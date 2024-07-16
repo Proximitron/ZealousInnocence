@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>	
+	<ThingDef Abstract ="True" Name ="UnderwearApparel" ParentName ="ApparelMakeableBase">		
+	</ThingDef>	
+</Defs>

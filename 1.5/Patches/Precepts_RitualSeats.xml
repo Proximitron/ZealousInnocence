@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<!---->
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/PreceptDef[defName="IdeoRitualSeat"]/buildingDefChances</xpath>
+		<value>
+			<ChangingMat>10</ChangingMat>
+		</value>
+	</Operation>
+</Patch>

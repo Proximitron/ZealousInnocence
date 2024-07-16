@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <!--
+  <ThingDef ParentName="BedWithQualityBase" Name="CribBasic">
+    <defName>CribBasic</defName>
+    <label>crib</label>
+    <description>A high walled crib, designed to keep a young child safe and comfortable through the night.</description>
+    <thingClass>Building_Bed</thingClass>
+    <graphicData> 
+      <texPath>Things/Building/Furniture/BasicCrib/BasicCrib</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+	  <shadowData>
+		<volume>(0.7, 1.0, 0.6)</volume>
+	  </shadowData>
+      <drawSize>(2,2)</drawSize>
+      <damageData>
+        <rect>(0,0.05,1,1.95)</rect>
+      </damageData>
+    </graphicData>
+    <comps>
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <li>EndTable</li>
+          <li>Dresser</li>
+          <li MayRequire="Ludeon.RimWorld.Ideology">SleepAccelerator</li>
+        </linkableFacilities>
+      </li>
+    </comps>
+    <statBases>
+      <MaxHitPoints>140</MaxHitPoints>
+      <Flammability>1.0</Flammability>
+      <Beauty>2</Beauty>
+      <WorkToBuild>800</WorkToBuild>
+      <Mass>30</Mass>
+      <BedRestEffectiveness>1</BedRestEffectiveness>
+      <Comfort>0.8</Comfort>
+      <ImmunityGainSpeedFactor>1.07</ImmunityGainSpeedFactor>
+      <SurgerySuccessChanceFactor>1</SurgerySuccessChanceFactor>
+    </statBases>
+    <size>(1,2)</size>
+    <stuffCategories>
+      <li>Metallic</li>
+      <li>Woody</li>
+    </stuffCategories>
+    <costStuffCount>45</costStuffCount>
+    <building>
+      <bed_showSleeperBody>True</bed_showSleeperBody>
+      <bed_healPerDay>5</bed_healPerDay>
+	  <buildingTags>
+        <li>Bed</li>
+		<li>Crib</li>
+      </buildingTags>
+    </building>
+    <fillPercent>0.4</fillPercent>
+    <pathCost>42</pathCost>
+    <staticSunShadowHeight>0</staticSunShadowHeight>
+    <castEdgeShadows>False</castEdgeShadows>
+    <designationHotKey>Misc2</designationHotKey>
+    <techLevel>Medieval</techLevel>
+    <researchPrerequisites>
+      <li>ComplexFurniture</li>
+    </researchPrerequisites>
+    <uiIconScale>0.90</uiIconScale>
+  </ThingDef>
+  <ThingDef ParentName="BedWithQualityBase" Name="CribBlanket">
+    <defName>CribBlanket</defName>
+    <label>crib with blankets</label>
+    <description>A high walled crib, designed to keep a young child safe and comfortable through the night. With blankets to tuck the child in.</description>
+    <thingClass>Building_Bed</thingClass>
+    <graphicData> 
+      <texPath>Things/Building/Furniture/BlanketCrib/BasicCrib</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+	  <shadowData>
+		<volume>(0.7, 1.0, 0.6)</volume>
+	  </shadowData>
+      <drawSize>(2,2)</drawSize>
+      <damageData>
+        <rect>(0,0.05,1,1.95)</rect>
+      </damageData>
+    </graphicData>
+    <comps>
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <li>EndTable</li>
+          <li>Dresser</li>
+          <li MayRequire="Ludeon.RimWorld.Ideology">SleepAccelerator</li>
+        </linkableFacilities>
+      </li>
+    </comps>
+    <statBases>
+      <MaxHitPoints>140</MaxHitPoints>
+      <Flammability>1.2</Flammability>
+      <Beauty>1</Beauty>
+      <WorkToBuild>800</WorkToBuild>
+      <Mass>30</Mass>
+      <BedRestEffectiveness>1</BedRestEffectiveness>
+      <Comfort>0.85</Comfort>
+      <ImmunityGainSpeedFactor>1.07</ImmunityGainSpeedFactor>
+      <SurgerySuccessChanceFactor>1</SurgerySuccessChanceFactor>
+    </statBases>
+    <size>(1,2)</size>
+    <stuffCategories>
+      <li>Metallic</li>
+      <li>Woody</li>
+    </stuffCategories>
+    <costStuffCount>45</costStuffCount>
+	<costList>
+      <Cloth>40</Cloth>
+    </costList>
+    <building>
+      <bed_showSleeperBody>True</bed_showSleeperBody>
+      <bed_healPerDay>5</bed_healPerDay>
+	  <buildingTags>
+        <li>Bed</li>
+		<li>Crib</li>
+      </buildingTags>
+    </building>
+    <fillPercent>0.4</fillPercent>
+    <pathCost>42</pathCost>
+    <staticSunShadowHeight>0</staticSunShadowHeight>
+    <castEdgeShadows>False</castEdgeShadows>
+    <designationHotKey>Misc2</designationHotKey>
+    <techLevel>Medieval</techLevel>
+    <researchPrerequisites>
+      <li>ComplexFurniture</li>
+    </researchPrerequisites>
+    <uiIconScale>0.90</uiIconScale>
+  </ThingDef>
+  -->
+  <ThingDef ParentName="BedWithQualityBase" Name="CribPillow">
+    <defName>CribPillow</defName>
+    <label>crib with a pillow</label>
+    <description>A high walled crib, designed to keep a young child safe through the night. With a pillow for increased comfort.</description>
+    <thingClass>Building_Bed</thingClass>
+    <graphicData> 
+      <texPath>Things/Building/Furniture/Crib/Crib</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+	  <shadowData>
+		<volume>(0.7, 1.0, 0.6)</volume>
+	  </shadowData>
+      <drawSize>(2,2)</drawSize>
+      <damageData>
+        <rect>(0,0.05,1,1.95)</rect>
+      </damageData>
+    </graphicData>
+    <comps>
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <li>EndTable</li>
+          <li>Dresser</li>
+          <li MayRequire="Ludeon.RimWorld.Ideology">SleepAccelerator</li>
+        </linkableFacilities>
+      </li>
+    </comps>
+    <statBases>
+      <MaxHitPoints>140</MaxHitPoints>
+      <Flammability>1.0</Flammability>
+      <Beauty>1</Beauty>
+      <WorkToBuild>800</WorkToBuild>
+      <Mass>30</Mass>
+      <BedRestEffectiveness>1</BedRestEffectiveness>
+      <Comfort>0.85</Comfort>
+      <ImmunityGainSpeedFactor>1.07</ImmunityGainSpeedFactor>
+      <SurgerySuccessChanceFactor>1</SurgerySuccessChanceFactor>
+    </statBases>
+    <size>(1,2)</size>
+    <stuffCategories>
+      <li>Metallic</li>
+      <li>Woody</li>
+    </stuffCategories>
+    <costStuffCount>45</costStuffCount>
+    <building>
+      <bed_showSleeperBody>True</bed_showSleeperBody>
+      <bed_healPerDay>5</bed_healPerDay>
+	  <buildingTags>
+        <li>Bed</li>
+		<li>Crib</li>
+      </buildingTags>
+    </building>
+    <fillPercent>0.4</fillPercent>
+    <pathCost>42</pathCost>
+    <staticSunShadowHeight>0</staticSunShadowHeight>
+    <castEdgeShadows>False</castEdgeShadows>
+    <designationHotKey>Misc2</designationHotKey>
+    <techLevel>Medieval</techLevel>
+    <researchPrerequisites>
+      <li>ComplexFurniture</li>
+    </researchPrerequisites>
+    <uiIconScale>0.90</uiIconScale>
+  </ThingDef>
+  
+  <ThingDef ParentName="DoubleBed" Name="DoubleCribPillow">
+    <defName>DoubleCribPillow</defName>
+    <label>double crib with a pillow</label>
+    <description>A high walled crib, designed to keep a young child safe through the night. With a pillow for increased comfort. Wide enough for two babies to kuddle each other.</description>
+    <thingClass>Building_Bed</thingClass>
+    <graphicData> 
+      <texPath>Things/Building/Furniture/DoubleCrib/Double_Crib</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+	  <shadowData>
+		<volume>(0.7, 1.0, 0.6)</volume>
+	  </shadowData>
+      <drawSize>(2,2)</drawSize>
+      <damageData>
+        <rect>(0,0.05,1,1.95)</rect>
+      </damageData>
+    </graphicData>
+    <comps>
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <li>EndTable</li>
+          <li>Dresser</li>
+          <li MayRequire="Ludeon.RimWorld.Ideology">SleepAccelerator</li>
+        </linkableFacilities>
+      </li>
+    </comps>
+    <statBases>
+      <MaxHitPoints>140</MaxHitPoints>
+      <Flammability>1.0</Flammability>
+      <Beauty>1</Beauty>
+      <WorkToBuild>1600</WorkToBuild>
+      <Mass>30</Mass>
+      <BedRestEffectiveness>1</BedRestEffectiveness>
+      <Comfort>0.90</Comfort>
+      <ImmunityGainSpeedFactor>1.07</ImmunityGainSpeedFactor>
+      <SurgerySuccessChanceFactor>1</SurgerySuccessChanceFactor>
+    </statBases>
+    <size>(2,2)</size>
+    <stuffCategories>
+      <li>Metallic</li>
+      <li>Woody</li>
+    </stuffCategories>
+    <costStuffCount>90</costStuffCount>
+    <building>
+      <bed_showSleeperBody>True</bed_showSleeperBody>
+      <bed_healPerDay>5</bed_healPerDay>
+	  <buildingTags>
+        <li>Bed</li>
+		<li>Crib</li>
+      </buildingTags>
+    </building>
+    <fillPercent>0.4</fillPercent>
+    <pathCost>42</pathCost>
+    <staticSunShadowHeight>0</staticSunShadowHeight>
+    <castEdgeShadows>False</castEdgeShadows>
+    <designationHotKey>Misc3</designationHotKey>
+    <techLevel>Medieval</techLevel>
+    <researchPrerequisites>
+      <li>ComplexFurniture</li>
+    </researchPrerequisites>
+    <uiIconScale>0.90</uiIconScale>
+  </ThingDef>
+</Defs>

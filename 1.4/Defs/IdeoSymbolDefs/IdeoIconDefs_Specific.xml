@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <IdeoIconDef>
+    <defName>Diaper</defName>
+    <iconPath>Apparel/Diaper/Nappy</iconPath>
+    <memes>
+      <li>Babs</li>
+    </memes>
+  </IdeoIconDef> 
+
+  <IdeoIconDef>
+    <defName>Crib</defName>
+    <iconPath>Things/Building/Furniture/Crib/Crib_south</iconPath>
+    <memes>
+      <li>Babs</li>
+    </memes>
+  </IdeoIconDef>
+</Defs>

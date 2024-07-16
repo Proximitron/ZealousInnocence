@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- Issue -->
+
+  <IssueDef>
+    <defName>Bladder</defName>
+    <label>bladder removal</label>
+    <iconPath>Things/Organ/Bladder/Bladder</iconPath>
+  </IssueDef>
+
+  <!-- HistoryEvents -->
+
+  <HistoryEventDef>
+    <defName>GotUnbladdered</defName>
+    <label>got unbladdered</label>
+  </HistoryEventDef>
+
+  <!-- Precepts -->
+  <PreceptDef>
+    <defName>Unbladdered_Respected</defName>
+    <issue>Bladder</issue>
+    <label>respected</label>
+    <description>To choose to remove the bladder is to choose to have freedom.</description>
+    <impact>Medium</impact>
+    <displayOrderInIssue>30</displayOrderInIssue>
+    <defaultSelectionWeight>0</defaultSelectionWeight>
+		<requiredMemes>
+			<li>Babs</li>
+		</requiredMemes>
+		<associatedMemes>
+			<li>Babs</li>
+		</associatedMemes>
+    <comps>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Respected_Bladderless</thought>
+      </li>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Respected_Bladderless_Social</thought>
+      </li>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Respected_Bladdered_Social</thought>
+      </li>
+      <li Class="PreceptComp_SelfTookMemoryThought">
+        <eventDef>GotUnbladdered</eventDef>
+        <thought>UnbladderingCeremony_Self_Respected</thought>
+      </li>
+      <li Class="PreceptComp_DevelopmentPoints">
+        <eventDef>GotUnbladdered</eventDef>
+        <eventLabel>unbladdering someone</eventLabel>
+        <points>1</points>
+      </li>
+    </comps>
+  </PreceptDef>
+
+  <PreceptDef>
+    <defName>Unbladdered_Elevated</defName>
+    <issue>Bladder</issue>
+    <label>elevated</label>
+    <description>Only unbladdered can reach enlightment, free from this awful need.</description>
+    <impact>High</impact>
+    <displayOrderInIssue>20</displayOrderInIssue>
+    <defaultSelectionWeight>0</defaultSelectionWeight>
+    <requiredMemes>
+      <li>Babs</li>
+    </requiredMemes>
+    <comps>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Elevated_Bladderless</thought>
+      </li>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Elevated_HalfUnbladdered</thought>
+      </li>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Elevated_Bladdered</thought>
+      </li>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Elevated_Bladderless_Social</thought>
+      </li>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Elevated_HalfUnbladdered_Social</thought>
+      </li>
+      <li Class="PreceptComp_SituationalThought">
+        <thought>Unbladdered_Elevated_Bladdered_Social</thought>
+      </li>
+      <li Class="PreceptComp_SelfTookMemoryThought">
+        <eventDef>GotUnbladdered</eventDef>
+        <thought>UnbladderingCeremony_Self_Elevated</thought>
+      </li>
+      <li Class="PreceptComp_DevelopmentPoints">
+        <eventDef>GotUnbladdered</eventDef>
+        <eventLabel>unbladdered someone</eventLabel>
+        <points>1</points>
+      </li>
+    </comps>
+  </PreceptDef>
+
+  <PreceptDef>
+    <defName>Unbladdered_Acceptable</defName>
+    <issue>Bladder</issue>
+    <impact>Low</impact>
+    <displayOrderInIssue>0</displayOrderInIssue>
+    <label>acceptable</label>
+    <defaultSelectionWeight>1</defaultSelectionWeight>
+    <description>As long as it is not forced on someone, a missing bladder is not an issue.</description>
+    <comps>
+      <li Class="PreceptComp_KnowsMemoryThought">
+        <eventDef>GotUnbladdered</eventDef>
+        <thought>Unbladdered_Know_Horrible</thought>
+        <description>someone got unbladdered</description>
+      </li>
+    </comps>
+  </PreceptDef>
+	
+  <PreceptDef>
+    <defName>Unbladdered_Horrible</defName>
+    <issue>Bladder</issue>
+    <impact>Low</impact>
+    <displayOrderInIssue>0</displayOrderInIssue>
+    <label>horrible</label>
+    <defaultSelectionWeight>1</defaultSelectionWeight>
+    <description>Removing someone's bladder is to remove controll. They are incomplete without one.</description>
+    <conflictingMemes>
+      <li>Babs</li>
+    </conflictingMemes>
+    <comps>
+      <li Class="PreceptComp_KnowsMemoryThought">
+        <eventDef>GotUnbladdered</eventDef>
+        <thought>Unbladdered_Know_Horrible</thought>
+        <description>someone got unbladdered</description>
+      </li>
+    </comps>
+  </PreceptDef>
+
+  <!-- Ceremony thoughts -->
+
+  <ThoughtDef>
+    <defName>Unbladdered_Know_Horrible</defName>
+    <durationDays>4</durationDays>
+    <doNotApplyToQuestLodgers>true</doNotApplyToQuestLodgers>
+    <nullifyingTraits>
+      <li>Psychopath</li>
+      <li>Bloodlust</li>
+			<li>Potty_Rebel</li>
+    </nullifyingTraits>
+    <stages>
+      <li>
+        <label>unbladder ceremony</label>
+        <description>We removed someones bladder for ideoligious beliefs! This is wrong!</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>UnbladderingCeremony_Self_Respected</defName>
+    <durationDays>4</durationDays>
+    <stages>
+      <li>
+        <label>was unbladdered</label>
+        <description>I was unbladdered in a righteous ceremony. Finally, I am a need less.</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>UnbladderingCeremony_Self_Elevated</defName>
+    <durationDays>4</durationDays>
+    <stages>
+      <li>
+        <label>was unbladdered</label>
+        <description>I was unbladdered in a righteous ceremony. Finally, no more potty.</description>
+        <baseMoodEffect>5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+
+  <!-- Thoughts : Bladderless -->
+
+  <ThoughtDef>
+    <defName>Unbladdered_Respected_Bladderless</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_Bladderless</workerClass>
+    <thoughtClass>Thought_Situational</thoughtClass>
+    <stages>
+      <li>
+        <label>bladderless</label>
+        <description>A need less I have to care for I guess.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>Unbladdered_Elevated_Bladderless</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_Bladderless</workerClass>
+    <thoughtClass>Thought_Situational</thoughtClass>
+    <stages>
+      <li>
+        <label>bladderless</label>
+        <description>No more potty! Yay!</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+
+  <ThoughtDef>
+    <defName>Unbladdered_Respected_Bladderless_Social</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_Bladderless_Social</workerClass>
+    <thoughtClass>Thought_SituationalSocial</thoughtClass>
+    <stages>
+      <li>
+        <label>bladderless</label>
+        <baseOpinionOffset>10</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>Unbladdered_Elevated_Bladderless_Social</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_Bladderless_Social</workerClass>
+    <thoughtClass>Thought_SituationalSocial</thoughtClass>
+    <stages>
+      <li>
+        <label>bladderless</label>
+        <baseOpinionOffset>20</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <!-- Thoughts: Artificial blindness -->
+<!--
+  <ThoughtDef>
+    <defName>Blindness_ArtificialBlind</defName>
+    <workerClass>ThoughtWorker_Precept_ArtificialBlind</workerClass>
+    <thoughtClass>Thought_Situational</thoughtClass>
+    <stages>
+      <li>
+        <label>vision blocked</label>
+        <description>Blocking my vision gives my mind closer access to true reality. It's not as good as a permanent blinding, but it's acceptable.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+-->
+
+  <!-- Thoughts: half-unbladdered -->
+
+  <ThoughtDef>
+    <defName>Unbladdered_Elevated_HalfUnbladdered</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_HalfUnbladdered</workerClass>
+    <thoughtClass>Thought_Situational</thoughtClass>
+    <stages>
+      <li>
+        <label>bad bladder</label>
+        <description>At least I am not expected to make it to the potty all the time.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+
+  <ThoughtDef>
+    <defName>Unbladdered_Elevated_HalfUnbladdered_Social</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_HalfUnbladdered_Social</workerClass>
+    <thoughtClass>Thought_SituationalSocial</thoughtClass>
+    <stages>
+      <li>
+        <label>bad bladder</label>
+        <baseOpinionOffset>5</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <!-- Thoughts: Not unbladdered -->
+
+  <ThoughtDef>
+    <defName>Unbladdered_Elevated_Bladdered</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_Bladdered</workerClass>
+    <thoughtClass>Thought_Situational</thoughtClass>
+    <doNotApplyToQuestLodgers>true</doNotApplyToQuestLodgers>
+    <stages>
+      <li>
+        <label>bladder</label>
+        <description>I wish to be without a bladder so I never need to hear about the potty monster anymore! At a minimum I should have less control over it.</description>
+        <baseMoodEffect>-3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>Unbladdered_Respected_Bladdered_Social</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_Bladdered_Social</workerClass>
+    <thoughtClass>Thought_SituationalSocial</thoughtClass>
+    <stages>
+      <li>
+        <label>bladdered</label>
+        <baseOpinionOffset>-2</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>Unbladdered_Elevated_Bladdered_Social</defName>
+    <workerClass>ZealousInnocence.ThoughtWorker_Precept_Bladdered_Social</workerClass>
+    <thoughtClass>Thought_SituationalSocial</thoughtClass>
+    <stages>
+      <li>
+        <label>bladdered</label>
+        <baseOpinionOffset>-3</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+  
+</Defs>

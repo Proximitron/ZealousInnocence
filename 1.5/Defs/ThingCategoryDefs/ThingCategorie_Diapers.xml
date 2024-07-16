@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <ThingCategoryDef>
+      <defName>Diapers</defName>
+      <label>diapers</label>
+      <parent>Apparel</parent>
+      <iconPath>Apparel/Diaper/Nappy</iconPath>
+      <resourceReadoutRoot>true</resourceReadoutRoot>
+    </ThingCategoryDef>
+	
+	  <ThingCategoryDef>
+      <defName>DiapersNight</defName>
+      <label>night diapers</label>
+      <parent>Diapers</parent>
+      <iconPath>Apparel/Diaper/Nighty</iconPath>
+      <resourceReadoutRoot>true</resourceReadoutRoot>
+    </ThingCategoryDef>
+</Defs>

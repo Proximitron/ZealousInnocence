@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef Name="ApparelDiaperBase" ParentName="ApparelMakeableBase" Abstract="True">
+		<thingClass>ZealousInnocence.Apparel_Diaper_Base</thingClass>
+		<tradeability>All</tradeability>
+		<thingCategories>
+			<li>Diapers</li>
+		</thingCategories>
+		<apparel>
+			<bodyPartGroups>
+				<li>Legs</li>
+			</bodyPartGroups>
+			<wornGraphicPath>Apparel/Diaper/Nappy</wornGraphicPath>
+			<layers>
+				<li>Underwear</li>
+			</layers>
+			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
+			<canBeGeneratedToSatisfyWarmth>true</canBeGeneratedToSatisfyWarmth>
+      <canBeGeneratedToSatisfyToxicEnvironmentResistance>false</canBeGeneratedToSatisfyToxicEnvironmentResistance>
+			<legsNakedUnlessCoveredBySomethingElse>true</legsNakedUnlessCoveredBySomethingElse>
+			<defaultOutfitTags>
+        <li>Worker</li>
+        <li>Soldier</li>
+      </defaultOutfitTags>
+			<tags>
+				<li>Diaper</li>
+      </tags>
+		</apparel>
+		<colorGenerator Class="ColorGenerator_Options">
+			<options>
+				<li>
+					<weight>8</weight>
+					<only>RGBA(255, 255, 255, 255)</only>
+				</li>
+				<li>
+					<weight>4</weight>
+					<min>RGBA(242, 0, 255, 255)</min>
+					<max>RGBA(255, 0, 188, 255)</max>
+				</li>
+				<li>
+					<weight>4</weight>
+					<min>RGBA(0, 199, 255, 255)</min>
+					<max>RGBA(0, 162, 255, 255)</max>
+				</li>
+			</options>
+		</colorGenerator>
+		<tickerType>Normal</tickerType>
+	</ThingDef>
+	
+	<ThingDef ParentName="ApparelDiaperBase">
+		<defName>Apparel_Diaper_Flimsy</defName>
+		<label>flimsy diaper</label>
+		<description>An extremly flimsy, cheap leather diaper.</description>
+		<graphicData>
+			<texPath>Apparel/Diaper/Nappy_Dirty</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<techLevel>Medieval</techLevel>
+		<stuffCategories>
+			<li>Leathery</li>
+		</stuffCategories>
+		<costStuffCount>2</costStuffCount>
+		<statBases>
+			<Absorbency>1.5</Absorbency>
+			<MaxHitPoints>60</MaxHitPoints>
+			<WorkToMake>250</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.05</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.25</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.15</StuffEffectMultiplierInsulation_Heat>
+			<EquipDelay>7</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<PsychicSensitivity>0.20</PsychicSensitivity>
+			<MoveSpeed>-0.08</MoveSpeed>
+			<MentalBreakThreshold>-0.12</MentalBreakThreshold>
+			<SocialImpact>-0.06</SocialImpact>
+			<NegotiationAbility>-0.04</NegotiationAbility>
+			<TradePriceImprovement>-0.05</TradePriceImprovement>
+			<Beauty>-3</Beauty>
+			<Comfort>0.15</Comfort>
+			<MeleeDodgeChance>-0.05</MeleeDodgeChance>
+			<PawnTrapSpringChance>0.03</PawnTrapSpringChance>
+			<HuntingStealth>-0.05</HuntingStealth>
+			<ArrestSuccessChance>-0.05</ArrestSuccessChance>
+			<WorkSpeedGlobal>-0.06</WorkSpeedGlobal>
+			<SlaveSuppressionOffset MayRequire="Ludeon.RimWorld.Ideology">0.2</SlaveSuppressionOffset>
+		</equippedStatOffsets>
+		<recipeMaker>
+			<recipeUsers>
+				<li>ElectricTailoringBench</li>
+				<li>HandTailoringBench</li>
+				<li>CraftingSpot</li>
+			</recipeUsers>
+		</recipeMaker>
+		<apparel>
+      <canBeDesiredForIdeo>false</canBeDesiredForIdeo>
+			<tags>
+        <li>Neolithic</li>
+			</tags>
+    </apparel>
+		<!--<comps>
+            <li Class="ZealousInnocence.DiaperFullnesProperties">
+                <diaperFullnes>1</diaperFullnes>		
+            </li>
+        </comps>-->
+	</ThingDef>
+	<ThingDef ParentName="ApparelDiaperBase">
+		<defName>Apparel_Diaper_Night</defName>
+		<label>night protection pants</label>
+		<description>Totally not diapers, but a slightly thicker version of underpants. Designed to prevent night time accidents. Low absorbency.</description>
+		<graphicData>
+			<texPath>Apparel/Diaper/Nighty</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<techLevel>Industrial</techLevel>
+		<stuffCategories>
+			<li>Fabric</li>
+			<li>Leathery</li>
+		</stuffCategories>
+		<costStuffCount>5</costStuffCount>
+		<statBases>
+			<Absorbency>1.25</Absorbency>
+			<MaxHitPoints>60</MaxHitPoints>
+			<WorkToMake>400</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.1</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.25</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.15</StuffEffectMultiplierInsulation_Heat>
+			<EquipDelay>7</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<PsychicSensitivity>0.10</PsychicSensitivity>
+			<MentalBreakThreshold>-0.09</MentalBreakThreshold>
+			<SocialImpact>-0.05</SocialImpact>
+			<Beauty>-1</Beauty>
+			<Comfort>0.15</Comfort>
+			<HuntingStealth>-0.01</HuntingStealth>
+			<ArrestSuccessChance>-0.01</ArrestSuccessChance>
+		</equippedStatOffsets>
+		<recipeMaker>
+			<recipeUsers>
+				<li>ElectricTailoringBench</li>
+				<li>HandTailoringBench</li>
+			</recipeUsers>
+		</recipeMaker>
+		<apparel>
+			<wornGraphicPath>Apparel/Diaper/Nighty</wornGraphicPath>
+      <canBeDesiredForIdeo>false</canBeDesiredForIdeo>
+			<tags>
+				<li>DiapersNight</li>
+				<li>IndustrialBasic</li>
+      </tags>
+    </apparel>
+		<thingCategories>
+			<li>DiapersNight</li>
+		</thingCategories>
+		<!--<comps>
+            <li Class="ZealousInnocence.DiaperFullnesProperties">
+                <diaperFullnes>1</diaperFullnes>		
+            </li>
+        </comps>-->
+	</ThingDef>
+	<ThingDef ParentName="ApparelDiaperBase">
+		<defName>Apparel_Diaper</defName>
+		<label>diaper</label>
+		<description>A simple diaper from leather or fabrics.</description>
+		<graphicData>
+			<texPath>Apparel/Diaper/Nappy_Dirty</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<techLevel>Industrial</techLevel>
+		<stuffCategories>
+			<li>Fabric</li>
+			<li>Leathery</li>
+		</stuffCategories>
+		<costStuffCount>5</costStuffCount>
+		<statBases>
+			<Absorbency>2.5</Absorbency>
+			<MaxHitPoints>80</MaxHitPoints>
+			<WorkToMake>400</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.10</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.50</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.30</StuffEffectMultiplierInsulation_Heat>
+			<EquipDelay>5</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<PsychicSensitivity>0.20</PsychicSensitivity>
+			<MoveSpeed>-0.08</MoveSpeed>
+			<MentalBreakThreshold>-0.12</MentalBreakThreshold>
+			<SocialImpact>-0.06</SocialImpact>
+			<NegotiationAbility>-0.04</NegotiationAbility>
+			<TradePriceImprovement>-0.05</TradePriceImprovement>
+			<Beauty>-3</Beauty>
+			<Comfort>0.15</Comfort>
+			<MeleeDodgeChance>-0.05</MeleeDodgeChance>
+			<PawnTrapSpringChance>0.03</PawnTrapSpringChance>
+			<HuntingStealth>-0.03</HuntingStealth>
+			<ArrestSuccessChance>-0.03</ArrestSuccessChance>
+			<WorkSpeedGlobal>-0.04</WorkSpeedGlobal>
+			<SlaveSuppressionOffset MayRequire="Ludeon.RimWorld.Ideology">0.1</SlaveSuppressionOffset>
+		</equippedStatOffsets>
+		<recipeMaker>
+			<recipeUsers>
+				<li>ElectricTailoringBench</li>
+				<li>HandTailoringBench</li>
+			</recipeUsers>
+		</recipeMaker>
+		<tradeTags>
+      <li>BasicClothing</li>
+    </tradeTags>
+		<apparel>
+      <canBeDesiredForIdeo>false</canBeDesiredForIdeo>
+			<tags>
+				<li>IndustrialBasic</li>
+      </tags>
+    </apparel>
+		<!--<comps>
+            <li Class="ZealousInnocence.DiaperFullnesProperties">
+                <diaperFullnes>1</diaperFullnes>		
+            </li>
+        </comps>-->
+	</ThingDef>
+	<ThingDef ParentName="ApparelDiaperBase">
+		<defName>Apparel_Premium_Diaper</defName>
+		<label>premium diaper</label>
+		<description>A single use, very puffy and cute diaper from finest fabric.</description>
+		<graphicData>
+			<texPath>Apparel/Diaper/Nappy_Premium</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<techLevel>Industrial</techLevel>
+		<stuffCategories>
+			<li>Fabric</li>
+		</stuffCategories>
+		<costStuffCount>20</costStuffCount>
+		<statBases>
+			<Absorbency>4</Absorbency>
+			<MaxHitPoints>80</MaxHitPoints>
+			<WorkToMake>1000</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.15</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.55</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.35</StuffEffectMultiplierInsulation_Heat>
+			<EquipDelay>3</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<PsychicSensitivity>0.20</PsychicSensitivity>
+			<MoveSpeed>-0.04</MoveSpeed>
+			<MentalBreakThreshold>-0.16</MentalBreakThreshold>
+			<SocialImpact>-0.05</SocialImpact>
+			<NegotiationAbility>-0.03</NegotiationAbility>
+			<TradePriceImprovement>-0.02</TradePriceImprovement>
+			<Beauty>-1</Beauty>
+			<Comfort>0.25</Comfort>
+			<MeleeDodgeChance>-0.05</MeleeDodgeChance>
+			<PawnTrapSpringChance>0.01</PawnTrapSpringChance>
+			<HuntingStealth>-0.01</HuntingStealth>
+			<ArrestSuccessChance>-0.01</ArrestSuccessChance>
+			<WorkSpeedGlobal>-0.01</WorkSpeedGlobal>
+			<SlaveSuppressionOffset MayRequire="Ludeon.RimWorld.Ideology">0.1</SlaveSuppressionOffset>
+		</equippedStatOffsets>
+		<recipeMaker>
+			<researchPrerequisite>ComplexClothing</researchPrerequisite>
+			<recipeUsers>
+				<li>ElectricTailoringBench</li>
+				<li>HandTailoringBench</li>
+			</recipeUsers>
+		</recipeMaker>
+		<tradeTags>
+      <li>BasicClothing</li>
+    </tradeTags>
+		<apparel>
+      <canBeDesiredForIdeo>true</canBeDesiredForIdeo>
+			<tags>
+				<li>IndustrialBasic</li>
+      </tags>
+    </apparel>
+		<!--<comps>
+            <li Class="ZealousInnocence.DiaperFullnesProperties">
+                <diaperFullnes>1</diaperFullnes>		
+            </li>
+        </comps>-->
+	</ThingDef>
+</Defs>

@@ -1,0 +1,11 @@
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.3\Assemblies\ZealousInnocence.dll.config
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.3\Assemblies\ZealousInnocence.dll
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.3\Source\ZealousInnocence\ZealousInnocence\obj\Debug\ZealousInnocence.csproj.AssemblyReference.cache
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.3\Source\ZealousInnocence\ZealousInnocence\obj\Debug\ZealousInnocence.csproj.CoreCompileInputs.cache
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.3\Source\ZealousInnocence\ZealousInnocence\obj\Debug\ZealousInnocence.dll
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.4\Assemblies\ZealousInnocence.dll.config
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.4\Assemblies\ZealousInnocence.dll
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.4\Source\ZealousInnocence\ZealousInnocence\obj\Debug\ZealousInnocence.csproj.AssemblyReference.cache
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.4\Source\ZealousInnocence\ZealousInnocence\obj\Debug\ZealousInnocence.csproj.CoreCompileInputs.cache
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.4\Source\ZealousInnocence\ZealousInnocence\obj\Debug\ZealousInnocence.dll
+C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.4\Source\ZealousInnocence\ZealousInnocence\obj\Debug\ZealousInnocence.csproj.CopyComplete

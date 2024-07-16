@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <TraitDef>
+    <defName>Potty_Rebel</defName>
+    <commonality>0.7</commonality>
+    <degreeDatas>
+      <li>
+        <label>Potty rebel</label>
+        <description>{PAWN_nameDef} enjoys wearing and using diapers. Having accidents will give them a mood bonus.</description>
+      </li>
+    </degreeDatas>
+  </TraitDef>
+  <TraitDef>
+    <defName>Big_Boy</defName>
+    <commonality>0.9</commonality>
+    <degreeDatas>
+      <li>
+        <label>Self concious</label>
+        <description>{PAWN_nameDef} heavily dislikes diapers, reguardless of medical requirement.</description>
+      </li>
+    </degreeDatas>
+  </TraitDef>   
+ </Defs>

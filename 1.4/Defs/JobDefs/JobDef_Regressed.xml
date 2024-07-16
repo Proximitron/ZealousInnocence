@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <JobDef>
+    <defName>RegressedPlayAround</defName>
+    <driverClass>ZealousInnocence.JobDriver_RegressedPlayAround</driverClass>
+    <reportString>playing.</reportString>
+  </JobDef>
+
+</Defs>

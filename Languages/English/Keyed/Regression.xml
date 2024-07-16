@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<!-- LordJob_RegressedPlayTime Playing -->
+	<LordJobRegressedPlayAround>Playing with someone</LordJobRegressedPlayAround>
+	<MessagePawnRegressed>{0} has been regressed! All brain injuries got healed, but they will need a lot of help and attention to regain their lost memories and mental age!</MessagePawnRegressed>
+	<LetterDiaperRash>{0} is suffering from a {1}, as a result of wearing a diaper too long. {PAWN_pronoun} will need some cream and baby powder.</LetterDiaperRash>
+	
+	<!-- New Translations for 1.5 -->
+	<MessagePawnResurrectedFailed>{0} could not be resurrected!</MessagePawnResurrectedFailed>
+</LanguageData>

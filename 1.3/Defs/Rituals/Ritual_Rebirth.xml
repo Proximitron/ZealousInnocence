@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<PreceptDef Abstract="True" Name="RebirthBase" ParentName="FuneralBase">
+		<label>rebirth</label>
+		<description>A gathering that occurs around a believer's grave to revive them. The corpse is exhumed and brought back to life. The brain is restored by a powerful drug that causes regression, but also heals every damage caused to it.</description>
+		<extraTextPawnDeathLetter>{PAWN_nameDef} should be reborn, so {PAWN_possessive} friends and family need to mourne no more.</extraTextPawnDeathLetter>
+		<issue>Ritual</issue>
+		<impact>Medium</impact>
+		<preceptClass>Precept_Ritual</preceptClass>
+		<allowDuplicates>true</allowDuplicates>
+		<countsTowardsPreceptLimit>false</countsTowardsPreceptLimit>
+		<selectionWeight>1.0</selectionWeight>
+		<displayOrderInImpact>100</displayOrderInImpact>
+		<ignoreLimitsInEditMode>false</ignoreLimitsInEditMode>
+		<receivesExpectationsQualityOffset>true</receivesExpectationsQualityOffset>
+		<notifyPlayerOnOpportunity>false</notifyPlayerOnOpportunity>
+		<associatedMemes>
+			<li>Babs</li>
+		</associatedMemes>
+		<requiredMemes>
+			<li>Babs</li>
+		</requiredMemes>
+	</PreceptDef>
+	
+
+	<PreceptDef ParentName="RebirthBase">
+    <defName>Rebirth</defName>
+    <label>rebirth</label>
+		<ritualPatternBase>RebirthPattern</ritualPatternBase>
+    <alsoAdds>PhoenixNoCorpse</alsoAdds>
+    <extraTextPawnDeathLetter>{PAWN_nameDef} should be reborn so {PAWN_possessive} friends and family don't need to suffer no more.</extraTextPawnDeathLetter>
+  </PreceptDef>
+
+  <PreceptDef ParentName="RebirthBase">
+    <defName>PhoenixNoCorpse</defName>
+    <canGenerateAsSpecialPrecept>false</canGenerateAsSpecialPrecept>
+    <label>phoenix (from the ashes)</label>
+    <visible>false</visible>
+    <listedForRoles>false</listedForRoles>
+    <ritualPatternBase>PhoenixPatternNoCorpse</ritualPatternBase>
+    <takeNameFrom>Rebirth</takeNameFrom>
+  </PreceptDef>
+	
+	<DutyDef>
+		<defName>Rebirth</defName>
+		<hook>HighPriority</hook>
+		<socialModeMax>Off</socialModeMax>
+		<thinkNode Class="ThinkNode_Priority">
+			<subNodes>
+				<li Class="ZealousInnocence.JobGiver_Rebirth"/>
+			</subNodes>
+		</thinkNode>
+	</DutyDef>
+	<JobDef>
+		<defName>Rebirth</defName>
+		<driverClass>ZealousInnocence.JobDriver_Rebirth</driverClass>
+		<reportString>Rebirthing TargetA.</reportString>
+		<casualInterruptible>false</casualInterruptible>
+	</JobDef>
+	<RitualBehaviorDef>
+		<defName>Rebirth</defName>
+		<durationTicks>1000</durationTicks>
+		<workerClass>ZealousInnocence.RitualBehaviorWorker_Rebirth</workerClass>
+		<roles>
+			<li Class="RitualRoleTag">
+				<label>speaker</label>
+				<id>moralist</id>
+				<precept>IdeoRole_Moralist</precept>
+				<tag>Moralist</tag>
+				<maxCount>1</maxCount>
+				<substitutable>true</substitutable>
+				<countsAsParticipant>False</countsAsParticipant>
+			</li>
+			<li Class="RitualRoleTag">
+        <label>leader</label>
+        <tag>Leader</tag>
+        <id>leader</id>
+        <precept>IdeoRole_Leader</precept>
+        <required>True</required>
+        <substitutable>True</substitutable>
+        <maxCount>1</maxCount>
+        <countsAsParticipant>False</countsAsParticipant>
+      </li>
+		</roles>
+		<stages>
+			<li>
+				<defaultDuty>Spectate</defaultDuty>
+				<endTriggers>
+					<li Class="StageEndTrigger_DurationPercentage">
+						<percentage>0.5</percentage>
+					</li>
+				</endTriggers>
+				<roleBehaviors>
+					<li>
+						<roleId>leader</roleId>
+						<dutyDef>SpeakOnCellFacingSpectators</dutyDef>
+						<speakerInteraction>Speech_Rebirth_Pre</speakerInteraction>
+						<customPositions>
+							<li Class="RitualPosition_OnInteractionCell"/>
+						</customPositions>
+					</li>
+				</roleBehaviors>
+			</li>
+			<li>
+				<defaultDuty>Spectate</defaultDuty>
+				<endTriggers>
+					<li Class="StageEndTrigger_DurationPercentage">
+						<percentage>0.5</percentage>
+					</li>
+				</endTriggers>
+				<roleBehaviors>
+					<li>
+						<roleId>moralist</roleId>
+						<dutyDef>SpeakOnCellFacingSpectators</dutyDef>
+						<speakerInteraction>Speech_Rebirth</speakerInteraction>
+						<customPositions>
+							<li Class="RitualPosition_OnInteractionCell"/>
+						</customPositions>
+					</li>
+				</roleBehaviors>
+			</li>
+			<li>
+				<defaultDuty>Spectate</defaultDuty>
+				<endTriggers>
+					<li Class="StageEndTrigger_DurationPercentage">
+						<percentage>0.45</percentage>
+					</li>
+				</endTriggers>
+				<roleBehaviors>
+					<li>
+						<roleId>leader</roleId>
+						<dutyDef>Rebirth</dutyDef>
+						<speakerInteraction>Speech_Rebirth</speakerInteraction>
+						<customPositions>
+							<li Class="RitualPosition_OnInteractionCell"/>
+						</customPositions>
+					</li>
+				</roleBehaviors>
+				<visualEffectDef>Funeral</visualEffectDef>
+			</li>
+		</stages>
+	</RitualBehaviorDef>
+	
+	
+	<DutyDef>
+		<defName>Phoenix</defName>
+		<hook>HighPriority</hook>
+		<socialModeMax>Off</socialModeMax>
+		<thinkNode Class="ThinkNode_Priority">
+			<subNodes>
+				<li Class="ZealousInnocence.JobGiver_Phoenix"/>
+			</subNodes>
+		</thinkNode>
+	</DutyDef>
+	<JobDef>
+		<defName>Phoenix</defName>
+		<driverClass>ZealousInnocence.JobDriver_Phoenix</driverClass>
+		<reportString>Recreating TargetA.</reportString>
+		<casualInterruptible>false</casualInterruptible>
+	</JobDef>
+	<RitualBehaviorDef>
+		<defName>Phoenix</defName>
+		<durationTicks>1000</durationTicks>
+		<workerClass>ZealousInnocence.RitualBehaviorWorker_Phoenix</workerClass>
+		<roles>
+			<li Class="RitualRoleTag">
+				<label>speaker</label>
+				<id>moralist</id>
+				<precept>IdeoRole_Moralist</precept>
+				<tag>Moralist</tag>
+				<maxCount>1</maxCount>
+				<substitutable>true</substitutable>
+				<countsAsParticipant>False</countsAsParticipant>
+			</li>
+			<li Class="RitualRoleTag">
+        <label>leader</label>
+        <tag>Leader</tag>
+        <id>leader</id>
+        <precept>IdeoRole_Leader</precept>
+        <required>True</required>
+        <substitutable>True</substitutable>
+        <maxCount>1</maxCount>
+        <countsAsParticipant>False</countsAsParticipant>
+      </li>
+		</roles>
+		<stages>
+			<li>
+				<defaultDuty>Spectate</defaultDuty>
+				<endTriggers>
+					<li Class="StageEndTrigger_DurationPercentage">
+						<percentage>0.5</percentage>
+					</li>
+				</endTriggers>
+				<roleBehaviors>
+					<li>
+						<roleId>leader</roleId>
+						<dutyDef>SpeakOnCellFacingSpectators</dutyDef>
+						<speakerInteraction>Speech_Rebirth_Pre</speakerInteraction>
+						<customPositions>
+							<li Class="RitualPosition_OnInteractionCell"/>
+						</customPositions>
+					</li>
+				</roleBehaviors>
+			</li>
+			<li>
+				<defaultDuty>Spectate</defaultDuty>
+				<endTriggers>
+					<li Class="StageEndTrigger_DurationPercentage">
+						<percentage>0.5</percentage>
+					</li>
+				</endTriggers>
+				<roleBehaviors>
+					<li>
+						<roleId>moralist</roleId>
+						<dutyDef>SpeakOnCellFacingSpectators</dutyDef>
+						<speakerInteraction>Speech_Rebirth</speakerInteraction>
+						<customPositions>
+							<li Class="RitualPosition_OnInteractionCell"/>
+						</customPositions>
+					</li>
+				</roleBehaviors>
+			</li>
+			<li>
+				<defaultDuty>Spectate</defaultDuty>
+				<endTriggers>
+					<li Class="StageEndTrigger_DurationPercentage">
+						<percentage>0.45</percentage>
+					</li>
+				</endTriggers>
+				<roleBehaviors>
+					<li>
+						<roleId>leader</roleId>
+						<dutyDef>Phoenix</dutyDef>
+						<speakerInteraction>Speech_Rebirth</speakerInteraction>
+						<customPositions>
+							<li Class="RitualPosition_OnInteractionCell"/>
+						</customPositions>
+					</li>
+				</roleBehaviors>
+				<visualEffectDef>Funeral</visualEffectDef>
+			</li>
+		</stages>
+	</RitualBehaviorDef>
+	<!--
+					<endTriggers>
+					<li Class="ZealousInnocence.StageEndTrigger_RoleTargetsEmptyGrave">
+						<roleId>moralist</roleId>
+					</li>
+				</endTriggers>
+	-->
+	<RitualPatternDef>
+    <defName>PhoenixPatternNoCorpse</defName>
+    <ritualExpectedDesc>Once a {IDEO} member dies and the body is lost, other {MEMBERS} gather around an empty grave for {RITUAL_labelDef}.</ritualExpectedDesc>
+    <ritualObligationTargetFilter>AnyEmptyGrave</ritualObligationTargetFilter>
+    <ritualBehavior>Phoenix</ritualBehavior>
+		<alwaysStartAnytime>true</alwaysStartAnytime>
+    <ritualOutcomeEffect>AttendedRebirth</ritualOutcomeEffect>
+		<tags>
+			<li>PhoenixCeremony</li>
+		</tags>
+  </RitualPatternDef>
+	
+	<RitualObligationTargetFilterDef>
+    <defName>AnyGraveWithPlayerPawn</defName>
+    <workerClass>ZealousInnocence.RitualObligationTargetWorker_AnyGraveWithPlayerPawn</workerClass>
+  </RitualObligationTargetFilterDef>
+	<RitualPatternDef>
+		<defName>RebirthPattern</defName>
+		<nameMaker>NamerRitualRebirth</nameMaker>
+		<ritualExpectedDesc>Once a {IDEO} member dies, other {MEMBERS} gather around their grave for {RITUAL_labelDef}.</ritualExpectedDesc>
+		<alwaysStartAnytime>true</alwaysStartAnytime>
+		<ritualObligationTargetFilter>AnyGraveWithPlayerPawn</ritualObligationTargetFilter>
+		<ritualBehavior>Rebirth</ritualBehavior>
+		<ritualOutcomeEffect>AttendedRebirth</ritualOutcomeEffect>
+		<tags>
+			<li>RebirthCeremony</li>
+		</tags>
+	</RitualPatternDef>
+	<RitualOutcomeEffectDef>
+		<defName>AttendedRebirth</defName>
+		<workerClass>RitualOutcomeEffectWorker_FromQuality</workerClass>
+		<allowAttachableOutcome>false</allowAttachableOutcome>
+		<comps>
+			<li Class="RitualOutcomeComp_RolePresentNotSubstituted">
+				<roleId>moralist</roleId>
+				<label>moral guide present</label>
+				<qualityOffset>0.3</qualityOffset>
+				<disableInClassicMode>true</disableInClassicMode>
+			</li>
+			<li Class="RitualOutcomeComp_ParticipantCount">
+				<label>participant count</label>
+				<curve>
+					<points>
+						<li>(1,  0.0)</li>
+						<li>(5,  0.5)</li>
+						<li>(10, 0.7)</li>
+					</points>
+				</curve>
+			</li>
+		</comps>
+		<outcomeChances>
+			<li>
+				<label>Terrible</label>
+				<chance>0.05</chance>
+				<memory>TerribleRebirth</memory>
+				<description>The {0} was a terrible! Whatever came back just made it worse.</description>
+				<positivityIndex>-2</positivityIndex>
+			</li>
+			<li>
+				<label>Lackluster</label>
+				<chance>0.15</chance>
+				<memory>UnsatisfyingRebirth</memory>
+				<description>The {0} was lackluster. The speech was long-winded and the rebirthed was left there lying out in the open crying.</description>
+				<positivityIndex>-1</positivityIndex>
+			</li>
+			<li>
+				<label>Good</label>
+				<chance>0.6</chance>
+				<memory>SatisfyingRebirth</memory>
+				<description>The {0} was good. The speaker's final words matched the feelings of everyone, as the reborn awoke.</description>
+				<positivityIndex>1</positivityIndex>
+			</li>
+			<li>
+				<label>Amazing</label>
+				<chance>0.2</chance>
+				<memory>HeartwarmingFuneral</memory>
+				<description>The {0} was amazing. The speech was captivating and heartfelt, the reborn one came back, like they where never gone!</description>
+				<positivityIndex>2</positivityIndex>
+			</li>
+		</outcomeChances>
+	</RitualOutcomeEffectDef>
+	
+	<!--            Rebirth thoughts start              -->
+	<ThoughtDef>
+		<defName>TerribleRebirth</defName>
+		<thoughtClass>Thought_AttendedRitual</thoughtClass>
+		<durationDays>6</durationDays>
+		<stackLimit>3</stackLimit>
+		<stages>
+			<li>
+				<label>terrible rebirth</label>
+				<description>That rebirth was botched and the mood was way off. What came back wasn't what left.</description>
+				<baseMoodEffect>-8</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+	<ThoughtDef>
+		<defName>UnsatisfyingRebirth</defName>
+		<thoughtClass>Thought_AttendedRitual</thoughtClass>
+		<durationDays>6</durationDays>
+		<stackLimit>3</stackLimit>
+		<stages>
+			<li>
+				<label>unsatisfying rebirth</label>
+				<description>The rebirth felt off somehow. Noone was sure if the reborn even wanted to come back in the first place.</description>
+				<baseMoodEffect>-5</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+	<ThoughtDef>
+		<defName>SatisfyingRebirth</defName>
+		<thoughtClass>Thought_AttendedRitual</thoughtClass>
+		<durationDays>6</durationDays>
+		<stackLimit>3</stackLimit>
+		<stages>
+			<li>
+				<label>satisfying rebirth</label>
+				<description>That rebirth was satisfying. The reborn looked and felt like the one we lost.</description>
+				<baseMoodEffect>2</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+	<ThoughtDef>
+		<defName>SpectacularRebirth</defName>
+		<thoughtClass>Thought_AttendedRitual</thoughtClass>
+		<durationDays>6</durationDays>
+		<stackLimit>3</stackLimit>
+		<stages>
+			<li>
+				<label>perfect rebirth</label>
+				<description>From the speech to the timing and the rebirth itself. It felt like their life just continued and death is really meaningless.</description>
+				<baseMoodEffect>5</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+	<!--            Rebirth thoughts end              -->
+	
+	<RulePackDef>
+    <defName>NamerRitualRebirth</defName>
+    <rulePack>
+      <rulesStrings>
+        <li>r_ritualName(p=2)->[memeAdjective] [rebirth]</li>
+        <li>r_ritualName->[rebirth] of [chosenTheme]</li>
+        <li>r_ritualName->[chosenAdjective] [rebirth]</li>
+        <li>r_ritualName->[keyDeity]'s [rebirth]</li>
+        <li>r_ritualName->[rebirth] of [keyDeity]</li>
+        <li>r_ritualName->[rebirth] of [memeConcept]</li>
+        <li>r_ritualName->[rebirth] of [chosenIdeoName]</li>
+        <li>r_ritualName(p=0.01)->rebirth</li>
+
+        <li>rebirth->rebirth</li>
+        <li>rebirth->excavation</li>
+        <li>rebirth->exhuming</li>
+        <li>rebirth->continuation</li>
+      </rulesStrings>
+    </rulePack>
+  </RulePackDef>
+	<InteractionDef>
+		<defName>Speech_Rebirth</defName>
+		<label>rebirthing speech</label>
+		<workerClass>InteractionWorker</workerClass>
+		<ignoreTimeSinceLastInteraction>True</ignoreTimeSinceLastInteraction>
+		<symbol>Things/Mote/SpeechSymbols/Speech</symbol>
+		<logRulesInitiator>
+			<include>
+				<li>SpeechUtility</li>
+			</include>
+			<rulesStrings>
+				<li>r_logentry->[INITIATOR_nameDef] [spokeof] [speechtopic].</li>
+				<li>speechtopic->rebirth</li>
+				<li>speechtopic->being a child again</li>
+				<li>speechtopic->learning about the world</li>
+				<li>speechtopic->having a second childhood</li>
+				<li>speechtopic->growing up with known potential</li>
+				<li>speechtopic->cheating death</li>
+				<li>speechtopic->reverse aging</li>
+				<li>speechtopic->body is just a vessle that can be reformed</li>
+				<li>speechtopic->being safe and protected</li>
+				<li>speechtopic->starting a new life from the beginning</li>
+				<li>speechtopic->being young again</li>
+				<li>speechtopic->remembering old friends</li>
+				<li>speechtopic->regaining old abilities</li>
+				<li>speechtopic->like a phoenix from the ashes</li>
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+	<InteractionDef>
+		<defName>Speech_Rebirth_Pre</defName>
+		<label>rebirthing speech</label>
+		<workerClass>InteractionWorker</workerClass>
+		<ignoreTimeSinceLastInteraction>True</ignoreTimeSinceLastInteraction>
+		<symbol>Things/Mote/SpeechSymbols/Speech</symbol>
+		<logRulesInitiator>
+			<include>
+				<li>SpeechUtility</li>
+			</include>
+			<rulesStrings>
+				<li>r_logentry->[INITIATOR_nameDef] [spokeof] [speechtopic].</li>
+				<li>speechtopic->science</li>
+				<li>speechtopic->reverse aging</li>
+				<li>speechtopic->repairing the brain</li>
+				<li>speechtopic->transfering memories</li>
+				<li>speechtopic->potential applications</li>
+				<li>speechtopic->seeing the world for the first time</li>
+				<li>speechtopic->regaining lost memories</li>
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>´
+
+</Defs>

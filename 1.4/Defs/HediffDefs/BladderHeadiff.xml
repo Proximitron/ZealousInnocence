@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	
+	<HediffDef ParentName="ChronicDiseaseBase">
+    <defName>BedWetting</defName>
+    <label>Bed wetter</label>
+    <description>Often wets the bed while being asleep. Needs protection at night.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <makesSickThought>false</makesSickThought>
+    <tendable>false</tendable>
+  </HediffDef>
+	
+  <HediffDef ParentName="InfectionBase">
+    <defName>BladderInfection</defName>
+    <label>Bladder infection</label>
+    <description>A temporary infection of the bladder. They will have great trouble making it to the toilet in time. Accidents might occur randomly and/or at night.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <makesSickThought>true</makesSickThought>
+    <tendable>false</tendable>
+		<stages>
+      <li>
+        <partEfficiencyOffset>-0.75</partEfficiencyOffset>
+      </li>
+    </stages>
+  </HediffDef>
+  
+	<HediffDef ParentName="ChronicDiseaseBase">
+    <defName>WeakBladder</defName>
+    <label>Weak bladder</label>
+    <description>A very weak bladder. Accidents might occure randomly and/or at night.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <makesSickThought>false</makesSickThought>
+    <tendable>false</tendable>
+		<stages>
+      <li>
+        <partEfficiencyOffset>-0.5</partEfficiencyOffset>
+      </li>
+    </stages>
+  </HediffDef>
+	
+  <HediffDef ParentName="ChronicDiseaseBase">
+    <defName>Incontinent</defName>
+    <label>incontinent</label>
+    <description>No control over their bladder at all. Diapers are strongly recommended.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <makesSickThought>false</makesSickThought>
+    <tendable>false</tendable>
+		<stages>
+      <li>
+        <partEfficiencyOffset>-1.0</partEfficiencyOffset>
+      </li>
+    </stages>
+  </HediffDef>
+  
+</Defs>

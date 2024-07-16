@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThoughtDef>
+		<defName>Apparel_Onesie</defName>
+		<workerClass>ZealousInnocence.ThoughtWorker_Onesie_Dressed</workerClass>
+		<validWhileDespawned>true</validWhileDespawned>
+		<stages>
+		
+			<!-- Thoughts if neutral stance to onesie-->
+			<li>
+				<label>too cute</label>
+				<description>I kind of feel like a toddler in this. Comfortable, but strange.</description>
+				<baseMoodEffect>-2</baseMoodEffect>
+			</li>
+				
+		  <!-- Thoughts if onesie is liked -->
+			<li>
+				<label>onesie</label>
+				<description>I feel cute and protected in this onesie. It's so fluffy!</description>
+				<baseMoodEffect>2</baseMoodEffect>
+			</li>
+			
+			<!-- Thoughts if onesie is hated -->
+			<li>
+				<label>dressed like a toddler</label>
+				<description>This onesie is unfit for an adult. I would prefer to go naked.</description>
+				<baseMoodEffect>-6</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+</Defs>

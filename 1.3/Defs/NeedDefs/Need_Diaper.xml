@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<NeedDef>
+		<defName>Diaper</defName>
+		<needClass>ZealousInnocence.Need_Diaper</needClass>
+		<label>diaper status</label>
+		<description>How dirty pawns diaper is.</description>
+		<showOnNeedList>true</showOnNeedList>
+		<minIntelligence>Humanlike</minIntelligence>
+		<baseLevel>0</baseLevel>
+		<listPriority>321</listPriority>
+		<major>true</major>
+		<freezeWhileSleeping>false</freezeWhileSleeping>
+		<freezeInMentalState>false</freezeInMentalState>
+		<showForCaravanMembers>false</showForCaravanMembers>  
+		<fallPerDay>0</fallPerDay>
+	</NeedDef>
+</Defs>

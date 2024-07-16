@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <InteractionDef>
+    <defName>RegressedPlayTime</defName>
+    <label>play</label>
+    <workerClass>ZealousInnocence.InteractionWorker_RegressedPlayTime</workerClass>
+    <symbol>Things/Motes/SpeechSymbols/RegressedGames</symbol>
+    <logRulesInitiator>
+      <rulesStrings>
+        <li>r_logentry->[INITIATOR_nameDef] asked [RECIPIENT_nameDef] to play with [INITIATOR_objective].</li>
+				
+				<li>babygame->peek-a-boo</li>
+        <li>babygame->toy</li>
+        <li>babygame->tickle</li>
+      </rulesStrings>
+    </logRulesInitiator>
+  </InteractionDef>
+
+</Defs>

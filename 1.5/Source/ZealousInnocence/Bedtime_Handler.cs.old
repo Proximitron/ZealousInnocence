@@ -1,0 +1,399 @@
+﻿using HarmonyLib;
+using RimWorld;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Unity.Jobs;
+using UnityEngine;
+using Verse;
+using Verse.AI;
+
+namespace ZealousInnocence
+{
+    public static class Patch_SleepAndWakeup
+    {
+        static Patch_SleepAndWakeup()
+        {
+
+        }
+        public static void Patch_PawsGoesToBed_Execute(Harmony harmony)
+        {
+            /*harmony.Patch(
+                original: AccessTools.Method(typeof(JobDriver_LayDown), "MakeNewToils"),
+                postfix: new HarmonyMethod(typeof(Patch_SleepAndWakeup), nameof(PawnGoesToBed_Postfix))
+            );
+            Log.Message("ZealousInnocence harmony patching: JobDriver_LayDown.MakeNewToils");
+            */
+            /*harmony.Patch(
+                original: AccessTools.Method(typeof(JobDriver), "ReadyForNextToil"),
+                postfix: new HarmonyMethod(typeof(Patch_SleepAndWakeup), nameof(ReadyForNextToil_Postfix))
+            );
+            Log.Message("ZealousInnocence harmony patching: JobDriver.ReadyForNextToil");*/
+        }
+
+        /*public static void PawnGoesToBed_Postfix(JobDriver_LayDown __instance)
+        {
+            Pawn pawn = __instance.pawn;
+            if (pawn == null) return;
+            if (!pawn.IsColonist) return;
+            if (pawn.Downed) return;
+            if (pawn.Dead) return;
+            if (pawn.jobs != null && pawn.jobs.curDriver is JobDriver_LayDown)
+            {
+                // If we don't need or want night diapers, we don't wear them
+                if (!DiaperHelper.needsDiaperNight(pawn) && DiaperHelper.getDiaperPreference(pawn) != DiaperLikeCategory.Liked) return;
+                if (DiaperHelper.isWearingNightDiaper(pawn)) return;
+                
+                pawn.outfits.
+                // Create a job for optimizing apparel
+                Job job = SleepwearUtility.GetOptimizeJob(pawn);
+
+                if (job != null)
+                {
+                    // Assign the job to the pawn
+                    pawn.jobs.StartJob(job, JobCondition.InterruptForced, null, true);
+
+                    Job job2 = SleepwearUtility.GetOptimizeJob(pawn);
+                    if(job2 != null)
+                    {
+                        pawn.jobs.jobQueue.EnqueueLast(job2);
+                    }
+                }
+
+                // make sure it gets optimized again later
+                //Job removeSleepwearJob = JobMaker.MakeJob(JobDefOf.OptimizeApparel);
+                
+            }
+        }*/
+
+        /*public static void ReadyForNextToil_Postfix(JobDriver __instance)
+        {
+            if (__instance is JobDriver_LayDown layDownDriver)
+            {
+                Pawn pawn = layDownDriver.pawn;
+                if (pawn == null) return;
+                if (!pawn.IsColonist) return;
+                if (pawn.Downed) return;
+                if (pawn.Dead) return;
+
+                Log.Message("ZealousInnocence DEBUG: ReadyForNextToil_Postfix, pawn ready: " + pawn.Name);
+                if (!pawn.InBed())
+                {
+                    Log.Message("ZealousInnocence DEBUG: ReadyForNextToil_Postfix, pawn ready: " + pawn.Name);
+                    // The pawn is no longer lying down, so they are waking up
+                    JobDriver_ChangeSleepwear.RemoveAndHaulSleepwear(pawn);
+                }
+                else
+                {
+                    Log.Message("ZealousInnocence DEBUG: ReadyForNextToil_Postfix, pawn also ready?: " + pawn.Name);
+                }
+            }
+        }
+        public static void PawnWakesUp_Postfix(JobDriver_LayDown __instance, JobCondition condition)
+        {
+            Pawn pawn = __instance.pawn;
+            if (condition == JobCondition.Succeeded && pawn != null)
+            {
+                Log.Message("ZealousInnocence DEBUG: PawnWakesUp_Postfix: " + pawn.Name);
+                JobDriver_ChangeSleepwear.RemoveAndHaulSleepwear(pawn);
+            }
+        }*/
+    }
+
+    public static class SleepwearUtility
+    {
+        public static Job GetOptimizeJob(Pawn pawn)
+        {
+            JobGiver_OptimizeApparel jobGiver = new JobGiver_OptimizeApparel();
+            ThinkResult result = jobGiver.TryIssueJobPackage(pawn, new JobIssueParams());
+
+            if (result.IsValid && result.Job != null)
+            {
+                return result.Job;
+            }
+            else
+            {
+                Log.Message($"{pawn.Name} could not be given optimize Job");
+                return null;
+            }
+        }
+        /*public static void AssignWearSleepwearJob(Pawn pawn, Apparel sleepwear)
+        {
+            if (pawn != null && sleepwear != null && pawn.Map != null)
+            {
+                if (!pawn.Dead && !pawn.Downed && pawn.CanReserveAndReach(sleepwear, PathEndMode.ClosestTouch, Danger.Deadly))
+                {
+                    Log.Message($"{pawn.Name} was assigned Equip job for {sleepwear.Label}");
+                    Job wearJob = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("Wear"), sleepwear);
+                    pawn.jobs.StartJob(wearJob,JobCondition.InterruptForced,null,true);
+
+                    Job removeSleepwearJob = JobMaker.MakeJob(JobDefOf.ChangeSleepwear);
+                    pawn.jobs.jobQueue.EnqueueLast(removeSleepwearJob);
+                }
+            }
+        }
+        */
+        public static void TriggerOptimizeApparel(Pawn pawn)
+        {
+
+            if (pawn != null && pawn.Map != null && pawn.RaceProps.Humanlike && !pawn.Downed && !pawn.Dead)
+            {
+                JobGiver_OptimizeApparel optimizer = new JobGiver_OptimizeApparel();
+                ThinkResult result = optimizer.TryIssueJobPackage(pawn, new JobIssueParams());
+
+                if (result.Job != null)
+                {
+                    pawn.jobs.StartJob(result.Job, JobCondition.InterruptForced, null, false, true, null, null, false);
+                }
+            }
+            
+        }
+        public static Apparel FindSleepwearNearBed(Pawn pawn, Building_Bed bed)
+        {
+            // Define a search radius around the bed
+            int searchRadius = 20;
+
+            // Ensure bed and map are valid
+            if (bed == null)
+            {
+                Log.Error("FindSleepwearNearBed: Invalid bed");
+                return null;
+            }
+            if (bed.Map == null)
+            {
+                Log.Error("FindSleepwearNearBed: Invalid map");
+                return null;
+            }
+
+            // Find sleepwear within the search radius
+            IEnumerable<Thing> potentialSleepwear = GenRadial.RadialDistinctThingsAround(bed.Position, bed.Map, searchRadius, true);
+            foreach (var thing in potentialSleepwear)
+            {
+                if (thing is Apparel cloth)
+                {
+                    if (DiaperHelper.isNightDiaper(cloth))
+                    {
+                        return cloth;
+                    }
+                }
+            }
+
+            // Second pass for general diapers
+            foreach (var thing in potentialSleepwear)
+            {
+                if (thing is Apparel cloth)
+                {
+                    if (DiaperHelper.isDiaper(cloth))
+                    {
+                        return cloth;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static bool hasConflictingApperalThatCantBeRemoved(Pawn pawn, Apparel sleepwear, bool dropSolvableConflicts = false)
+        {
+            List<Apparel> wornApparel = pawn.apparel.WornApparel;
+            foreach (var apparel in wornApparel)
+            {
+                if (apparel.def.apparel.layers == sleepwear.def.apparel.layers)
+                {
+                    if (pawn.outfits.forcedHandler.IsForced(apparel)) return true;
+                    if (dropSolvableConflicts) pawn.apparel.TryDrop(apparel);
+                }
+            }
+            return false;
+        }
+        public static Apparel FindRegularClothing(Pawn pawn)
+        {
+            // Define your criteria for regular clothing here
+            // For example, checking against a specific ThingDef or similar
+            // This example finds any apparel that's not a night diaper
+            IEnumerable<Thing> potentialClothing = pawn.Map.listerThings.AllThings;
+            foreach (var thing in potentialClothing)
+            {
+                if (thing is Apparel cloth)
+                {
+                    if (!DiaperHelper.isNightDiaper(cloth))
+                    {
+                        return cloth;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static bool AcceptableSleeptime(Pawn pawn)
+        {
+            Need_Rest restNeed = pawn.needs.TryGetNeed<Need_Rest>();
+            if (restNeed != null && restNeed.CurLevel < 0.3) return true;
+
+            // Check the pawn's current schedule
+            TimeAssignmentDef currentAssignment = pawn.timetable?.CurrentAssignment;
+
+            // If the schedule is not defined or the pawn is scheduled to sleep, return true
+            return currentAssignment == TimeAssignmentDefOf.Sleep;
+        }
+    }
+
+    /*
+
+    public class JobDriver_ChangeSleepwear : JobDriver
+    {
+        public override bool TryMakePreToilReservations(bool errorOnFailed)
+        {
+            return true;
+        }
+
+        protected override IEnumerable<Toil> MakeNewToils()
+        {
+            List<Apparel> sleepwearToStore = new List<Apparel>();
+
+            // Remove sleepwear and place in inventory
+            Toil removeSleepwear = new Toil();
+            removeSleepwear.initAction = () =>
+            {
+                Pawn pawn = removeSleepwear.actor;
+                // Create a list to store apparel that needs to be dropped
+                List<Apparel> apparelToDrop = new List<Apparel>();
+
+                // Collect all the sleepwear that needs to be dropped
+                foreach (var apparel in pawn.apparel.WornApparel.ToList()) // ToList() creates a copy for safe iteration
+                {
+                    if (DiaperHelper.isNightDiaper(apparel) && !pawn.outfits.forcedHandler.IsForced(apparel))
+                    {
+                        apparelToDrop.Add(apparel);
+                    }
+                }
+
+                // Now drop and unforbid the collected apparel
+                foreach (var apparel in apparelToDrop)
+                {
+                    if (pawn.apparel.TryDrop(apparel, out Apparel droppedApparel, pawn.PositionHeld, true))
+                    {
+                        droppedApparel.SetForbidden(false, false); // Unforbid the dropped apparel
+                    }
+                }
+            };
+            removeSleepwear.defaultCompleteMode = ToilCompleteMode.Instant;
+            yield return removeSleepwear;
+        }
+    }
+    */
+    /*public class JobDriver_WearSleepwear : JobDriver
+    {
+        public override bool TryMakePreToilReservations(bool errorOnFailed)
+        {
+            return true;
+        }
+
+        protected override IEnumerable<Toil> MakeNewToils()
+        {
+            // Go to the sleepwear location
+            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+            
+            // Pick up the sleepwear
+            yield return Toils_Haul.StartCarryThing(TargetIndex.A);
+
+
+            // Wear the sleepwear
+            Toil wearSleepwear = new Toil();
+
+            wearSleepwear.initAction = () =>
+            {
+                Pawn pawn = wearSleepwear.actor;
+                Apparel sleepwear = (Apparel)pawn.CurJob.targetA.Thing;
+                if (sleepwear != null)
+                {
+                    if(SleepwearUtility.hasConflictingApperalThatCantBeRemoved(pawn, sleepwear,true)) return;
+                    
+                    pawn.apparel.Wear(sleepwear);
+                    Log.Message($"{pawn.Name} is now wearing {sleepwear.Label}");
+                }
+            };
+            wearSleepwear.defaultCompleteMode = ToilCompleteMode.Instant;
+            yield return wearSleepwear;
+        }
+    }*/
+
+    /*public class JobGiver_WearSleepwear : ThinkNode_JobGiver
+    {
+        protected override Job TryGiveJob(Pawn pawn)
+        {
+            return null;
+            
+            //
+            if (pawn.InBed() || pawn.CurJobDef == JobDefOf.LayDown)
+            {
+                return null;
+            }
+
+            // Check if the pawn is in bed and is scheduled to sleep
+            if (pawn.InBed() && ShouldBeSleeping(pawn))
+            {
+                Building_Bed bed = pawn.ownership?.OwnedBed;
+                if (bed != null)
+                {
+                    // Create a job to wear sleepwear, targeting the bed position
+                    Job job = JobMaker.MakeJob(JobDefOf.WearSleepwear, bed.Position);
+                    return job;
+                }
+            }
+            return null;
+        }
+
+        private bool ShouldBeSleeping(Pawn pawn)
+        {
+            // Check the pawn's current schedule
+            TimeAssignmentDef currentAssignment = pawn.timetable?.CurrentAssignment;
+
+            // If the schedule is not defined or the pawn is scheduled to sleep, return true
+            return currentAssignment == TimeAssignmentDefOf.Sleep || currentAssignment == TimeAssignmentDefOf.Anything;
+        }
+    }*/
+    /*public class JobGiver_ChangeSleepwear : ThinkNode_JobGiver
+    {
+        protected override Job TryGiveJob(Pawn pawn)
+        {
+            // Check if the pawn is not in bed and is scheduled to be awake
+            if (!pawn.InBed() && ShouldBeAwake(pawn))
+            {
+                // Create a job to change out of sleepwear
+                Job job = JobMaker.MakeJob(JobDefOf.ChangeSleepwear);
+                return job;
+            }
+            return null;
+        }
+
+        private bool ShouldBeAwake(Pawn pawn)
+        {
+            // Check the pawn's current schedule
+            TimeAssignmentDef currentAssignment = pawn.timetable?.CurrentAssignment;
+
+            // If the schedule is defined and the pawn is scheduled to do anything other than sleep, return true
+            return currentAssignment != TimeAssignmentDefOf.Sleep;
+        }
+    }
+    public class ThinkNode_ConditionalHasSleepwearAndDontWantIt : ThinkNode_Conditional
+    {
+        protected override bool Satisfied(Pawn pawn)
+        {
+            List<Apparel> wornApparel = pawn.apparel.WornApparel;
+
+            if(DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked) return false;
+            // Identify sleepwear to remove
+            foreach (var apparel in wornApparel)
+            {
+                if (DiaperHelper.isNightDiaper(apparel))
+                {
+                    if(!pawn.outfits.forcedHandler.IsForced(apparel)) return true;
+                }
+            }
+            return false;
+        }
+    }*/
+}

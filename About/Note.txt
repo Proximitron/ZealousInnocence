@@ -1,0 +1,35 @@
+Original Note by Diaper-Author, left as Reference to his work. OUTDATED INFORMATION:
+
+This mod adds non-functioning diapers (basically just textures with buffs) to RimWorld.
+Wearing diapers gives the pawn primarily social disadvantages.
+But on the upside they grant alot of comfort and slightly decreases the risk of mental break.
+
+MoveSpeed -0.08
+MentalBreakThreshold -0.05
+SocialImpact -0.12
+NegotiationAbility -0.06
+TradePriceImprovement -0.05
+Beauty -2
+Comfort 0.10
+MeleeDodgeChance -0.10
+PawnTrapSpringChance 0.03
+HuntingStealth -0.03
+ArrestSuccessChance -0.03
+WorkSpeedGlobal -0.02
+GlobalLearningFactor -0.01
+SlaveSuppressionOffset 0.08
+
+All of these values can be easily changed in the "Apparel_Diaper.xml" file.
+
+
+Good-to-know/Bugs:
+-I modelled these diapers after the humans of the "RimNude2.2.10 unofficial" texture pack. So they probably won’t fit well on any other beings/creatures.
+-Rjw adds a small pregnancy bulge on female colonists. And if that happens then these diapers will clip out slightly. I’m not an expert on rjw’s code so I don’t know how to fix it.
+-Assembly code ripped/edited from someone called "Project 06" on the ludeon forums. And from the UnderWhere mod by "An Ol' Spicy Keychain".
+-Feel free to add/change/tweak/re-upload anything in this mod. No need to credit me.
+
+
+Sources:
+
+Better Cribs - Age Matters 2.0
+

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef Name="ApparelUnderwearBase" ParentName="ApparelMakeableBase" Abstract="True">
+		<thingClass>ZealousInnocence.Apparel_Underwear_Base</thingClass>
+		<tradeability>All</tradeability>
+		<thingCategories>
+			<li>Underwear</li>
+		</thingCategories>
+		<apparel>
+			<bodyPartGroups>
+				<li>Legs</li>
+			</bodyPartGroups>
+			<layers>
+				<li>Underwear</li>
+			</layers>
+			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
+			<canBeGeneratedToSatisfyWarmth>true</canBeGeneratedToSatisfyWarmth>
+      <canBeGeneratedToSatisfyToxicEnvironmentResistance>false</canBeGeneratedToSatisfyToxicEnvironmentResistance>
+			<defaultOutfitTags>
+        <li>Worker</li>
+        <li>Soldier</li>
+      </defaultOutfitTags>
+			<tags>
+				<li>Underwear</li>
+      </tags>
+			<legsNakedUnlessCoveredBySomethingElse>true</legsNakedUnlessCoveredBySomethingElse>
+		</apparel>
+		<colorGenerator Class="ColorGenerator_Options">
+			<options>
+				<li>
+					<weight>8</weight>
+					<only>RGBA(255, 255, 255, 255)</only>
+				</li>
+				<li>
+					<weight>4</weight>
+					<min>RGBA(242, 0, 255, 255)</min>
+					<max>RGBA(255, 0, 188, 255)</max>
+				</li>
+				<li>
+					<weight>4</weight>
+					<min>RGBA(0, 199, 255, 255)</min>
+					<max>RGBA(0, 162, 255, 255)</max>
+				</li>
+			</options>
+		</colorGenerator>
+		<tickerType>Normal</tickerType>
+	</ThingDef>
+	
+	<ThingDef ParentName="ApparelUnderwearBase">
+		<defName>Apparel_Underwear_Loincloth</defName>
+		<label>loincloth</label>
+		<description>Simple loincloth, low tech and easy to get into.</description>
+		<graphicData>
+			<texPath>Apparel/Underwear/Loincloth</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<techLevel>Medieval</techLevel>
+		<stuffCategories>
+			<li>Leathery</li>
+			<li>Fabric</li>
+		</stuffCategories>
+		<costStuffCount>10</costStuffCount>
+		<statBases>
+			<Absorbency>0.25</Absorbency>
+			<MaxHitPoints>70</MaxHitPoints>
+			<WorkToMake>550</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.025</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.10</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.10</StuffEffectMultiplierInsulation_Heat>
+			<EquipDelay>5</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<PsychicSensitivity>-0.1</PsychicSensitivity>
+			<MoveSpeed>0.05</MoveSpeed>
+			<SocialImpact>0.02</SocialImpact>
+			<Beauty>-3</Beauty>
+			<Comfort>0.07</Comfort>
+		</equippedStatOffsets>
+		<recipeMaker>
+			<recipeUsers>
+				<li>ElectricTailoringBench</li>
+				<li>HandTailoringBench</li>
+				<li>CraftingSpot</li>
+			</recipeUsers>
+		</recipeMaker>
+		<apparel>
+			<wornGraphicPath>Apparel/Underwear/loincloth/loincloth</wornGraphicPath>
+      <canBeDesiredForIdeo>true</canBeDesiredForIdeo>
+			<tags>
+        <li>Neolithic</li>
+			</tags>
+    </apparel>
+	</ThingDef>
+	
+	<ThingDef ParentName="ApparelUnderwearBase">
+		<defName>Apparel_Underwear_Boxers</defName>
+		<label>boxers</label>
+		<description>Modern, easy to get in, boxer shorts.</description>
+		<graphicData>
+			<texPath>Apparel/Underwear/Boxers</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<techLevel>Industrial</techLevel>
+		<stuffCategories>
+			<li>Fabric</li>
+		</stuffCategories>
+		<costStuffCount>25</costStuffCount>
+		<statBases>
+			<Absorbency>0.3</Absorbency>
+			<MaxHitPoints>80</MaxHitPoints>
+			<WorkToMake>700</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.035</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.15</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.15</StuffEffectMultiplierInsulation_Heat>
+			<EquipDelay>5</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<PsychicSensitivity>-0.05</PsychicSensitivity>
+			<MoveSpeed>0.08</MoveSpeed>
+			<SocialImpact>0.03</SocialImpact>
+			<Beauty>-2</Beauty>
+			<Comfort>0.08</Comfort>
+		</equippedStatOffsets>
+		<recipeMaker>
+			<researchPrerequisite>ComplexClothing</researchPrerequisite>
+			<recipeUsers>
+				<li>ElectricTailoringBench</li>
+				<li>HandTailoringBench</li>
+			</recipeUsers>
+		</recipeMaker>
+		<apparel>
+			<wornGraphicPath>Apparel/Underwear/boxers/boxers</wornGraphicPath>
+      <canBeDesiredForIdeo>true</canBeDesiredForIdeo>
+			<tags>
+        <li>IndustrialBasic</li>
+			</tags>
+			<gender>Male</gender>
+    </apparel>
+	</ThingDef>
+	<ThingDef ParentName="ApparelUnderwearBase">
+		<defName>Apparel_Underwear_Panties</defName>
+		<label>panties</label>
+		<description>Simple panties, from finest fabric.</description>
+		<graphicData>
+			<texPath>Apparel/Underwear/Panties</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<techLevel>Industrial</techLevel>
+		<stuffCategories>
+			<li>Fabric</li>
+		</stuffCategories>
+		<costStuffCount>25</costStuffCount>
+		<statBases>
+			<Absorbency>0.25</Absorbency>
+			<MaxHitPoints>70</MaxHitPoints>
+			<WorkToMake>800</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.015</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.10</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.25</StuffEffectMultiplierInsulation_Heat>
+			<EquipDelay>5</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<PsychicSensitivity>0.1</PsychicSensitivity>
+			<MoveSpeed>0.1</MoveSpeed>
+			<SocialImpact>0.05</SocialImpact>
+			<Beauty>-1</Beauty>
+			<Comfort>0.08</Comfort>
+		</equippedStatOffsets>
+		<recipeMaker>
+			<researchPrerequisite>ComplexClothing</researchPrerequisite>
+			<recipeUsers>
+				<li>ElectricTailoringBench</li>
+				<li>HandTailoringBench</li>
+			</recipeUsers>
+		</recipeMaker>
+		<apparel>
+			<wornGraphicPath>Apparel/Underwear/panties/panties</wornGraphicPath>
+      <canBeDesiredForIdeo>true</canBeDesiredForIdeo>
+			<tags>
+        <li>IndustrialBasic</li>
+			</tags>
+			<gender>Female</gender>
+    </apparel>
+	</ThingDef>
+</Defs>

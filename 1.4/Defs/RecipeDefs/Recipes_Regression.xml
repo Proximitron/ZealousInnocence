@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<RecipeDef ParentName="SurgeryFlesh">
+		<defName>SurgeryRegression</defName>
+		<label>Regression</label>
+		<description>A dangerous operation to heal the brain with a powerful drug that causes regression. Despite healing the brain physically, it supresses major brain function for a time.</description>
+		<workerClass>ZealousInnocence.Recipe_Regression</workerClass>
+		<jobString>Performing regression operation.</jobString>
+		<workAmount>5000</workAmount>
+		<deathOnFailedSurgeryChance>0.1</deathOnFailedSurgeryChance>
+		<skillRequirements>
+			<Medicine>1</Medicine>
+		</skillRequirements>
+		<targetsBodyPart>true</targetsBodyPart>
+		<recipeUsers>
+			<li>Human</li>
+		</recipeUsers>
+		<ingredients>
+			<li>
+				<filter>
+					<categories>
+						<li>Medicine</li>
+					</categories>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<categories>
+				<li>Medicine</li>
+			</categories>
+		</fixedIngredientFilter>
+		<researchPrerequisite>VitalsMonitor</researchPrerequisite>
+	</RecipeDef>
+</Defs>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- Issue -->
+	<IssueDef>
+		<defName>Diapers</defName>
+		<label>diapers</label>
+		<iconPath>Apparel/Diaper/Nappy</iconPath>
+	</IssueDef>
+	
+	<!-- PreceptDef -->
+	<PreceptDef>
+		<defName>Diapers_Loved</defName>
+		<issue>Diapers</issue>
+		<label>loved</label>
+		<description>Potties are horrible, diapers are the best. Say no to the potty monster!</description>
+		<impact>Medium</impact>
+		<defaultSelectionWeight>0</defaultSelectionWeight>
+		<requiredMemes>
+			<li>Babs</li>
+		</requiredMemes>
+		<associatedMemes>
+			<li>Babs</li>
+		</associatedMemes>
+	</PreceptDef>
+	<PreceptDef>
+		<defName>Diapers_Neutral</defName>
+		<issue>Diapers</issue>
+		<label>neutral</label>
+		<description>It's better to use the toilet if possible. But if someone can't control it anymore, its better then the alternative</description>
+		<impact>Low</impact>
+		<defaultSelectionWeight>1</defaultSelectionWeight>
+	</PreceptDef>
+	<PreceptDef>
+		<defName>Diapers_Hated</defName>
+		<issue>Diapers</issue>
+		<label>hated</label>
+		<description>I would rather die then have to wear diaper let alone use it.</description>
+		<impact>Medium</impact>
+		<defaultSelectionWeight>1</defaultSelectionWeight>
+	</PreceptDef>
+	
+	<!-- Thoughts -->
+	
+	<!--
+			<comps>
+		  <li Class="PreceptComp_SituationalThought">
+				<description>Slept in my crib</description>
+				<thought>CribBed_Preferred</thought>
+		  </li>
+
+      <li Class="PreceptComp_SelfTookMemoryThought">
+        <eventDef>GotLovin_NonSpouse</eventDef>
+        <thought>GotLovin_Disapproved</thought>
+        <description>Lustful act with non-spouse</description>
+      </li>
+      <li Class="PreceptComp_KnowsMemoryThought">
+        <eventDef>GotLovin_NonSpouse</eventDef>
+        <thought>Diaper_Know_Disapproved</thought>
+      </li>
+    </comps>
+
+	<ThoughtDef>
+		<defName>Diaper_Know_Disapproved</defName>
+		<thoughtClass>Thought_MemorySocial</thoughtClass>
+		<durationDays>5</durationDays>
+		<stackLimit>100</stackLimit>
+		<stackLimitForSameOtherPawn>3</stackLimitForSameOtherPawn>
+		<stages>
+			<li>
+				<label>shamed with diapers</label>
+				<baseOpinionOffset>-5</baseOpinionOffset>
+			</li>
+		</stages>
+		<nullifyingTraits>
+			<li>Potty_Rebel</li>
+		</nullifyingTraits>
+	</ThoughtDef>
+	<ThoughtDef>
+		<defName>Diaper_Know_Approved</defName>
+		<thoughtClass>Thought_MemorySocial</thoughtClass>
+		<durationDays>5</durationDays>
+		<stackLimit>100</stackLimit>
+		<stackLimitForSameOtherPawn>3</stackLimitForSameOtherPawn>
+		<stages>
+			<li>
+				<label>first diapering</label>
+				<baseOpinionOffset>5</baseOpinionOffset>
+			</li>
+		</stages>
+		<nullifyingTraits>
+			<li>Big_Boy</li>
+		</nullifyingTraits>
+	</ThoughtDef>
+		-->
+</Defs>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+<!-- Moved to BladderPatches, because of conditional nature in other mods
+
+  <ThingDef ParentName="BodyPartNaturalBase">
+    <defName>Bladder</defName>
+    <label>bladder</label>
+    <description>A biological human bladder. Is obviously required for bladder control.</description>
+    <descriptionHyperlinks><RecipeDef>InstallNaturalBladder</RecipeDef></descriptionHyperlinks>
+    <statBases>
+      <MarketValue>100</MarketValue>
+      <Mass>1</Mass>
+    </statBases>
+  </ThingDef>
+-->
+</Defs>
+  
