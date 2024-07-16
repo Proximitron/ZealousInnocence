@@ -352,6 +352,11 @@ namespace ZealousInnocence
                     }
 
                     currProtection.HitPoints -= realPointDamage;
+                    if (currProtection.HitPoints < 1)
+                    {
+                        currProtection.Notify_LordDestroyed();
+                        currProtection.Destroy(DestroyMode.Vanish);
+                    }
                 }
                 else
                 {
@@ -370,7 +375,7 @@ namespace ZealousInnocence
                 {
                     // That means there are 400 need intervals in a day, meaning a chance of 0.0025 happens once a day
                     // 0.5 - (0.0 - 0.5) makes the total chance higher, the higher the amount of missing hitpoints
-                    float chance = 0.5f - (currProtection.HitPoints / currProtection.MaxHitPoints);
+                    float chance = Math.Min(0.5f, 0.5f - (currProtection.HitPoints / currProtection.MaxHitPoints));
                     chance = 0.003f * chance * Find.Storyteller.difficulty.playerPawnInfectionChanceFactor; // infection factors are 0.3,"Easy" 0.5,"Medium" 0.75 and 1.1 
 
                     Log.Message("DEBUG: playerPawnInfectionChange = " + Find.Storyteller.difficulty.playerPawnInfectionChanceFactor);

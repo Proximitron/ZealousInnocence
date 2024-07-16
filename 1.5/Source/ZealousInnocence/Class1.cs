@@ -285,15 +285,21 @@ namespace ZealousInnocence
 
     public static class JobGiver_UseToilet_TryGiveJob_Patch
     {
-        // Prefix to save runs in unnessesary cases
+        // Prefix to save runs in unnessesary cases. It tracks if the pawn notices 
         public static bool Prefix(JobGiver_UseToilet __instance, Pawn pawn)
         {
             if(pawn != null && pawn.RaceProps.Humanlike)
             {
+                var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+                if(diaperNeed != null && diaperNeed.isHavingAccident)
+                {
+                    return true; // now we notice for sure
+                }
                 if (!DiaperHelper.getBladderControlLevelCapable(pawn))
                 {
                     return false;
                 }
+
             }
             return true;
         }

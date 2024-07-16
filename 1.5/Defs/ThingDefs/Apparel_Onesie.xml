@@ -49,6 +49,7 @@
       <tags>
         <li>IndustrialBasic</li>
 		    <li>IndustrialAdvanced</li>
+				<li>Onesies</li>
       </tags>
 	  <defaultOutfitTags>
         <li>Worker</li>
@@ -140,6 +141,7 @@
         <li>OnSkin</li>
       </layers>
       <tags>
+				<li>Onesies</li>
         <li>IndustrialBasic</li>
 		    <li>IndustrialAdvanced</li>
       </tags>
@@ -232,6 +234,7 @@
         <li>OnSkin</li>
       </layers>
       <tags>
+				<li>Onesies</li>
         <li>IndustrialBasic</li>
 		    <li>IndustrialAdvanced</li>
       </tags>
@@ -324,6 +327,7 @@
         <li>OnSkin</li>
       </layers>
       <tags>
+				<li>Onesies</li>
         <li>IndustrialBasic</li>
 		    <li>IndustrialAdvanced</li>
       </tags>

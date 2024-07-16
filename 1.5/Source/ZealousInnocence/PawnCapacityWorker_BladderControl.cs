@@ -25,18 +25,23 @@ namespace ZealousInnocence
             Pawn pawn = diffSet.pawn;
             if (pawn != null)
             {
+                if(impactors != null)
+                {
+                    impactors.Add(new PawnCapacityUtility.CapacityImpactorCapacity { capacity = RimWorld.PawnCapacityDefOf.Consciousness });
+                }
+
 
                 float ageFactor = GetAgeFactor(pawn);
                 if (ageFactor != 1f && impactors != null)
                 {
-                    impactors.Add(new CapacityImpactorCustom { customLabel = "Age factor", customValue = ageFactor});
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "Age", customValue = ageFactor});
                 }
                 num2 *= ageFactor;
 
                 float sleepFactor = GetSleepingFactor(pawn);
                 if (sleepFactor != 1f && impactors != null)
                 {
-                    impactors.Add(new CapacityImpactorCustom { customLabel = "Sleeping factor", customValue = sleepFactor });
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "Sleeping", customValue = sleepFactor });
                 }
                 num2 *= sleepFactor;
             }
@@ -72,11 +77,11 @@ namespace ZealousInnocence
             {
                 if (age <= 70)
                 {
-                    return 1.0f - (age - 50) / 20f * 0.5f; // Linear decrease from 1.0 at age 50 to 0.5 at age 70
+                    return 1.0f - (age - 50) / 20f * 0.25f; // Linear decrease from 1.0 at age 50 to 0.75 at age 70
                 }
                 else
                 {
-                    return 0.5f; // Maximum reduction at age 70 and beyond
+                    return 0.75f; // Maximum reduction at age 70 and beyond
                 }
             }
             else
