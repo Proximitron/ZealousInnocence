@@ -6,8 +6,8 @@
 		<validWhileDespawned>true</validWhileDespawned>
 		<stages>
 			<li>
-			<label>slept in my cot</label>
-			<description>I feel so small and cute!</description>
+			<label>Slept in a crib</label>
+			<description>I felt so small and safe!</description>
 			<baseMoodEffect>3</baseMoodEffect>
 			</li>
 		</stages>
