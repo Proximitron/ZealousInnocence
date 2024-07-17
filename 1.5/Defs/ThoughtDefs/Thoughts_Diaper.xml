@@ -11,12 +11,12 @@
 			<!-- Thoughts if diaper is not required but still worn-->
 			<li>
 				<label>A diaper?</label>
-				<description>Aren't these normally for babies..?</description>
+				<description>Do I really have to wear this?</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
 				<label>Unnecessary wet diaper</label>
-				<description>My diaper is a bit damp, I can't believe I had to use it...</description>
+				<description>My diaper is a bit wet, I can't believe I had to use it!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			<li>
@@ -33,7 +33,7 @@
 		  <!-- Thoughts if diaper is nessesary (day & night) but otherwise not expecially liked -->
 			<li>
 				<label>Diaper needed</label>
-				<description>I should probably put on a diaper soon, before I have an accident.</description>
+				<description>I probably should put on protection soon, before I have an accident.</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			<li>
@@ -48,7 +48,7 @@
 			</li>
 			<li>
 				<label>Full diaper</label>
-				<description>I can't help it - but it's still embarrassing... Time for a change.</description>
+				<description>I can't help it... Time for a change.</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
@@ -132,7 +132,7 @@
 			<!-- Thoughts if diaper is nessesary but only at night -->
 			<li>
 				<label>Dry night diaper</label>
-				<description>I only need them during the night. I'm fully capable when I'm up, ya know.</description>
+				<description>I only need them during the night. I'm fully capable when I'm awake, ya know.</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
@@ -159,7 +159,7 @@
 			</li>
 			<li>
 				<label>Wet the bed</label>
-				<description>It happened again- atleast the bed was safe. I hope no one sees me throwing these.</description>
+				<description>It happened again, atleast the bed was safe. I hope no one sees me throwing these.</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			<li>
@@ -400,14 +400,14 @@
 			<!-- Default behaviour if nothing else applies -->
 			<li>
 				<label>Wet a diaper</label>
-				<description>Having to go in a diaper makes me feel like a baby.</description>
+				<description>Having to go in a diaper makes me feel small.</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			
 			<!-- Thoughts if diapers loved -->
 			<li>
 				<label>Wet my diaper</label>
-				<description>I'd take diapers over a toilet any day!</description>
+				<description>I'd take diapers over a toilet, any day!</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 			
