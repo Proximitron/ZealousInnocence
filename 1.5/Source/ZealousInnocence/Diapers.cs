@@ -71,8 +71,34 @@ namespace ZealousInnocence
 
     public class Need_Diaper : Need
     {
-        public bool isHavingAccident;
-        public bool peeing;
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref this.isHavingAccident, "isHavingAccident", false);
+            Scribe_Values.Look(ref this.peeing, "peeing", false);
+            Scribe_Values.Look(ref this.failureSeed, "failureSeed", 0);
+        }
+        private bool isHavingAccident;
+        public bool IsHavingAccident { get => isHavingAccident; }
+
+        private bool peeing;
+        public bool IsPeeing { get => peeing; }
+
+        private int failureSeed = 0;
+
+        public int FailureSeed
+        {
+            get
+            {
+                if (failureSeed == 0)
+                {
+                    failureSeed = Rand.RangeInclusive(1, int.MaxValue);
+                }
+                return failureSeed;
+            }
+            set => failureSeed = value;
+        }
+
 
         public void StartSound(bool pee = true)
         {
@@ -94,6 +120,10 @@ namespace ZealousInnocence
         public bool hasDiaper()
         {
             return DiaperHelper.getDiaper(pawn) != null;
+        }
+        public bool hasUnderwearOrDiaper()
+        {
+            return DiaperHelper.getUnderwearOrDiaper(pawn) != null;
         }
 
         public Need_Diaper(Pawn pawn) : base(pawn)
@@ -143,7 +173,7 @@ namespace ZealousInnocence
         {
             get
             {
-                return hasDiaper();
+                return hasUnderwearOrDiaper();
             }
         }
 
@@ -191,7 +221,7 @@ namespace ZealousInnocence
         public void startAccident(bool pee = true)
         {
             StartSound(pee);
-
+            FailureSeed = 0;
             isHavingAccident = true;
             peeing = pee;
             Log.Message("debug: starting accident '" + (peeing ? "pee" : "poop") + "' for " + pawn.Name);

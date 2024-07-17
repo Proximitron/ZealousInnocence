@@ -291,15 +291,23 @@ namespace ZealousInnocence
             if(pawn != null && pawn.RaceProps.Humanlike)
             {
                 var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
-                if(diaperNeed != null && diaperNeed.isHavingAccident)
-                {
-                    return true; // now we notice for sure
-                }
-                if (!DiaperHelper.getBladderControlLevelCapable(pawn))
-                {
-                    return false;
-                }
+                if (diaperNeed == null) return true; // anything without that gets a free pass
+                if (diaperNeed.IsHavingAccident) return true; // now we notice for sure
+                if (!DiaperHelper.getBladderControlLevelCapable(pawn)) return false; // incapeable of noticing
+                if (pawn.story.traits.HasTrait(TraitDef.Named("Potty_Rebel"))) return false; // will never run of a potty!
+                
+                var currDiapie = DiaperHelper.getDiaper(pawn);
+                if (currDiapie != null && pawn.outfits.forcedHandler.IsForced(currDiapie)) return false; // forced in diapers
+                
 
+                float bladderControl = pawn.health.capacities.GetLevel(PawnCapacityDefOf.BladderControl);
+                // 0.2 bladder control = 100%, 0.65 bladder control = 1%
+                float probability = Mathf.Clamp01(-2 * bladderControl + 1.4f);
+
+                // Use the in-game day combined with pawn's birth year and birth day as the seed
+                //int seed = GenDate.DaysPassed + pawn.ageTracker.BirthYear + pawn.ageTracker.BirthDayOfYear;
+
+                if (Rand.ChanceSeeded(probability, diaperNeed.FailureSeed)) return false; // depending on the level on control
             }
             return true;
         }
@@ -308,37 +316,22 @@ namespace ZealousInnocence
         {
             if (__result != null && pawn.RaceProps.Humanlike)
             {
-               
-                var currDiapie = DiaperHelper.getDiaper(pawn);
-                if (currDiapie != null && pawn.outfits.forcedHandler.IsForced(currDiapie))
-                {
-                    __result = null;
-                    return;
-                }
                 if (pawn.Awake())
                 {
-                    if (pawn.story.traits.HasTrait(TraitDef.Named("Potty_Rebel")))
+                    var liked = DiaperHelper.getDiaperPreference(pawn);
+                    if (liked == DiaperLikeCategory.Liked)
                     {
-                        __result = null;
-                        return;
-                    }
-                    else
-                    {
-                        var liked = DiaperHelper.getDiaperPreference(pawn);
-                        if (liked == DiaperLikeCategory.Liked)
+                        var currDiapie = DiaperHelper.getDiaper(pawn);
+                        if (currDiapie == null)
                         {
-                           
-                            if (currDiapie == null)
-                            {
-                                pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("HadToGoPotty"), null, null);
-                            }
+                            pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("HadToGoPotty"), null, null);
                         }
-
-                    }
+                    }                    
                 }
+                var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+                if (diaperNeed != null) diaperNeed.FailureSeed = 0; // resetting seed
+                
                 //Log.Message($"JobGiver_UseToilet attempting to assign a job to {pawn.Name.ToStringShort}");
-
-                // Optionally modify the result or log additional details
             }
         }
     }
@@ -504,7 +497,6 @@ namespace ZealousInnocence
     {
         public static BodyPartDef Bladder;
     }
-
     [DefOf]
     public class DiaperChangie
     {
