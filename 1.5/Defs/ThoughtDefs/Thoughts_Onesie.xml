@@ -7,29 +7,29 @@
 		<stages>		
 			<!-- Thoughts if neutral stance to onesie-->
 			<li>
-				<label>too cute</label>
-				<description>I kind of feel like a toddler in this. Comfortable, but strange.</description>
+				<label>A onesie?</label>
+				<description>I kinda feel like a toddler in this. It's comfortable, but strange.</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>	
 			
 		  <!-- Thoughts if onesie is liked -->
 			<li>
-				<label>onesie</label>
-				<description>I feel cute and protected in this onesie. It's so fluffy!</description>
+				<label>Onesie</label>
+				<description>I feel so safe and comfy in this onesie. Not to mention cute!</description>
 				<baseMoodEffect>1</baseMoodEffect>
 			</li>
 			
 			<!-- Thoughts if onesie is hated -->
 			<li>
-				<label>dressed like a toddler</label>
-				<description>This onesie is unfit for an adult. I would prefer to go naked.</description>
+				<label>Dressed like a toddler</label>
+				<description>This onesie is unfit for adults. I'd rather wear nothing.</description>
 				<baseMoodEffect>-6</baseMoodEffect>
 			</li>
 			
 			<!-- Non-Adults only. They go by what it feels like. -->
 			<li>
-				<label>comfortable onesie</label>
-				<description>This onesie feels nice i guess?</description>
+				<label>Comfy onesie</label>
+				<description>This onesie is pretty comfortable, I guess.</description>
 				<baseMoodEffect>1</baseMoodEffect>
 			</li>
 		</stages>
