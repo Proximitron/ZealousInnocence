@@ -122,7 +122,7 @@ namespace ZealousInnocence
             Non_Adult_Used,
             Non_Adult_Other,
 
-            // Thoughts if diaper is nessesary but only at night
+            // Thoughts if night diaper is nessesary, but normal diaper is worn!
             Night_Protection_Diaper_Clean,
             Night_Protection_Diaper_Used,
             Night_Protection_Diaper_Worse,
