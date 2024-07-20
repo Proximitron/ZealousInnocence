@@ -9,6 +9,7 @@ using Verse;
 using Verse.AI.Group;
 using System.Runtime;
 using UnityEngine;
+using System.Security.Cryptography;
 
 namespace ZealousInnocence
 {
@@ -116,15 +117,17 @@ namespace ZealousInnocence
                 {
                     jumping = !jumping;
                 }
-                if (Ticks % 120 == 0 && !jumping)
+                if (Ticks % 60 == 0 && !jumping)
                 {
                     pawn.Rotation = Rot4.Random;
                 }
-                pawn.needs.joy.GainJoy(job.def.joyGainRate * 0.000644f, JoyKindDefOf.Social);
+ 
+                if (pawn.needs.joy != null) pawn.needs.joy.GainJoy(job.def.joyGainRate * 0.000644f, JoyKindDefOf.Social);
+                else if (pawn.needs.learning != null) LearningUtility.LearningTickCheckEnd(pawn);
             };
             toil.socialMode = RandomSocialMode.SuperActive;
             toil.defaultCompleteMode = ToilCompleteMode.Delay;
-            toil.defaultDuration = 20;
+            toil.defaultDuration = 30;
             toil.handlingFacing = true;
             yield return toil;
         }
@@ -215,7 +218,17 @@ namespace ZealousInnocence
 
         private bool ShouldBeCalledOff()
         {
-            return !GatheringsUtility.AcceptableGameConditionsToContinueGathering(base.Map) || initiator.GetTimeAssignment() == TimeAssignmentDefOf.Work || recipient.GetTimeAssignment() == TimeAssignmentDefOf.Work || (initiator.needs.rest != null && initiator.needs.rest.CurLevel < 0.3f) || (recipient.needs.rest != null && recipient.needs.rest.CurLevel < 0.3f) || (initiator.needs.rest == null && recipient.needs.rest == null && initiator.needs.joy.CurLevel > 0.9f && recipient.needs.joy.CurLevel > 0.9f);
+            return !GatheringsUtility.AcceptableGameConditionsToContinueGathering(base.Map)
+                || initiator.GetTimeAssignment() == TimeAssignmentDefOf.Work
+                || recipient.GetTimeAssignment() == TimeAssignmentDefOf.Work
+                || (initiator.needs.rest != null && initiator.needs.rest.CurLevel < 0.3f)
+                || (recipient.needs.rest != null && recipient.needs.rest.CurLevel < 0.3f)
+                || initiator.needs.rest == null
+                || recipient.needs.rest == null
+                || (initiator.needs.joy != null && initiator.needs.joy.CurLevel > 0.9f)
+                || (recipient.needs.joy != null && recipient.needs.joy.CurLevel > 0.9f)
+                || (recipient.needs.learning != null && recipient.needs.learning.CurLevel > 0.9f)
+                || (recipient.needs.learning != null && recipient.needs.learning.CurLevel > 0.9f);
         }
     }
 
@@ -223,103 +236,156 @@ namespace ZealousInnocence
     {
         protected override Job TryGiveJob(Pawn pawn)
         {
-            LordToil_RegressedPlayTime lordToil_PlayTime = pawn.GetLord().CurLordToil as LordToil_RegressedPlayTime;
-            Pawn friend = ((pawn == lordToil_PlayTime.friends[0]) ? lordToil_PlayTime.friends[1] : lordToil_PlayTime.friends[0]);
-            Job result;
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debugging = settings.debugging && settings.debuggingJobs;
+            if(debugging) Log.Message($"JobGiver_RegressedPlayTime: TryGiveJob called for pawn: {pawn?.Name?.ToStringFull}");
+
+            // Check if pawn or its lord is null
+            if (pawn == null)
+            {
+                if (debugging) Log.Error("JobGiver_RegressedPlayTime: Pawn is null");
+                return null;
+            }
+
+            var lord = pawn.GetLord();
+            if (lord == null)
+            {
+                if (debugging) Log.Error("JobGiver_RegressedPlayTime: Pawn's lord is null");
+                return null;
+            }
+
+            // Check if the current lord toil is of the expected type
+            LordToil_RegressedPlayTime lordToil_PlayTime = lord.CurLordToil as LordToil_RegressedPlayTime;
+            if (lordToil_PlayTime == null)
+            {
+                if (debugging) Log.Error("JobGiver_RegressedPlayTime: Current lord toil is not LordToil_RegressedPlayTime");
+                return null;
+            }
+
+            // Check if the friends array is valid
+            if (lordToil_PlayTime.friends == null || lordToil_PlayTime.friends.Length < 2)
+            {
+                if (debugging) Log.Error("JobGiver_RegressedPlayTime: Friends array is null or does not have enough elements");
+                return null;
+            }
+            if (debugging) Log.Message($"JobGiver_RegressedPlayTime: Pre friend assignment");
+            
+            // Determine the friend pawn
+            Pawn friend = (pawn == lordToil_PlayTime.friends[0]) ? lordToil_PlayTime.friends[1] : lordToil_PlayTime.friends[0];
             if (friend == null)
             {
-                result = null;
+                if (debugging) Log.Warning("JobGiver_RegressedPlayTime: Friend is null");
+                return null;
             }
-            else
+            if (debugging) Log.Message($"JobGiver_RegressedPlayTime: Post friend assignment");
+            if (lordToil_PlayTime.playTime == null || lordToil_PlayTime.ticksToNextJoy < Find.TickManager.TicksGame)
             {
-                if (lordToil_PlayTime.playTime == null || lordToil_PlayTime.ticksToNextJoy < Find.TickManager.TicksGame)
-                {
-                    lordToil_PlayTime.playTime = base.TryGiveJob(pawn);
-
-                    lordToil_PlayTime.ticksToNextJoy = Find.TickManager.TicksGame + Rand.RangeInclusiveSeeded(2500, 7500, pawn.HashOffsetTicks());
-                }
-                if (lordToil_PlayTime.playTime != null && (friend.needs.food == null || friend.needs.food.CurLevel > 0.33f) && pawn.needs.joy.CurLevel < 0.8f && Math.Abs(lordToil_PlayTime.tickSinceLastJobGiven - Find.TickManager.TicksGame) > 1)
-                {
-                    Job job = new Job(lordToil_PlayTime.playTime.def);
-                    job.targetA = lordToil_PlayTime.playTime.targetA;
-                    job.targetB = lordToil_PlayTime.playTime.targetB;
-                    job.targetC = lordToil_PlayTime.playTime.targetC;
-                    job.targetQueueA = lordToil_PlayTime.playTime.targetQueueA;
-                    job.targetQueueB = lordToil_PlayTime.playTime.targetQueueB;
-                    job.count = lordToil_PlayTime.playTime.count;
-                    job.countQueue = lordToil_PlayTime.playTime.countQueue;
-                    job.expiryInterval = lordToil_PlayTime.playTime.expiryInterval;
-                    job.locomotionUrgency = lordToil_PlayTime.playTime.locomotionUrgency;
-                    if (job.TryMakePreToilReservations(pawn, errorOnFailed: false))
-                    {
-                        lordToil_PlayTime.tickSinceLastJobGiven = Find.TickManager.TicksGame;
-                        return job;
-                    }
-                    pawn.ClearAllReservations(releaseDestinationsOnlyIfObsolete: false);
-                }
-                if ((pawn.Position - friend.Position).LengthHorizontalSquared >= 6 || !GenSight.LineOfSight(pawn.Position, friend.Position, pawn.Map, skipFirstCell: true))
-                {
-                    if (friend.CurJob != null && friend.CurJob.def != RimWorld.JobDefOf.Goto)
-                    {
-                        result = new Job(RimWorld.JobDefOf.Goto, friend);
-                    }
-                    else
-                    {
-                        pawn.rotationTracker.FaceCell(friend.Position);
-                        result = null;
-                    }
-                }
-                else if (Rand.ChanceSeeded(0.8f, pawn.HashOffsetTicks()))
-                {
-                    Predicate<IntVec3> validator2 = (IntVec3 x) => x.Standable(pawn.Map) && x.InAllowedArea(pawn) && !x.IsForbidden(pawn) && pawn.CanReserveAndReach(x, PathEndMode.OnCell, Danger.None) && (x - friend.Position).LengthHorizontalSquared < 50 && GenSight.LineOfSight(x, friend.Position, pawn.Map, skipFirstCell: true) && x != friend.Position;
-
-                    if (CellFinder.TryFindRandomReachableCellNearPosition(pawn.Position, pawn.Position, pawn.Map, 12f, TraverseParms.For(TraverseMode.NoPassClosedDoors), (IntVec3 x) => validator2(x), null, out var result2))
-                    {
-                        if ((pawn.Position - friend.Position).LengthHorizontalSquared >= 5 || (LovePartnerRelationUtility.LovePartnerRelationExists(pawn, friend) && pawn.Position != friend.Position))
-                        {
-                            pawn.mindState.nextMoveOrderIsWait = !pawn.mindState.nextMoveOrderIsWait;
-                            if (!result2.IsValid || pawn.mindState.nextMoveOrderIsWait)
-                            {
-                                pawn.rotationTracker.FaceCell(friend.Position);
-                                return null;
-                            }
-                        }
-                        Job job2 = new Job(JobDefOf.RegressedPlayAround, result2);
-                        pawn.Map.pawnDestinationReservationManager.Reserve(pawn, job2, result2);
-                        result = job2;
-                    }
-                    else
-                    {
-                        pawn.rotationTracker.FaceCell(friend.Position);
-                        result = null;
-                    }
-                }
-                else
-                {
-                    Predicate<IntVec3> validator = (IntVec3 x) => x.Standable(pawn.Map) && x.InAllowedArea(pawn) && !x.IsForbidden(pawn) && pawn.CanReserveAndReach(x, PathEndMode.OnCell, Danger.None) && (x - friend.Position).LengthHorizontalSquared < 50 && GenSight.LineOfSight(x, friend.Position, pawn.Map, skipFirstCell: true) && x != friend.Position;
-                    if (CellFinder.TryFindRandomReachableCellNearPosition(pawn.Position, pawn.Position, pawn.Map, 12f, TraverseParms.For(TraverseMode.NoPassClosedDoors), (IntVec3 x) => validator(x), null, out var result3))
-                    {
-                        if ((pawn.Position - friend.Position).LengthHorizontalSquared >= 5 || (LovePartnerRelationUtility.LovePartnerRelationExists(pawn, friend) && pawn.Position != friend.Position))
-                        {
-                            pawn.mindState.nextMoveOrderIsWait = !pawn.mindState.nextMoveOrderIsWait;
-                            if (!result3.IsValid || pawn.mindState.nextMoveOrderIsWait)
-                            {
-                                pawn.rotationTracker.FaceCell(friend.Position);
-                                return null;
-                            }
-                        }
-                        Job job3 = new Job(RimWorld.JobDefOf.GotoWander, result3);
-                        pawn.Map.pawnDestinationReservationManager.Reserve(pawn, job3, result3);
-                        result = job3;
-                    }
-                    else
-                    {
-                        pawn.rotationTracker.FaceCell(friend.Position);
-                        result = null;
-                    }
-                }
+                lordToil_PlayTime.playTime = new Job(JobDefOf.RegressedPlayAround); 
+                lordToil_PlayTime.ticksToNextJoy = Find.TickManager.TicksGame + Rand.RangeInclusiveSeeded(2500, 7500, pawn.HashOffsetTicks());
             }
-            return result;
+            Need need = pawn.needs.joy;
+            if (need == null) need = pawn.needs.learning;
+            if(need == null)
+            {
+                if (debugging) Log.Error("JobGiver_RegressedPlayTime: No usable need found!");
+                return null;
+            }
+            if (lordToil_PlayTime.playTime != null &&
+                (friend.needs.food == null || friend.needs.food.CurLevel > 0.33f) &&
+                need.CurLevel < 0.8f &&
+                Math.Abs(lordToil_PlayTime.tickSinceLastJobGiven - Find.TickManager.TicksGame) > 1)
+            {
+                Job job = new Job(lordToil_PlayTime.playTime.def)
+                {
+                    targetA = lordToil_PlayTime.playTime.targetA,
+                    targetB = lordToil_PlayTime.playTime.targetB,
+                    targetC = lordToil_PlayTime.playTime.targetC,
+                    targetQueueA = lordToil_PlayTime.playTime.targetQueueA,
+                    targetQueueB = lordToil_PlayTime.playTime.targetQueueB,
+                    count = lordToil_PlayTime.playTime.count,
+                    countQueue = lordToil_PlayTime.playTime.countQueue,
+                    expiryInterval = lordToil_PlayTime.playTime.expiryInterval,
+                    locomotionUrgency = lordToil_PlayTime.playTime.locomotionUrgency
+                };
+                if (job.TryMakePreToilReservations(pawn, errorOnFailed: false))
+                {
+                    lordToil_PlayTime.tickSinceLastJobGiven = Find.TickManager.TicksGame;
+                    return job;
+                }
+                pawn.ClearAllReservations(releaseDestinationsOnlyIfObsolete: false);
+            }
+            // Movement and job assignment logic with logging
+            if ((pawn.Position - friend.Position).LengthHorizontalSquared >= 6 || !GenSight.LineOfSight(pawn.Position, friend.Position, pawn.Map, skipFirstCell: true))
+            {
+                if (friend.CurJob != null && friend.CurJob.def != RimWorld.JobDefOf.Goto)
+                {
+                    return new Job(RimWorld.JobDefOf.Goto, friend);
+                }
+
+                pawn.rotationTracker.FaceCell(friend.Position);
+                return null;
+            }
+            if (Rand.ChanceSeeded(0.8f, pawn.HashOffsetTicks()))
+            {
+                Predicate<IntVec3> validator2 = (IntVec3 x) =>
+                    x.Standable(pawn.Map) &&
+                    x.InAllowedArea(pawn) &&
+                    !x.IsForbidden(pawn) &&
+                    pawn.CanReserveAndReach(x, PathEndMode.OnCell, Danger.None) &&
+                    (x - friend.Position).LengthHorizontalSquared < 50 &&
+                    GenSight.LineOfSight(x, friend.Position, pawn.Map, skipFirstCell: true) &&
+                    x != friend.Position;
+
+                if (CellFinder.TryFindRandomReachableCellNearPosition(pawn.Position, pawn.Position, pawn.Map, 12f, TraverseParms.For(TraverseMode.NoPassClosedDoors), validator2, null, out var result2))
+                {
+                    if ((pawn.Position - friend.Position).LengthHorizontalSquared >= 5 || (LovePartnerRelationUtility.LovePartnerRelationExists(pawn, friend) && pawn.Position != friend.Position))
+                    {
+                        pawn.mindState.nextMoveOrderIsWait = !pawn.mindState.nextMoveOrderIsWait;
+                        if (!result2.IsValid || pawn.mindState.nextMoveOrderIsWait)
+                        {
+                            pawn.rotationTracker.FaceCell(friend.Position);
+                            return null;
+                        }
+                    }
+
+                    Job job2 = new Job(JobDefOf.RegressedPlayAround, result2);
+                    pawn.Map.pawnDestinationReservationManager.Reserve(pawn, job2, result2);
+                    return job2;
+                }
+                if (debugging) Log.Message($"JobGiver_RegressedPlayTime: Post block 5");
+                pawn.rotationTracker.FaceCell(friend.Position);
+                return null;
+            }
+
+            Predicate<IntVec3> validator = (IntVec3 x) =>
+                x.Standable(friend.Map) &&
+                x.InAllowedArea(friend) &&
+                !x.IsForbidden(friend) &&
+                friend.CanReserveAndReach(x, PathEndMode.OnCell, Danger.None) &&
+                (x - pawn.Position).LengthHorizontalSquared < 50 &&
+                GenSight.LineOfSight(x, pawn.Position, pawn.Map, skipFirstCell: true) &&
+                x != pawn.Position;
+
+            if (CellFinder.TryFindRandomReachableCellNearPosition(friend.Position, friend.Position, friend.Map, 12f, TraverseParms.For(TraverseMode.NoPassClosedDoors), validator, null, out var result3))
+            {
+                if ((friend.Position - pawn.Position).LengthHorizontalSquared >= 5 || (LovePartnerRelationUtility.LovePartnerRelationExists(friend, pawn) && pawn.Position != friend.Position))
+                {
+                    friend.mindState.nextMoveOrderIsWait = !friend.mindState.nextMoveOrderIsWait;
+                    if (!result3.IsValid || pawn.mindState.nextMoveOrderIsWait)
+                    {
+                        friend.rotationTracker.FaceCell(pawn.Position);
+                        return null;
+                    }
+                }
+
+                Job job3 = new Job(RimWorld.JobDefOf.GotoWander, result3);
+                friend.Map.pawnDestinationReservationManager.Reserve(friend, job3, result3);
+                return job3;
+            }
+
+            friend.rotationTracker.FaceCell(pawn.Position);
+            return null;
         }
     }
+
 }

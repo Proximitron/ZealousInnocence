@@ -29,8 +29,6 @@ namespace ZealousInnocence
                 {
                     impactors.Add(new PawnCapacityUtility.CapacityImpactorCapacity { capacity = RimWorld.PawnCapacityDefOf.Consciousness });
                 }
-
-
                 float ageFactor = GetAgeFactor(pawn);
                 if (ageFactor != 1f && impactors != null)
                 {
@@ -44,6 +42,10 @@ namespace ZealousInnocence
                     impactors.Add(new CapacityImpactorCustom { customLabel = "Sleeping", customValue = sleepFactor });
                 }
                 num2 *= sleepFactor;
+            }
+            else
+            {
+                Log.Message($"there was no pawn defined?");
             }
 
             return num2;
@@ -108,7 +110,7 @@ namespace ZealousInnocence
                     }
 
                 }
-                return 0.8f;
+                return 0.75f;
             }
             return 1.0f;
         }

@@ -188,17 +188,17 @@ namespace ZealousInnocence
             Need_Hygiene need_Hygiene = this.pawn.needs.TryGetNeed<Need_Hygiene>();
             if (need_Hygiene != null)
             {
-                need_Hygiene.CurLevel -= Math.Min(need_Hygiene.CurLevel, 0.1f);
+                need_Hygiene.CurLevel -= Math.Min(need_Hygiene.CurLevel, peeAmount);
             }
             if (bladder != null)
             {
-                bladder.CurLevel += Math.Min(bladder.CurLevel, 0.1f);
+                bladder.CurLevel += peeAmount;
             }
             if (pawn.InBed())
             {
                 var bed = pawn.CurrentBed();
-                int damage = (int)Math.Ceiling(((float)bed.MaxHitPoints / 2f) * ((float)filth / 10f));
-                bed.HitPoints -= Math.Min(bed.HitPoints-1, damage);
+                float damage = ((float)bed.MaxHitPoints / 2f) * ((float)filth / 10f);
+                bed.HitPoints -= Math.Min(bed.HitPoints-1, chancedDamage(damage));
                 foreach (var curr in pawn.CurrentBed().CurOccupants)
                 {
                     if (curr != pawn)
@@ -288,6 +288,8 @@ namespace ZealousInnocence
         public override void NeedInterval()
         {
             if (pawn.Dead || !pawn.RaceProps.Humanlike || !pawn.RaceProps.IsFlesh) return;
+            pawn.health.capacities.Notify_CapacityLevelsDirty(); // Yes, nessesary. The caching doesn't keep track of changes like sleeping and things that not cause hediffs
+
             Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
             if (bladder == null) return;
 
@@ -296,8 +298,8 @@ namespace ZealousInnocence
             {
                 CurLevel = (float)currProtection.HitPoints / (float)currProtection.MaxHitPoints;
             }
-            var currControlLevel = DiaperHelper.getBladderControlLevel(pawn);
-            List<Hediff> health = pawn.health.hediffSet.hediffs;
+            //var currControlLevel = DiaperHelper.getBladderControlLevel(pawn);
+            //List<Hediff> health = pawn.health.hediffSet.hediffs;
 
             if (!isHavingAccident && bladder.CurLevel <= 0f)
             {
@@ -309,8 +311,15 @@ namespace ZealousInnocence
             // A negativ value means there is a chance of bladder failure
             //float remainingControl = (currControlLevel - (1.0f - bladder.CurLevel));
             //if (!isHavingAccident && remainingControl < 0f)
-            
-            if (!isHavingAccident && bladder.CurLevel < 0.5f && bladder.CurLevel < DiaperHelper.getBladderControlFailPoint(pawn))
+ 
+            /* This testing was done to find the issue with caching
+            if (DiaperHelper.needsDiaperNight(pawn))
+            {
+                Log.Message($"testing night control: {DiaperHelper.getBladderControlLevel(pawn)} {pawn.health.capacities.GetLevel(PawnCapacityDefOf.BladderControl)} at level {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+            }*/
+
+
+            if (!isHavingAccident && bladder.CurLevel <= 0.5f && bladder.CurLevel <= DiaperHelper.getBladderControlFailPoint(pawn))
             {
                 
                 //float failChance = ((remainingControl * -1.0f) * 0.06f) - 0.01f;
@@ -321,7 +330,7 @@ namespace ZealousInnocence
                 {
                     */
                 startAccident();
-                Log.Message("doing fail of bladder control at level " + bladder.CurLevel + " failpoint " + DiaperHelper.getBladderControlFailPoint(pawn).ToString() + " for " + pawn.Name);
+                Log.Message($"doing fail of bladder control at level {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
             }
 
             if (!isHavingAccident && bladder.CurLevel <= 0.30f)
@@ -366,21 +375,10 @@ namespace ZealousInnocence
                                                                                           //float totalDiaperAbsorbency = currDiapie.GetStatValue(StatDefOf.Absorbency);
                                                                                           //Log.Message("absorbency: " + absorbency);
                                                                                           // Log.Message("absorbency2: " + currDiapie.GetStatValue(StatDefOf.Absorbency));
-
                     if (absorbency < 0.1f) absorbency = 0.1f;
                     float hitPointDamage = peeAmount / (0.05f * absorbency);
 
-                    float halfHitpoints = hitPointDamage - (float)Math.Floor(hitPointDamage);
-
-                    int realPointDamage = (int)Math.Floor(hitPointDamage);
-                    //Log.Message("halfhitpoints: " + halfHitpoints + " from " + realPointDamage + " at pee amount " + peeAmount + " and bladder " + bladder.CurLevel + " at absorbency " + absorbency);
-                    if (halfHitpoints > 0.0f && Rand.ChanceSeeded(halfHitpoints, pawn.HashOffsetTicks() + 4))
-                    {
-                        //Log.Message("chance hit at: " + halfHitpoints + " doing ceiling of " + realPointDamage);
-                        realPointDamage = (int)Math.Ceiling(hitPointDamage);
-                    }
-
-                    currProtection.HitPoints -= realPointDamage;
+                    currProtection.HitPoints -= chancedDamage(hitPointDamage);
                     if (currProtection.HitPoints < 1)
                     {
                         currProtection.Notify_LordDestroyed();
@@ -438,6 +436,17 @@ namespace ZealousInnocence
         void CategoryChanged()
         {
         }
+        int chancedDamage(float damage)
+        {
+            float halfHitpoints = damage - (float)Math.Floor(damage);
+
+            if (halfHitpoints > 0.0f && Rand.ChanceSeeded(halfHitpoints, pawn.HashOffsetTicks() + 4))
+            {
+                return (int)Math.Ceiling(damage);
+            }
+
+            return (int)Math.Floor(damage); ;
+        }
     }
     public class Recipe_PutInDiaper : RecipeWorker
     {
@@ -491,6 +500,11 @@ namespace ZealousInnocence
         public static void getMemory(Pawn pawn, ThoughtDef thought, int stage = 0)
         {
             var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
+            if (!pawn.health.capacities.CanBeAwake)
+            {
+                if (debugging) Log.Message("Can't gain Memory for unconcious " + pawn.Name + ", thought " + thought.defName + " at stage " + stage.ToString());
+            }
+            
             var memories = pawn.needs.mood.thoughts.memories;
             if (debugging) Log.Message("Creating Memory for "+pawn.Name+", thought "+thought.defName+" at stage "+stage.ToString());
 
@@ -523,7 +537,44 @@ namespace ZealousInnocence
             var defPants = ThoughtDef.Named("WetBed");
             DiaperHelper.getMemory(pawn, defPants, (int)thought);
         }
-        
+        public static bool remembersPotty(Pawn pawn)
+        {
+            if (pawn != null && pawn.RaceProps.Humanlike)
+            {
+                var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+                if (diaperNeed == null) return true; // anything without that gets a free pass
+                if (diaperNeed.IsHavingAccident) return true; // now we notice for sure
+                if (!DiaperHelper.getBladderControlLevelCapable(pawn)) return false; // incapeable of noticing
+                if (pawn.story.traits.HasTrait(TraitDef.Named("Potty_Rebel"))) return false; // will never run to a potty!
+
+                var currDiapie = DiaperHelper.getDiaper(pawn);
+                if (currDiapie != null && pawn.outfits.forcedHandler.IsForced(currDiapie)) return false; // forced in diapers
+
+
+                float bladderControl = DiaperHelper.getBladderControlLevel(pawn);
+
+                // 0.2 bladder control = 100%, 0.65 bladder control = 1%
+                float probability = Mathf.Clamp01(-2 * bladderControl + 1.4f);
+
+                // Use the in-game day combined with pawn's birth year and birth day as the seed
+                //int seed = GenDate.DaysPassed + pawn.ageTracker.BirthYear + pawn.ageTracker.BirthDayOfYear;
+
+                if (Rand.ChanceSeeded(probability, diaperNeed.FailureSeed))
+                {
+                    var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
+                    if (debugging) Log.Message($"JobGiver_UseToilet prefix false, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                    return false; // depending on the level on control
+                }
+                else
+                {
+                    var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
+                    if (debugging) Log.Message($"JobGiver_UseToilet prefix true, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                }
+            }
+            return true;
+        }
+
+
         public static bool AcceptableNightTimeOld(Pawn pawn)
         {
             Need_Rest restNeed = pawn.needs.TryGetNeed<Need_Rest>();
@@ -556,7 +607,7 @@ namespace ZealousInnocence
         }
         public static bool needsDiaper(Pawn pawn)
         {            
-            return pawn.health != null && pawn.health.capacities.GetLevel(PawnCapacityDefOf.BladderControl) <= 0.5;
+            return pawn.health != null && getBladderControlLevel(pawn) <= 0.5;
         }
         public static bool needsDiaperNight(Pawn pawn)
         {
@@ -629,18 +680,17 @@ namespace ZealousInnocence
             return null;
         }
         public static float getBladderControlLevel(Pawn pawn)
-        {            
+        {
             return pawn.health.capacities.GetLevel(PawnCapacityDefOf.BladderControl);
         }
         public static bool getBladderControlLevelCapable(Pawn pawn)
         {
-            var bladderControlWorker = new PawnCapacityWorker_BladderControl();
-            return bladderControlWorker.CapableOf(pawn);
+            return pawn.health.capacities.CapableOf(PawnCapacityDefOf.BladderControl);
         }
 
         public static float getBladderControlFailPoint(Pawn pawn)
         {
-            var bladderControl = pawn.health.capacities.GetLevel(PawnCapacityDefOf.BladderControl);
+            var bladderControl = getBladderControlLevel(pawn);
 
             // Define the input and output ranges
             float x0 = 1.0f; // If full bladder control
@@ -663,6 +713,7 @@ namespace ZealousInnocence
             // Perform linear interpolation
             return y0 + (bladderControl - x0) * (y1 - y0) / (x1 - x0);
         }
+
 
         public static DiaperLikeCategory getDiaperPreference(Pawn pawn)
         {

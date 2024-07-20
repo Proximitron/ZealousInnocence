@@ -43,6 +43,8 @@ namespace ZealousInnocence
         public bool formerAdultsCanHaveIdeoRoles = true;
         public bool formerAdultsGetGrowthMoments = false;
         public bool debugging = false;
+        public bool debuggingCloth = false;
+        public bool debuggingJobs = false;
 
         public override void ExposeData()
         {
@@ -53,6 +55,8 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);
             Scribe_Values.Look(ref formerAdultsGetGrowthMoments, "formerAdultsGetGrowthMoments", false);
             Scribe_Values.Look(ref debugging, "debugging", false);
+            Scribe_Values.Look(ref debuggingCloth, "debuggingCloth", false);
+            Scribe_Values.Look(ref debuggingJobs, "debuggingJobs", false);
         }
     }
 
@@ -68,67 +72,117 @@ namespace ZealousInnocence
             Harmony.DEBUG = false;
 
             //harmony.PatchAll(Assembly.GetExecutingAssembly());
-            harmony.Patch(
-                 original: AccessTools.Method(typeof(JobGiver_OptimizeApparel), "ApparelScoreRaw"),
-                 postfix: new HarmonyMethod(typeof(Patch_JobGiver_OptimizeApparel), nameof(Patch_JobGiver_OptimizeApparel.ApparelScoreRaw))
-            );
-            if(settings.debugging) Log.Message("ZealousInnocence harmony patching: JobGiver_OptimizeApparel.ApparelScoreGain");
 
-            //Patch_SleepAndWakeup.Patch_PawsGoesToBed_Execute(harmony);
-            harmony.Patch(
+            // Changes how pawns score gear based on behaviour and preferences
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(JobGiver_OptimizeApparel), "ApparelScoreRaw"),
+                postfix: new HarmonyMethod(typeof(Patch_JobGiver_OptimizeApparel), nameof(Patch_JobGiver_OptimizeApparel.ApparelScoreRaw)),
+                info: "JobGiver_OptimizeApparel.ApparelScoreRaw"
+            );
+
+            // This patch doesn't limit what pawns can wear, but change what pawns wear on spawning
+            patchFunctionPostfix(
                 original: AccessTools.Method(typeof(ApparelProperties), "PawnCanWear", new Type[] { typeof(Pawn), typeof(bool) }),
-                postfix: new HarmonyMethod(typeof(ApparelProperties_PawnCanWear_Patch), nameof(ApparelProperties_PawnCanWear_Patch.Postfix))
+                postfix: new HarmonyMethod(typeof(ApparelProperties_PawnCanWear_Patch), nameof(ApparelProperties_PawnCanWear_Patch.Postfix)),
+                info: "ApparelProperties.PawnCanWear"
             );
-            if (settings.debugging) Log.Message("ZealousInnocence harmony patching: ApparelProperties.PawnCanWear");
 
-            harmony.Patch(
+            // The following 2 functions are patched to control the going to the toilet behaviour, based on bladder control(+)
+            patchFunctionPrefix(
                 original: AccessTools.Method(typeof(JobGiver_UseToilet), "TryGiveJob"),
-                prefix: new HarmonyMethod(typeof(JobGiver_UseToilet_TryGiveJob_Patch), nameof(JobGiver_UseToilet_TryGiveJob_Patch.Prefix))
+                prefix: new HarmonyMethod(typeof(JobGiver_UseToilet_TryGiveJob_Patch), nameof(JobGiver_UseToilet_TryGiveJob_Patch.Prefix)),
+                info: "JobGiver_UseToilet.TryGiveJob"
             );
-            if (settings.debugging) Log.Message("ZealousInnocence harmony patching: JobGiver_UseToilet.TryGiveJob Prefix");
-            harmony.Patch(
+            patchFunctionPostfix(
                 original: AccessTools.Method(typeof(JobGiver_UseToilet), "TryGiveJob"),
-                postfix: new HarmonyMethod(typeof(JobGiver_UseToilet_TryGiveJob_Patch), nameof(JobGiver_UseToilet_TryGiveJob_Patch.Postfix))
+                postfix: new HarmonyMethod(typeof(JobGiver_UseToilet_TryGiveJob_Patch), nameof(JobGiver_UseToilet_TryGiveJob_Patch.Postfix)),
+                info: "JobGiver_UseToilet.TryGiveJob"
             );
-            if (settings.debugging) Log.Message("ZealousInnocence harmony patching: JobGiver_UseToilet.TryGiveJob Postfix");
 
-            harmony.Patch(
+            // By default only system defined CapacityImpactor are shown. This patch adds custom ones
+            patchFunctionPostfix(
                 original: AccessTools.Method(typeof(HealthCardUtility), "GetPawnCapacityTip"),
-                postfix: new HarmonyMethod(typeof(HealthCardUtility_GetPawnCapacityTip_Patch), nameof(HealthCardUtility_GetPawnCapacityTip_Patch.Postfix))
+                postfix: new HarmonyMethod(typeof(HealthCardUtility_GetPawnCapacityTip_Patch), nameof(HealthCardUtility_GetPawnCapacityTip_Patch.Postfix)),
+                info: "HealthCardUtility.GetPawnCapacityTip"
             );
-            if (settings.debugging) Log.Message("ZealousInnocence harmony patching: HealthCardUtility.GetPawnCapacityTip Postfix");
+
+            // The bladder rate can be different, depending on how big the bladder is
+            patchFunctionPostfix(
+                original:  AccessTools.PropertyGetter(typeof(Need_Bladder), "BladderRate"),
+                postfix: new HarmonyMethod(typeof(Need_Bladder_Patch), nameof(Need_Bladder_Patch.BladderRate_Postfix)),
+                info: "Property Need_Bladder.BladderRate"
+            );
+            // The category can be different, depending on if the paw can feel the need to go potty
+            patchFunctionPostfix(
+                original: AccessTools.PropertyGetter(typeof(Need_Bladder), "CurCategory"),
+                postfix: new HarmonyMethod(typeof(Need_Bladder_Patch), nameof(Need_Bladder_Patch.CurCategory_Postfix)),
+                info: "Property Need_Bladder.CurCategory"
+            );
 
             ModChecker.ZealousInnocenceActive();
-            
+
             if (!ModChecker.ForeverYoungActive())
             {
-                harmony.Patch(
+                // Can suspend learning need on pawns that got again young
+                patchFunctionPostfix(
                     original: AccessTools.PropertyGetter(typeof(Need_Learning), nameof(Need_Learning.Suspended)),
-                    postfix: new HarmonyMethod(typeof(Need_Learning_IsFrozen), nameof(Need_Learning_IsFrozen.Postfix))
+                    postfix: new HarmonyMethod(typeof(Need_Learning_IsFrozen), nameof(Need_Learning_IsFrozen.Postfix)),
+                    info: "Property Need_Learning.Suspended"
                 );
-                if (settings.debugging) Log.Message("ZealousInnocence harmony patching: Need_Learning.Suspended");
-                harmony.Patch(
-                   original: AccessTools.Method(typeof(Precept_Role), nameof(Precept_Role.RequirementsMet)),
-                   prefix: new HarmonyMethod(typeof(PreceptRole_RequirementsMet), nameof(PreceptRole_RequirementsMet.Prefix))
-                );
-                if (settings.debugging) Log.Message("ZealousInnocence harmony patching: Precept_Role.RequirementsMet");
+                // Can allow or disallow Rols for children (again)
+                patchFunctionPrefix(
+                    original: AccessTools.Method(typeof(Precept_Role), nameof(Precept_Role.RequirementsMet)),
+                    prefix: new HarmonyMethod(typeof(PreceptRole_RequirementsMet), nameof(PreceptRole_RequirementsMet.Prefix)),
+                    info: "Precept_Role.RequirementsMet"
+                );                
             }
 
         }
+        private void patchFunctionPostfix(MethodInfo original, HarmonyMethod postfix, string info)
+        {
+            harmony.Patch(
+                original: original,
+                postfix: postfix
+            );
+            if (settings.debugging)
+            {
+                Log.Message($"ZealousInnocence harmony patching: Postfix {info}");
+                DoCheckOnHarmonyMethode(original, false, true);
+            }
+        }
+        private void patchFunctionPrefix(MethodInfo original, HarmonyMethod prefix, string info)
+        {
+            harmony.Patch(
+                original: original,
+                prefix: prefix
+            );
+            if (settings.debugging)
+            {
+                Log.Message($"ZealousInnocence harmony patching: Prefix {info}");
+                DoCheckOnHarmonyMethode(original,true,false);
+            }
+        }
 
-        public void DoCheckOnHarmonyMethode(MethodInfo originalMethod)
+        public void DoCheckOnHarmonyMethode(MethodInfo originalMethod, bool checkPrefix = true, bool checkPostfix = true)
         {
             var patches = Harmony.GetPatchInfo(originalMethod);
             if (patches != null)
             {
-                foreach (var prefix in patches.Prefixes)
+                if (checkPrefix)
                 {
-                    Log.Message($"Prefix patch from {prefix.owner}");
+                    foreach (var prefix in patches.Prefixes)
+                    {
+                        Log.Message($"Prefix patch from {prefix.owner}");
+                    }
                 }
-                foreach (var postfix in patches.Postfixes)
+                if (checkPostfix)
                 {
-                    Log.Message($"Postfix patch from {postfix.owner}");
+                    foreach (var postfix in patches.Postfixes)
+                    {
+                        Log.Message($"Postfix patch from {postfix.owner}");
+                    }
                 }
+
             }
         }
 
@@ -156,7 +210,12 @@ namespace ZealousInnocence
             listStandard.CheckboxLabeled("Learning Need", ref settings.formerAdultsNeedLearning, "Controlles if a pawn has still the need to learn after being regressed to the age of a child.");
 
             listStandard.GapLine();
-            listStandard.CheckboxLabeled("DEBUGGING Mode", ref settings.debugging, "Activates a lot of unnessessary logs and work, in case you want to find an error. Restart required!");
+            listStandard.CheckboxLabeled("DEBUGGING Mode", ref settings.debugging, "Activates a lot of unnessessary logs and work, in case you want to find an error. Restart may be required in certain situations.");
+            if (settings.debugging)
+            {
+                listStandard.CheckboxLabeled("DEBUG Cloth", ref settings.debuggingCloth, "Generates debugging related to cloth.");
+                listStandard.CheckboxLabeled("DEBUG Jobs", ref settings.debuggingJobs, "Generates debugging related to jobs.");
+            }
             if (settings.debugging && listStandard.ButtonText("Check ForeverYoung active"))
             {
                 ModChecker.ZealousInnocenceActive();
@@ -283,76 +342,48 @@ namespace ZealousInnocence
         }
     }
 
-    public static class JobGiver_UseToilet_TryGiveJob_Patch
+    [HarmonyPatch(typeof(Thing), "DrawGUIOverlay")]
+    public static class Thing_DrawGUIOverlay_Patch
     {
-        // Prefix to save runs in unnessesary cases. It tracks if the pawn notices 
-        public static bool Prefix(JobGiver_UseToilet __instance, Pawn pawn)
+        public static bool Prefix(Thing __instance)
         {
-            if(pawn != null && pawn.RaceProps.Humanlike)
+            if (__instance is Apparel apparel)
             {
-                var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
-                if (diaperNeed == null) return true; // anything without that gets a free pass
-                if (diaperNeed.IsHavingAccident) return true; // now we notice for sure
-                if (!DiaperHelper.getBladderControlLevelCapable(pawn)) return false; // incapeable of noticing
-                if (pawn.story.traits.HasTrait(TraitDef.Named("Potty_Rebel"))) return false; // will never run to a potty!
-                
-                var currDiapie = DiaperHelper.getDiaper(pawn);
-                if (currDiapie != null && pawn.outfits.forcedHandler.IsForced(currDiapie)) return false; // forced in diapers
-                
-
-                float bladderControl = pawn.health.capacities.GetLevel(PawnCapacityDefOf.BladderControl);
-
-                // 0.2 bladder control = 100%, 0.65 bladder control = 1%
-                float probability = Mathf.Clamp01(-2 * bladderControl + 1.4f);
-
-                // Use the in-game day combined with pawn's birth year and birth day as the seed
-                //int seed = GenDate.DaysPassed + pawn.ageTracker.BirthYear + pawn.ageTracker.BirthDayOfYear;
-
-                if (Rand.ChanceSeeded(probability, diaperNeed.FailureSeed))
+                if (apparel.def.thingCategories != null && apparel.def.thingCategories.Contains(ThingCategoryDef.Named("Diapers")))
                 {
-                    var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
-                    if (debugging) Log.Message($"JobGiver_UseToilet prefix false, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
-                    return false; // depending on the level on control
-                }
-                else
-                {
-                    var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
-                    if (debugging) Log.Message($"JobGiver_UseToilet prefix true, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
-                }
-            }
-            return true;
-        }
-        // Postfix to observe or modify the output of TryGiveJob
-        public static void Postfix(JobGiver_UseToilet __instance, Pawn pawn, ref Job __result)
-        {
-            if (__result != null && pawn.RaceProps.Humanlike)
-            {
-                if (pawn.Awake())
-                {
-                    var liked = DiaperHelper.getDiaperPreference(pawn);
-                    if (liked == DiaperLikeCategory.Liked)
+                    // Check the HP of the apparel
+                    float hpPercentage = (float)apparel.HitPoints / (float)apparel.MaxHitPoints;
+
+                    // Determine which texture to use based on HP percentage
+
+                    // Determine the texture path based on HP percentage
+                    string texPath = apparel.def.graphicData.texPath;
+                    if (hpPercentage < 0.5f)
                     {
-                        var currDiapie = DiaperHelper.getDiaper(pawn);
-                        if (currDiapie == null)
-                        {
-                            pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("HadToGoPotty"), null, null);
-                        }
-                        else
-                        {
-                            var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
-                            if (debugging) Log.Message($"JobGiver_UseToilet postfix null for {pawn.Name.ToStringShort}");
-                            __result = null;
-                            return;
-                        }
-                    }                    
+                        texPath += "_Dirty";
+                    }
+
+                    // Load the appropriate texture
+                    Texture2D texture = ContentFinder<Texture2D>.Get(texPath, true);
+
+                    // Draw the icon with the chosen texture
+                    Vector2 screenPos = GenMapUI.LabelDrawPosFor(__instance, -0.6f);
+                    GUI.DrawTexture(new Rect(screenPos.x, screenPos.y, 32f, 32f), texture);
+
+                    // Optionally, draw the label as well
+                    GenMapUI.DrawThingLabel(__instance, __instance.LabelShort);
+
+                    // Skip the original method
+                    return false;
                 }
-                var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
-                if (diaperNeed != null) diaperNeed.FailureSeed = 0; // resetting seed
-                
-                //Log.Message($"JobGiver_UseToilet attempting to assign a job to {pawn.Name.ToStringShort}");
             }
+
+            // Continue with the original method if not apparel
+            return true;
+
         }
     }
+
     public static class ApparelProperties_PawnCanWear_Patch
     {
         // Prefix for the second overload
@@ -395,18 +426,21 @@ namespace ZealousInnocence
         [HarmonyPatch("ApparelScoreRaw")]
         public static float ApparelScoreRaw(float __result, Pawn pawn, Apparel ap)
         {
-            var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debugging = settings.debugging && settings.debuggingCloth;
             if (ap.HasThingCategory(ThingCategoryDefOf.Diapers))
             {
                 __result -= 0.5f; // Diapers by default less likely to be worn
-
+                var isNightDiaper = DiaperHelper.isNightDiaper(ap);
+                if (isNightDiaper) __result += 1f; // Usually better than diapers and better than no underwear
                 if (DiaperHelper.needsDiaper(pawn))
                 {
-                    __result += 5f;
+                    if (isNightDiaper) __result += 3f; // too thin
+                    else __result += 5f;
                 }
                 else
                 {
-                    if (DiaperHelper.isNightDiaper(ap) && DiaperHelper.needsDiaperNight(pawn))
+                    if (isNightDiaper && DiaperHelper.needsDiaperNight(pawn))
                     {
                         __result += 5f;
                     }
@@ -430,7 +464,7 @@ namespace ZealousInnocence
             }
             else if (ap.HasThingCategory(ThingCategoryDefOf.Underwear))
             {
-                __result += 0.2f; // Underwear is default more likely to be worn
+                __result += 1.5f; // Underwear is default more likely to be worn
                 var preference = DiaperHelper.getDiaperPreference(pawn);
                 if (preference == DiaperLikeCategory.Liked)
                 {
@@ -454,7 +488,7 @@ namespace ZealousInnocence
             }
             else if (ap.HasThingCategory(ThingCategoryDefOf.Onesies))
             {
-                __result -= 0.25f; // Onesies by default are less likely to be worn
+                __result -= 0.35f; // Onesies by default are less likely to be worn
 
                 var preference = OnesieHelper.getOnesiePreference(pawn);
                 if (preference == OnesieLikeCategory.NonAdult)
