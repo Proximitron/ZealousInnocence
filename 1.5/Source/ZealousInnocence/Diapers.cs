@@ -92,7 +92,7 @@ namespace ZealousInnocence
             {
                 if (failureSeed == 0)
                 {
-                    failureSeed = Rand.RangeInclusive(1, int.MaxValue);
+                    failureSeed = pawn.HashOffsetTicks() + pawn.ageTracker.BirthDayOfYear + pawn.ageTracker.AgeChronologicalYears + pawn.ageTracker.BirthYear;
                 }
                 return failureSeed;
             }
@@ -192,7 +192,7 @@ namespace ZealousInnocence
             }
             if (bladder != null)
             {
-                bladder.CurLevel -= Math.Min(bladder.CurLevel, 0.1f); ;
+                bladder.CurLevel += Math.Min(bladder.CurLevel, 0.1f);
             }
             if (pawn.InBed())
             {
@@ -307,22 +307,21 @@ namespace ZealousInnocence
 
             // the current control level of 0.0 to 1.0 minus the inverted bladder value from 0.0 to 1.0 give a value of -1.0 to 1.0.
             // A negativ value means there is a chance of bladder failure
-            float remainingControl = (currControlLevel - (1.0f - bladder.CurLevel));
-
-            if (!isHavingAccident && remainingControl < 0f)
+            //float remainingControl = (currControlLevel - (1.0f - bladder.CurLevel));
+            //if (!isHavingAccident && remainingControl < 0f)
+            
+            if (!isHavingAccident && bladder.CurLevel < 0.5f && bladder.CurLevel < DiaperHelper.getBladderControlFailPoint(pawn))
             {
-
-                //float failChance = ((remainingControl * -1.0f) * 0.08f) - 0.01f;
-
-                float failChance = ((remainingControl * -1.0f) * 0.06f) - 0.01f;
-                Log.Message("debug: bladder control of " + remainingControl + " lower then 0, calculated fail of " + failChance.ToString() + " for " + pawn.Name);
+                
+                //float failChance = ((remainingControl * -1.0f) * 0.06f) - 0.01f;
+                /*Log.Message("debug: bladder control of " + remainingControl + " lower then 0, calculated fail of " + failChance.ToString() + " for " + pawn.Name);
 
                 bool trigger = Rand.ChanceSeeded(failChance, pawn.HashOffsetTicks());
                 if (trigger)
                 {
-                    startAccident();
-                    Log.Message("doing fail of bladder control at fail chance of " + failChance.ToString() + " for " + pawn.Name);
-                }
+                    */
+                startAccident();
+                Log.Message("doing fail of bladder control at level " + bladder.CurLevel + " failpoint " + DiaperHelper.getBladderControlFailPoint(pawn).ToString() + " for " + pawn.Name);
             }
 
             if (!isHavingAccident && bladder.CurLevel <= 0.30f)
@@ -637,6 +636,32 @@ namespace ZealousInnocence
         {
             var bladderControlWorker = new PawnCapacityWorker_BladderControl();
             return bladderControlWorker.CapableOf(pawn);
+        }
+
+        public static float getBladderControlFailPoint(Pawn pawn)
+        {
+            var bladderControl = pawn.health.capacities.GetLevel(PawnCapacityDefOf.BladderControl);
+
+            // Define the input and output ranges
+            float x0 = 1.0f; // If full bladder control
+            float y0 = 0.0f; // The failure will happen at 0.0 
+            float x1 = 0.2f; // If 20% bladder control
+            float y1 = 0.4f; // the failure will happen at 0.4 (60% filled bladder)
+
+            // If the input is less than or equal to the lower bound, return the lower output bound
+            if (bladderControl >= x0)
+            {
+                return y0;
+            }
+
+            // If the input is greater than or equal to the upper bound, return the upper output bound
+            if (bladderControl <= x1)
+            {
+                return y1;
+            }
+
+            // Perform linear interpolation
+            return y0 + (bladderControl - x0) * (y1 - y0) / (x1 - x0);
         }
 
         public static DiaperLikeCategory getDiaperPreference(Pawn pawn)

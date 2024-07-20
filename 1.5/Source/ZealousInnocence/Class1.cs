@@ -294,20 +294,31 @@ namespace ZealousInnocence
                 if (diaperNeed == null) return true; // anything without that gets a free pass
                 if (diaperNeed.IsHavingAccident) return true; // now we notice for sure
                 if (!DiaperHelper.getBladderControlLevelCapable(pawn)) return false; // incapeable of noticing
-                if (pawn.story.traits.HasTrait(TraitDef.Named("Potty_Rebel"))) return false; // will never run of a potty!
+                if (pawn.story.traits.HasTrait(TraitDef.Named("Potty_Rebel"))) return false; // will never run to a potty!
                 
                 var currDiapie = DiaperHelper.getDiaper(pawn);
                 if (currDiapie != null && pawn.outfits.forcedHandler.IsForced(currDiapie)) return false; // forced in diapers
                 
 
                 float bladderControl = pawn.health.capacities.GetLevel(PawnCapacityDefOf.BladderControl);
+
                 // 0.2 bladder control = 100%, 0.65 bladder control = 1%
                 float probability = Mathf.Clamp01(-2 * bladderControl + 1.4f);
 
                 // Use the in-game day combined with pawn's birth year and birth day as the seed
                 //int seed = GenDate.DaysPassed + pawn.ageTracker.BirthYear + pawn.ageTracker.BirthDayOfYear;
 
-                if (Rand.ChanceSeeded(probability, diaperNeed.FailureSeed)) return false; // depending on the level on control
+                if (Rand.ChanceSeeded(probability, diaperNeed.FailureSeed))
+                {
+                    var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
+                    if (debugging) Log.Message($"JobGiver_UseToilet prefix false, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                    return false; // depending on the level on control
+                }
+                else
+                {
+                    var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
+                    if (debugging) Log.Message($"JobGiver_UseToilet prefix true, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                }
             }
             return true;
         }
@@ -325,6 +336,13 @@ namespace ZealousInnocence
                         if (currDiapie == null)
                         {
                             pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("HadToGoPotty"), null, null);
+                        }
+                        else
+                        {
+                            var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
+                            if (debugging) Log.Message($"JobGiver_UseToilet postfix null for {pawn.Name.ToStringShort}");
+                            __result = null;
+                            return;
                         }
                     }                    
                 }
@@ -422,19 +440,14 @@ namespace ZealousInnocence
                 {
                     __result += 2f;
                 }
-                if(pawn.gender == Gender.Male)
+                if(pawn.gender == Gender.Male && ap.HasThingCategory(ThingCategoryDefOf.FemaleCloth))
                 {
-                    if (ap.HasThingCategory(ThingCategoryDefOf.FemaleCloth))
-                    {
-                        __result -= 1f;
-                    }
+                    __result -= 1f;
+
                 }
-                else if (pawn.gender == Gender.Female)
+                else if (pawn.gender == Gender.Female && ap.HasThingCategory(ThingCategoryDefOf.MaleCloth))
                 {
-                    if (ap.HasThingCategory(ThingCategoryDefOf.MaleCloth))
-                    {
-                        __result -= 1f;
-                    }
+                   __result -= 1f;
                 }
                 if (debugging) Log.Message("Apparel " + ap.Label + " is underwear and rated " + __result + " for " + pawn.LabelShort);
 
