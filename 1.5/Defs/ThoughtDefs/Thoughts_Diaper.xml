@@ -10,179 +10,197 @@
 		
 			<!-- Thoughts if diaper is not required but still worn-->
 			<li>
-				<label>strange underwear</label>
-				<description>I feel so small, I don't need to wear these...</description>
+				<label>A diaper?</label>
+				<description>Do I really have to wear this?</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
-				<label>unwanted wet padding</label>
-				<description>I can't believe I actually went in it...</description>
+				<label>Unnecessary wet diaper</label>
+				<description>My diaper is a bit wet, I can't believe I had to use it!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			<li>
-				<label>unwanted full padding</label>
-				<description>I can't believe I'm walking around in a full diaper. Like some sort of toddler.</description>
+				<label>Unnecessary full diaper</label>
+				<description>Gross- I gotta get out of this thing!</description>
 				<baseMoodEffect>-8</baseMoodEffect>
 			</li>
 			<li>
-				<label>unwanted overflowing padding</label>
-				<description>This is awful! I gotta get out of this thing!!!</description>
+				<label>Unnecessary flooded diaper</label>
+				<description>It's going to leak! And I think I'm getting a rash...</description>
 				<baseMoodEffect>-12</baseMoodEffect>
 			</li>
 		
 		  <!-- Thoughts if diaper is nessesary (day & night) but otherwise not expecially liked -->
 			<li>
-				<label>diaper needed</label>
+				<label>Diaper needed</label>
 				<description>I probably should put on protection soon, before I have an accident.</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			<li>
-				<label>protected</label>
+				<label>Protected</label>
 				<description>I have to wear diapers, doesn't mean I have to like it.</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			<li>
-				<label>had an accident</label>
+				<label>Had an accident</label>
 				<description>It happened again... Atleast my pants are dry.</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			<li>
-				<label>full diaper</label>
+				<label>Full diaper</label>
 				<description>I can't help it... Time for a change.</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
-				<label>overflowing diaper</label>
-				<description>I've really ruined this thing... I need to change! Fast!</description>
+				<label>Flooded diaper</label>
+				<description>I've really ruined this thing... I need to change, fast!</description>
 				<baseMoodEffect>-7</baseMoodEffect>
 			</li>		
 		
 		  <!-- Thoughts if diaper is liked -->
 			<li>
-				<label>diaper wanted</label>
-				<description>I hate not being padded, I want my diapers!</description>
+				<label>Diaper wanted</label>
+				<description>I feel uncomfortable when I'm not padded, I want my diapers!</description>
 				<baseMoodEffect>-4</baseMoodEffect>
 			</li>
 			<li>
-				<label>padded up</label>
-				<description>I like my diapers, they're so soft and comfy. And they keep me dry!</description>
+				<label>Padded up</label>
+				<description>I like my diapers, they're so comfy. And they keep me dry!</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 			<li>
-				<label>used diaper</label>
+				<label>Used diaper</label>
 				<description>My diaper is a bit swollen, and I don't mind one bit!</description>
 				<baseMoodEffect>3</baseMoodEffect>
 			</li>
 			<li>
-				<label>full diaper</label>
+				<label>Full diaper</label>
 				<description>My diaper is starting to stink. Maybe I should ask for a change?</description>
 				<baseMoodEffect>1</baseMoodEffect>
 			</li>
 			<li>
-				<label>sagging</label>
-				<description>It's going to leak! I need to ask for a change!</description>
+				<label>Sagging</label>
+				<description>I'm going to leak! I need to ask for a change!</description>
 				<baseMoodEffect>-4</baseMoodEffect>
 			</li>
 
 		
 			<!-- Thoughts if diaper is hated -->
 			<li>
-				<label>hated diaper</label>
-				<description>I'm an fully functioning adult! Why am I wearing diapers?!</description>
+				<label>Disliked diaper</label>
+				<description>I'm an adult! Why am I wearing diapers?!</description>
 				<baseMoodEffect>-7</baseMoodEffect>
 			</li>
 			<li>
-				<label>hated soiled diaper</label>
-				<description>This is madness. I can't believe I'm walking around in this. Get me out of this thing!</description>
+				<label>Disliked dirty diaper</label>
+				<description>I can't believe I'm wearing this. Get me out of this thing!</description>
 				<baseMoodEffect>-16</baseMoodEffect>
 			</li>
 		
 			<!-- Thoughts of non-adult (child) -->
 			<li>
-				<label>prone to accidents</label>
+				<label>Unprotected</label>
 				<description>The others laugh at me when I have accidents! It's not fair!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			<li>
-				<label>prone to bedwetting</label>
+				<label>Unprotected night</label>
 				<description>The others laugh at me when I wet the bed! It's not fair!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			<li>
-				<label>"pull-ups"</label>
-				<description>They are pull-ups! And they're for big boys! NOT diapers!</description>
+				<label>"Pull-ups"</label>
+				<description>They are pull-ups! And they're for bigs! NOT like diapers!</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 			<li>
-				<label>diapered</label>
-				<description>The grown ups gave me poofy underwear.</description>
+				<label>Diapered</label>
+				<description>I guess I have to wear these.</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			<li>
-				<label>soggy</label>
-				<description>I feel all warm and safe, why do the grown ups hate this?</description>
+				<label>Soggy</label>
+				<description>I'm a bit wet, but that's okay!</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 			<li>
-				<label>heavy pants</label>
+				<label>Heavy pants</label>
 				<description>I need a change!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			
-			<!-- Thoughts if diaper is nessesary but only at night and diaper is worn -->
+			<!-- Thoughts if diaper is nessesary but only at night -->
 			<li>
-				<label>wrong protection</label>
-				<description>A diaper? This is a bit much... Do we not have nighttime briefs?</description>
+				<label>Dry night diaper</label>
+				<description>I really don't need diapers! I want pull-ups for... night time protection!</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
-				<label>wet wrong protection</label>
-				<description>I woke up with a wet diaper... I gotta find somewhere to throw this, I look so stupid.</description>
+				<label>Wet night diaper</label>
+				<description>It happened again! I hope noone notice that i wear a wet diaper. Not even pull-ups!</description>
 				<baseMoodEffect>-4</baseMoodEffect>
 			</li>
 			<li>
-				<label>soaked wrong protection</label>
-				<description>My protection is about to leak! Why does it swell up so much?!</description>
+				<label>Flooded night diaper</label>
+				<description>I need to get rid of them, quickly! That would never happend with pull-ups... i think.</description>
 				<baseMoodEffect>-6</baseMoodEffect>
 			</li>	
 		
 			<!-- Thoughts if diaper is nessesary but only at night and night diapers are worn -->
 			<li>
-				<label>risk of bedwetting</label>
-				<description>I better put on some protection, otherwise I may ruin my bed.</description>
+				<label>Risk of bedwetting</label>
+				<description>I better put on some pull-ups, otherwise I may ruin my bed.</description>
 				<baseMoodEffect>-2</baseMoodEffect>
 			</li>
 			<li>
-				<label>night protection</label>
-				<description>It's only for the night! I swear!</description>
+				<label>Night protection</label>
+				<description>It's only for the night! They are called pull-ups, not diapers!</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			<li>
-				<label>wet nighttime padding</label>
+				<label>Wet pull-ups</label>
 				<description>It happened again, atleast the bed was safe. I hope no one sees me throwing these.</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			<li>
-				<label>soaked nighttime protection</label>
+				<label>Flooded pull-ups</label>
 				<description>My protection is at it's limit, I need to get new ones, fast!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			
-			<!-- Thoughts if night diapers are unnessesary, but worn -->
+			<!-- Thoughts if pull-ups are unnessesary, but worn -->
 			<li>
-				<label>unnecessary night diaper</label>
-				<description>I'm not a bedwetter. Really!</description>
+				<label>Unnessary pull-ups</label>
+				<description>I'm not a bedwetter, really!</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			<li>
-				<label>wet night diaper</label>
+				<label>Wet pull-ups</label>
 				<description>Was that me..? No, I don't need these!</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
-				<label>full night diaper</label>
+				<label>Full pull-ups</label>
 				<description>Someone's playing a prank, I don't wet the bed! I swear!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
+			</li>
+			
+			<!-- START: Thoughts if underwear is requested/wanted or wrongfully worn -->
+			<li>
+				<label>No underwear</label>
+				<description>I really don't like going commando!</description>
+				<baseMoodEffect>-1</baseMoodEffect>
+			</li>
+			<li>
+				<label>Underwear</label>
+				<description>It feels nice wearing underwear!</description>
+				<baseMoodEffect>1</baseMoodEffect>
+			</li>
+			<!-- Thoughts of non-adult (child) -->
+			<li>
+				<label>Grown up underpants</label>
+				<description>Yes! I am wearing undies for bigs!</description>
+				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 		</stages>
 	</ThoughtDef>
@@ -194,44 +212,44 @@
     <validWhileDespawned>true</validWhileDespawned>
     <stages>
 			<li>
-				<label>funny smell</label>
+				<label>Funny smell</label>
 				<description>Do you smell that? Who was it?</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			<li>
-				<label>someone stinks!</label>
+				<label>Someone stinks!</label>
 				<description>Who smells? Someone needs to get changed.</description>
 				<baseMoodEffect>-2</baseMoodEffect>
 			</li>
 			<li>
-				<label>serious stink!</label>
+				<label>Serious stink!</label>
 				<description>The smell is so bad, I think I'm going to vomit.</description>
 				<baseMoodEffect>-4</baseMoodEffect>
 			</li>
 			<li>
-				<label>like a sewage plant!</label>
+				<label>Like a sewage plant!</label>
 				<description>I can't stand the smell anymore! I need fresh air!</description>
 				<baseMoodEffect>-7</baseMoodEffect>
 			</li>
 			
 			<li>
-				<label>huh?</label>
+				<label>Huh?</label>
 				<description>Was that me?</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			<li>
-				<label>piddle-pants!</label>
-				<description>*giggle* someone had an accident!</description>
+				<label>Piddle-pants!</label>
+				<description>Hihi, someone had an accident!</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 			<li>
-				<label>stinky, stinky!</label>
+				<label>Stinky, stinky!</label>
 				<description>I will tell!</description>
 				<baseMoodEffect>1</baseMoodEffect>
 			</li>
 			<li>
-				<label>change, now!</label>
-				<description>Someone get them some changies, now!</description>
+				<label>Change, now!</label>
+				<description>Iii, someone needs changies, now!</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
     </stages>
@@ -239,26 +257,26 @@
 		
   <ThoughtDef>
 		<defName>WetBed</defName>
-		<durationDays>3</durationDays>
-		<stackLimit>1</stackLimit>
+		<durationDays>1</durationDays>
+		<stackLimit>2</stackLimit>
 		<stages>
 			<!-- Default behaviour if nothing else applies -->
 			<li>
-				<label>wet the bed</label>
-				<description>I woke up in a wet puddle. It was pretty embarrassing...</description>
+				<label>Wet the bed</label>
+				<description>I woke up in a puddle. It was super embarrassing...</description>
 				<baseMoodEffect>-8</baseMoodEffect>
 			</li>
 			
 			<!-- Thoughts of bedwetter -->
 			<li>
-				<label>wet the bed</label>
-				<description>I wet the bed, again! Maybe it's time to wear some protection...</description>
+				<label>Wet the bed</label>
+				<description>I wet the bed. Again! Maybe it's time for some protection...</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			
 			<!-- Thoughts of non-adult (child) -->
 			<li>
-				<label>wet the bed</label>
+				<label>Wet the bed</label>
 				<description>I didn't mean to! I hope the grown ups won't be mad...</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
@@ -274,8 +292,8 @@
     <socialTargetDevelopmentalStageFilter>Adult</socialTargetDevelopmentalStageFilter>
 		<stages>
 			<li>
-				<label>held it in</label>
-				<description>I had to hold it in for a while, it was uncomfortable.</description>
+				<label>Held it in</label>
+				<description>I had to hold it in for awhile, it was uncomfortable.</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 		</stages>
@@ -290,7 +308,7 @@
     <socialTargetDevelopmentalStageFilter>Adult</socialTargetDevelopmentalStageFilter>
 		<stages>
 			<li>
-				<label>potty monster</label>
+				<label>Potty monster</label>
 				<description>I had to use a toilet, I don't like toilets!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
@@ -307,7 +325,7 @@
 		<stackLimit>1</stackLimit>
 		<stages>
 			<li>
-				<label>wet neighbor</label>
+				<label>Wet neighbor</label>
 				<description>I got peed on by the person I shared a bed with. Blegh!</description>
 				<baseMoodEffect>-6</baseMoodEffect>
 			</li>
@@ -322,29 +340,29 @@
 		<stages>
 			<!-- Default behaviour if nothing else applies -->
 			<li>
-				<label>had an accident</label>
-				<description>I soiled my pants like some kind of toddler!</description>
+				<label>Had an accident</label>
+				<description>I soiled my pants like a toddler!</description>
 				<baseMoodEffect>-6</baseMoodEffect>
 			</li>
 			
 			<!-- Thoughts if diapers loved -->
 			<li>
-				<label>wet pants</label>
+				<label>Wet pants</label>
 				<description>I would much rather go in a diaper...</description>
 				<baseMoodEffect>-2</baseMoodEffect>
 			</li>
 
 			<!-- Thoughts if diapers hated -->
 			<li>
-				<label>wet myself</label>
+				<label>Wet myself</label>
 				<description>Don't you dare suggest I wear a diaper.</description>
 				<baseMoodEffect>-4</baseMoodEffect>
 			</li>
 			
 			<!-- Non-Adult behaviour -->
 			<li>
-				<label>failed potty training</label>
-				<description>I had an accident! I hope the grown ups aren't upset with me.</description>
+				<label>Failed potty training</label>
+				<description>I had an accident! I hope the grown ups aren't mad at me.</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 
@@ -359,32 +377,32 @@
 		<stages>
 			<!-- Default behaviour if nothing else applies -->
 			<li>
-				<label>sudden bedwetting</label>
-				<description>I wet a diaper in my sleep! Why?</description>
+				<label>Sudden bedwetting</label>
+				<description>I wet my diaper last night! Why?</description>
 				<baseMoodEffect>-4</baseMoodEffect>
 			</li>
 			<li>
-				<label>bedwetting</label>
-				<description>Good thing I wore a diaper, I guess...</description>
+				<label>Bedwetting</label>
+				<description>It's a good thing I wore a diaper, I guess.</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			
 			<!-- Thoughts if diapers loved -->
 			<li>
-				<label>woke up wet</label>
-				<description>I woke up to a wet diaper, what a way to start the day!</description>
+				<label>Woke up wet</label>
+				<description>I woke up with a wet diaper, what a way to start the day!</description>
 				<baseMoodEffect>3</baseMoodEffect>
 			</li>
 			<li>
-				<label>warm morning</label>
+				<label>Warm morning</label>
 				<description>I woke up with a warm diaper today!</description>
 				<baseMoodEffect>4</baseMoodEffect>
 			</li>
 			
 			<!-- Non-Adult behaviour -->
 			<li>
-				<label>protected bedwetting</label>
-				<description>I went in my diaper last night. Again. At least the bed was dry!</description>
+				<label>Protected bedwetting</label>
+				<description>I wet my diaper last night... again. But, thats okay! At least the bed was dry!</description>
 				<baseMoodEffect>1</baseMoodEffect>
 			</li>
 
@@ -399,29 +417,29 @@
 		<stages>
 			<!-- Default behaviour if nothing else applies -->
 			<li>
-				<label>wet a diaper</label>
+				<label>Wet a diaper</label>
 				<description>Having to go in a diaper makes me feel small.</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			
 			<!-- Thoughts if diapers loved -->
 			<li>
-				<label>wet my diaper</label>
-				<description>I'd take diapers over a toilet any day!</description>
+				<label>Wet my diaper</label>
+				<description>I'd take diapers over a toilet, any day!</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 			
 			<!-- Thoughts if diapers hated -->
 			<li>
-				<label>had to use a diaper</label>
-				<description>I had no choice but to go in a awful diaper. This is madness!</description>
+				<label>Soiled a diaper</label>
+				<description>I had no choice but to use this awful diaper. This is madness!</description>
 				<baseMoodEffect>-6</baseMoodEffect>
 			</li>
 			
 			<!-- Non-Adult behaviour -->
 			<li>
-				<label>failed potty training</label>
-				<description>I had an accident in my diaper again. The grown ups don't like that.</description>
+				<label>Failed potty training</label>
+				<description>I had an accident in my diaper again. I hope i don't get in trouble over this.</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 

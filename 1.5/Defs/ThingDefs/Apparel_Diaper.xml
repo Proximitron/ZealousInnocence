@@ -108,8 +108,8 @@
 	</ThingDef>
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Diaper_Night</defName>
-		<label>night protection pants</label>
-		<description>Totally not diapers, but a slightly thicker version of underpants. Designed to prevent night time accidents. Low absorbency.</description>
+		<label>nighttime pull-ups</label>
+		<description>Totally not diapers, but a slightly thicker version of underpants. Designed to prevent accidents at night. Low absorbency.</description>
 		<graphicData>
 			<texPath>Apparel/Diaper/Nighty</texPath>
 			<graphicClass>Graphic_Single</graphicClass>

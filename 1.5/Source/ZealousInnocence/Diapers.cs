@@ -405,7 +405,7 @@ namespace ZealousInnocence
                     float chance = Math.Min(0.5f, 0.5f - (currProtection.HitPoints / currProtection.MaxHitPoints));
                     chance = 0.003f * chance * Find.Storyteller.difficulty.playerPawnInfectionChanceFactor; // infection factors are 0.3,"Easy" 0.5,"Medium" 0.75 and 1.1 
 
-                    Log.Message("DEBUG: playerPawnInfectionChange = " + Find.Storyteller.difficulty.playerPawnInfectionChanceFactor);
+                    //Log.Message("DEBUG: playerPawnInfectionChange = " + Find.Storyteller.difficulty.playerPawnInfectionChanceFactor);
                     if (Rand.ChanceSeeded(chance, pawn.HashOffsetTicks()+8))
                     {
                         if (!pawn.health.hediffSet.HasHediff(HediffDefOf.DiaperRash))
@@ -598,7 +598,7 @@ namespace ZealousInnocence
             {
                 Apparel apparel = wornApparel[i];
 
-                if (DiaperHelper.isNightDiaper(apparel))
+                if (isNightDiaper(apparel))
                 {
                     return true;
                 }
@@ -607,12 +607,12 @@ namespace ZealousInnocence
         }
         public static bool needsDiaper(Pawn pawn)
         {            
-            return pawn.health != null && getBladderControlLevel(pawn) <= 0.5;
+            return pawn.health != null && getBladderControlLevel(pawn) <= 0.5f;
         }
         public static bool needsDiaperNight(Pawn pawn)
         {
             var bladderControlWorker = new PawnCapacityWorker_BladderControl();
-            return bladderControlWorker.SimulateBladderControlDuringSleep(pawn) <= 0.5;
+            return bladderControlWorker.SimulateBladderControlDuringSleep(pawn) <= 0.5f;
         }
         public static Apparel getUnderwearOrDiaper(Pawn pawn)
         {
@@ -624,8 +624,22 @@ namespace ZealousInnocence
             {
                 Apparel apparel = wornApparel[i];
 
-                if (DiaperHelper.isDiaper(apparel)) return apparel;
-                if (DiaperHelper.isUnderwear(apparel)) return apparel;
+                if (isDiaper(apparel)) return apparel;
+                if (isUnderwear(apparel)) return apparel;
+            }
+            return null;
+        }
+        public static Apparel getUnderwear(Pawn pawn)
+        {
+            List<Apparel> wornApparel = pawn?.apparel?.WornApparel;
+            if (wornApparel == null) return null;
+
+
+            for (int i = 0; i < wornApparel.Count; i++)
+            {
+                Apparel apparel = wornApparel[i];
+
+                if (isUnderwear(apparel)) return apparel;
             }
             return null;
         }
@@ -639,7 +653,7 @@ namespace ZealousInnocence
             {
                 Apparel apparel = wornApparel[i];
                     
-                if (DiaperHelper.isDiaper(apparel)) return apparel;
+                if (isDiaper(apparel)) return apparel;
             }
             return null;
         }

@@ -25,10 +25,6 @@ namespace ZealousInnocence
             Pawn pawn = diffSet.pawn;
             if (pawn != null)
             {
-                if(impactors != null)
-                {
-                    impactors.Add(new PawnCapacityUtility.CapacityImpactorCapacity { capacity = RimWorld.PawnCapacityDefOf.Consciousness });
-                }
                 float ageFactor = GetAgeFactor(pawn);
                 if (ageFactor != 1f && impactors != null)
                 {
@@ -36,12 +32,31 @@ namespace ZealousInnocence
                 }
                 num2 *= ageFactor;
 
-                float sleepFactor = GetSleepingFactor(pawn);
+                bool needsDiaper = num2 <= 0.5;
+                bool awake = pawn.Awake() && !simulateSleep;
+
+                float sleepFactor = GetSleepingFactor(pawn, awake);
                 if (sleepFactor != 1f && impactors != null)
                 {
                     impactors.Add(new CapacityImpactorCustom { customLabel = "Sleeping", customValue = sleepFactor });
                 }
                 num2 *= sleepFactor;
+
+                if (impactors != null)
+                {
+                    if (needsDiaper)
+                    {
+                        impactors.Add(new CapacityImpactorCustom { customString = "Needs Diapers" });
+                    }
+                    else
+                    {
+                        float whileAsleep = awake ? GetSleepingFactor(pawn, false) * num2 : num2;
+                        if (whileAsleep <= 0.5f)
+                        {
+                            impactors.Add(new CapacityImpactorCustom { customString = "Bedwetting Risk" });
+                        }
+                    }
+                }
             }
             else
             {
@@ -60,42 +75,50 @@ namespace ZealousInnocence
         {
             if (!pawn.RaceProps.Humanlike) return 1.0f;
             int age = pawn.ageTracker.AgeBiologicalYears;
+            float factor;
 
             // Young age factor calculation
             if (age <= 3)
             {
-                return 0f; // Toddlers have no bladder control
+                factor = 0f; // Toddlers have no bladder control
             }
-            else if (age <= 6)
+            else if (age < 6)
             {
-                return (age - 3) / 3f * 0.5f; // Linear increase from 0 at age 3 to 0.5 at age 6
+                factor = (age - 3) / 3f * 0.5f; // Linear increase from 0 at age 3 to 0.5 at age 6
             }
-            else if (age <= 12)
+            else if(age == 6)
             {
-                return 0.5f + (age - 6) / 6f * 0.5f; // Linear increase from 0.5 at age 6 to 1.0 at age 12
+                factor = 0.51f; // tweak it to slightly be out of day diapers
+            }
+            else if (age <= 15)
+            {
+                factor = 0.5f + (age - 6) / 9f * 0.5f; // Linear increase from 0.5 at age 6 to 1.0 at age 14
             }
             // Senior age factor calculation
             else if (age >= 50)
             {
                 if (age <= 70)
                 {
-                    return 1.0f - (age - 50) / 20f * 0.25f; // Linear decrease from 1.0 at age 50 to 0.75 at age 70
+                    factor = 1.0f - (age - 50) / 20f * 0.25f; // Linear decrease from 1.0 at age 50 to 0.75 at age 70
                 }
                 else
                 {
-                    return 0.75f; // Maximum reduction at age 70 and beyond
+                    factor = 0.75f; // Maximum reduction at age 70 and beyond
                 }
             }
             else
             {
-                return 1.0f; // Full control for ages 12 to 50
+                factor = 1.0f; // Full control for ages 14 to 50
             }
 
+            // Round to 2 decimal places
+            factor = Mathf.Round(factor * 100f) / 100f;
+
+            return factor;
         }
-        private float GetSleepingFactor(Pawn pawn)
+        private float GetSleepingFactor(Pawn pawn, bool isAwake)
         {
-            bool state = pawn.Awake() && !simulateSleep;
-            if (!state)
+            if (!isAwake)
             {
                 List<Hediff> health = pawn.health.hediffSet.hediffs;
                 for (int i = 0; i < health.Count; i++)

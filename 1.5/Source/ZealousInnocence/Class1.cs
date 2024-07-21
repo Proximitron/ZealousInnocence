@@ -39,7 +39,7 @@ namespace ZealousInnocence
     {
         public float targetChronoAge = 10f;
         public bool reduceAge = false;
-        public bool formerAdultsNeedLearning = false;
+        public bool formerAdultsNeedLearning = true;
         public bool formerAdultsCanHaveIdeoRoles = true;
         public bool formerAdultsGetGrowthMoments = false;
         public bool debugging = false;
@@ -51,7 +51,7 @@ namespace ZealousInnocence
             base.ExposeData();
             Scribe_Values.Look(ref targetChronoAge, "targetChronoAge", 10f);
             Scribe_Values.Look(ref reduceAge, "reduceAge", false);
-            Scribe_Values.Look(ref formerAdultsNeedLearning, "formerAdultsNeedLearning", false);
+            Scribe_Values.Look(ref formerAdultsNeedLearning, "formerAdultsNeedLearning", true);
             Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);
             Scribe_Values.Look(ref formerAdultsGetGrowthMoments, "formerAdultsGetGrowthMoments", false);
             Scribe_Values.Look(ref debugging, "debugging", false);
@@ -140,27 +140,23 @@ namespace ZealousInnocence
         }
         private void patchFunctionPostfix(MethodInfo original, HarmonyMethod postfix, string info)
         {
+            if (!settings.debugging) DoCheckOnHarmonyMethode(original, false, true);
             harmony.Patch(
                 original: original,
                 postfix: postfix
             );
-            if (settings.debugging)
-            {
-                Log.Message($"ZealousInnocence harmony patching: Postfix {info}");
-                DoCheckOnHarmonyMethode(original, false, true);
-            }
+            Log.Message($"ZealousInnocence harmony patching: Postfix {info}");
+            if (settings.debugging) DoCheckOnHarmonyMethode(original, false, true);
         }
         private void patchFunctionPrefix(MethodInfo original, HarmonyMethod prefix, string info)
         {
+            if(!settings.debugging) DoCheckOnHarmonyMethode(original, true, false);
             harmony.Patch(
                 original: original,
                 prefix: prefix
             );
-            if (settings.debugging)
-            {
-                Log.Message($"ZealousInnocence harmony patching: Prefix {info}");
-                DoCheckOnHarmonyMethode(original,true,false);
-            }
+            Log.Message($"ZealousInnocence harmony patching: Prefix {info}");
+            if (settings.debugging) DoCheckOnHarmonyMethode(original,true,false);
         }
 
         public void DoCheckOnHarmonyMethode(MethodInfo originalMethod, bool checkPrefix = true, bool checkPostfix = true)
@@ -207,7 +203,7 @@ namespace ZealousInnocence
             {
                 listStandard.CheckboxLabeled("Ideology Roles", ref settings.formerAdultsCanHaveIdeoRoles, "Allow former adults to hold roles in their ideology.");
             }
-            listStandard.CheckboxLabeled("Learning Need", ref settings.formerAdultsNeedLearning, "Controlles if a pawn has still the need to learn after being regressed to the age of a child.");
+            listStandard.CheckboxLabeled("Learning Need", ref settings.formerAdultsNeedLearning, "Controlles if a pawn has still the need to learn after being regressed to the age of a child. Many child activity are based on this need. Without it, many childish behaviours will not happen.");
 
             listStandard.GapLine();
             listStandard.CheckboxLabeled("DEBUGGING Mode", ref settings.debugging, "Activates a lot of unnessessary logs and work, in case you want to find an error. Restart may be required in certain situations.");
@@ -308,12 +304,20 @@ namespace ZealousInnocence
     }
     public class CapacityImpactorCustom : PawnCapacityUtility.CapacityImpactor
     {
-        public string customLabel;
-        public float customValue;
+        public string customLabel = "";
+        public float customValue = 0.0f;
+        public string customString = "";
 
         public override string Readable(Pawn pawn)
         {
-            return $"{customLabel}: {customValue.ToStringPercent()}";
+            if (customString == "")
+            {
+                return $"{customLabel}: {customValue.ToStringPercent()}";
+            }
+            else
+            {
+                return $"{customString}";
+            }
         }
     }
     [HarmonyPatch(typeof(HealthCardUtility), "GetPawnCapacityTip")]

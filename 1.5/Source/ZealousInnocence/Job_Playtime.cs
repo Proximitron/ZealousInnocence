@@ -268,7 +268,6 @@ namespace ZealousInnocence
                 if (debugging) Log.Error("JobGiver_RegressedPlayTime: Friends array is null or does not have enough elements");
                 return null;
             }
-            if (debugging) Log.Message($"JobGiver_RegressedPlayTime: Pre friend assignment");
             
             // Determine the friend pawn
             Pawn friend = (pawn == lordToil_PlayTime.friends[0]) ? lordToil_PlayTime.friends[1] : lordToil_PlayTime.friends[0];
@@ -277,7 +276,6 @@ namespace ZealousInnocence
                 if (debugging) Log.Warning("JobGiver_RegressedPlayTime: Friend is null");
                 return null;
             }
-            if (debugging) Log.Message($"JobGiver_RegressedPlayTime: Post friend assignment");
             if (lordToil_PlayTime.playTime == null || lordToil_PlayTime.ticksToNextJoy < Find.TickManager.TicksGame)
             {
                 lordToil_PlayTime.playTime = new Job(JobDefOf.RegressedPlayAround); 

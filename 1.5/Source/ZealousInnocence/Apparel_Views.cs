@@ -136,7 +136,12 @@ namespace ZealousInnocence
             // Thoughts if night diapers are unnessesary, but worn
             Night_Protection_Not_Required_Clean,
             Night_Protection_Not_Required_Used,
-            Night_Protection_Not_Required_Worse,            
+            Night_Protection_Not_Required_Worse,
+
+            //START: Thoughts if underwear is requested/wanted or wrongfully worn
+            Underwear_Not_Worn,
+            Underwear_Worn,
+            Underwear_Worn_Non_Adult,
         }
 
         [DefOf]
@@ -283,11 +288,16 @@ namespace ZealousInnocence
                         throw new NotImplementedException();
                 }
             }
+
             // After this point it should be clear that no diaper is worn
+            var currUnderpants = DiaperHelper.getUnderwear(p);
+
             if (preference == DiaperLikeCategory.NonAdult)
             {
                 if(diaperRequired) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_None);
                 if(diaperRequiredNight) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_None);
+                if(currUnderpants != null) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Underwear_Worn_Non_Adult);
+                return ThoughtState.Inactive;
             }
 
             if (preference == DiaperLikeCategory.Liked)
@@ -299,7 +309,8 @@ namespace ZealousInnocence
                 if(diaperRequired) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Night_Protection_Required_None);
                 if (diaperRequiredNight) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Required_Neutral_None);
             }
-            return ThoughtState.Inactive;
+            if(currUnderpants == null) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Underwear_Not_Worn);
+            return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Underwear_Worn);
         }
     }
 }
