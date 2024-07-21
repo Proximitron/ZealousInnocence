@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>	
+  <GeneDef Name="GeneBladderSize" Abstract="True">
+    <displayCategory>Bladder</displayCategory>
+		<endogeneCategory>BodyType</endogeneCategory>
+    <canGenerateInGeneSet>true</canGenerateInGeneSet>
+    <passOnDirectly>true</passOnDirectly>
+    <exclusionTags>
+      <li>BladderSize</li>
+    </exclusionTags>
+  </GeneDef>
+
+  <GeneDef ParentName="GeneBladderSize">
+    <defName>BladderSizeTiny</defName>
+    <label>tiny bladder</label>
+    <labelShortAdj>tiny bladder</labelShortAdj>
+    <description>How cute! This pawn needs to run fast and often just to make it in time.</description>
+    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
+    <displayOrderInCategory>10</displayOrderInCategory>
+    <statFactors>
+      <BladderSize>0.5</BladderSize>
+    </statFactors>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+
+  <GeneDef ParentName="GeneBladderSize">
+    <defName>BladderSizeSmall</defName>
+    <label>small bladder</label>
+    <labelShortAdj>small bladder</labelShortAdj>
+    <description>This pawns bladder is a bit on the small side. It should be fine as long as toilets are nearby.</description>
+    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
+    <displayOrderInCategory>20</displayOrderInCategory>
+    <statFactors>
+      <BladderSize>0.75</BladderSize>
+    </statFactors>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+
+  <GeneDef ParentName="GeneBladderSize">
+    <defName>BladderSizeBig</defName>
+    <label>big bladder</label>
+    <labelShortAdj>big bladder</labelShortAdj>
+    <description>This pawns bladder is exceptionally big. It's amazing how long they hold it!</description>
+    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
+    <displayOrderInCategory>30</displayOrderInCategory>
+    <statFactors>
+      <BladderSize>1.75</BladderSize>
+    </statFactors>
+    <biostatCpx>-1</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+
+
+  <GeneDef Name="GeneBladderStrength" Abstract="True">
+    <displayCategory>Bladder</displayCategory>
+		<endogeneCategory>BodyType</endogeneCategory>
+    <canGenerateInGeneSet>true</canGenerateInGeneSet>
+    <passOnDirectly>true</passOnDirectly>
+    <exclusionTags>
+      <li>BladderStrength</li>
+    </exclusionTags>
+  </GeneDef>
+	
+	<GeneDef ParentName="GeneBladderStrength">
+    <defName>BladderStrenghWeak</defName>
+    <label>weak bladder</label>
+    <labelShortAdj>weak bladder</labelShortAdj>
+    <description>Having a genetically weak bladder makes it harder to notice in time, to make sucessfully it to the toilet.</description>
+    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
+    <displayOrderInCategory>10</displayOrderInCategory>
+    <statFactors>
+      <BladderStrengh>0.75</BladderStrengh>
+    </statFactors>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+
+	<GeneDef ParentName="GeneBladderStrength">
+    <defName>BladderStrenghStrong</defName>
+    <label>strong bladder</label>
+    <labelShortAdj>strong bladder</labelShortAdj>
+    <description>Having a genetically strong bladder makes it easier to notice in time, to make sucessfully to the toilet.</description>
+    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
+    <displayOrderInCategory>10</displayOrderInCategory>
+    <statFactors>
+      <BladderStrengh>1.5</BladderStrengh>
+    </statFactors>
+    <biostatCpx>-1</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+</Defs>

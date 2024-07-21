@@ -560,6 +560,8 @@ namespace ZealousInnocence
     {
         public static StatDef Absorbency;
         public static StatDef DiaperAbsorbency; // This value is a stat created from Absorbency and DiaperSupport
+        public static StatDef BladderSize; // The size is used to control the speed a bladder fills and how much pee a % of the bladder is
+        public static StatDef BladderStrengh; // Influences bladder control of the pawn
     }
 
     [DefOf]

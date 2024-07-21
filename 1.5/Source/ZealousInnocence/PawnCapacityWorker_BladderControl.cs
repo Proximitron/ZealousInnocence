@@ -25,6 +25,13 @@ namespace ZealousInnocence
             Pawn pawn = diffSet.pawn;
             if (pawn != null)
             {
+                float strFactor = GetStrenghFactor(pawn);
+                if (strFactor != 1f && impactors != null)
+                {
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "Bladder Strength", customValue = strFactor });
+                }
+                num2 *= strFactor;
+
                 float ageFactor = GetAgeFactor(pawn);
                 if (ageFactor != 1f && impactors != null)
                 {
@@ -60,7 +67,7 @@ namespace ZealousInnocence
             }
             else
             {
-                Log.Message($"there was no pawn defined?");
+                Log.Error($"there was no pawn defined for PawnCapacityWorker_BladderControl in CalculateCapacityLevel?");
             }
 
             return num2;
@@ -136,6 +143,10 @@ namespace ZealousInnocence
                 return 0.75f;
             }
             return 1.0f;
+        }
+        private float GetStrenghFactor(Pawn pawn)
+        {
+            return pawn.GetStatValue(StatDefOf.BladderStrengh, true);
         }
 
         public bool CapableOf(Pawn pawn)

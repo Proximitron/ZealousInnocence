@@ -11,7 +11,7 @@
 	
 	  <ThingCategoryDef>
       <defName>DiapersNight</defName>
-      <label>night diapers</label>
+      <label>pull-ups</label>
       <parent>Diapers</parent>
       <iconPath>Apparel/Diaper/Nighty</iconPath>
       <resourceReadoutRoot>true</resourceReadoutRoot>
