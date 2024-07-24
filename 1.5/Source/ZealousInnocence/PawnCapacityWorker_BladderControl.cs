@@ -60,7 +60,15 @@ namespace ZealousInnocence
                         float whileAsleep = awake ? GetSleepingFactor(pawn, false) * num2 : num2;
                         if (whileAsleep <= 0.5f)
                         {
-                            impactors.Add(new CapacityImpactorCustom { customString = "Bedwetting Risk" });
+                            if(whileAsleep <= 0.25f)
+                            {
+                                impactors.Add(new CapacityImpactorCustom { customString = "High Bedwetting Risk" });
+                            }
+                            else
+                            {
+                                impactors.Add(new CapacityImpactorCustom { customString = "Low Bedwetting Risk" });
+                            }
+                            
                         }
                     }
                 }

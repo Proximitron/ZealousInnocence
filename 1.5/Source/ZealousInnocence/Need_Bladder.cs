@@ -12,14 +12,26 @@ namespace ZealousInnocence
 {
     public static class Need_Bladder_Patch
     {
-        public static void BladderRate_Postfix(Need_Bladder __instance, ref float __result)
+        /*public static void BladderRate_Postfix(Need_Bladder __instance, ref float __result)
         {
             // Access the private pawn field
-            //Pawn pawn = (Pawn)AccessTools.Field(typeof(Need), "pawn").GetValue(__instance);
+            Pawn pawn = (Pawn)AccessTools.Field(typeof(Need), "pawn").GetValue(__instance);
             // Add your custom logic here
             // For example, modify the bladder rate based on certain conditions
-            
-        }
+            float bladderStrength = pawn.GetStatValue(StatDefOf.BladderStrengh, true);
+            var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var dbug = true; // debugging.debugging && debugging.debuggingCapacities;
+            if (dbug) Log.Message($"BladderRate_Postfix: {pawn.Name} changing rate from {__result} on {bladderStrength}");
+            if (bladderStrength != 1f)
+            {
+                float factor = 1f / bladderStrength;
+               
+                if (dbug) Log.Message($"BladderRate_Postfix: {pawn.Name} changing rate from {__result} to {__result*factor}");
+                
+                __result *= factor;
+            }
+
+        }*/
 
         public static void CurCategory_Postfix(Need_Bladder __instance, ref BowelCategory __result)
         {

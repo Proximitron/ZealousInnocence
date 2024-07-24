@@ -45,6 +45,7 @@ namespace ZealousInnocence
         public bool debugging = false;
         public bool debuggingCloth = false;
         public bool debuggingJobs = false;
+        public bool debuggingCapacities = false;
 
         public override void ExposeData()
         {
@@ -57,6 +58,7 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref debugging, "debugging", false);
             Scribe_Values.Look(ref debuggingCloth, "debuggingCloth", false);
             Scribe_Values.Look(ref debuggingJobs, "debuggingJobs", false);
+            Scribe_Values.Look(ref debuggingJobs, "debuggingCapacities", false);
         }
     }
 
@@ -107,11 +109,11 @@ namespace ZealousInnocence
             );
 
             // The bladder rate can be different, depending on how big the bladder is
-            patchFunctionPostfix(
+            /*patchFunctionPostfix(
                 original:  AccessTools.PropertyGetter(typeof(Need_Bladder), "BladderRate"),
                 postfix: new HarmonyMethod(typeof(Need_Bladder_Patch), nameof(Need_Bladder_Patch.BladderRate_Postfix)),
                 info: "Property Need_Bladder.BladderRate"
-            );
+            );*/
             // The category can be different, depending on if the paw can feel the need to go potty
             patchFunctionPostfix(
                 original: AccessTools.PropertyGetter(typeof(Need_Bladder), "CurCategory"),
@@ -211,6 +213,7 @@ namespace ZealousInnocence
             {
                 listStandard.CheckboxLabeled("DEBUG Cloth", ref settings.debuggingCloth, "Generates debugging related to cloth.");
                 listStandard.CheckboxLabeled("DEBUG Jobs", ref settings.debuggingJobs, "Generates debugging related to jobs.");
+                listStandard.CheckboxLabeled("DEBUG Capacities", ref settings.debuggingCapacities, "Generates debugging related to capacities like bladder control.");
             }
             if (settings.debugging && listStandard.ButtonText("Check ForeverYoung active"))
             {
@@ -560,7 +563,6 @@ namespace ZealousInnocence
     {
         public static StatDef Absorbency;
         public static StatDef DiaperAbsorbency; // This value is a stat created from Absorbency and DiaperSupport
-        public static StatDef BladderSize; // The size is used to control the speed a bladder fills and how much pee a % of the bladder is
         public static StatDef BladderStrengh; // Influences bladder control of the pawn
     }
 

@@ -15,13 +15,13 @@
     <label>tiny bladder</label>
     <labelShortAdj>tiny bladder</labelShortAdj>
     <description>How cute! This pawn needs to run fast and often just to make it in time.</description>
-    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
-    <displayOrderInCategory>10</displayOrderInCategory>
+    <iconPath>Genes/Icons/TinyBladder</iconPath>
+    <displayOrderInCategory>-160</displayOrderInCategory>
     <statFactors>
-      <BladderSize>0.5</BladderSize>
+      <BladderRateMultiplier>2.5</BladderRateMultiplier>
     </statFactors>
-    <biostatCpx>2</biostatCpx>
-    <biostatMet>0</biostatMet>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>2</biostatMet>
   </GeneDef>
 
   <GeneDef ParentName="GeneBladderSize">
@@ -29,29 +29,42 @@
     <label>small bladder</label>
     <labelShortAdj>small bladder</labelShortAdj>
     <description>This pawns bladder is a bit on the small side. It should be fine as long as toilets are nearby.</description>
-    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
-    <displayOrderInCategory>20</displayOrderInCategory>
+    <iconPath>Genes/Icons/SmallBladder</iconPath>
+    <displayOrderInCategory>-150</displayOrderInCategory>
     <statFactors>
-      <BladderSize>0.75</BladderSize>
+      <BladderRateMultiplier>1.75</BladderRateMultiplier>
     </statFactors>
     <biostatCpx>1</biostatCpx>
-    <biostatMet>0</biostatMet>
+    <biostatMet>1</biostatMet>
   </GeneDef>
 
   <GeneDef ParentName="GeneBladderSize">
     <defName>BladderSizeBig</defName>
     <label>big bladder</label>
     <labelShortAdj>big bladder</labelShortAdj>
-    <description>This pawns bladder is exceptionally big. It's amazing how long they hold it!</description>
-    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
-    <displayOrderInCategory>30</displayOrderInCategory>
+    <description>This pawns bladder is big than most pawns. They can usually finish their job before they need to take care of business!</description>
+    <iconPath>Genes/Icons/BigBladder</iconPath>
+    <displayOrderInCategory>-140</displayOrderInCategory>
     <statFactors>
-      <BladderSize>1.75</BladderSize>
+      <BladderRateMultiplier>0.8</BladderRateMultiplier>
     </statFactors>
-    <biostatCpx>-1</biostatCpx>
-    <biostatMet>0</biostatMet>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>-1</biostatMet>
   </GeneDef>
 
+  <GeneDef ParentName="GeneBladderSize">
+    <defName>BladderSizeHuge</defName>
+    <label>huge bladder</label>
+    <labelShortAdj>huge bladder</labelShortAdj>
+    <description>This pawns bladder is exceptionally big. It's amazing how long they hold it!</description>
+    <iconPath>Genes/Icons/BigBladder</iconPath>
+    <displayOrderInCategory>-130</displayOrderInCategory>
+    <statFactors>
+      <BladderRateMultiplier>0.65</BladderRateMultiplier>
+    </statFactors>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>-2</biostatMet>
+  </GeneDef>
 
   <GeneDef Name="GeneBladderStrength" Abstract="True">
     <displayCategory>Bladder</displayCategory>
@@ -68,12 +81,12 @@
     <label>weak bladder</label>
     <labelShortAdj>weak bladder</labelShortAdj>
     <description>Having a genetically weak bladder makes it harder to notice in time, to make sucessfully it to the toilet.</description>
-    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
-    <displayOrderInCategory>10</displayOrderInCategory>
+    <iconPath>Genes/Icons/RedBicep</iconPath>
+    <displayOrderInCategory>-120</displayOrderInCategory>
     <statFactors>
       <BladderStrengh>0.75</BladderStrengh>
     </statFactors>
-    <biostatCpx>1</biostatCpx>
+    <biostatCpx>0</biostatCpx>
     <biostatMet>0</biostatMet>
   </GeneDef>
 
@@ -82,12 +95,12 @@
     <label>strong bladder</label>
     <labelShortAdj>strong bladder</labelShortAdj>
     <description>Having a genetically strong bladder makes it easier to notice in time, to make sucessfully to the toilet.</description>
-    <iconPath>UI/Icons/Genes/Gene_NonSenescent</iconPath>
-    <displayOrderInCategory>10</displayOrderInCategory>
+    <iconPath>Genes/Icons/GreenBicep</iconPath>
+    <displayOrderInCategory>-110</displayOrderInCategory>
     <statFactors>
       <BladderStrengh>1.5</BladderStrengh>
     </statFactors>
-    <biostatCpx>-1</biostatCpx>
-    <biostatMet>0</biostatMet>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>-1</biostatMet>
   </GeneDef>
 </Defs>
