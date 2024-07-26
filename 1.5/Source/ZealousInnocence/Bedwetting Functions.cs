@@ -60,26 +60,31 @@ namespace ZealousInnocence
         {
             float chance;
 
-            if (age <= 4)
+            if (age <= 3)
             {
-                chance = 1f;
+                chance = 1f; // 100% chance for ages 0 to 3
             }
             else if (age <= 8)
             {
-                chance = Mathf.Lerp(0.5f, 0.2f, (age - 3) / 5f); // Gradually decrease from 0.5 to 0.2 between ages 3 and 8
+                chance = Mathf.Lerp(0.7f, 0.25f, (age - 3) / 5f); // Gradually decrease from 0.7 to 0.25 between ages 3 and 8
             }
             else if (age <= 15)
             {
-                chance = Mathf.Lerp(0.2f, 0.05f, (age - 8) / 7f); // Gradually decrease from 0.2 to 0.1 between ages 8 and 15
+                chance = Mathf.Lerp(0.25f, 0.05f, (age - 8) / 7f); // Gradually decrease from 0.25 to 0.05 between ages 8 and 15
             }
-            else if (age <= 70)
+            else if (age <= 65)
             {
-                chance = 0.05f; // Constant chance from age 15 to 70
+                chance = 0.05f; // Constant 0.05 chance from age 15 to 65
+            }
+            else if (age <= 80)
+            {
+                chance = Mathf.Lerp(0.05f, 0.3f, (age - 65) / 15f); // Gradually increase from 0.05 to 0.3 from age 65 to 80
             }
             else
             {
-                chance = Mathf.Lerp(0.1f, 0.3f, (age - 70) / 10f); // Gradually increase from 0.1 to 0.3 from age 70 to 80
+                chance = 0.3f; // Constant 0.3 chance from age 81+
             }
+
             return Rand.ChanceSeeded(chance, pawn.thingIDNumber);
         }
     }
