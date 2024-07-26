@@ -121,6 +121,14 @@ namespace ZealousInnocence
                 info: "Property Need_Bladder.CurCategory"
             );
 
+
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new Type[] { typeof(PawnGenerationRequest) }),
+                postfix: new HarmonyMethod(typeof(PawnGenerator_GeneratePawn_Patch), nameof(PawnGenerator_GeneratePawn_Patch.Postfix)),
+                info: "PawnGenerator.GeneratePawn"
+            );
+
+
             ModChecker.ZealousInnocenceActive();
 
             if (!ModChecker.ForeverYoungActive())

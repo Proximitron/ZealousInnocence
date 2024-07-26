@@ -1,14 +1,31 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 	
-	<HediffDef ParentName="ChronicDiseaseBase">
-    <defName>BedWetting</defName>
-    <label>Bed wetter</label>
-    <description>Often wets the bed while being asleep. Needs protection at night.</description>
-    <hediffClass>HediffWithComps</hediffClass>
-    <makesSickThought>false</makesSickThought>
-    <tendable>false</tendable>
-  </HediffDef>
+<HediffDef ParentName="ChronicDiseaseBase">
+  <defName>BedWetting</defName>
+  <label>bedwetting</label>
+  <description>Condition that affects bedwetting from childhood through adulthood. Can grow out of it as they get older. Needs protection at night.</description>
+  <hediffClass>HediffWithComps</hediffClass>
+  <makesSickThought>false</makesSickThought>
+  <tendable>false</tendable>
+  <stages>
+    <li>
+      <label>childhood bedwetting</label>
+      <minSeverity>0</minSeverity>
+      <partEfficiencyOffset>-1.0</partEfficiencyOffset>
+    </li>
+    <li>
+      <label>teen bedwetting</label>
+      <minSeverity>0.4</minSeverity>
+      <partEfficiencyOffset>-1.0</partEfficiencyOffset>
+    </li>
+    <li>
+      <label>bedwetting</label>
+      <minSeverity>0.7</minSeverity>
+      <partEfficiencyOffset>-1.0</partEfficiencyOffset>
+    </li>
+  </stages>
+</HediffDef>
 	
   <HediffDef ParentName="InfectionBase">
     <defName>BladderInfection</defName>

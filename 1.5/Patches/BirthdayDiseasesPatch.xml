@@ -50,19 +50,8 @@
 					</points>
 				</ageFractionMtbDaysCurve>
 			</li>
-			<li Class="HediffGiver_Birthday">
+			<li Class="ZealousInnocence.HediffGiver_BedWetting">
 				<hediff>BedWetting</hediff>
-				<partsToAffect>
-					<li>Bladder</li>
-				</partsToAffect>
-				<ageFractionChanceCurve>
-					<points>
-            <li>(0.2, 0.001)</li>
-						<li>(0.7, 0.003)</li>
-            <li>(1, 0.01)</li>
-            <li>(1.5, 0.1)</li>
-					</points>
-				</ageFractionChanceCurve>
 			</li>
 		</value>
 	</Operation>

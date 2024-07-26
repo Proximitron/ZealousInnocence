@@ -175,6 +175,8 @@ namespace ZealousInnocence
                     }
                 }
             }
+            HediffGiver_BedWetting bedWettingGiver = new HediffGiver_BedWetting();
+            bedWettingGiver.OnIntervalPassed(pawn, null);
             refreshAgeStageCache(pawn);
             return false;
         }
