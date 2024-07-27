@@ -77,6 +77,7 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref this.isHavingAccident, "isHavingAccident", false);
             Scribe_Values.Look(ref this.peeing, "peeing", false);
             Scribe_Values.Look(ref this.failureSeed, "failureSeed", 0);
+            Scribe_Values.Look(ref this.bedwettingSeed, "bedwettingSeed", bedwettingSeed);
         }
         private bool isHavingAccident;
         public bool IsHavingAccident { get => isHavingAccident; }
@@ -86,6 +87,7 @@ namespace ZealousInnocence
 
         private int failureSeed = 0;
 
+        public int bedwettingSeed = 0;
         public int FailureSeed
         {
             get

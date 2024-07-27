@@ -12,10 +12,10 @@ namespace ZealousInnocence
 {
     public class HediffGiver_BedWetting : HediffGiver
     {
-        private int lastCheckTick = 0;
         public override void OnIntervalPassed(Pawn pawn, Hediff cause)
         {
             if (!pawn.IsColonist) return;
+            if (pawn.health.hediffSet.HasHediff(HediffDef.Named("Incontinent"))) return;
 
             bool shouldWet = BedWetting_Helper.BedwettingAtAge(pawn, pawn.ageTracker.AgeBiologicalYears);
             //Log.Message($"ZealousInnocence bedwetting interval {Find.TickManager.TicksGame}: Pawn {pawn.LabelShort} {shouldWet}");
@@ -60,21 +60,28 @@ namespace ZealousInnocence
         {
             float chance;
 
-            if (age <= 3)
+            var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+            if (diaperNeed == null)
+            {
+                Log.WarningOnce($"ZealousInnocence Error: Pawn {pawn.LabelShort} has no Need_Diaper for BedwettingAtAge check",pawn.thingIDNumber - 9242);
+                return false;
+            }
+
+            if (age <= 5)
             {
                 chance = 1f; // 100% chance for ages 0 to 3
             }
-            else if (age <= 8)
+            else if (age <= 9)
             {
-                chance = Mathf.Lerp(0.7f, 0.25f, (age - 3) / 5f); // Gradually decrease from 0.7 to 0.25 between ages 3 and 8
+                chance = Mathf.Lerp(0.8f, 0.3f, (age - 5) / 4f); // Gradually decrease from 0.8 to 0.3 between ages 6 and 9
             }
             else if (age <= 15)
             {
-                chance = Mathf.Lerp(0.25f, 0.05f, (age - 8) / 7f); // Gradually decrease from 0.25 to 0.05 between ages 8 and 15
+                chance = Mathf.Lerp(0.28f, 0.07f, (age - 9) / 6f); // Gradually decrease from 0.28 to 0.07 between ages 10 and 15
             }
             else if (age <= 65)
             {
-                chance = 0.05f; // Constant 0.05 chance from age 15 to 65
+                chance = 0.05f; // Constant 0.05 chance from age 16 to 65
             }
             else if (age <= 80)
             {
@@ -85,7 +92,34 @@ namespace ZealousInnocence
                 chance = 0.3f; // Constant 0.3 chance from age 81+
             }
 
-            return Rand.ChanceSeeded(chance, pawn.thingIDNumber);
+            if (diaperNeed.bedwettingSeed == 0)
+            {
+                int tries = 0;
+                diaperNeed.bedwettingSeed = pawn.thingIDNumber;
+                
+                if (chance < 0.99f && chance > 0.01f) // if chances are too small or too big. We go with random instead.
+                {
+                    var def = HediffDef.Named("BedWetting");
+                    var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+                    var debugging = settings.debugging;
+                    while (true)
+                    {
+                        if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, pawn.ageTracker.AgeBiologicalYears))
+                        {
+                            if (debugging) Log.Message($"ZealousInnocence DEBUG: Bedwetting seed {diaperNeed.bedwettingSeed} assigned with matching requirement {pawn.health.hediffSet.HasHediff(def)} for {pawn.LabelShort} after {tries} tries!");
+                            break;
+                        }
+                        diaperNeed.bedwettingSeed++;
+                        if (tries++ > 1000)
+                        {
+                            Log.Error($"ZealousInnocence Error: Could not resolve bedwetting seed to match requirement {pawn.health.hediffSet.HasHediff(def)} for {pawn.LabelShort} seed {diaperNeed.bedwettingSeed} after {tries} tries");
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return Rand.ChanceSeeded(chance, diaperNeed.bedwettingSeed);
         }
     }
 
@@ -94,14 +128,21 @@ namespace ZealousInnocence
     {
         public static void Postfix(Pawn __result, PawnGenerationRequest request)
         {
-            var def = HediffDef.Named("BedWetting");
+            var diaperNeed = __result.needs.TryGetNeed<Need_Diaper>();
+            if (diaperNeed != null)
+            {
+                diaperNeed.bedwettingSeed = __result.thingIDNumber;
+            }
+            if (__result.health.hediffSet.HasHediff(HediffDef.Named("Incontinent"))) return;
 
+            var def = HediffDef.Named("BedWetting");
             if (BedWetting_Helper.BedwettingAtAge(__result, __result.ageTracker.AgeBiologicalYears))
             {
                 __result.health.AddHediff(def);
                 var hediff = __result.health.hediffSet.GetFirstHediffOfDef(def);
                 hediff.Severity = BedWetting_Helper.BedwettingSeverity(__result);
             }
+
         }
     }
 }

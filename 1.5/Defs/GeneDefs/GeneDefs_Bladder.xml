@@ -57,7 +57,7 @@
     <label>huge bladder</label>
     <labelShortAdj>huge bladder</labelShortAdj>
     <description>This pawns bladder is exceptionally big. It's amazing how long they hold it!</description>
-    <iconPath>Genes/Icons/BigBladder</iconPath>
+    <iconPath>Genes/Icons/HugeBladder</iconPath>
     <displayOrderInCategory>-130</displayOrderInCategory>
     <statFactors>
       <BladderRateMultiplier>0.65</BladderRateMultiplier>
