@@ -16,4 +16,20 @@
     <showOnEntities>false</showOnEntities>
     <showDevelopmentalStageFilter>Adult, Child</showDevelopmentalStageFilter>
   </StatDef>
+	
+	<StatDef>
+		<defName>BedwettingChance</defName>
+		<category>BasicsPawn</category>
+		<label>bedwetting modifier</label>
+    <description>Describes the chance this pawn will develop issues with bedwetting in their lifetime.\n\nShould they do so, this will only cause issues while being asleep.Night time protection is recommended in such cases.</description>
+    
+    <defaultBaseValue>0</defaultBaseValue>
+    <minValue>-1</minValue>
+    <toStringStyle>PercentZero</toStringStyle>
+    <showOnHumanlikes>true</showOnHumanlikes>
+    <showOnAnimals>true</showOnAnimals>
+    <showOnMechanoids>false</showOnMechanoids>
+    <showOnEntities>false</showOnEntities>
+    <showDevelopmentalStageFilter>Adult, Child</showDevelopmentalStageFilter>
+  </StatDef>
 </Defs>

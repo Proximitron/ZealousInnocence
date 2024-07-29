@@ -12,17 +12,14 @@
     <li>
       <label>childhood bedwetting</label>
       <minSeverity>0</minSeverity>
-      <partEfficiencyOffset>-1.0</partEfficiencyOffset>
     </li>
     <li>
       <label>teen bedwetting</label>
       <minSeverity>0.4</minSeverity>
-      <partEfficiencyOffset>-1.0</partEfficiencyOffset>
     </li>
     <li>
       <label>bedwetting</label>
       <minSeverity>0.7</minSeverity>
-      <partEfficiencyOffset>-1.0</partEfficiencyOffset>
     </li>
   </stages>
 </HediffDef>
@@ -57,36 +54,57 @@
     <tendable>false</tendable>
 		<stages>
       <li>
-        <partEfficiencyOffset>-0.5</partEfficiencyOffset>
+        <partEfficiencyOffset>-0.35</partEfficiencyOffset>
       </li>
     </stages>
-
   </HediffDef>
 	
 	<HediffDef ParentName="ChronicDiseaseBase">
     <defName>SmallBladder</defName>
     <label>Small bladder</label>
-    <description>Has a smaller bladder than normal. But in most cases they make it to the toilet in time...</description>
+    <description>This bladder is smaller than normal. More frequent visits to the toilet are adviced.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <makesSickThought>false</makesSickThought>
     <tendable>false</tendable>
 		<stages>
       <li>
-        <partEfficiencyOffset>-0.25</partEfficiencyOffset>
+			  <statOffsets>
+					<BladderRateMultiplier>0.75</BladderRateMultiplier>
+				</statOffsets>
       </li>
     </stages>
   </HediffDef>
 	
-  <HediffDef ParentName="ChronicDiseaseBase">
-    <defName>Incontinent</defName>
-    <label>incontinent</label>
-    <description>No control over their bladder at all. Diapers are strongly recommended.</description>
+	<HediffDef ParentName="ChronicDiseaseBase">
+    <defName>TinyBladder</defName>
+    <label>Tiny bladder</label>
+    <description>This bladder is tiny. It's owner will need to run often and fast to make it in time.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <makesSickThought>false</makesSickThought>
     <tendable>false</tendable>
 		<stages>
       <li>
-        <partEfficiencyOffset>-1.0</partEfficiencyOffset>
+			  <statOffsets>
+					<BladderRateMultiplier>1.5</BladderRateMultiplier>
+				</statOffsets>
+      </li>
+    </stages>
+  </HediffDef>
+	
+	
+	
+  <HediffDef ParentName="ChronicDiseaseBase">
+    <defName>Incontinent</defName>
+    <label>incontinent</label>
+    <description>No control over their bladder at all, even if they have one. Diapers are strongly recommended.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <makesSickThought>false</makesSickThought>
+    <tendable>false</tendable>
+		<stages>
+      <li>
+        <statOffsets>
+					<BladderStrengh>-10.0</BladderStrengh>
+				</statOffsets>
       </li>
     </stages>
 

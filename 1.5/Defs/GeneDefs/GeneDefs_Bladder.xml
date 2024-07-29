@@ -18,7 +18,7 @@
     <iconPath>Genes/Icons/TinyBladder</iconPath>
     <displayOrderInCategory>-160</displayOrderInCategory>
     <statFactors>
-      <BladderRateMultiplier>2.5</BladderRateMultiplier>
+      <BladderRateMultiplier>1.5</BladderRateMultiplier>
     </statFactors>
     <biostatCpx>1</biostatCpx>
     <biostatMet>2</biostatMet>
@@ -28,11 +28,11 @@
     <defName>BladderSizeSmall</defName>
     <label>small bladder</label>
     <labelShortAdj>small bladder</labelShortAdj>
-    <description>This pawns bladder is a bit on the small side. It should be fine as long as toilets are nearby.</description>
+    <description>This pawns bladder will always be a bit smaller than normal. They should be fine, as long as toilets are nearby.</description>
     <iconPath>Genes/Icons/SmallBladder</iconPath>
     <displayOrderInCategory>-150</displayOrderInCategory>
     <statFactors>
-      <BladderRateMultiplier>1.75</BladderRateMultiplier>
+      <BladderRateMultiplier>0.75</BladderRateMultiplier>
     </statFactors>
     <biostatCpx>1</biostatCpx>
     <biostatMet>1</biostatMet>
@@ -42,11 +42,11 @@
     <defName>BladderSizeBig</defName>
     <label>big bladder</label>
     <labelShortAdj>big bladder</labelShortAdj>
-    <description>This pawns bladder is big than most pawns. They can usually finish their job before they need to take care of business!</description>
+    <description>This pawns bladder is bigger than most. They can usually finish their job before they need to take care of business!</description>
     <iconPath>Genes/Icons/BigBladder</iconPath>
     <displayOrderInCategory>-140</displayOrderInCategory>
     <statFactors>
-      <BladderRateMultiplier>0.8</BladderRateMultiplier>
+      <BladderRateMultiplier>-0.2</BladderRateMultiplier>
     </statFactors>
     <biostatCpx>1</biostatCpx>
     <biostatMet>-1</biostatMet>
@@ -60,7 +60,7 @@
     <iconPath>Genes/Icons/HugeBladder</iconPath>
     <displayOrderInCategory>-130</displayOrderInCategory>
     <statFactors>
-      <BladderRateMultiplier>0.65</BladderRateMultiplier>
+      <BladderRateMultiplier>-0.35</BladderRateMultiplier>
     </statFactors>
     <biostatCpx>1</biostatCpx>
     <biostatMet>-2</biostatMet>
@@ -102,5 +102,57 @@
     </statFactors>
     <biostatCpx>1</biostatCpx>
     <biostatMet>-1</biostatMet>
+  </GeneDef>
+	
+	<GeneDef Name="GeneBladderBedwetting" Abstract="True">
+    <displayCategory>Bladder</displayCategory>
+		<endogeneCategory>BodyType</endogeneCategory>
+    <canGenerateInGeneSet>true</canGenerateInGeneSet>
+    <passOnDirectly>true</passOnDirectly>
+    <exclusionTags>
+      <li>BladderBedwetting</li>
+    </exclusionTags>
+  </GeneDef>
+
+	<GeneDef ParentName="GeneBladderStrength">
+    <defName>BladderBedwettingEarly</defName>
+    <label>early bloomer</label>
+    <labelShortAdj>early bloomer</labelShortAdj>
+    <description>Causes a pawn to grow out of bedwetting at a earlier age and have a no chance to keep that trait as an adult.</description>
+    <iconPath>Genes/Icons/EarlyBloomer</iconPath>
+    <displayOrderInCategory>-100</displayOrderInCategory>
+    <statFactors>
+      <BedwettingChance>-0.25</BedwettingChance>
+    </statFactors>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>1</biostatMet>
+  </GeneDef>
+
+	<GeneDef ParentName="GeneBladderStrength">
+    <defName>BladderBedwettingLate</defName>
+    <label>late bloomer</label>
+    <labelShortAdj>late bloomer</labelShortAdj>
+    <description>Causes to grow out of bedwetting at a later age and has a much higher chance (50/50) to keep it into adulthood.</description>
+    <iconPath>Genes/Icons/LateBloomer</iconPath>
+    <displayOrderInCategory>-90</displayOrderInCategory>
+    <statFactors>
+      <BedwettingChance>0.45</BedwettingChance>
+    </statFactors>
+    <biostatCpx>0</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+	
+	<GeneDef ParentName="GeneBladderStrength">
+    <defName>BladderBedwettingAlways</defName>
+    <label>bedwetter</label>
+    <labelShortAdj>bedwetter</labelShortAdj>
+    <description>The unlucky pawn receiving this gene will always keep bedwetting for a lifetime. Lots of protection is adviced at night.</description>
+    <iconPath>Genes/Icons/Bedwetter</iconPath>
+    <displayOrderInCategory>-80</displayOrderInCategory>
+    <statFactors>
+      <BedwettingChance>1.0</BedwettingChance>
+    </statFactors>
+    <biostatCpx>0</biostatCpx>
+    <biostatMet>0</biostatMet>
   </GeneDef>
 </Defs>

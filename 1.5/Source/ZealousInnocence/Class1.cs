@@ -572,6 +572,7 @@ namespace ZealousInnocence
         public static StatDef Absorbency;
         public static StatDef DiaperAbsorbency; // This value is a stat created from Absorbency and DiaperSupport
         public static StatDef BladderStrengh; // Influences bladder control of the pawn
+        public static StatDef BedwettingChance; // Influences bedwetting chance (-1.0 to 1.0). At any end it guaranties it one way or the other.
     }
 
     [DefOf]
