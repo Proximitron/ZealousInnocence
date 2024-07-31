@@ -131,18 +131,18 @@
 			
 			<!-- Thoughts if diaper is nessesary but only at night -->
 			<li>
-				<label>Dry night diaper</label>
-				<description>I really don't need diapers! I want pull-ups for... night time protection!</description>
+				<label>Wrong protection</label>
+				<description>Really? Diapers? I only need absorbant underwear. Nighttime protection.. Pull-ups...</description>
 				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
 				<label>Wet night diaper</label>
-				<description>It happened again! I hope noone notice that i wear a wet diaper. Not even pull-ups!</description>
+				<description>It happened again, but in a diaper! I hope no one notices I'm wearing these instead of pull-ups.</description>
 				<baseMoodEffect>-4</baseMoodEffect>
 			</li>
 			<li>
 				<label>Flooded night diaper</label>
-				<description>I need to get rid of them, quickly! That would never happend with pull-ups... i think.</description>
+				<description>I need to get rid of these, fast! This would have never happened if I had pull-ups... Obviously...</description>
 				<baseMoodEffect>-6</baseMoodEffect>
 			</li>	
 		
@@ -154,7 +154,7 @@
 			</li>
 			<li>
 				<label>Night protection</label>
-				<description>It's only for the night! They're called pull-ups, NOT diapers!</description>
+				<description>It's only for the night! And they are called pull-ups, NOT diapers!</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			<li>
