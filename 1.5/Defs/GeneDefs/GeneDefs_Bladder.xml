@@ -39,7 +39,7 @@
     <defName>BladderSizeBig</defName>
     <label>big bladder</label>
     <labelShortAdj>big bladder</labelShortAdj>
-    <description>This person was born with a bigger bladder. They can usually finish their job before they need to take care of business!</description>
+    <description>This person was born with a bigger bladder. They can work longer hours before finally needing to go.</description>
     <iconPath>Genes/Icons/BigBladder</iconPath>
     <displayOrderInCategory>-140</displayOrderInCategory>
     <biostatCpx>0</biostatCpx>
@@ -74,7 +74,7 @@
     <defName>BladderStrenghWeak</defName>
     <label>weak bladder control</label>
     <labelShortAdj>weak control</labelShortAdj>
-    <description>Having a genetically weak control over their bladder makes it harder to notice in time to make it successfully to the toilet.</description>
+    <description>This gene gives a pawn weaker control over their bladder. By the time they notice they need to go they'll probably already have had an accident.</description>
     <iconPath>Genes/Icons/RedBicep</iconPath>
     <displayOrderInCategory>-120</displayOrderInCategory>
     <statFactors>
@@ -88,7 +88,7 @@
     <defName>BladderStrenghStrong</defName>
     <label>strong bladder control</label>
     <labelShortAdj>strong control</labelShortAdj>
-    <description>Having a genetically strong control over their bladder makes it easier to notice in time to make it successfully to the toilet.</description>
+    <description>This gene gives a pawn stronger control over their bladder. They'll always have an easier time making it to the bathroom.</description>
     <iconPath>Genes/Icons/GreenBicep</iconPath>
     <displayOrderInCategory>-110</displayOrderInCategory>
     <statFactors>
@@ -112,7 +112,7 @@
     <defName>BladderBedwettingEarly</defName>
     <label>early bloomer</label>
     <labelShortAdj>early bloomer</labelShortAdj>
-    <description>Causes a pawn to grow out of bedwetting at an earlier age, with no chance to keep that affliction as an adult.</description>
+    <description>Causes a pawn to grow out of bedwetting at an earlier age, with no chance to keep the affliction as an adult.</description>
     <iconPath>Genes/Icons/EarlyBloomer</iconPath>
     <displayOrderInCategory>-100</displayOrderInCategory>
     <statFactors>
@@ -140,7 +140,7 @@
     <defName>BladderBedwettingAlways</defName>
     <label>bedwetter</label>
     <labelShortAdj>bedwetter</labelShortAdj>
-    <description>The unlucky pawn receiving this gene will always keep bedwetting. Lots of protection is advised at night.</description>
+    <description>Pawns with this gene will always have no control over their bladder during the night. Lots of nighttime protection is advised.</description>
     <iconPath>Genes/Icons/Bedwetter</iconPath>
     <displayOrderInCategory>-80</displayOrderInCategory>
     <statFactors>
