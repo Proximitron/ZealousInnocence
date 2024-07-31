@@ -74,7 +74,7 @@
     <defName>BladderStrenghWeak</defName>
     <label>weak bladder control</label>
     <labelShortAdj>weak control</labelShortAdj>
-    <description>This gene gives a pawn weaker control over their bladder. By the time they notice they need to go, they'll probably already have had an accident.</description>
+    <description>This gene gives a pawn weaker control over their bladder. This can lead to accidents.</description>
     <iconPath>Genes/Icons/RedBicep</iconPath>
     <displayOrderInCategory>-120</displayOrderInCategory>
     <statFactors>

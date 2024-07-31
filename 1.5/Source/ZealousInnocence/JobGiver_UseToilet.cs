@@ -23,6 +23,8 @@ namespace ZealousInnocence
         {
             if (__result != null && pawn.RaceProps.Humanlike)
             {
+                var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+                var debugging = settings.debugging && settings.debuggingJobs;
                 if (pawn.Awake())
                 {
                     var liked = DiaperHelper.getDiaperPreference(pawn);
@@ -35,13 +37,17 @@ namespace ZealousInnocence
                         }
                         else
                         {
-                            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-                            var debugging = settings.debugging && settings.debuggingJobs;
                             if (debugging) Log.Message($"JobGiver_UseToilet postfix null for {pawn.Name.ToStringShort}");
                             __result = null;
                             return;
                         }
                     }
+                }
+                else
+                {
+                    if (debugging) Log.Message($"JobGiver_UseToilet not awake for {pawn.Name.ToStringShort}");
+                    __result = null;
+                    return;
                 }
                 var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
                 if (diaperNeed != null) diaperNeed.FailureSeed = 0; // resetting seed

@@ -598,6 +598,8 @@ namespace ZealousInnocence
 
         public static HediffDef BigBladder;
         public static HediffDef SmallBladder;
+
+        public static HediffDef BedWetting;
     }
 
     [DefOf]

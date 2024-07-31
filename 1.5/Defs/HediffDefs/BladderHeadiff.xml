@@ -83,7 +83,7 @@
 	<HediffDef ParentName="AddedBodyPartBase">
     <defName>BigBladder</defName>
     <label>Big Bladder</label>
-    <description>A bladder that is bigger than normal. They will visit the toilet less frequently, and will almost always make it.</description>
+    <description>A bladder that is bigger than normal. They will visit the toilet less frequently.</description>
     <labelNoun>a big bladder</labelNoun>
     <descriptionHyperlinks><ThingDef>BladderBig</ThingDef></descriptionHyperlinks>
     <spawnThingOnRemoved>BladderBig</spawnThingOnRemoved>

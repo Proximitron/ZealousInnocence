@@ -58,11 +58,15 @@ namespace ZealousInnocence
                     else
                     {
                         float whileAsleep = awake ? GetSleepingFactor(pawn, false) * num2 : num2;
-                        if (whileAsleep <= 0.5f)
+                        if (whileAsleep <= 0.6f)
                         {
                             if(whileAsleep <= 0.25f)
                             {
                                 impactors.Add(new CapacityImpactorCustom { customString = "High Bedwetting Risk" });
+                            }
+                            else if(whileAsleep <= 0.37f)
+                            {
+                                impactors.Add(new CapacityImpactorCustom { customString = "Medium Bedwetting Risk" });
                             }
                             else
                             {
@@ -135,18 +139,9 @@ namespace ZealousInnocence
         {
             if (!isAwake)
             {
-                List<Hediff> health = pawn.health.hediffSet.hediffs;
-                for (int i = 0; i < health.Count; i++)
+                if (pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
                 {
-
-                    switch (health[i].def.defName)
-                    {
-                        case "BedWetting":
-                            return 0f;
-                        default:
-                            continue;
-                    }
-
+                    return 0.35f;
                 }
                 return 0.75f;
             }
