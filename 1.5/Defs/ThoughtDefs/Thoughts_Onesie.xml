@@ -22,7 +22,7 @@
 			<!-- Thoughts if onesie is hated -->
 			<li>
 				<label>Hated onesie</label>
-				<description>I'm dressed like a toddler, this onesie is not fit for an adult. I'd rather wear nothing.</description>
+				<description>I'm dressed like a toddler, this onesie is unfit for an adult. I'd rather wear nothing.</description>
 				<baseMoodEffect>-6</baseMoodEffect>
 			</li>
 			
