@@ -178,14 +178,14 @@
         <label>Terrible</label>
         <chance>0.05</chance>
         <ideoCertaintyOffset>0.2</ideoCertaintyOffset>
-        <description>The {0} was terrible! The diaper didn't fit, the situation felt unnatural and forced.</description>
+        <description>The {0} was terrible! The convertee faught and argued, the situation felt unnatural and forced.</description>
         <positivityIndex>-2</positivityIndex>
       </li>
       <li>
         <label>Ineffective</label>
         <chance>0.15</chance>
         <ideoCertaintyOffset>0.12</ideoCertaintyOffset>
-        <description>The {0} was ineffective. We put a diaper on them and they didn't like it.</description>
+        <description>The {0} was ineffective. We managed to get a diaper on them, and they didn't like it.</description>
         <positivityIndex>-1</positivityIndex>
       </li>
       <li>
@@ -193,7 +193,7 @@
         <chance>0.6</chance>
         <ideoCertaintyOffset>-0.3</ideoCertaintyOffset>
         <memory>EffectiveConversion</memory>
-        <description>The {0} was effective. It seems they enjoyed themselves a bit and even giggled while getting put in diapers. They might join us soon.</description>
+        <description>The {0} was effective. It seems they enjoyed themselves a bit, they even giggled while adorning a diaper. They might join us soon.</description>
         <positivityIndex>1</positivityIndex>
       </li>
       <li>
@@ -201,7 +201,7 @@
         <chance>0.2</chance>
         <ideoCertaintyOffset>-1</ideoCertaintyOffset>
         <memory>MasterfulConversion</memory>
-        <description>The {0} was masterful! The truth of the many advantages of diapers where accepted effordless and immediately. I don't think they will want to be without them ever again.</description>
+        <description>The {0} was masterful! The truth and advantages of diapers were accepted effortlessly and immediately. I don't think they will ever want to be without one again.</description>
         <positivityIndex>2</positivityIndex>
       </li>
     </outcomeChances>
