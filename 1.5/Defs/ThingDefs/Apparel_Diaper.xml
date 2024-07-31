@@ -100,7 +100,7 @@
 			</recipeUsers>
 		</recipeMaker>
 		<apparel>
-			<wornGraphicPath>Apparel/Diaper/Nappy</wornGraphicPath>
+			<wornGraphicPath>Apparel/Diaper/Nappy/Nappy</wornGraphicPath>
       <canBeDesiredForIdeo>false</canBeDesiredForIdeo>
 			<tags>
         <li>Neolithic</li>
