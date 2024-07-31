@@ -59,13 +59,18 @@
     </stages>
   </HediffDef>
 	
-	<HediffDef ParentName="ChronicDiseaseBase">
-    <defName>SmallBladder</defName>
+	<HediffDef ParentName="AddedBodyPartBase">
+		<defName>SmallBladder</defName>
     <label>Small bladder</label>
     <description>This bladder is smaller than normal. More frequent visits to the toilet are adviced.</description>
-    <hediffClass>HediffWithComps</hediffClass>
-    <makesSickThought>false</makesSickThought>
-    <tendable>false</tendable>
+    <labelNoun>a small bladder</labelNoun>
+    <descriptionHyperlinks><ThingDef>BladderSmall</ThingDef></descriptionHyperlinks>
+    <spawnThingOnRemoved>BladderSmall</spawnThingOnRemoved>
+    <addedPartProps>
+      <solid>true</solid>
+      <partEfficiency>1.0</partEfficiency>
+      <betterThanNatural>false</betterThanNatural>
+    </addedPartProps>
 		<stages>
       <li>
 			  <statOffsets>
@@ -75,24 +80,27 @@
     </stages>
   </HediffDef>
 	
-	<HediffDef ParentName="ChronicDiseaseBase">
-    <defName>TinyBladder</defName>
-    <label>Tiny bladder</label>
-    <description>This bladder is tiny. It's owner will need to run often and fast to make it in time.</description>
-    <hediffClass>HediffWithComps</hediffClass>
-    <makesSickThought>false</makesSickThought>
-    <tendable>false</tendable>
+	<HediffDef ParentName="AddedBodyPartBase">
+    <defName>BigBladder</defName>
+    <label>Big Bladder</label>
+    <description>This pawn has a big bladder. Less frequent visits to the toilet are possible.</description>
+    <labelNoun>a big bladder</labelNoun>
+    <descriptionHyperlinks><ThingDef>BladderBig</ThingDef></descriptionHyperlinks>
+    <spawnThingOnRemoved>BladderBig</spawnThingOnRemoved>
+    <addedPartProps>
+      <solid>true</solid>
+      <partEfficiency>1.0</partEfficiency>
+      <betterThanNatural>false</betterThanNatural>
+    </addedPartProps>
 		<stages>
       <li>
 			  <statOffsets>
-					<BladderRateMultiplier>1.5</BladderRateMultiplier>
+					<BladderRateMultiplier>-0.2</BladderRateMultiplier>
 				</statOffsets>
       </li>
     </stages>
   </HediffDef>
-	
-	
-	
+		
   <HediffDef ParentName="ChronicDiseaseBase">
     <defName>Incontinent</defName>
     <label>incontinent</label>

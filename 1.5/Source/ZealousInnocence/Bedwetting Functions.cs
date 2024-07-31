@@ -57,7 +57,7 @@ namespace ZealousInnocence
         }
         public static float BedwettingModifier(Pawn pawn)
         {
-            return pawn.GetStatValue(StatDefOf.BedwettingChance, true);
+            return pawn.GetStatValue(StatDefOf.BedwettingChance, true) - 1.0f;
         }
         public static float BedwettingSeverity(Pawn pawn)
         {
@@ -81,10 +81,11 @@ namespace ZealousInnocence
             var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
             if (diaperNeed == null)
             {
-                Log.WarningOnce($"ZealousInnocence Error: Pawn {pawn.LabelShort} has no Need_Diaper for BedwettingAtAge check",pawn.thingIDNumber - 9242);
+                Log.WarningOnce($"ZealousInnocence Warning: Pawn {pawn.LabelShort} has no Need_Diaper for BedwettingAtAge check, skipping all bedwetting related features.",pawn.thingIDNumber - 9242);
                 return false;
             }
-
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            
             if (age <= 3)
             {
                 chance = 1f; // 100% chance for ages 0 to 3
@@ -99,7 +100,7 @@ namespace ZealousInnocence
             }
             else if (age <= 65)
             {
-                chance = 0.05f; // Constant 0.05 chance from age 16 to 65
+                chance = settings.adultBedwetters; // Constant 0.05 chance from age 16 to 65, now changed to dynamic
             }
             else if (age <= 80)
             {
@@ -109,29 +110,52 @@ namespace ZealousInnocence
             {
                 chance = 0.3f; // Constant 0.3 chance from age 81+
             }
-            chance += BedwettingModifier(pawn);
+            if (chance < settings.adultBedwetters) chance = settings.adultBedwetters;
+            if(settings.adultBedwetters <= 0f)
+            {
+                chance = 0.0f;
+            }
+            else if(settings.adultBedwetters >= 1f)
+            {
+                chance = 1.0f;
+            }
+            else
+            {
+                chance += BedwettingModifier(pawn);
+            }
+            
             chance = Math.Max(0f, Math.Min(1f, chance));
             if (diaperNeed.bedwettingSeed == 0)
             {
                 int tries = 0;
                 diaperNeed.bedwettingSeed = pawn.thingIDNumber;
+                var def = HediffDef.Named("BedWetting");
                 
+                var debugging = settings.debugging;
+                if (pawn.health.hediffSet.HasHediff(def))
+                {
+                    var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);
+                    if (hediff.Part != null)
+                    {
+                        if (debugging) Log.Message($"ZealousInnocence MIGRATION: Migrating organ related bedwetting to body for {pawn.LabelShort}!");
+                        pawn.health.RemoveHediff(hediff);
+
+                        AddHediff(pawn);
+                    }
+                }
+                if (pawn.health.hediffSet.HasHediff(HediffDefOf.SmallBladder))
+                {
+                    var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);
+                    if (hediff.Part == null)
+                    {
+                        if (debugging) Log.Message($"ZealousInnocence MIGRATION: Migrating full body small bladder to new bladder size system for {pawn.LabelShort}!");
+                        pawn.health.RemoveHediff(hediff);
+                    }
+                    DiaperHelper.replaceBladderPart(pawn, HediffDefOf.SmallBladder);
+                }
                 if (chance < 0.99f && chance > 0.01f) // if chances are too small or too big. We go with random instead.
                 {
-                    var def = HediffDef.Named("BedWetting");
-                    var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-                    var debugging = settings.debugging;
-                    if (pawn.health.hediffSet.HasHediff(def))
-                    {
-                        var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);
-                        if(hediff.Part != null)
-                        {
-                            if (debugging) Log.Message($"ZealousInnocence MIGRATION: Migrating organ related bedwetting to body for {pawn.LabelShort}!");
-                            pawn.health.RemoveHediff(hediff);
 
-                            AddHediff(pawn);
-                        }
-                    }
                     while (true)
                     {
                         if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, pawn.ageTracker.AgeBiologicalYears))
@@ -150,29 +174,6 @@ namespace ZealousInnocence
             }
 
             return Rand.ChanceSeeded(chance, diaperNeed.bedwettingSeed);
-        }
-    }
-
-    [HarmonyPatch(typeof(PawnGenerator), "GeneratePawn", new Type[] { typeof(PawnGenerationRequest) })]
-    public static class PawnGenerator_GeneratePawn_Patch
-    {
-        public static void Postfix(Pawn __result, PawnGenerationRequest request)
-        {
-            var diaperNeed = __result.needs.TryGetNeed<Need_Diaper>();
-            if (diaperNeed != null)
-            {
-                diaperNeed.bedwettingSeed = __result.thingIDNumber;
-            }
-            if (__result.health.hediffSet.HasHediff(HediffDef.Named("Incontinent"))) return;
-
-            var def = HediffDef.Named("BedWetting");
-            if (BedWetting_Helper.BedwettingAtAge(__result, __result.ageTracker.AgeBiologicalYears))
-            {
-                __result.health.AddHediff(def);
-                var hediff = __result.health.hediffSet.GetFirstHediffOfDef(def);
-                hediff.Severity = BedWetting_Helper.BedwettingSeverity(__result);
-            }
-
         }
     }
 }

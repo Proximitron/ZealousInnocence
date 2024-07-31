@@ -45,7 +45,7 @@
     <workSkillLearnFactor>1</workSkillLearnFactor>
 		<anesthetize>false</anesthetize>
 		<jobString>Diaper changies.</jobString>
-		<workAmount>300</workAmount>
+		<workAmount>50</workAmount>
 		<hideBodyPartNames>true</hideBodyPartNames>
 		<targetsBodyPart>false</targetsBodyPart>
 		<surgerySuccessChanceFactor>5</surgerySuccessChanceFactor>
@@ -59,6 +59,25 @@
 		</skillRequirements>
 	</RecipeDef>
 	
+	<RecipeDef ParentName="PutInDiaperBase">
+		<defName>PutInFlimsyDiaper</defName>
+		<label>diaper change (flimsy)</label>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Apparel_Diaper_Flimsy</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Apparel_Diaper_Flimsy</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+	</RecipeDef>
 	<RecipeDef ParentName="PutInDiaperBase">
 		<defName>PutInDiaper</defName>
 		<label>diaper change (normal)</label>
@@ -75,6 +94,25 @@
 		<fixedIngredientFilter>
 			<thingDefs>
 				<li>Apparel_Diaper</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+	</RecipeDef>
+	<RecipeDef ParentName="PutInDiaperBase">
+		<defName>PutInNightDiaper</defName>
+		<label>diaper change (pull-ups)</label>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Apparel_Diaper_Night</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Apparel_Diaper_Night</li>
 			</thingDefs>
 		</fixedIngredientFilter>
 	</RecipeDef>

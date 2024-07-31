@@ -25,6 +25,9 @@
       </tags>
 			<legsNakedUnlessCoveredBySomethingElse>true</legsNakedUnlessCoveredBySomethingElse>
 		</apparel>
+		<statBases>
+			<EquipDelay>3</EquipDelay>
+		</statBases>
 		<colorGenerator Class="ColorGenerator_Options">
 			<options>
 				<li>
@@ -69,7 +72,6 @@
 			<StuffEffectMultiplierArmor>0.025</StuffEffectMultiplierArmor>
 			<StuffEffectMultiplierInsulation_Cold>0.10</StuffEffectMultiplierInsulation_Cold>
 			<StuffEffectMultiplierInsulation_Heat>0.10</StuffEffectMultiplierInsulation_Heat>
-			<EquipDelay>5</EquipDelay>
 		</statBases>
 		<equippedStatOffsets>
 			<PsychicSensitivity>-0.1</PsychicSensitivity>
@@ -116,7 +118,6 @@
 			<StuffEffectMultiplierArmor>0.035</StuffEffectMultiplierArmor>
 			<StuffEffectMultiplierInsulation_Cold>0.15</StuffEffectMultiplierInsulation_Cold>
 			<StuffEffectMultiplierInsulation_Heat>0.15</StuffEffectMultiplierInsulation_Heat>
-			<EquipDelay>5</EquipDelay>
 		</statBases>
 		<equippedStatOffsets>
 			<PsychicSensitivity>-0.05</PsychicSensitivity>
@@ -163,7 +164,6 @@
 			<StuffEffectMultiplierArmor>0.015</StuffEffectMultiplierArmor>
 			<StuffEffectMultiplierInsulation_Cold>0.10</StuffEffectMultiplierInsulation_Cold>
 			<StuffEffectMultiplierInsulation_Heat>0.25</StuffEffectMultiplierInsulation_Heat>
-			<EquipDelay>5</EquipDelay>
 		</statBases>
 		<equippedStatOffsets>
 			<PsychicSensitivity>0.1</PsychicSensitivity>

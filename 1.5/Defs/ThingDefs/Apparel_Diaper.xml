@@ -45,6 +45,11 @@
 			</options>
 		</colorGenerator>
 		<tickerType>Normal</tickerType>
+		<!--<comps>
+				<li Class="ZealousInnocence.DiaperFullnesProperties">
+						<diaperFullnes>1</diaperFullnes>		
+				</li>
+		</comps>-->
 	</ThingDef>
 	
 	<ThingDef ParentName="ApparelDiaperBase">
@@ -52,7 +57,7 @@
 		<label>flimsy diaper</label>
 		<description>An extremly flimsy, cheap leather diaper.</description>
 		<graphicData>
-			<texPath>Apparel/Diaper/PlainCloth/PlainCloth_Dirty</texPath>
+			<texPath>Apparel/Diaper/Nappy/Nappy_Dirty</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<techLevel>Medieval</techLevel>
@@ -95,23 +100,19 @@
 			</recipeUsers>
 		</recipeMaker>
 		<apparel>
+			<wornGraphicPath>Apparel/Diaper/Nappy</wornGraphicPath>
       <canBeDesiredForIdeo>false</canBeDesiredForIdeo>
 			<tags>
         <li>Neolithic</li>
 			</tags>
     </apparel>
-		<!--<comps>
-            <li Class="ZealousInnocence.DiaperFullnesProperties">
-                <diaperFullnes>1</diaperFullnes>		
-            </li>
-        </comps>-->
 	</ThingDef>
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Diaper_Night</defName>
 		<label>nighttime pull-ups</label>
 		<description>Totally not diapers, but a slightly thicker version of underpants. Designed to prevent accidents at night. Low absorbency.</description>
 		<graphicData>
-			<texPath>Apparel/Diaper/Nighty</texPath>
+			<texPath>Apparel/Diaper/PullupsPlain/PullupsPlain</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<techLevel>Industrial</techLevel>
@@ -147,7 +148,7 @@
 			</recipeUsers>
 		</recipeMaker>
 		<apparel>
-			<wornGraphicPath>Apparel/Diaper/Nighty</wornGraphicPath>
+			<wornGraphicPath>Apparel/Diaper/PullupsPlain/PullupsPlain</wornGraphicPath>
       <canBeDesiredForIdeo>false</canBeDesiredForIdeo>
 			<tags>
 				<li>DiapersNight</li>
@@ -157,11 +158,6 @@
 		<thingCategories>
 			<li>DiapersNight</li>
 		</thingCategories>
-		<!--<comps>
-            <li Class="ZealousInnocence.DiaperFullnesProperties">
-                <diaperFullnes>1</diaperFullnes>		
-            </li>
-        </comps>-->
 	</ThingDef>
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Diaper</defName>
@@ -219,12 +215,8 @@
 				<li>IndustrialBasic</li>
       </tags>
     </apparel>
-		<!--<comps>
-            <li Class="ZealousInnocence.DiaperFullnesProperties">
-                <diaperFullnes>1</diaperFullnes>		
-            </li>
-        </comps>-->
 	</ThingDef>
+	
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Premium_Diaper</defName>
 		<label>premium diaper</label>

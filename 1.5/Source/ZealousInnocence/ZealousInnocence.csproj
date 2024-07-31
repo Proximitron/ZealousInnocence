@@ -61,4 +61,7 @@
       <HintPath>BadHygiene.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.5\Assemblies\$(TargetFileName)&quot;" />
+  </Target>
 </Project>

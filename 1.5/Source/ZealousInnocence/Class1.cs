@@ -42,6 +42,8 @@ namespace ZealousInnocence
         public bool formerAdultsNeedLearning = true;
         public bool formerAdultsCanHaveIdeoRoles = true;
         public bool formerAdultsGetGrowthMoments = false;
+        public bool dynamicGenetics = true;
+        public float adultBedwetters = 0.05f;
         public bool debugging = false;
         public bool debuggingCloth = false;
         public bool debuggingJobs = false;
@@ -55,6 +57,8 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref formerAdultsNeedLearning, "formerAdultsNeedLearning", true);
             Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);
             Scribe_Values.Look(ref formerAdultsGetGrowthMoments, "formerAdultsGetGrowthMoments", false);
+            Scribe_Values.Look(ref dynamicGenetics, "dynamicGenetics", true);
+            Scribe_Values.Look(ref adultBedwetters, "adultBedwetters", 0.05f);
             Scribe_Values.Look(ref debugging, "debugging", false);
             Scribe_Values.Look(ref debuggingCloth, "debuggingCloth", false);
             Scribe_Values.Look(ref debuggingJobs, "debuggingJobs", false);
@@ -196,13 +200,17 @@ namespace ZealousInnocence
         {
             Listing_Standard listStandard = new Listing_Standard();
             listStandard.Begin(inRect);
-            
 
+            listStandard.CheckboxLabeled("Dynamic Genetics", ref settings.dynamicGenetics, "Adds random genetic bladder properties to some of the NEWLY generated pawns, like small and big bladders or the tendencies for bedwetting.");
+            listStandard.GapLine();
+            listStandard.Label($"Adult bedwetter chance: {Math.Round(settings.adultBedwetters * 100)}%", tooltip: "The rate of adults that wet the bed. Base value is 5%.");
+            settings.adultBedwetters = listStandard.Slider(settings.adultBedwetters, 0f, 1f);
+            listStandard.GapLine();
             listStandard.CheckboxLabeled("Reduce Age", ref settings.reduceAge, "If checked, the reincarnation ritual will reduce the age of the pawn to that of a child. Otherwise it will regress the pawn mentally.");
 
             listStandard.GapLine();
             listStandard.Label("Ritual Age Result: " + settings.targetChronoAge, tooltip: "The target age a pawn will be reduced to by the rebirth ritual. Only works if 'Reduce Age' is checked as well.");
-            settings.targetChronoAge = (float)System.Math.Round((double)listStandard.Slider(settings.targetChronoAge, 3, 13));
+            settings.targetChronoAge = (float)System.Math.Round(listStandard.Slider(settings.targetChronoAge, 3, 13));
 
             listStandard.GapLine();
             listStandard.TextEntry("Options after this point will ONLY work if 'Reduce Age' is checked and 'ForeverYoung' is NOT installed!");
@@ -213,7 +221,7 @@ namespace ZealousInnocence
             {
                 listStandard.CheckboxLabeled("Ideology Roles", ref settings.formerAdultsCanHaveIdeoRoles, "Allow former adults to hold roles in their ideology.");
             }
-            listStandard.CheckboxLabeled("Learning Need", ref settings.formerAdultsNeedLearning, "Controlles if a pawn has still the need to learn after being regressed to the age of a child. Many child activity are based on this need. Without it, many childish behaviours will not happen.");
+            listStandard.CheckboxLabeled("Learning Need", ref settings.formerAdultsNeedLearning, "Controlles if a pawn has still the need to learn after being regressed to the age of a child. Many child activity are based on this need. Without it, many childish behaviours will not happen.");          
 
             listStandard.GapLine();
             listStandard.CheckboxLabeled("DEBUGGING Mode", ref settings.debugging, "Activates a lot of unnessessary logs and work, in case you want to find an error. Restart may be required in certain situations.");
@@ -580,6 +588,25 @@ namespace ZealousInnocence
     {
         public static HediffDef RegressionState;
         public static HediffDef DiaperRash;
+
+        public static HediffDef BigBladder;
+        public static HediffDef SmallBladder;
+    }
+
+    [DefOf]
+    public class GeneDefOf
+    {
+        //public static GeneDef BladderSizeTiny;
+        public static GeneDef BladderSizeSmall;
+        public static GeneDef BladderSizeBig;
+        //public static GeneDef BladderSizeHuge;
+
+        public static GeneDef BladderBedwettingEarly;
+        public static GeneDef BladderBedwettingLate;
+        public static GeneDef BladderBedwettingAlways;
+
+        public static GeneDef BladderStrenghWeak;
+        public static GeneDef BladderStrenghStrong;
     }
 
     [DefOf]

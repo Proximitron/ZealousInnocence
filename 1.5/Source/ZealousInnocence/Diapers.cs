@@ -506,6 +506,59 @@ namespace ZealousInnocence
     }
     public static class DiaperHelper
     {
+        public static void addHediffToBladder(Pawn pawn, HediffDef defName)
+        {
+            BodyPartRecord bladder = DiaperHelper.getBladderControlSourcePart(pawn);
+            if (bladder == null)
+            {
+                return;
+            }
+            var newHediff = HediffMaker.MakeHediff(defName, pawn);
+            pawn.health.AddHediff(newHediff, bladder);
+        }
+        public static void replaceBladderPart(Pawn pawn, HediffDef bladderSize)
+        {
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            
+            if (settings.debugging) Log.Message($"Pawn {pawn.LabelShort} searching bladder");
+            BodyPartRecord originalBladder = getBladderControlSourcePart(pawn);
+            if (originalBladder != null)
+            {
+                // Remove the original Bladder part
+                pawn.health.hediffSet.hediffs.RemoveAll(hediff => hediff.Part == originalBladder);
+                if (settings.debugging) Log.Message($"Pawn {pawn.LabelShort} removing old hediff");
+
+                // Check if the new bladder part is already defined in the pawn's body
+                BodyPartRecord newBladderPart = pawn.RaceProps.body.AllParts.Find(part => part.def == BodyPartDefOf.Bladder);
+
+                if (newBladderPart != null)
+                {
+                    if (settings.debugging) Log.Message($"Restore procedure to {pawn.LabelShort}");
+                    pawn.health.AddHediff(RimWorld.HediffDefOf.MissingBodyPart, newBladderPart); // Mark the original bladder as missing
+                    pawn.health.RestorePart(newBladderPart); // Restore the new bladder part
+                    if (bladderSize == HediffDefOf.BigBladder)
+                    {
+                        addHediffToBladder(pawn, HediffDefOf.BigBladder);
+                    }
+                    if (bladderSize == HediffDefOf.SmallBladder)
+                    {
+                        addHediffToBladder(pawn, HediffDefOf.SmallBladder);
+                    }
+                        
+                }
+            }
+        }
+        public static BodyPartRecord getBladderControlSourcePart(Pawn pawn)
+        {
+            foreach (var part in pawn.health.hediffSet.GetNotMissingParts())
+            {
+                if (part.def.tags.Contains(BodyPartTagDefOf.BladderControlSource))
+                {
+                    return part;
+                }
+            }
+            return null;
+        }
         public static void getMemory(Pawn pawn, ThoughtDef thought, int stage = 0)
         {
             var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
