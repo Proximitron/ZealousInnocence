@@ -12,7 +12,7 @@
 		<defName>Onesies_Loved</defName>
 		<issue>Onesies</issue>
 		<label>loved</label>
-		<description>Onesies are the best! They are comfy, cute and even make diapers last longer!</description>
+		<description>Onesies are the best! They are comfy, cute, and even make diapers last longer!</description>
 		<impact>Low</impact>
 		<defaultSelectionWeight>0</defaultSelectionWeight>
 		<requiredMemes>
@@ -26,7 +26,7 @@
 		<defName>Onesies_Neutral</defName>
 		<issue>Onesies</issue>
 		<label>neutral</label>
-		<description>Onesies are childish, but they are pretty comfortable. If nothing better is in reach, they are ok I guess.</description>
+		<description>Onesies are childish, but they are pretty comfortable. If nothing better is in reach, they are alright.</description>
 		<impact>Low</impact>
 		<defaultSelectionWeight>1</defaultSelectionWeight>
 	</PreceptDef>
