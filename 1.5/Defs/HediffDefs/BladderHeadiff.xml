@@ -48,7 +48,7 @@
 	<HediffDef ParentName="ChronicDiseaseBase">
     <defName>WeakBladder</defName>
     <label>Weak bladder</label>
-    <description>A very weak bladder. Accidents might occure randomly and/or throughout the night.</description>
+    <description>A very weak bladder. Accidents might occure randomly and/or during the night.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <makesSickThought>false</makesSickThought>
     <tendable>false</tendable>
@@ -104,7 +104,7 @@
   <HediffDef ParentName="ChronicDiseaseBase">
     <defName>Incontinent</defName>
     <label>incontinent</label>
-    <description>No control over their bladder at all. Diapers are strongly recommended.</description>
+    <description>This pawn has no control over their bladder at all. Diapers are strongly recommended.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <makesSickThought>false</makesSickThought>
     <tendable>false</tendable>
