@@ -140,7 +140,7 @@
     <defName>BladderBedwettingAlways</defName>
     <label>bedwetter</label>
     <labelShortAdj>bedwetter</labelShortAdj>
-    <description>Pawns with this gene will always have no control over their bladder during the night. Lots of nighttime protection is advised.</description>
+    <description>Pawns with this gene will have severely hindered control over their bladder as they sleep. Lots of nighttime protection is advised.</description>
     <iconPath>Genes/Icons/Bedwetter</iconPath>
     <displayOrderInCategory>-80</displayOrderInCategory>
     <statFactors>
