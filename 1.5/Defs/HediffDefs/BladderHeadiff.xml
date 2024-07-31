@@ -4,7 +4,7 @@
 <HediffDef ParentName="ChronicDiseaseBase">
   <defName>BedWetting</defName>
   <label>bedwetting</label>
-  <description>Condition that affects bedwetting from childhood through adulthood. Can grow out of it as they get older. Needs protection at night.</description>
+  <description>A condition that affects bedwetting from childhood through adulthood, many pawns can grow out of it as they get older. Protection is needed during the night.</description>
   <hediffClass>HediffWithComps</hediffClass>
   <makesSickThought>false</makesSickThought>
   <tendable>false</tendable>
@@ -27,7 +27,7 @@
   <HediffDef ParentName="InfectionBase">
     <defName>BladderInfection</defName>
     <label>Bladder infection</label>
-    <description>A temporary infection of the bladder. They will have great trouble making it to the toilet in time. Accidents might occur randomly and/or at night.</description>
+    <description>A temporary infection of the bladder. They will have great trouble making it to the toilet in time. Accidents might occur randomly and/or during the night.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <makesSickThought>true</makesSickThought>
     <tendable>true</tendable>
@@ -48,7 +48,7 @@
 	<HediffDef ParentName="ChronicDiseaseBase">
     <defName>WeakBladder</defName>
     <label>Weak bladder</label>
-    <description>A very weak bladder. Accidents might occure randomly and/or at night.</description>
+    <description>A very weak bladder. Accidents might occure randomly and/or throughout the night.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <makesSickThought>false</makesSickThought>
     <tendable>false</tendable>
@@ -62,7 +62,7 @@
 	<HediffDef ParentName="AddedBodyPartBase">
 		<defName>SmallBladder</defName>
     <label>Small bladder</label>
-    <description>This bladder is smaller than normal. More frequent visits to the toilet are adviced.</description>
+    <description>A bladder that is smaller than normal. They will visit the toilet more frequently, if they can make it.</description>
     <labelNoun>a small bladder</labelNoun>
     <descriptionHyperlinks><ThingDef>BladderSmall</ThingDef></descriptionHyperlinks>
     <spawnThingOnRemoved>BladderSmall</spawnThingOnRemoved>
@@ -83,7 +83,7 @@
 	<HediffDef ParentName="AddedBodyPartBase">
     <defName>BigBladder</defName>
     <label>Big Bladder</label>
-    <description>This pawn has a big bladder. Less frequent visits to the toilet are possible.</description>
+    <description>A bladder that is bigger than normal. They will visit the toilet less frequently, and will almost always make it.</description>
     <labelNoun>a big bladder</labelNoun>
     <descriptionHyperlinks><ThingDef>BladderBig</ThingDef></descriptionHyperlinks>
     <spawnThingOnRemoved>BladderBig</spawnThingOnRemoved>
@@ -104,7 +104,7 @@
   <HediffDef ParentName="ChronicDiseaseBase">
     <defName>Incontinent</defName>
     <label>incontinent</label>
-    <description>No control over their bladder at all, even if they have one. Diapers are strongly recommended.</description>
+    <description>No control over their bladder at all. Diapers are strongly recommended.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <makesSickThought>false</makesSickThought>
     <tendable>false</tendable>
