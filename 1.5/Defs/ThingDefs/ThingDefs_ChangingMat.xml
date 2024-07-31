@@ -3,7 +3,7 @@
 	<ThingDef ParentName="RitualSeatBase">
     <defName>ChangingMat</defName>
     <label>changing mat</label>
-    <description>A changing mat for getting changed, or for sitting on on while observing rituals, praying, or discussing. Can also be used for quick naps.</description>
+    <description>A changing mat for getting changed, or to sit on while observing rituals, praying, or conversating. Can also be used for quick naps.</description>
     <graphicData>
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Misc/ChangingMat/ChangingMat</texPath>
