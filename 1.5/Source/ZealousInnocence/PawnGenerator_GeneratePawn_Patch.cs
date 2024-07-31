@@ -51,9 +51,9 @@ namespace ZealousInnocence
                     if (!HasGeneWithExclusionTag(__result, "BladderSize"))
                     {
                         rand = Rand.ValueSeeded(diaperNeed.bedwettingSeed + 4213);
-                        if (rand < 0.8f)
+                        if (rand < 0.25f)
                         {
-                            if (rand < 0.4f)
+                            if (rand < 0.15f)
                             {
                                 /*if (rand < 0.02f)
                                 {
@@ -127,15 +127,16 @@ namespace ZealousInnocence
 
             if(HasGeneWithExclusionTag(__result, "BladderSize"))
             {
-                if (settings.debugging) Log.Message($"Pawn {__result.LabelShort} has a bladder size gene");
+                var debugGenes = settings.debugging && settings.debuggingGenes;
+                if (debugGenes) Log.Message($"Pawn {__result.LabelShort} has a bladder size gene");
                 if (HasGene(__result, GeneDefOf.BladderSizeBig))
                 {
-                    if (settings.debugging) Log.Message($"Pawn {__result.LabelShort} patching big");
+                    if (debugGenes) Log.Message($"Pawn {__result.LabelShort} patching big");
                     DiaperHelper.replaceBladderPart(__result, HediffDefOf.BigBladder);
                 }
                 if (HasGene(__result, GeneDefOf.BladderSizeSmall))
                 {
-                    if (settings.debugging) Log.Message($"Pawn {__result.LabelShort} patching small");
+                    if (debugGenes) Log.Message($"Pawn {__result.LabelShort} patching small");
                     DiaperHelper.replaceBladderPart(__result, HediffDefOf.SmallBladder);
                 }
             }

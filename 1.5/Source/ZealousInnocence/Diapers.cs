@@ -519,21 +519,21 @@ namespace ZealousInnocence
         public static void replaceBladderPart(Pawn pawn, HediffDef bladderSize)
         {
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            
-            if (settings.debugging) Log.Message($"Pawn {pawn.LabelShort} searching bladder");
+            var debugGenes = settings.debugging && settings.debuggingGenes;
+            if (debugGenes) Log.Message($"Pawn {pawn.LabelShort} searching bladder");
             BodyPartRecord originalBladder = getBladderControlSourcePart(pawn);
             if (originalBladder != null)
             {
                 // Remove the original Bladder part
                 pawn.health.hediffSet.hediffs.RemoveAll(hediff => hediff.Part == originalBladder);
-                if (settings.debugging) Log.Message($"Pawn {pawn.LabelShort} removing old hediff");
+                if (debugGenes) Log.Message($"Pawn {pawn.LabelShort} removing old hediff");
 
                 // Check if the new bladder part is already defined in the pawn's body
                 BodyPartRecord newBladderPart = pawn.RaceProps.body.AllParts.Find(part => part.def == BodyPartDefOf.Bladder);
 
                 if (newBladderPart != null)
                 {
-                    if (settings.debugging) Log.Message($"Restore procedure to {pawn.LabelShort}");
+                    if (debugGenes) Log.Message($"Restore procedure to {pawn.LabelShort}");
                     pawn.health.AddHediff(RimWorld.HediffDefOf.MissingBodyPart, newBladderPart); // Mark the original bladder as missing
                     pawn.health.RestorePart(newBladderPart); // Restore the new bladder part
                     if (bladderSize == HediffDefOf.BigBladder)
