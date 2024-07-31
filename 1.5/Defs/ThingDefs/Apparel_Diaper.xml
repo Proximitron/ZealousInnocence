@@ -55,7 +55,7 @@
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Diaper_Flimsy</defName>
 		<label>flimsy diaper</label>
-		<description>An extremly flimsy, cheap leather diaper.</description>
+		<description>An extremley flimsy, cheap leather diaper.</description>
 		<graphicData>
 			<texPath>Apparel/Diaper/Nappy/Nappy_Dirty</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
@@ -220,7 +220,7 @@
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Premium_Diaper</defName>
 		<label>premium diaper</label>
-		<description>A single use, very puffy and cute diaper from finest fabric.</description>
+		<description>A very poofy and cute diaper, made with materials to be highly absorbant. Able to withstand multiple and many uses.</description>
 		<graphicData>
 			<texPath>Apparel/Diaper/PlainCloth/PlainCloth_Premium</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
