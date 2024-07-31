@@ -132,7 +132,7 @@
   <ThingDef ParentName="BedWithQualityBase" Name="CribPillow">
     <defName>CribPillow</defName>
     <label>crib with a pillow</label>
-    <description>A high walled crib, designed to keep a child safe through the night. With a pillow for increased comfort.</description>
+    <description>A high walled crib, designed to keep a baby safe throughout the night. With a soft pillow for increased comfort.</description>
     <thingClass>Building_Bed</thingClass>
     <graphicData> 
       <texPath>Things/Building/Furniture/Crib/Crib</texPath>
@@ -195,7 +195,7 @@
   <ThingDef ParentName="DoubleBed" Name="DoubleCribPillow">
     <defName>DoubleCribPillow</defName>
     <label>double crib with a pillow</label>
-    <description>A high walled crib, designed to keep a child safe through the night. With a pillow for increased comfort. Wide enough for two babies to cuddle each other.</description>
+    <description>A high walled crib, designed to keep two babys safe throughout the night. With two soft pillows for increased comfort.</description>
     <thingClass>Building_Bed</thingClass>
     <graphicData> 
       <texPath>Things/Building/Furniture/DoubleCrib/Double_Crib</texPath>

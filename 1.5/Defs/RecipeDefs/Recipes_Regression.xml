@@ -3,7 +3,7 @@
 	<RecipeDef ParentName="SurgeryFlesh">
 		<defName>SurgeryRegression</defName>
 		<label>Physical Regression</label>
-		<description>A dangerous operation to heal the brain with a powerful drug that causes physical regression. The treated person will be healed, but also being a child again.</description>
+		<description>A dangerous operation to heal the brain using a very powerful drug, this comes with a side effect of physical regression. The patient's brain will be restored, but the patient will also become a child again.</description>
 		<workerClass>ZealousInnocence.Recipe_Regression</workerClass>
 		<jobString>Performing physical regression operation.</jobString>
 		<workAmount>5000</workAmount>
@@ -35,7 +35,7 @@
 	<RecipeDef ParentName="SurgeryFlesh">
 		<defName>SurgeryRegressionMental</defName>
 		<label>Mental Regression</label>
-		<description>A dangerous operation to heal the brain with a powerful drug that causes mental regression. Despite healing the brain physically, it supresses major brain function for a time.</description>
+		<description>A dangerous operation to heal the brain using a powerful drug, this comes with a side effect of mental regression. Despite healing the brain physically, it shifts and supresses major brain functionality, the patient's brain is essentially reverted to that of a newborn</description>
 		<workerClass>ZealousInnocence.Recipe_Regression</workerClass>
 		<jobString>Performing mental regression operation.</jobString>
 		<modExtensions>

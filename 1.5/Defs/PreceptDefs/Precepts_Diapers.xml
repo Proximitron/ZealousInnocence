@@ -26,7 +26,7 @@
 		<defName>Diapers_Neutral</defName>
 		<issue>Diapers</issue>
 		<label>neutral</label>
-		<description>It's better to use the toilet if possible. But if someone can't control it anymore, its better then the alternative</description>
+		<description>It's better to use the toilet if possible. But if someone can't control it, its better then the alternative</description>
 		<impact>Low</impact>
 		<defaultSelectionWeight>1</defaultSelectionWeight>
 	</PreceptDef>
@@ -34,7 +34,7 @@
 		<defName>Diapers_Hated</defName>
 		<issue>Diapers</issue>
 		<label>hated</label>
-		<description>I would rather die then have to wear diaper let alone use it.</description>
+		<description>I would rather die then have to wear a diaper, let alone use it.</description>
 		<impact>Medium</impact>
 		<defaultSelectionWeight>1</defaultSelectionWeight>
 	</PreceptDef>

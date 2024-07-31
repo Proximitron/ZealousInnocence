@@ -21,7 +21,7 @@
 		<defName>BedwettingChance</defName>
 		<category>BasicsPawn</category>
 		<label>bedwetting modifier</label>
-    <description>Describes the chance this pawn will develop issues with bedwetting in their lifetime.\n\nShould they do so, this will only cause issues while being asleep.Night time protection is recommended in such cases.</description>
+    <description>Describes the chance this pawn will develop issues with bedwetting in their lifetime.\n\nShould they do so, this will only cause issues while being asleep. Nighttime protection is recommended in such cases.</description>
     
     <defaultBaseValue>1.0</defaultBaseValue>
     <minValue>0.0</minValue>

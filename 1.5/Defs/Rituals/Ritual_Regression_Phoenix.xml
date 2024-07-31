@@ -2,7 +2,7 @@
 <Defs>
 	<PreceptDef Abstract="True" Name="RebirthBase" ParentName="FuneralBase">
 		<label>rebirth</label>
-		<description>A gathering that occurs around a believer's grave to revive them. The corpse is exhumed and brought back to life. The brain is restored by a powerful drug that causes regression of body and mind.</description>
+		<description>A gathering that occurs around a believer's grave to revive them. The corpse is exhumed and brought back to life. The brain is restored by a powerful drug that causes regression of both body and mind.</description>
 		<extraTextPawnDeathLetter>{PAWN_nameDef} should be reborn, so {PAWN_possessive} friends and family don't need to grieve.</extraTextPawnDeathLetter>
 		<issue>Ritual</issue>
 		<impact>Medium</impact>
@@ -28,7 +28,7 @@
     <label>rebirth</label>
 		<ritualPatternBase>RebirthPattern</ritualPatternBase>
     <alsoAdds>PhoenixNoCorpse</alsoAdds>
-    <extraTextPawnDeathLetter>{PAWN_nameDef} should be reborn so {PAWN_possessive} friends and family don't need to suffer.</extraTextPawnDeathLetter>
+    <extraTextPawnDeathLetter>{PAWN_nameDef} should be reborn so {PAWN_possessive} friends and family don't need to grieve.</extraTextPawnDeathLetter>
   </PreceptDef>
 
   <PreceptDef ParentName="RebirthBase">
@@ -337,7 +337,7 @@
 				<label>Amazing</label>
 				<chance>0.2</chance>
 				<memory>HeartwarmingFuneral</memory>
-				<description>The {0} was amazing. The speech was captivating and heartfelt, the reborn came back, like they where never gone!</description>
+				<description>The {0} was amazing. The speech was captivating and heartfelt, the reborn came back, like they were never gone!</description>
 				<positivityIndex>2</positivityIndex>
 			</li>
 		</outcomeChances>

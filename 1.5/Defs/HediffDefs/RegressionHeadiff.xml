@@ -2,7 +2,7 @@
 <Defs>
 	<HediffDef>
 		<defName>RegressionState</defName>
-		<description>This person is mentally regressed. It will take some time for them to go back to normal.</description>
+		<description>This person is mentally regressed. It will take some time for them to become their normal adult self. Until then, your colony has another baby.</description>
 		<hediffClass>HediffWithComps</hediffClass>
 		<label>regression</label>
 		<everCurableByItem>false</everCurableByItem>
