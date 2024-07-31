@@ -131,7 +131,7 @@ namespace ZealousInnocence
                 diaperNeed.bedwettingSeed = pawn.thingIDNumber;
                 var def = HediffDef.Named("BedWetting");
                 
-                var debugging = settings.debugging;
+                var debugging = settings.debugging && settings.debuggingBedwetting;
                 if (pawn.health.hediffSet.HasHediff(def))
                 {
                     var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);

@@ -310,7 +310,7 @@ namespace ZealousInnocence
 
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             var debugging = settings.debugging && settings.debuggingCapacities;
-
+            var debugBedwetting = settings.debugging && settings.debuggingBedwetting;
             if (pawn.Awake())
             {
                 if(sleepTrack > 0)
@@ -331,8 +331,9 @@ namespace ZealousInnocence
                 if (bladder.CurLevel <= 0.75f && sleepTrack % 10 == 0)
                 {
                     // 7% every 10 ticks. Sleep roughly 100 ticks, makes it a 10 times 7% chance (70% times the remember potty chance of 5%-100%)
-                    if (!DiaperHelper.remembersPotty(pawn) && Rand.ChanceSeeded(0.07f, pawn.HashOffsetTicks()))
+                    if (Rand.ChanceSeeded(0.07f, pawn.HashOffsetTicks()) && !DiaperHelper.remembersPotty(pawn))
                     {
+                        if(debugBedwetting) Log.Message($"Triggering bedwetting incident at {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
                         startAccident();
                     }
                 }
@@ -373,7 +374,7 @@ namespace ZealousInnocence
 
                     // Get a toilet job for the pawn
                     Job job = jobGiver.TryGiveJob(pawn);
-
+                    if (debugBedwetting) Log.Message($"conditions met for wakeup call at level {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
                     // If a job is found, start the job
                     if (job != null)
                     {
@@ -390,12 +391,12 @@ namespace ZealousInnocence
                     */
                 if (startPottyRun)
                 {
-                    if (debugging) Log.Message($"prevent fail of bladder control at level {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                    if (debugBedwetting) Log.Message($"prevent fail of bladder control at level {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
                 }
                 else
                 {
                     startAccident();
-                    if (debugging) Log.Message($"doing fail of bladder control at level {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                    if (debugBedwetting) Log.Message($"doing fail of bladder control at level {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
                 }
 
             }
@@ -514,7 +515,7 @@ namespace ZealousInnocence
                 return (int)Math.Ceiling(damage);
             }
 
-            return (int)Math.Floor(damage); ;
+            return (int)Math.Floor(damage);
         }
     }
     public class Recipe_PutInDiaper : RecipeWorker
@@ -711,14 +712,16 @@ namespace ZealousInnocence
                 // Use the in-game day combined with pawn's birth year and birth day as the seed
                 //int seed = GenDate.DaysPassed + pawn.ageTracker.BirthYear + pawn.ageTracker.BirthDayOfYear;
                 var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+                var debugBedwetting = settings.debugging && settings.debuggingBedwetting && !pawn.Awake();
+                var debug = settings.debugging && (settings.debuggingCapacities || debugBedwetting);
                 if (Rand.ChanceSeeded(probability, diaperNeed.FailureSeed))
                 {
-                    if (settings.debugging && settings.debuggingCapacities) Log.Message($"JobGiver_UseToilet prefix: job denied, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                    if (debug) Log.Message($"JobGiver_UseToilet prefix: job denied, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
                     return false; // depending on the level on control
                 }
                 else
                 {
-                    if (settings.debugging && settings.debuggingCapacities) Log.Message($"JobGiver_UseToilet prefix: job given, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                    if (debug) Log.Message($"JobGiver_UseToilet prefix: job given, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
                 }
             }
             return true;

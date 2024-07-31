@@ -49,6 +49,7 @@ namespace ZealousInnocence
         public bool debuggingJobs = false;
         public bool debuggingCapacities = false;
         public bool debuggingGenes = false;
+        public bool debuggingBedwetting = false;
 
         public override void ExposeData()
         {
@@ -65,6 +66,7 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref debuggingJobs, "debuggingJobs", false);
             Scribe_Values.Look(ref debuggingCapacities, "debuggingCapacities", false);
             Scribe_Values.Look(ref debuggingGenes, "debuggingGenes", false);
+            Scribe_Values.Look(ref debuggingBedwetting, "debuggingBedwetting", false);
         }
     }
 
@@ -237,6 +239,8 @@ namespace ZealousInnocence
                 listStandard.CheckboxLabeled("DEBUG Jobs", ref settings.debuggingJobs, "Generates debugging related to jobs.");
                 listStandard.CheckboxLabeled("DEBUG Capacities", ref settings.debuggingCapacities, "Generates debugging related to capacities like bladder control.");
                 listStandard.CheckboxLabeled("DEBUG Genes", ref settings.debuggingGenes, "Generates debugging related to genes and creation of gene related conditions and changes.");
+                listStandard.CheckboxLabeled("DEBUG Bedwetting", ref settings.debuggingBedwetting, "Generates debugging related to all bedwetting related functions and calls.");
+                
             }
             if (settings.debugging && listStandard.ButtonText("Check ForeverYoung active"))
             {

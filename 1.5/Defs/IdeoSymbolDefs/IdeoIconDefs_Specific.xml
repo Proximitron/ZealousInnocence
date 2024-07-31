@@ -3,7 +3,7 @@
 
   <IdeoIconDef>
     <defName>Diaper</defName>
-    <iconPath>Apparel/Diaper/Nappy</iconPath>
+    <iconPath>Apparel/Diaper/PlainCloth/PlainCloth</iconPath>
     <memes>
       <li>Babs</li>
     </memes>

@@ -25,6 +25,7 @@ namespace ZealousInnocence
             {
                 var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
                 var debugging = settings.debugging && settings.debuggingJobs;
+                var debugBedwetting = debugging || (settings.debugging && settings.debuggingBedwetting && !pawn.Awake());
                 if (pawn.Awake())
                 {
                     var liked = DiaperHelper.getDiaperPreference(pawn);
@@ -45,7 +46,7 @@ namespace ZealousInnocence
                 }
                 else
                 {
-                    if (debugging) Log.Message($"JobGiver_UseToilet not awake for {pawn.Name.ToStringShort}");
+                    if (debugging || debugBedwetting) Log.Message($"JobGiver_UseToilet not awake for {pawn.Name.ToStringShort}");
                     __result = null;
                     return;
                 }

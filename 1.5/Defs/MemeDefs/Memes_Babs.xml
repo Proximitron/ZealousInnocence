@@ -15,7 +15,7 @@
     <defName>Babs</defName>
     <label>babs</label>
     <description>Going to the potty is a waste of time. Free yourself from this evil!</description>
-    <iconPath>Apparel/Diaper/Nappy</iconPath>
+    <iconPath>Apparel/Diaper/PlainCloth/PlainCloth</iconPath>
     <groupDef>Misc</groupDef>
     <impact>2</impact>
     <renderOrder>999</renderOrder>
