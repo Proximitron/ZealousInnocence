@@ -394,7 +394,7 @@ namespace ZealousInnocence
                     string texPath = apparel.def.graphicData.texPath;
                     if (hpPercentage < 0.5f)
                     {
-                        texPath += "_Dirty";
+                        //texPath += "_Dirty";
                     }
 
                     // Load the appropriate texture
@@ -424,6 +424,7 @@ namespace ZealousInnocence
         public static void Postfix(ApparelProperties __instance, Pawn pawn, bool ignoreGender, ref bool __result)
         {
             if (pawn.Map != null && pawn.Spawned && !pawn.Dead) return;
+            if (!__result) return; // we don't overwrite things that can't be worn
 
             if (__instance.tags.Contains("Onesies"))
             {
@@ -434,6 +435,7 @@ namespace ZealousInnocence
                 {
                     if(DiaperHelper.needsDiaper(pawn)) __result = true;
                 }
+
             }
             else if (__instance.tags.Contains("DiapersNight"))
             {
