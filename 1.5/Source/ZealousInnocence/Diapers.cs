@@ -201,6 +201,26 @@ namespace ZealousInnocence
             {
                 bladder.CurLevel += peeAmountPercentile;
             }
+            List<Apparel> legApparel = pawn.apparel.WornApparel.Where(apparel => apparel.def.apparel.bodyPartGroups.Contains(BodyPartGroupDefOf.Legs)).ToList();
+            int splitOfDamage = legApparel.Count;
+            int damageBase = 25; // damage for a full bladder in hp
+            for (int i = legApparel.Count - 1; i >= 0; i--)
+            {
+                Apparel apparel = legApparel[i];
+                float damage = damageBase * (peeAmountPercentile / splitOfDamage);
+                int finDamage = chancedDamage(damage);
+                if (debugging) Log.Message($"crapPants: causing {finDamage} damage to {apparel.LabelShort} for {pawn.LabelShort} " + pawn.Name);
+                apparel.HitPoints -= Math.Min(apparel.HitPoints, finDamage);
+                pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
+
+                // Check if the apparel gets destroyed during this process
+                if (apparel.HitPoints < 1)
+                {
+                    apparel.Notify_LordDestroyed();
+                    apparel.Destroy(DestroyMode.Vanish);
+                }
+            }
+
             if (pawn.InBed())
             {
                 var bed = pawn.CurrentBed();
@@ -217,7 +237,6 @@ namespace ZealousInnocence
                 if (!pawn.ageTracker.Adult) DiaperHelper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
                 else if (DiaperHelper.needsDiaperNight(pawn)) DiaperHelper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
                 else DiaperHelper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
-
                 pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
             }
 
