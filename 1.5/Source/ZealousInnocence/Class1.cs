@@ -424,7 +424,7 @@ namespace ZealousInnocence
         public static void Postfix(ApparelProperties __instance, Pawn pawn, bool ignoreGender, ref bool __result)
         {
             if (pawn.Map != null && pawn.Spawned && !pawn.Dead) return;
-            if (!__result) return; // we don't overwrite things that can't be worn
+            if (!__result) return; // we don't overwrite things that can't be worn with a positive response
 
             if (__instance.tags.Contains("Onesies"))
             {
