@@ -10,20 +10,6 @@
     </exclusionTags>
   </GeneDef>
 
-  <!--<GeneDef ParentName="GeneBladderSize">
-    <defName>BladderSizeTiny</defName>
-    <label>tiny bladder</label>
-    <labelShortAdj>tiny bladder</labelShortAdj>
-    <description>How cute! This pawn needs to run fast and often just to make it in time.</description>
-    <iconPath>Genes/Icons/TinyBladder</iconPath>
-    <displayOrderInCategory>-160</displayOrderInCategory>
-    <statFactors>
-      <BladderRateMultiplier>1.5</BladderRateMultiplier>
-    </statFactors>
-    <biostatCpx>0</biostatCpx>
-    <biostatMet>1</biostatMet>
-  </GeneDef>-->
-
   <GeneDef ParentName="GeneBladderSize">
     <defName>BladderSizeSmall</defName>
     <label>small bladder</label>
@@ -45,20 +31,6 @@
     <biostatCpx>0</biostatCpx>
     <biostatMet>-1</biostatMet>
   </GeneDef>
-
-  <!--<GeneDef ParentName="GeneBladderSize">
-    <defName>BladderSizeHuge</defName>
-    <label>huge bladder</label>
-    <labelShortAdj>huge bladder</labelShortAdj>
-    <description>This pawn's bladder is exceptionally big. It's amazing how long they can hold it!</description>
-    <iconPath>Genes/Icons/HugeBladder</iconPath>
-    <displayOrderInCategory>-130</displayOrderInCategory>
-    <statFactors>
-      <BladderRateMultiplier>-0.35</BladderRateMultiplier>
-    </statFactors>
-    <biostatCpx>0</biostatCpx>
-    <biostatMet>-2</biostatMet>
-  </GeneDef>-->
 
   <GeneDef Name="GeneBladderStrength" Abstract="True">
     <displayCategory>Bladder</displayCategory>

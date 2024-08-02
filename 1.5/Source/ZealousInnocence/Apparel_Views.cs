@@ -45,6 +45,7 @@ namespace ZealousInnocence
         public static PreceptDef Onesies_Neutral;
         public static PreceptDef Onesies_Hated;
 
+        public static PreceptDef CribBed_Preferred;
         static PreceptDefOf()
         {
             DefOfHelper.EnsureInitializedInCtor(typeof(RimWorld.PreceptDefOf));

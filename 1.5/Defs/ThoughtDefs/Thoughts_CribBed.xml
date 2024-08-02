@@ -6,9 +6,19 @@
 		<validWhileDespawned>true</validWhileDespawned>
 		<stages>
 			<li>
-			<label>Slept in a crib</label>
-			<description>I felt so small and cute! My crib always keeps me safe.</description>
-			<baseMoodEffect>3</baseMoodEffect>
+				<label>Slept in a crib</label>
+				<description>I felt so crammed and uncomfortable. The rails made it feel like I was in a prisoner's bed!</description>
+				<baseMoodEffect>-7</baseMoodEffect>
+			</li>
+			<li>
+				<label>Slept in a crib</label>
+				<description>I felt so small and cute! My crib always keeps me safe.</description>
+				<baseMoodEffect>3</baseMoodEffect>
+			</li>
+			<li>
+				<label>Slept in a crib</label>
+				<description>I like this special bed, it's exactly my size and I can't fall out!</description>
+				<baseMoodEffect>5</baseMoodEffect>
 			</li>
 		</stages>
   </ThoughtDef>

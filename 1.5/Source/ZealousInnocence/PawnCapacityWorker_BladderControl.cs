@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using DubsBadHygiene;
+using HarmonyLib;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace ZealousInnocence
     public class PawnCapacityWorker_BladderControl : PawnCapacityWorker
     {
         public bool simulateSleep = false;
+        public bool simulateAwake = false;
         public override float CalculateCapacityLevel(HediffSet diffSet,
                                                       List<PawnCapacityUtility.CapacityImpactor> impactors = null)
         {
@@ -39,42 +41,55 @@ namespace ZealousInnocence
                 }
                 num2 *= ageFactor;
 
-                bool needsDiaper = num2 <= 0.5;
-                bool awake = pawn.Awake() && !simulateSleep;
+                num2 *= LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().generalBladderControlFactor;
 
-                float sleepFactor = GetSleepingFactor(pawn, awake);
-                if (sleepFactor != 1f && impactors != null)
+                bool needsDiaper = num2 <= DiaperHelper.NeedsDiaperBreakpoint;
+                bool awake = (pawn.Awake() || simulateAwake) && !simulateSleep;
+                
+                float whileAsleepFactor = GetSleepingFactor(pawn, false);
+                float whileAwakeTotal = num2;
+                float whileAsleepTotal = whileAwakeTotal * whileAsleepFactor;
+
+                float sleepFactor = awake ? GetSleepingFactor(pawn, awake) : whileAsleepFactor;
+
+                if (sleepFactor < 0.99f && impactors != null)
                 {
                     impactors.Add(new CapacityImpactorCustom { customLabel = "Sleeping", customValue = sleepFactor });
                 }
                 num2 *= sleepFactor;
 
+                float bedwettingChance = DiaperHelper.CalculateProbability(whileAsleepTotal);
                 if (impactors != null)
                 {
+                    string bedwetting = "(low)";
+                    if (bedwettingChance > 0.2f)
+                    {
+                        if (bedwettingChance > 0.6f)
+                        {
+                            bedwetting = $"(very high)";
+                        }
+                        else if (bedwettingChance > 0.4f)
+                        {
+                            bedwetting = $"(high)";
+                        }
+                        else
+                        {
+                            bedwetting = $"(medium)";
+                        }
+                    }
                     if (needsDiaper)
                     {
                         impactors.Add(new CapacityImpactorCustom { customString = "Needs Diapers" });
                     }
                     else
                     {
-                        float whileAsleep = awake ? GetSleepingFactor(pawn, false) * num2 : num2;
-                        if (whileAsleep <= 0.6f)
+                        if(whileAsleepTotal <= DiaperHelper.NeedsDiaperNightBreakpoint)
                         {
-                            if(whileAsleep <= 0.25f)
-                            {
-                                impactors.Add(new CapacityImpactorCustom { customString = "High Bedwetting Risk" });
-                            }
-                            else if(whileAsleep <= 0.37f)
-                            {
-                                impactors.Add(new CapacityImpactorCustom { customString = "Medium Bedwetting Risk" });
-                            }
-                            else
-                            {
-                                impactors.Add(new CapacityImpactorCustom { customString = "Low Bedwetting Risk" });
-                            }
-                            
+                            impactors.Add(new CapacityImpactorCustom { customString = "Needs Pull-Ups" });
                         }
                     }
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "Daytime Accidents", customValue = DiaperHelper.CalculateProbability(whileAwakeTotal) });
+                    impactors.Add(new CapacityImpactorCustom { customLabel = $"Bedwetting {bedwetting}", customValue = DiaperHelper.CalculateProbability(whileAsleepTotal) });
                 }
             }
             else
@@ -101,28 +116,28 @@ namespace ZealousInnocence
             {
                 factor = 0f; // Toddlers have no bladder control
             }
-            else if (age < 6)
+            else if (age <= 6)
             {
-                factor = (age - 3) / 3f * 0.5f; // Linear increase from 0 at age 3 to 0.5 at age 6
+                factor = Mathf.Lerp(0f, 0.5f, Mathf.InverseLerp(3, 6, age));
             }
-            else if(age == 6)
+            else if (age <= 9)
             {
-                factor = 0.51f; // tweak it to slightly be out of day diapers
+                factor = Mathf.Lerp(0.5f, 0.75f, Mathf.InverseLerp(6, 9, age));
             }
-            else if (age <= 15)
+            else if (age <= 17)
             {
-                factor = 0.5f + (age - 6) / 9f * 0.5f; // Linear increase from 0.5 at age 6 to 1.0 at age 14
+                factor = Mathf.Lerp(0.75f, 1.0f, Mathf.InverseLerp(9, 17, age));
             }
             // Senior age factor calculation
             else if (age >= 50)
             {
                 if (age <= 70)
                 {
-                    factor = 1.0f - (age - 50) / 20f * 0.25f; // Linear decrease from 1.0 at age 50 to 0.75 at age 70
+                    factor = 1.0f - (age - 50) / 20f * 0.2f; // Linear decrease from 1.0 at age 50 to 0.75 at age 70
                 }
                 else
                 {
-                    factor = 0.75f; // Maximum reduction at age 70 and beyond
+                    factor = 0.80f; // Maximum reduction at age 70 and beyond
                 }
             }
             else
@@ -137,15 +152,19 @@ namespace ZealousInnocence
         }
         private float GetSleepingFactor(Pawn pawn, bool isAwake)
         {
+            float total = 1.0f;
             if (!isAwake)
             {
                 if (pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
                 {
-                    return 0.35f;
+                    total -= 0.7f;
                 }
-                return 0.75f;
+                else
+                {
+                    total -= 0.17f;
+                }
             }
-            return 1.0f;
+            return Math.Min(1f, total * LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().generalNighttimeControlFactor);
         }
         private float GetStrenghFactor(Pawn pawn)
         {
@@ -162,6 +181,13 @@ namespace ZealousInnocence
             simulateSleep = true;
             float simulatedLevel = CalculateCapacityLevel(pawn.health.hediffSet, null);
             simulateSleep = false;
+            return simulatedLevel;
+        }
+        public float SimulateBladderControlAwake(Pawn pawn)
+        {
+            simulateAwake = true;
+            float simulatedLevel = CalculateCapacityLevel(pawn.health.hediffSet, null);
+            simulateAwake = false;
             return simulatedLevel;
         }
     }

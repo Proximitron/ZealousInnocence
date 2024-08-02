@@ -39,6 +39,12 @@ namespace ZealousInnocence
         {
             if (!__result.IsColonist) return;
 
+            Need bladder = __result.needs.TryGetNeed<Need_Bladder>();
+            if (bladder != null)
+            {
+                bladder.CurLevel = Rand.RangeSeeded(0.7f, 1.0f, __result.HashOffsetTicks());
+            }
+
             var diaperNeed = __result.needs.TryGetNeed<Need_Diaper>();
             var def = HediffDef.Named("BedWetting");
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
@@ -53,9 +59,9 @@ namespace ZealousInnocence
                     if (!HasGeneWithExclusionTag(__result, "BladderSize"))
                     {
                         rand = Rand.ValueSeeded(diaperNeed.bedwettingSeed + 4213);
-                        if (rand < 0.25f)
+                        if (rand < 0.15f)
                         {
-                            if (rand < 0.15f)
+                            if (rand < 0.10f)
                             {
                                 /*if (rand < 0.02f)
                                 {
@@ -109,7 +115,7 @@ namespace ZealousInnocence
                     if (!HasGeneWithExclusionTag(__result, "BladderStrength"))
                     {
                         rand = Rand.ValueSeeded(diaperNeed.bedwettingSeed + 5811);
-                        if (rand < 0.2f)
+                        if (rand < 0.14f)
                         {
                             if (rand < 0.1f)
                             {
@@ -117,11 +123,7 @@ namespace ZealousInnocence
                             }
                             else
                             {
-                                if (rand < 0.03f)
-                                {
-                                    AddGene(__result, GeneDefOf.BladderStrenghStrong);
-                                }
-
+                                AddGene(__result, GeneDefOf.BladderStrenghStrong);
                             }
                         }
                     }

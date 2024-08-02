@@ -13,6 +13,7 @@ using UnityEngine;
 using HarmonyLib;
 using System.Reflection;
 using DubsBadHygiene;
+using Verse.Noise;
 
 namespace ZealousInnocence
 {
@@ -32,43 +33,6 @@ namespace ZealousInnocence
 
             // Use MP.IsInMultiplayer to act upon it in other places
             // user can have it enabled and not be in session
-        }
-    }
-
-    public class ZealousInnocenceSettings : ModSettings
-    {
-        public float targetChronoAge = 10f;
-        public bool reduceAge = false;
-        public bool formerAdultsNeedLearning = true;
-        public bool formerAdultsCanHaveIdeoRoles = true;
-        public bool formerAdultsGetGrowthMoments = false;
-        public bool dynamicGenetics = true;
-        public float adultBedwetters = 0.05f;
-        public bool debugging = false;
-        public bool debuggingCloth = false;
-        public bool debuggingJobs = false;
-        public bool debuggingCapacities = false;
-        public bool debuggingGenes = false;
-        public bool debuggingBedwetting = false;
-        public bool debuggingApparelGenerator = false;
-
-        public override void ExposeData()
-        {
-            base.ExposeData();
-            Scribe_Values.Look(ref targetChronoAge, "targetChronoAge", 10f);
-            Scribe_Values.Look(ref reduceAge, "reduceAge", false);
-            Scribe_Values.Look(ref formerAdultsNeedLearning, "formerAdultsNeedLearning", true);
-            Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);
-            Scribe_Values.Look(ref formerAdultsGetGrowthMoments, "formerAdultsGetGrowthMoments", false);
-            Scribe_Values.Look(ref dynamicGenetics, "dynamicGenetics", true);
-            Scribe_Values.Look(ref adultBedwetters, "adultBedwetters", 0.05f);
-            Scribe_Values.Look(ref debugging, "debugging", false);
-            Scribe_Values.Look(ref debuggingCloth, "debuggingCloth", false);
-            Scribe_Values.Look(ref debuggingJobs, "debuggingJobs", false);
-            Scribe_Values.Look(ref debuggingCapacities, "debuggingCapacities", false);
-            Scribe_Values.Look(ref debuggingGenes, "debuggingGenes", false);
-            Scribe_Values.Look(ref debuggingBedwetting, "debuggingBedwetting", false);
-            Scribe_Values.Look(ref debuggingApparelGenerator, "debuggingApparelGenerator", false);
         }
     }
 
@@ -201,56 +165,9 @@ namespace ZealousInnocence
 
             }
         }
-
         public override void DoSettingsWindowContents(Rect inRect)
         {
-            Listing_Standard listStandard = new Listing_Standard();
-            listStandard.Begin(inRect);
-
-            listStandard.CheckboxLabeled("Dynamic Genetics", ref settings.dynamicGenetics, "Adds random genetic bladder properties to some of the NEWLY generated pawns, like small and big bladders or the tendencies for bedwetting.");
-            if (settings.dynamicGenetics)
-            {
-                listStandard.GapLine();
-                listStandard.Label($"Adult bedwetter chance: {Math.Round(settings.adultBedwetters * 100)}%", tooltip: "The rate of adults that wet the bed. Base value is 5%.");
-                settings.adultBedwetters = listStandard.Slider(settings.adultBedwetters, 0f, 1f);
-            }
-            listStandard.GapLine();
-            listStandard.CheckboxLabeled("Reduce Age", ref settings.reduceAge, "If checked, the reincarnation ritual will reduce the age of the pawn to that of a child. Otherwise it will regress the pawn mentally.");
-
-            listStandard.GapLine();
-            listStandard.Label("Ritual Age Result: " + settings.targetChronoAge, tooltip: "The target age a pawn will be reduced to by the rebirth ritual. Only works if 'Reduce Age' is checked as well.");
-            settings.targetChronoAge = (float)System.Math.Round(listStandard.Slider(settings.targetChronoAge, 3, 13));
-
-            if (settings.reduceAge) {
-                listStandard.GapLine();
-                listStandard.TextEntry("Options after this point will ONLY work if 'Reduce Age' is checked and 'ForeverYoung' is NOT installed!");
-                listStandard.TextEntry("If 'ForeverYoung' is installed, the setting of that mode will handle this settings instead!");
-                listStandard.CheckboxLabeled("Extra Growth Moments", ref settings.formerAdultsGetGrowthMoments, "If off, former adults will NOT get extra growth moments at 7/10/13. If on, growth moments will work as normal.");
-
-                if (ModsConfig.IdeologyActive)
-                {
-                    listStandard.CheckboxLabeled("Ideology Roles", ref settings.formerAdultsCanHaveIdeoRoles, "Allow former adults to hold roles in their ideology.");
-                }
-                listStandard.CheckboxLabeled("Learning Need", ref settings.formerAdultsNeedLearning, "Controlles if a pawn has still the need to learn after being regressed to the age of a child. Many child activity are based on this need. Without it, many childish behaviours will not happen.");
-            }
-            listStandard.GapLine();
-            listStandard.CheckboxLabeled("DEBUGGING Mode", ref settings.debugging, "Activates a lot of unnessessary logs and work, in case you want to find an error. Restart may be required in certain situations.");
-            if (settings.debugging)
-            {
-                listStandard.CheckboxLabeled("DEBUG Cloth", ref settings.debuggingCloth, "Generates debugging related to cloth.");
-                listStandard.CheckboxLabeled("DEBUG Jobs", ref settings.debuggingJobs, "Generates debugging related to jobs.");
-                listStandard.CheckboxLabeled("DEBUG Capacities", ref settings.debuggingCapacities, "Generates debugging related to capacities like bladder control.");
-                listStandard.CheckboxLabeled("DEBUG Genes", ref settings.debuggingGenes, "Generates debugging related to genes and creation of gene related conditions and changes.");
-                listStandard.CheckboxLabeled("DEBUG Bedwetting", ref settings.debuggingBedwetting, "Generates debugging related to all bedwetting related functions and calls.");
-                listStandard.CheckboxLabeled("DEBUG Apparel", ref settings.debuggingApparelGenerator, "Generates debugging related the apparel generator, used on generating new pawns.");
-
-            }
-            if (settings.debugging && listStandard.ButtonText("Check ForeverYoung active"))
-            {
-                ModChecker.ZealousInnocenceActive();
-                ModChecker.ForeverYoungActive();
-            }
-            listStandard.End();
+            settings.DoWindowContents(inRect);
 
             base.DoSettingsWindowContents(inRect);
         }
@@ -496,7 +413,7 @@ namespace ZealousInnocence
                 var preference = DiaperHelper.getDiaperPreference(pawn);
                 if (preference == DiaperLikeCategory.NonAdult)
                 {
-                    __result += 2f;
+                    __result += 0.5f;
                 }
                 else if (preference == DiaperLikeCategory.Liked)
                 {
@@ -540,7 +457,7 @@ namespace ZealousInnocence
                 var preference = OnesieHelper.getOnesiePreference(pawn);
                 if (preference == OnesieLikeCategory.NonAdult)
                 {
-                    __result += 1f;
+                    __result += 0.35f; // children don't care
                 }
                 else if (preference == OnesieLikeCategory.Liked)
                 {
@@ -550,6 +467,8 @@ namespace ZealousInnocence
                 {
                     __result -= 10f;
                 }
+                if (DiaperHelper.needsDiaper(pawn)) __result += 0.8f;
+                else if (DiaperHelper.needsDiaperNight(pawn)) __result += 0.4f;
                 if (debugging) Log.Message("Apparel " + ap.Label + " is onesie and rated " + __result + " for " + pawn.LabelShort);
             }
             //JobGiver_OptimizeApparel.ApparelScoreRaw
@@ -617,6 +536,7 @@ namespace ZealousInnocence
         public static HediffDef SmallBladder;
 
         public static HediffDef BedWetting;
+        public static HediffDef Incontinent;
     }
 
     [DefOf]
