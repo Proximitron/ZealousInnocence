@@ -349,8 +349,8 @@ namespace ZealousInnocence
                 // every 10 ticks of sleeping
                 if (bladder.CurLevel <= 0.75f && sleepTrack % 10 == 0)
                 {
-                    // 7% every 10 ticks. Sleep roughly 100 ticks, makes it a 10 times 7% chance (70% times the remember potty chance of 5%-100%)
-                    if (Rand.ChanceSeeded(0.07f, pawn.HashOffsetTicks()) && !DiaperHelper.remembersPotty(pawn))
+                    // 7% every 10 ticks. Sleep roughly 100 ticks, makes it a 10 times 10% chance (to remember potty chance of 5%-100%)
+                    if (Rand.ChanceSeeded(0.08f, pawn.HashOffsetTicks()) && !DiaperHelper.remembersPotty(pawn))
                     {
                         if(debugBedwetting) Log.Message($"Triggering bedwetting incident at {bladder.CurLevel} failpoint {DiaperHelper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
                         startAccident();
@@ -682,7 +682,7 @@ namespace ZealousInnocence
         public static float CalculateProbability(float bladderControl)
         {
             // Base chance of 1%
-            if (bladderControl > 1f) return 0.005f;
+            if (bladderControl > 1.25f) return 0.003f;
 
             // this only applies for bladder control under 100%
             bladderControl = Mathf.Clamp(bladderControl, 0f, 1f);
@@ -690,17 +690,17 @@ namespace ZealousInnocence
             if (bladderControl >= 0.75f)
             {
                 // Range 1.0 to 0.75: 1%-5% chance
-                return Mathf.Lerp(0.01f, 0.05f, Mathf.InverseLerp(1.0f, 0.75f, bladderControl));
+                return Mathf.Lerp(0.003f, 0.05f, Mathf.InverseLerp(1.25f, 0.75f, bladderControl));
             }
             else if (bladderControl >= 0.5f)
             {
                 // Range 0.75 to 0.5: 5%-30% chance
-                return Mathf.Lerp(0.05f, 0.30f, Mathf.InverseLerp(0.75f, 0.5f, bladderControl));
+                return Mathf.Lerp(0.05f, 0.25f, Mathf.InverseLerp(0.75f, 0.5f, bladderControl));
             }
             else if (bladderControl >= 0.15f)
             {
                 // Range 0.5 to 0.25: 30%-80% chance
-                return Mathf.Lerp(0.30f, 0.90f, Mathf.InverseLerp(0.5f, 0.15f, bladderControl));
+                return Mathf.Lerp(0.25f, 0.90f, Mathf.InverseLerp(0.5f, 0.15f, bladderControl));
             }
             else
             {
@@ -778,8 +778,11 @@ namespace ZealousInnocence
             return false;
         }
         public static bool needsDiaper(Pawn pawn)
-        {            
-            return getBladderControlLevel(pawn) <= 0.5f;
+        {   
+            if(pawn.Awake()) return getBladderControlLevel(pawn) <= 0.5f;
+
+            var bladderControlWorker = new PawnCapacityWorker_BladderControl();
+            return bladderControlWorker.SimulateBladderControlAwake(pawn) <= 0.5f;
         }
         public static bool acceptsDiaper(Pawn pawn)
         {
@@ -788,6 +791,8 @@ namespace ZealousInnocence
         }
         public static bool needsDiaperNight(Pawn pawn)
         {
+            if (!pawn.Awake()) return getBladderControlLevel(pawn) <= 0.5f;
+
             var bladderControlWorker = new PawnCapacityWorker_BladderControl();
             return bladderControlWorker.SimulateBladderControlDuringSleep(pawn) <= 0.5f;
         }

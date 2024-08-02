@@ -92,11 +92,11 @@ namespace ZealousInnocence
             }
             else if (age <= 9)
             {
-                chance = Mathf.Lerp(0.9f, 0.35f, (age - 3) / 6f); // Gradually decrease from 0.8 to 0.35 between ages 3 and 9
+                chance = Mathf.Lerp(0.9f, 0.39f, (age - 3) / 6f); // Gradually decrease from 0.8 to 0.35 between ages 3 and 9
             }
             else if (age <= 15)
             {
-                chance = Mathf.Lerp(0.28f, 0.08f, (age - 9) / 6f); // Gradually decrease from 0.28 to 0.07 between ages 10 and 15
+                chance = Mathf.Lerp(0.34f, Math.Min(0.08f, settings.adultBedwetters), (age - 9) / 6f); // Gradually decrease from 0.28 to 0.07 between ages 10 and 15
             }
             else if (age <= 65)
             {
@@ -104,7 +104,7 @@ namespace ZealousInnocence
             }
             else if (age <= 80)
             {
-                chance = Mathf.Lerp(0.05f, 0.3f, (age - 65) / 15f); // Gradually increase from 0.05 to 0.3 from age 65 to 80
+                chance = Mathf.Lerp(0.05f, 0.35f, (age - 65) / 15f); // Gradually increase from 0.05 to 0.3 from age 65 to 80
             }
             else
             {
