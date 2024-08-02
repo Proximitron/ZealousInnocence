@@ -4,21 +4,21 @@
 <HediffDef ParentName="ChronicDiseaseBase">
   <defName>BedWetting</defName>
   <label>bedwetting</label>
-  <description>A condition that affects bedwetting from childhood through adulthood, many pawns can grow out of it as they get older. Protection is needed during the night.</description>
+  <description>A condition that affects bedwetting from childhood through adulthood. Adults with the condition can no longer grow out of it.\n\nProtection is needed during the night.</description>
   <hediffClass>HediffWithComps</hediffClass>
   <makesSickThought>false</makesSickThought>
   <tendable>false</tendable>
   <stages>
     <li>
-      <label>childhood bedwetting</label>
+      <label>childhood</label>
       <minSeverity>0</minSeverity>
     </li>
     <li>
-      <label>teen bedwetting</label>
+      <label>teenage</label>
       <minSeverity>0.4</minSeverity>
     </li>
     <li>
-      <label>bedwetting</label>
+      <label>adulthood</label>
       <minSeverity>0.7</minSeverity>
     </li>
   </stages>

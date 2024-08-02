@@ -24,6 +24,9 @@ namespace ZealousInnocence
         public float generalBladderControlFactor = 1.00f;
         public float generalNighttimeControlFactor = 1.00f;
 
+        public float needDiapers = 0.45f;
+        public float needPullUp = 0.6f;
+        
         public bool debugging = false;
         public bool debuggingCloth = false;
         public bool debuggingJobs = false;
@@ -50,6 +53,8 @@ namespace ZealousInnocence
 
             Scribe_Values.Look(ref generalBladderControlFactor, "generalBladderControlFactor", 1.0f);
             Scribe_Values.Look(ref generalNighttimeControlFactor, "generalNighttimeControlFactor", 1.0f);
+            Scribe_Values.Look(ref needDiapers, "needDiapers", 0.45f);
+            Scribe_Values.Look(ref needPullUp, "needPullUp", 0.6f);
 
             Scribe_Values.Look(ref debugging, "debugging", false);
             Scribe_Values.Look(ref debuggingCloth, "debuggingCloth", false);
@@ -94,7 +99,7 @@ namespace ZealousInnocence
             }
             if (this.tab == 1)
             {
-                this.DebuggingTab(canvas.ContractedBy(10f));
+                this.DoExtraTab(canvas.ContractedBy(10f));
             }
             if (this.tab == 2)
             {
@@ -108,47 +113,50 @@ namespace ZealousInnocence
             row.Begin(canvas);
             row.GapLine(gabSize);
 
-            row.CheckboxLabeled("Reduce Age", ref reduceAge, "If checked, the reincarnation ritual will reduce the age of the pawn to that of a child. Otherwise it will regress the pawn mentally.");
+            row.CheckboxLabeled("SettingReduceAge".Translate(), ref reduceAge, "SettingReduceAgeHelp".Translate());
 
             row.GapLine(gabSize);
-            row.Label("Ritual Age Result: " + targetChronoAge, tooltip: "The target age a pawn will be reduced to by the rebirth ritual. Only works if 'Reduce Age' is checked as well.");
+            row.Label("SettingRitualAgeResult".Translate() + ": " + targetChronoAge, tooltip: "SettingRitualAgeResultHelp".Translate());
             targetChronoAge = (float)System.Math.Round(row.Slider(targetChronoAge, 3, 13));
 
             if (reduceAge)
             {
                 row.GapLine(gabSize);
-                row.TextEntry("Will not work if 'ForeverYoung' is installed!");
-                row.CheckboxLabeled("Extra Growth Moments", ref formerAdultsGetGrowthMoments, "If off, former adults will NOT get extra growth moments at 7/10/13. If on, growth moments will work as normal.");
+                row.TextEntry("SettingNotWithForeverYoung".Translate());
+                row.CheckboxLabeled("SettingExtraGrowthMoments", ref formerAdultsGetGrowthMoments, "SettingExtraGrowthMomentsHelp".Translate());
 
                 if (ModsConfig.IdeologyActive)
                 {
-                    row.CheckboxLabeled("Ideology Roles", ref formerAdultsCanHaveIdeoRoles, "Allow former adults to hold roles in their ideology.");
+                    row.CheckboxLabeled("SettingIdeologyRoles".Translate(), ref formerAdultsCanHaveIdeoRoles, "SettingIdeologyRolesHelp".Translate());
                 }
-                row.CheckboxLabeled("Learning Need", ref formerAdultsNeedLearning, "Controlles if a pawn has still the need to learn after being regressed to the age of a child. Many child activity are based on this need. Without it, many childish behaviours will not happen.");
+                row.CheckboxLabeled("SettingLearningNeed".Translate(), ref formerAdultsNeedLearning, "SettingLearningNeedHelp".Translate());
             }
+
             this.row.NewColumn();
             this.row.ColumnWidth = (canvas.width - 40f) * 0.33f;
             row.GapLine(gabSize);
 
-            row.CheckboxLabeled("Dynamic Genetics", ref dynamicGenetics, "Adds random genetic bladder properties to some of the NEWLY generated pawns, like small and big bladders or the tendencies for bedwetting.");
+            row.CheckboxLabeled("SettingDynamicGenetics".Translate(), ref dynamicGenetics, "SettingDynamicGeneticsHelp".Translate());
             if (dynamicGenetics)
             {
                 row.GapLine(gabSize);
-                row.Label($"Adult bedwetter chance: {Math.Round(adultBedwetters * 100)}%", tooltip: "The rate of adults that wet the bed. Base value is 5%.");
+                row.Label("SettingAdultBedwetterChance".Translate() + $": {Math.Round(adultBedwetters * 100)}%", tooltip: "SettingAdultBedwetterChanceHelp".Translate(NamedArgumentUtility.Named("5", "CHANCE")));
                 adultBedwetters = row.Slider(adultBedwetters, 0f, 1f);
             }
 
             this.row.NewColumn();
             this.row.ColumnWidth = (canvas.width - 40f) * 0.33f;
             row.GapLine(gabSize);
-            if (debugging)
-            {
-                row.Label($"Bladder control factor: {Math.Round(generalBladderControlFactor * 100)}%", tooltip: "Lower control causes more wetting incidents in general. Modifier applied after everything. Base value is 100%.");
-                generalBladderControlFactor = row.Slider(generalBladderControlFactor, 0f, 2f);
-                row.Label($"Nighttime control factor: {Math.Round(generalNighttimeControlFactor * 100)}%", tooltip: "Lower control causes more wetting incidents AT NIGHT. Modifier applied after everything. Base value is 100%.");
-                generalNighttimeControlFactor = row.Slider(generalNighttimeControlFactor, 0f, 2f);
 
-            }
+            row.Label("SettingBladderControlFactor".Translate() + $": {Math.Round(generalBladderControlFactor * 100)}%", tooltip: "SettingBladderControlFactor".Translate(NamedArgumentUtility.Named("100", "CHANCE")));
+            generalBladderControlFactor = row.Slider(generalBladderControlFactor, 0f, 2f);
+            row.Label("SettingNighttimeControlFactor".Translate() + $": {Math.Round(generalNighttimeControlFactor * 100)}%", tooltip: "SettingNighttimeControlFactorHelp".Translate(NamedArgumentUtility.Named("100", "CHANCE")));
+            generalNighttimeControlFactor = row.Slider(generalNighttimeControlFactor, 0f, 2f);
+            row.Label("SettingNeedDiapersOnBladderControl".Translate() + $": {Math.Round(needDiapers * 100)}%", tooltip: "SettingNeedDiapersOnBladderControlHelp".Translate(NamedArgumentUtility.Named("45", "CHANCE")));
+            needDiapers = row.Slider(needDiapers, 0f, 1f);
+            row.Label("SettingNeedPullupsOnBladderControl".Translate() + $": {Math.Round(needPullUp * 100)}%", tooltip: "SettingNeedPullupsOnBladderControlHelp".Translate(NamedArgumentUtility.Named("60", "CHANCE")));
+            needPullUp = row.Slider(needPullUp, 0f, 1f);
+
             row.End();
 
             /*
@@ -180,7 +188,7 @@ namespace ZealousInnocence
             this.row.Begin(canvas);
             row.GapLine(gabSize);
 
-            row.CheckboxLabeled("DEBUGGING Mode", ref debugging, "Activates a lot of unnessessary logs and work, in case you want to find an error. Restart may be required in certain situations.");
+            row.CheckboxLabeled("SettingDebugMode".Translate(), ref debugging, "".Translate());
 
             /*
             this.DoLinks(canvas);

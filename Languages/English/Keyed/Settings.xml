@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<SettingReduceAge>Reduce Age</SettingReduceAge>
+	<SettingReduceAgeHelp>If checked, the reincarnation ritual will reduce the age of the pawn to that of a child. Otherwise it will regress the pawn mentally.</SettingReduceAgeHelp>
+	
+	<SettingRitualAgeResult>Ritual Age Result</SettingRitualAgeResult>
+	<SettingRitualAgeResultHelp>The target age a pawn will be reduced to by the rebirth ritual. Only works if 'Reduce Age' is checked as well</SettingRitualAgeResultHelp>
+	
+	<SettingNotWithForeverYoung>Will not work if 'ForeverYoung' is installed!</SettingNotWithForeverYoung>
+	
+	<SettingExtraGrowthMoments>Extra Growth Moments</SettingExtraGrowthMoments>
+	<SettingExtraGrowthMomentsHelp>If off, former adults will NOT get extra growth moments at 7/10/13. If on, growth moments will work as normal.</SettingExtraGrowthMomentsHelp>
+	
+	<SettingIdeologyRoles>Ideology Roles</SettingIdeologyRoles>
+	<SettingIdeologyRolesHelp>Allow former adults to hold roles in their ideology.</SettingIdeologyRolesHelp>
+
+	<SettingLearningNeed>Learning Need</SettingLearningNeed>
+	<SettingLearningNeedHelp>Controlles if a pawn has still the need to learn after being regressed to the age of a child. Many child activity are based on this need. Without it, many childish behaviours will not happen.</SettingLearningNeedHelp>
+	
+	<SettingDynamicGenetics>Dynamic Genetics</SettingDynamicGenetics>
+	<SettingDynamicGeneticsHelp>Adds random genetic bladder properties to some of the NEWLY generated pawns, like small and big bladders or the tendencies for bedwetting.</SettingDynamicGeneticsHelp>
+	
+	<SettingAdultBedwetterChance>Adult bedwetter chance</SettingAdultBedwetterChance>
+	<SettingAdultBedwetterChanceHelp>The rate of adults that wet the bed. Base value is {CHANCE}%.</SettingAdultBedwetterChanceHelp>
+	
+	<SettingBladderControlFactor>Bladder control factor</SettingBladderControlFactor>
+	<SettingBladderControlFactorHelp>Lower control causes more wetting incidents in general. Modifier applied after everything. Base value is {CHANCE}%.</SettingBladderControlFactorHelp>
+	
+	<SettingNighttimeControlFactor>Nighttime control factor</SettingNighttimeControlFactor>
+	<SettingNighttimeControlFactorHelp>Lower control causes more wetting incidents AT NIGHT. Modifier applied after everything. Base value is {CHANCE}%.</SettingNighttimeControlFactorHelp>
+	
+	<SettingNeedDiapersOnBladderControl>Need Diapers on bladder control</SettingNeedDiapersOnBladderControl>
+	<SettingNeedDiapersOnBladderControlHelp>Causes the pawn to automatically accept they need diapers at this level of control WHILE DAYTIME. Base value is {CHANCE}%.</SettingNeedDiapersOnBladderControlHelp>
+	
+	<SettingNeedPullupsOnBladderControl>Need Pullups on bladder control</SettingNeedPullupsOnBladderControl>
+	<SettingNeedPullupsOnBladderControlHelp>Causes the pawn to automatically accept they need pull-ups AT NIGHT at this level of control AT NIGHT. Modifier applied after everything. Base value is {CHANCE}%.</SettingNeedPullupsOnBladderControlHelp>
+	
+	<SettingDebugMode>DEBUGGING Mode</SettingDebugMode>
+	<SettingDebugModeHelp>Activates a lot of unnessessary logs and work, in case you want to find an error. Restart may be required in certain situations.</SettingDebugModeHelp>
+</LanguageData>

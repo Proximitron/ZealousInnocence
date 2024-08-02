@@ -536,6 +536,7 @@ namespace ZealousInnocence
         public static HediffDef SmallBladder;
 
         public static HediffDef BedWetting;
+        public static HediffDef Incontinent;
     }
 
     [DefOf]

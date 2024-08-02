@@ -257,8 +257,8 @@
 		
   <ThoughtDef>
 		<defName>WetBed</defName>
-		<durationDays>1</durationDays>
-		<stackLimit>2</stackLimit>
+		<durationDays>2.5</durationDays>
+		<stackLimit>3</stackLimit>
 		<stages>
 			<!-- Default behaviour if nothing else applies -->
 			<li>
@@ -286,7 +286,7 @@
 
 	<ThoughtDef>
 		<defName>HadToHoldIt</defName>
-		<durationDays>0.3</durationDays>
+		<durationDays>0.5</durationDays>
 		<stackLimit>1</stackLimit>
 		<developmentalStageFilter>Adult</developmentalStageFilter>
     <socialTargetDevelopmentalStageFilter>Adult</socialTargetDevelopmentalStageFilter>
@@ -302,7 +302,7 @@
 	
 	<ThoughtDef>
 		<defName>HadToGoPotty</defName>
-		<durationDays>1</durationDays>
+		<durationDays>1.5</durationDays>
 		<stackLimit>3</stackLimit>
 		<developmentalStageFilter>Adult</developmentalStageFilter>
     <socialTargetDevelopmentalStageFilter>Adult</socialTargetDevelopmentalStageFilter>
@@ -321,8 +321,8 @@
 	
   <ThoughtDef>
 		<defName>PeedOnMe</defName>
-		<durationDays>2</durationDays>
-		<stackLimit>1</stackLimit>
+		<durationDays>3</durationDays>
+		<stackLimit>2</stackLimit>
 		<stages>
 			<li>
 				<label>Wet neighbor</label>
@@ -372,8 +372,8 @@
 	
 	<ThoughtDef>
 		<defName>DiaperPeedBed</defName>
-		<durationDays>2</durationDays>
-		<stackLimit>2</stackLimit>
+		<durationDays>1</durationDays>
+		<stackLimit>1</stackLimit>
 		<stages>
 			<!-- Default behaviour if nothing else applies -->
 			<li>
