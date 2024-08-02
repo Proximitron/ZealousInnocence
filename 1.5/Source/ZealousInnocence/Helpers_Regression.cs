@@ -93,9 +93,14 @@ namespace ZealousInnocence
         {
             int oldAge = pawn.ageTracker.AgeBiologicalYears;
             removedHediffs = new List<Hediff>();
-            float num = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge; // Mathf.Max(pawn.ageTracker.AgeBiologicalYearsFloat - years, LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge);
-            pawnAgeDelta = pawn.ageTracker.AgeBiologicalYearsFloat - num;
-            pawn.ageTracker.AgeBiologicalTicks = Mathf.RoundToInt(num * 3600000f);
+            float num = pawn.ageTracker.AgeBiologicalYears;
+            pawnAgeDelta = 0;
+            if (pawn.ageTracker.Adult)
+            {
+                num = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge; // Mathf.Max(pawn.ageTracker.AgeBiologicalYearsFloat - years, LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge);
+                pawnAgeDelta = pawn.ageTracker.AgeBiologicalYearsFloat - num;
+                pawn.ageTracker.AgeBiologicalTicks = Mathf.RoundToInt(num * 3600000f);
+            }
 
             if (pawn.ageTracker.AgeBiologicalYears < 13 && oldAge >= 13)
             {
