@@ -58,13 +58,13 @@ namespace ZealousInnocence
                     else
                     {
                         float whileAsleep = awake ? GetSleepingFactor(pawn, false) * num2 : num2;
-                        if (whileAsleep <= 0.6f)
+                        if (whileAsleep <= 0.7f)
                         {
-                            if(whileAsleep <= 0.25f)
+                            if(whileAsleep <= 0.3f)
                             {
                                 impactors.Add(new CapacityImpactorCustom { customString = "High Bedwetting Risk" });
                             }
-                            else if(whileAsleep <= 0.37f)
+                            else if(whileAsleep <= 0.5f)
                             {
                                 impactors.Add(new CapacityImpactorCustom { customString = "Medium Bedwetting Risk" });
                             }
@@ -141,7 +141,7 @@ namespace ZealousInnocence
             {
                 if (pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
                 {
-                    return 0.35f;
+                    return 0.30f;
                 }
                 return 0.75f;
             }

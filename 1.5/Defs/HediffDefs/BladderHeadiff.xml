@@ -71,6 +71,7 @@
       <partEfficiency>1.0</partEfficiency>
       <betterThanNatural>false</betterThanNatural>
     </addedPartProps>
+		<countsAsAddedPartOrImplant>false</countsAsAddedPartOrImplant>
 		<stages>
       <li>
 			  <statOffsets>
@@ -92,6 +93,7 @@
       <partEfficiency>1.0</partEfficiency>
       <betterThanNatural>false</betterThanNatural>
     </addedPartProps>
+		<countsAsAddedPartOrImplant>false</countsAsAddedPartOrImplant>
 		<stages>
       <li>
 			  <statOffsets>

@@ -322,7 +322,7 @@ namespace ZealousInnocence
             if (bladder == null) return;
 
             var currProtection = DiaperHelper.getUnderwearOrDiaper(pawn);
-            if (currProtection != null && DiaperHelper.isDiaper(currProtection))
+            if (currProtection != null)
             {
                 CurLevel = (float)currProtection.HitPoints / (float)currProtection.MaxHitPoints;
             }
@@ -697,10 +697,10 @@ namespace ZealousInnocence
                 // Range 0.75 to 0.5: 5%-30% chance
                 return Mathf.Lerp(0.05f, 0.30f, Mathf.InverseLerp(0.75f, 0.5f, bladderControl));
             }
-            else if (bladderControl >= 0.25f)
+            else if (bladderControl >= 0.15f)
             {
                 // Range 0.5 to 0.25: 30%-80% chance
-                return Mathf.Lerp(0.30f, 0.80f, Mathf.InverseLerp(0.5f, 0.25f, bladderControl));
+                return Mathf.Lerp(0.30f, 0.90f, Mathf.InverseLerp(0.5f, 0.15f, bladderControl));
             }
             else
             {

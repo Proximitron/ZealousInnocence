@@ -10,6 +10,6 @@
 		<lethalFlesh>false</lethalFlesh>
 		<showOnMechanoids>false</showOnMechanoids>
 		<minValue>0.0</minValue>
-		<minForCapable>0.25</minForCapable>
+		<minForCapable>0.15</minForCapable>
 	</PawnCapacityDef>
 </Defs>
