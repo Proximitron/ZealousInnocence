@@ -13,7 +13,6 @@
 			<layers>
 				<li>Underwear</li>
 			</layers>
-			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
 			<canBeGeneratedToSatisfyWarmth>true</canBeGeneratedToSatisfyWarmth>
       <canBeGeneratedToSatisfyToxicEnvironmentResistance>false</canBeGeneratedToSatisfyToxicEnvironmentResistance>
 			<defaultOutfitTags>
@@ -88,10 +87,58 @@
 			</recipeUsers>
 		</recipeMaker>
 		<apparel>
+			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
 			<wornGraphicPath>Apparel/Underwear/loincloth/loincloth</wornGraphicPath>
       <canBeDesiredForIdeo>true</canBeDesiredForIdeo>
 			<tags>
         <li>Neolithic</li>
+			</tags>
+    </apparel>
+	</ThingDef>
+	
+	<ThingDef ParentName="ApparelUnderwearBase">
+		<defName>Apparel_Underwear_Kids</defName>
+		<label>kids underwear</label>
+		<description>Simple, slightly thicker underwear for children.</description>
+		<graphicData>
+			<texPath>Apparel/Underwear/UnderwearPlain</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<techLevel>Medieval</techLevel>
+		<stuffCategories>
+			<li>Leathery</li>
+			<li>Fabric</li>
+		</stuffCategories>
+		<costStuffCount>5</costStuffCount>
+		<statBases>
+			<Absorbency>0.5</Absorbency>
+			<MaxHitPoints>70</MaxHitPoints>
+			<WorkToMake>250</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.025</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.10</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.10</StuffEffectMultiplierInsulation_Heat>
+		</statBases>
+		<equippedStatOffsets>
+			<MoveSpeed>0.07</MoveSpeed>
+			<SocialImpact>0.03</SocialImpact>
+			<Beauty>-3</Beauty>
+			<Comfort>0.07</Comfort>
+		</equippedStatOffsets>
+		<recipeMaker>
+			<recipeUsers>
+				<li>ElectricTailoringBench</li>
+				<li>HandTailoringBench</li>
+			</recipeUsers>
+		</recipeMaker>
+		<apparel>
+			<developmentalStageFilter>Child</developmentalStageFilter>
+			<wornGraphicPath>Apparel/Underwear/UnderwearPlain/UnderwearPlain</wornGraphicPath>
+      <canBeDesiredForIdeo>false</canBeDesiredForIdeo>
+			<tags>
+        <li>Neolithic</li>
+				<li>IndustrialBasic</li>
 			</tags>
     </apparel>
 	</ThingDef>
@@ -134,6 +181,7 @@
 			</recipeUsers>
 		</recipeMaker>
 		<apparel>
+			<developmentalStageFilter>Adult</developmentalStageFilter>
 			<wornGraphicPath>Apparel/Underwear/boxers/boxers</wornGraphicPath>
       <canBeDesiredForIdeo>true</canBeDesiredForIdeo>
 			<tags>
@@ -180,6 +228,7 @@
 			</recipeUsers>
 		</recipeMaker>
 		<apparel>
+			<developmentalStageFilter>Adult</developmentalStageFilter>
 			<wornGraphicPath>Apparel/Underwear/panties/panties</wornGraphicPath>
       <canBeDesiredForIdeo>true</canBeDesiredForIdeo>
 			<tags>

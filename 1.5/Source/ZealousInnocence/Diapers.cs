@@ -779,12 +779,22 @@ namespace ZealousInnocence
         }
         public static bool needsDiaper(Pawn pawn)
         {            
-            return pawn.health != null && getBladderControlLevel(pawn) <= 0.5f;
+            return getBladderControlLevel(pawn) <= 0.5f;
+        }
+        public static bool acceptsDiaper(Pawn pawn)
+        {
+            var pref = getDiaperPreference(pawn);
+            return pref == DiaperLikeCategory.NonAdult || pref == DiaperLikeCategory.Liked || (pref != DiaperLikeCategory.Disliked && needsDiaper(pawn));
         }
         public static bool needsDiaperNight(Pawn pawn)
         {
             var bladderControlWorker = new PawnCapacityWorker_BladderControl();
             return bladderControlWorker.SimulateBladderControlDuringSleep(pawn) <= 0.5f;
+        }
+        public static bool acceptsDiaperNight(Pawn pawn)
+        {
+            var pref = getDiaperPreference(pawn);
+            return pref == DiaperLikeCategory.NonAdult || pref == DiaperLikeCategory.Liked || (pref != DiaperLikeCategory.Disliked && needsDiaperNight(pawn));
         }
         public static Apparel getUnderwearOrDiaper(Pawn pawn)
         {

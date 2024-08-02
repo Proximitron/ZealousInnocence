@@ -50,6 +50,7 @@ namespace ZealousInnocence
         public bool debuggingCapacities = false;
         public bool debuggingGenes = false;
         public bool debuggingBedwetting = false;
+        public bool debuggingApparelGenerator = false;
 
         public override void ExposeData()
         {
@@ -67,6 +68,7 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref debuggingCapacities, "debuggingCapacities", false);
             Scribe_Values.Look(ref debuggingGenes, "debuggingGenes", false);
             Scribe_Values.Look(ref debuggingBedwetting, "debuggingBedwetting", false);
+            Scribe_Values.Look(ref debuggingApparelGenerator, "debuggingApparelGenerator", false);
         }
     }
 
@@ -240,7 +242,8 @@ namespace ZealousInnocence
                 listStandard.CheckboxLabeled("DEBUG Capacities", ref settings.debuggingCapacities, "Generates debugging related to capacities like bladder control.");
                 listStandard.CheckboxLabeled("DEBUG Genes", ref settings.debuggingGenes, "Generates debugging related to genes and creation of gene related conditions and changes.");
                 listStandard.CheckboxLabeled("DEBUG Bedwetting", ref settings.debuggingBedwetting, "Generates debugging related to all bedwetting related functions and calls.");
-                
+                listStandard.CheckboxLabeled("DEBUG Apparel", ref settings.debuggingApparelGenerator, "Generates debugging related the apparel generator, used on generating new pawns.");
+
             }
             if (settings.debugging && listStandard.ButtonText("Check ForeverYoung active"))
             {
@@ -426,6 +429,9 @@ namespace ZealousInnocence
             if (pawn.Map != null && pawn.Spawned && !pawn.Dead) return;
             if (!__result) return; // we don't overwrite things that can't be worn with a positive response
 
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debugging = settings.debugging && settings.debuggingApparelGenerator;
+
             if (__instance.tags.Contains("Onesies"))
             {
                 OnesieLikeCategory pref = OnesieHelper.getOnesiePreference(pawn);
@@ -433,24 +439,29 @@ namespace ZealousInnocence
                 else if(pref == OnesieLikeCategory.Disliked) __result = false;
                 else
                 {
-                    if(DiaperHelper.needsDiaper(pawn)) __result = true;
+                    if(DiaperHelper.needsDiaper(pawn) && DiaperHelper.acceptsDiaper(pawn)) __result = true;
                 }
-
+                
+                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on not needsDiaper {DiaperHelper.needsDiaper(pawn)} or cat based {pref} age {pawn.ageTracker.AgeBiologicalYears}");
             }
             else if (__instance.tags.Contains("DiapersNight"))
             {
-                __result = DiaperHelper.needsDiaperNight(pawn) && DiaperHelper.getDiaperPreference(pawn) != DiaperLikeCategory.Disliked;
+                __result = DiaperHelper.needsDiaperNight(pawn) && DiaperHelper.acceptsDiaperNight(pawn);
+                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on needsNight {DiaperHelper.needsDiaperNight(pawn)} and acceptance {DiaperHelper.acceptsDiaperNight(pawn)} of {DiaperHelper.getDiaperPreference(pawn) != DiaperLikeCategory.Disliked} age {pawn.ageTracker.AgeBiologicalYears}");
             }
             else if (__instance.tags.Contains("Diaper"))
             {
+                __result = (DiaperHelper.needsDiaper(pawn) && DiaperHelper.acceptsDiaper(pawn)) || DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked;
+                if (debugging) Log.Message($"Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {DiaperHelper.needsDiaper(pawn)} or cat {DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} age {pawn.ageTracker.AgeBiologicalYears}");
 
-                __result = DiaperHelper.needsDiaper(pawn) || DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked;
-                               
             }
             else if (__instance.tags.Contains("Underwear"))
             {
                 __result = (!DiaperHelper.needsDiaper(pawn) && !DiaperHelper.needsDiaperNight(pawn)) || DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked;
+                if (debugging) Log.Message($"Apparel DEBUG: Underwear {pawn.LabelShort} value {__result} based on not needsDiaper {DiaperHelper.needsDiaper(pawn)} not needsNight {DiaperHelper.needsDiaperNight(pawn)} or cat {DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked} age {pawn.ageTracker.AgeBiologicalYears}");
             }
+
+
         }
     }
 
@@ -660,15 +671,13 @@ namespace ZealousInnocence
     {
         public static HistoryEventDef GotUnbladdered;
     }
-    
 
-    public enum BathroomDesireCategory : byte
+    [DefOf]
+    public class ApparelLayerDefOf
     {
-        Going,
-        NeedsToGo,
-        Fine,
+        public static ApparelLayerDef Underwear;
     }
 
-    
+
 }
 //-----------------------------------------------------------

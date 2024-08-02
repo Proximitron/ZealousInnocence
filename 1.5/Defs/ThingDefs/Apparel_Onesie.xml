@@ -25,7 +25,8 @@
     <thingCategories>
       <li>Onesies</li>
     </thingCategories>
-    <apparel>
+		<apparel>
+			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
       <bodyPartGroups>
         <li>Neck</li>
         <li>Shoulders</li>
@@ -101,7 +102,6 @@
       <StuffEffectMultiplierInsulation_Heat>0.85</StuffEffectMultiplierInsulation_Heat>
     </statBases>
 		<apparel>
-			<developmentalStageFilter>Adult</developmentalStageFilter>
 			<wornGraphicPath>Apparel/Onesie/Simplie/Simplie</wornGraphicPath>
 		</apparel>
   </ThingDef>
@@ -133,7 +133,6 @@
       <TradePriceImprovement>0.02</TradePriceImprovement>
     </equippedStatOffsets>
 		<apparel>
-			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
 			<wornGraphicPath>Apparel/Onesie/Onesie/Onesie</wornGraphicPath>
 		</apparel>
   </ThingDef>
@@ -165,7 +164,6 @@
       <FixBrokenDownBuildingSuccessChance>0.15</FixBrokenDownBuildingSuccessChance>
     </equippedStatOffsets>
 		<apparel>
-			<developmentalStageFilter>Adult</developmentalStageFilter>
 			<wornGraphicPath>Apparel/Onesie/Worksie/Worksie</wornGraphicPath>
 		</apparel>
   </ThingDef>
@@ -198,7 +196,6 @@
       <PainShockThreshold>0.05</PainShockThreshold>
     </equippedStatOffsets>
 		<apparel>
-			<developmentalStageFilter>Adult</developmentalStageFilter>
 			<wornGraphicPath>Apparel/Onesie/Gunsie/Gunsie</wornGraphicPath>
 		</apparel>
   </ThingDef>

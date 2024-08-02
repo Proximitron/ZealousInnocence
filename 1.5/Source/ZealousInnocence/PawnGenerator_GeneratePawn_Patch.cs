@@ -1,8 +1,10 @@
 ﻿using DubsBadHygiene;
 using HarmonyLib;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
@@ -42,7 +44,7 @@ namespace ZealousInnocence
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             if (diaperNeed != null)
             {
-                
+
                 diaperNeed.bedwettingSeed = __result.thingIDNumber;
                 // This should not affect newborns, as we assume they could be born naturally and that would compound the genes
                 if (settings.dynamicGenetics && request.AllowedDevelopmentalStages != DevelopmentalStage.Newborn)
@@ -84,12 +86,13 @@ namespace ZealousInnocence
                     {
                         rand = Rand.ValueSeeded(diaperNeed.bedwettingSeed + 8292);
                         // If they are prone to bedwetting by seed as adult, they carry the gene
-                        if(BedWetting_Helper.BedwettingAtAge(__result, 20)){
+                        if (BedWetting_Helper.BedwettingAtAge(__result, 20))
+                        {
                             if (rand < 0.3f)
                             {
                                 AddGene(__result, GeneDefOf.BladderBedwettingAlways);
                             }
-                            else if(rand < 0.8f)
+                            else if (rand < 0.8f)
                             {
                                 AddGene(__result, GeneDefOf.BladderBedwettingLate);
                             }
@@ -125,7 +128,7 @@ namespace ZealousInnocence
                 }
             }
 
-            if(HasGeneWithExclusionTag(__result, "BladderSize"))
+            if (HasGeneWithExclusionTag(__result, "BladderSize"))
             {
                 var debugGenes = settings.debugging && settings.debuggingGenes;
                 if (debugGenes) Log.Message($"Pawn {__result.LabelShort} has a bladder size gene");
@@ -144,7 +147,7 @@ namespace ZealousInnocence
 
             if (__result.health.hediffSet.HasHediff(HediffDef.Named("Incontinent"))) return;
 
-            
+
             if (BedWetting_Helper.BedwettingAtAge(__result, __result.ageTracker.AgeBiologicalYears))
             {
                 __result.health.AddHediff(def);
@@ -152,6 +155,92 @@ namespace ZealousInnocence
                 hediff.Severity = BedWetting_Helper.BedwettingSeverity(__result);
             }
 
+            var underwear = __result.apparel.WornApparel.FirstOrDefault(a => a.def.apparel.layers.Contains(ApparelLayerDefOf.Underwear));
+            if (underwear != null)
+            {
+                if(DiaperHelper.needsDiaper(__result))
+                {
+                    if (!DiaperHelper.isDiaper(underwear) && DiaperHelper.acceptsDiaper(__result))
+                    {
+                        if (settings.debugging) Log.Message($"PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
+                        __result.apparel.Remove(underwear);
+                        underwear = null;
+                    }
+
+                }
+                else if(DiaperHelper.needsDiaperNight(__result))
+                {
+                    if (!DiaperHelper.isNightDiaper(underwear) && DiaperHelper.acceptsDiaperNight(__result))
+                    {
+                        if (settings.debugging) Log.Message($"PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
+                        __result.apparel.Remove(underwear);
+                        underwear = null;
+                    }
+                }
+            }
+            if (underwear == null)
+            {
+                ThingDef underwearDef = ChooseUnderwearFor(__result);
+                if (underwearDef != null)
+                {
+                    underwear = (Apparel)ThingMaker.MakeThing(underwearDef, ChooseMaterialFor(__result, underwearDef));
+                    underwear.SetStyleDef(__result.StyleDef);
+                    __result.apparel.Wear(underwear, true);
+                    if(settings.debugging) Log.Message($"PawnGenerator: Fixed underwear issue for {__result.LabelShort} with {underwear.LabelShort}");
+                }
+                else
+                {
+                    if (settings.debugging) Log.Message($"PawnGenerator: Could not fix underwear issue for {__result.LabelShort}");
+                }
+            }
+
+        }
+        private static ThingDef ChooseMaterialFor(Pawn pawn, ThingDef thing)
+        {
+            if (pawn.Faction == null || pawn.Faction.def.techLevel == TechLevel.Medieval || pawn.Faction.def.techLevel == TechLevel.Neolithic)
+            {
+                return ThingDefOf.Leather_Plain;
+            }
+            if(pawn.Faction.def.techLevel == TechLevel.Spacer) return DefDatabase<ThingDef>.GetNamed("Synthread");
+            if (pawn.Faction.def.techLevel == TechLevel.Industrial) return DefDatabase<ThingDef>.GetNamed("Cloth");
+            return DefDatabase<ThingDef>.GetNamed("Hyperweave");
+        }
+        private static ThingDef ChooseUnderwearFor(Pawn pawn)
+        {
+            if (DiaperHelper.needsDiaper(pawn) && DiaperHelper.acceptsDiaper(pawn))
+            {
+                return DefDatabase<ThingDef>.GetNamed("Apparel_Diaper");
+            }
+            else if (DiaperHelper.needsDiaperNight(pawn) && DiaperHelper.acceptsDiaperNight(pawn))
+            {
+                return DefDatabase<ThingDef>.GetNamed("Apparel_Diaper_Night");
+            }
+            else
+            {
+                if (pawn.Faction == null || pawn.Faction.def.techLevel == TechLevel.Medieval || pawn.Faction.def.techLevel == TechLevel.Neolithic)
+                {
+                    return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Loincloth");
+                }
+                else
+                {
+                    if(!pawn.ageTracker.Adult && pawn.ageTracker.AgeBiologicalYears >= 2)
+                    {
+                        return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Kids");
+                    }
+                    if (pawn.ageTracker.Adult)
+                    {
+                        if (pawn.gender == Gender.Female)
+                        {
+                            return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Panties");
+                        }
+                        else
+                        {
+                            return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Boxers");
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }
