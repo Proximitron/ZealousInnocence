@@ -46,7 +46,7 @@ namespace ZealousInnocence
             }
 
             var diaperNeed = __result.needs.TryGetNeed<Need_Diaper>();
-            var def = HediffDef.Named("BedWetting");
+            var bedwettingDef = HediffDefOf.BedWetting;
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             if (diaperNeed != null)
             {
@@ -105,7 +105,7 @@ namespace ZealousInnocence
                         }
                         else
                         {
-                            if (rand < 0.2f)
+                            if (rand < 0.1f)
                             {
                                 AddGene(__result, GeneDefOf.BladderBedwettingEarly);
                             }
@@ -147,13 +147,13 @@ namespace ZealousInnocence
             }
 
 
-            if (__result.health.hediffSet.HasHediff(HediffDef.Named("Incontinent"))) return;
+            if (__result.health.hediffSet.HasHediff(HediffDefOf.Incontinent)) return;
 
 
             if (BedWetting_Helper.BedwettingAtAge(__result, __result.ageTracker.AgeBiologicalYears))
             {
-                __result.health.AddHediff(def);
-                var hediff = __result.health.hediffSet.GetFirstHediffOfDef(def);
+                __result.health.AddHediff(bedwettingDef);
+                var hediff = __result.health.hediffSet.GetFirstHediffOfDef(bedwettingDef);
                 hediff.Severity = BedWetting_Helper.BedwettingSeverity(__result);
             }
 
@@ -209,6 +209,7 @@ namespace ZealousInnocence
         }
         private static ThingDef ChooseUnderwearFor(Pawn pawn)
         {
+            if (pawn.ageTracker.AgeBiologicalYears < 3) return null;
             if (DiaperHelper.needsDiaper(pawn) && DiaperHelper.acceptsDiaper(pawn))
             {
                 return DefDatabase<ThingDef>.GetNamed("Apparel_Diaper");
@@ -225,7 +226,7 @@ namespace ZealousInnocence
                 }
                 else
                 {
-                    if(!pawn.ageTracker.Adult && pawn.ageTracker.AgeBiologicalYears >= 2)
+                    if(!pawn.ageTracker.Adult)
                     {
                         return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Kids");
                     }

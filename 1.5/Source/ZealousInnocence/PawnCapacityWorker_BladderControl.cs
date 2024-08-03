@@ -155,7 +155,7 @@ namespace ZealousInnocence
             float total = 1.0f;
             if (!isAwake)
             {
-                if (pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
+                if (pawn.ageTracker.AgeBiologicalYears < 6 || pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
                 {
                     total -= 0.7f;
                 }

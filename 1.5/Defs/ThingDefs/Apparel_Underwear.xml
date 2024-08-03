@@ -98,7 +98,7 @@
 	
 	<ThingDef ParentName="ApparelUnderwearBase">
 		<defName>Apparel_Underwear_Kids</defName>
-		<label>kids underwear</label>
+		<label>kid underwear</label>
 		<description>Simple, slightly thicker underwear for children.</description>
 		<graphicData>
 			<texPath>Apparel/Underwear/UnderwearPlain</texPath>
