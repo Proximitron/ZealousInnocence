@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 
 namespace ZealousInnocence
 {
-    
+
     public class InteractionWorker_RegressedPlayTime : InteractionWorker
     {
         public override float RandomSelectionWeight(Pawn initiator, Pawn recipient)

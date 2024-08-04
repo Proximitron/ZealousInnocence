@@ -82,12 +82,6 @@ namespace ZealousInnocence
                 info: "HealthCardUtility.GetPawnCapacityTip"
             );
 
-            // The bladder rate can be different, depending on how big the bladder is
-            /*patchFunctionPostfix(
-                original:  AccessTools.PropertyGetter(typeof(Need_Bladder), "BladderRate"),
-                postfix: new HarmonyMethod(typeof(Need_Bladder_Patch), nameof(Need_Bladder_Patch.BladderRate_Postfix)),
-                info: "Property Need_Bladder.BladderRate"
-            );*/
             // The category can be different, depending on if the paw can feel the need to go potty
             patchFunctionPostfix(
                 original: AccessTools.PropertyGetter(typeof(Need_Bladder), "CurCategory"),
@@ -101,6 +95,16 @@ namespace ZealousInnocence
                 postfix: new HarmonyMethod(typeof(PawnGenerator_GeneratePawn_Patch), nameof(PawnGenerator_GeneratePawn_Patch.Postfix)),
                 info: "PawnGenerator.GeneratePawn"
             );
+            /*patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Thing), "DrawGUIOverlay"),
+                prefix: new HarmonyMethod(typeof(Thing_DrawGUIOverlay_Patch), nameof(Thing_DrawGUIOverlay_Patch.Prefix)),
+                info: "Thing.DrawGUIOverlay"
+            );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Thing), "DrawAt"),
+                prefix: new HarmonyMethod(typeof(Patch_Thing_DrawAt), nameof(Patch_Thing_DrawAt.Prefix)),
+                info: "Thing.DrawAt"
+            );*/
 
 
             ModChecker.ZealousInnocenceActive();
@@ -303,8 +307,9 @@ namespace ZealousInnocence
         {
             if (__instance is Apparel apparel)
             {
-                if (apparel.def.thingCategories != null && apparel.def.thingCategories.Contains(ThingCategoryDef.Named("Diapers")))
+                if (apparel.def.thingCategories != null && (apparel.def.thingCategories.Contains(ThingCategoryDefOf.Diapers) || apparel.def.thingCategories.Contains(ThingCategoryDefOf.Underwear)))
                 {
+                    
                     // Check the HP of the apparel
                     float hpPercentage = (float)apparel.HitPoints / (float)apparel.MaxHitPoints;
 
@@ -312,9 +317,9 @@ namespace ZealousInnocence
 
                     // Determine the texture path based on HP percentage
                     string texPath = apparel.def.graphicData.texPath;
-                    if (hpPercentage < 0.5f)
+                    if (hpPercentage < 0.51f)
                     {
-                        //texPath += "_Dirty";
+                        texPath += "_Dirty";
                     }
 
                     // Load the appropriate texture
@@ -477,127 +482,5 @@ namespace ZealousInnocence
 
         }
     }
-
-    public enum DiaperSituationCategory : byte
-    {
-        Trashed,
-        Spent,
-        Used,
-        Clean,
-    }
-
-    public enum DiaperLikeCategory : byte
-    {
-        Neutral,
-        Liked,
-        Disliked,
-        NonAdult
-    }
-
-
-    [DefOf]
-    public class PawnCapacityDefOf
-    {
-        public static PawnCapacityDef BladderControl;
-    }
-    [DefOf]
-    public class BodyPartTagDefOf
-    {
-        public static BodyPartTagDef BladderControlSource;
-    }
-    [DefOf]
-    public class BodyPartDefOf
-    {
-        public static BodyPartDef Bladder;
-    }
-    [DefOf]
-    public class DiaperChangie
-    {
-        public static SoundDef Pee;
-        public static SoundDef Poop;
-    }
-
-    [DefOf]
-    public class StatDefOf
-    {
-        public static StatDef Absorbency;
-        public static StatDef DiaperAbsorbency; // This value is a stat created from Absorbency and DiaperSupport
-        public static StatDef BladderStrengh; // Influences bladder control of the pawn
-        public static StatDef BedwettingChance; // Influences bedwetting chance (-1.0 to 1.0). At any end it guaranties it one way or the other.
-    }
-
-    [DefOf]
-    public class HediffDefOf
-    {
-        public static HediffDef RegressionState;
-        public static HediffDef DiaperRash;
-
-        public static HediffDef BigBladder;
-        public static HediffDef SmallBladder;
-
-        public static HediffDef BedWetting;
-        public static HediffDef Incontinent;
-    }
-
-    [DefOf]
-    public class GeneDefOf
-    {
-        //public static GeneDef BladderSizeTiny;
-        public static GeneDef BladderSizeSmall;
-        public static GeneDef BladderSizeBig;
-        //public static GeneDef BladderSizeHuge;
-
-        public static GeneDef BladderBedwettingEarly;
-        public static GeneDef BladderBedwettingLate;
-        public static GeneDef BladderBedwettingAlways;
-
-        public static GeneDef BladderStrenghWeak;
-        public static GeneDef BladderStrenghStrong;
-    }
-
-    [DefOf]
-    public class TraitDefOf
-    {
-        public static TraitDef Potty_Rebel;
-        public static TraitDef Big_Boy;
-    }
-    [DefOf]
-    public class JobDefOf
-    {
-        public static JobDef Unbladder;
-        public static JobDef Rebirth;
-        public static JobDef Phoenix;
-        public static JobDef RegressedPlayAround;
-        public static JobDef LayDown;
-        //public static JobDef WearSleepwear;
-       // public static JobDef OptimizeApparel;
-        //public static JobDef ChangeSleepwear;
-    }
-    [DefOf]
-    public class DutyDefOf
-    {
-        public static DutyDef RegressedPlayTime;
-    }
-
-    [DefOf]
-    public class ThoughtDefOf
-    {
-        public static ThoughtDef RegressedGames;
-    }
-
-
-    [DefOf]
-    public class HistoryEventDefOf
-    {
-        public static HistoryEventDef GotUnbladdered;
-    }
-
-    [DefOf]
-    public class ApparelLayerDefOf
-    {
-        public static ApparelLayerDef Underwear;
-    }
-
-
 }
 //-----------------------------------------------------------

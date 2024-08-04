@@ -57,7 +57,7 @@
 		<label>flimsy diaper</label>
 		<description>An extremley flimsy, cheap leather diaper.</description>
 		<graphicData>
-			<texPath>Apparel/Diaper/Nappy/Nappy_Dirty</texPath>
+			<texPath>Apparel/Diaper/Nappy/Nappy</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<techLevel>Medieval</techLevel>

@@ -9,6 +9,7 @@
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
     <LangVersion>latest</LangVersion>
+		<DisableNamespaceImports>true</DisableNamespaceImports>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

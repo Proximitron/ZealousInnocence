@@ -16,49 +16,49 @@ namespace ZealousInnocence
     /// Testimplementation
     /// </summary>
 
-    [DefOf]
-    public static class ThingCategoryDefOf
-    {
-        public static ThingCategoryDef Diapers;
-        public static ThingCategoryDef Onesies;
-        public static ThingCategoryDef DiapersNight;
-        public static ThingCategoryDef Underwear;
-        public static ThingCategoryDef MaleCloth;
-        public static ThingCategoryDef FemaleCloth;
-        static ThingCategoryDefOf()
-        {
-            DefOfHelper.EnsureInitializedInCtor(typeof(RimWorld.ThingCategoryDefOf));
-        }
-    }
-
-    //public static float ApparelScoreGain(Pawn pawn, Apparel ap, List<float> wornScoresCache)
-
-
-    [DefOf]
-    public static class PreceptDefOf
-    {
-        public static PreceptDef Diapers_Loved;
-        public static PreceptDef Diapers_Neutral;
-        public static PreceptDef Diapers_Hated;
-
-        public static PreceptDef Onesies_Loved;
-        public static PreceptDef Onesies_Neutral;
-        public static PreceptDef Onesies_Hated;
-
-        public static PreceptDef CribBed_Preferred;
-        static PreceptDefOf()
-        {
-            DefOfHelper.EnsureInitializedInCtor(typeof(RimWorld.PreceptDefOf));
-        }
-    }
 
     [StaticConstructorOnStartup]
     public class Apparel_Diaper_Base : Apparel
     {
         public override float GetSpecialApparelScoreOffset()
         {
-            
+
             return base.GetSpecialApparelScoreOffset();
+        }
+        /*protected override void DrawAt(Vector3 drawLoc, bool flip = false)
+        {
+
+            var hpPercent = (float)HitPoints / MaxHitPoints;
+            string customTexturePath = def.graphicData.texPath;
+            if (hpPercent < 0.5f)
+            {
+                customTexturePath += "_Dirty";
+            }
+            Material material = MaterialPool.MatFrom(customTexturePath, ShaderDatabase.Transparent);
+            Log.Message($"Strangeness.");
+            Graphics.DrawMesh(MeshPool.plane10, drawLoc, Quaternion.identity, material, 0);
+            return;
+
+            //base.DrawAt(drawLoc, flip);
+        }*/
+        public override Graphic Graphic
+        {
+            get
+            {
+                if (this.HitPoints < this.MaxHitPoints * 0.5f)
+                {
+                    return GraphicDatabase.Get<Graphic_Single>(this.def.graphicData.texPath + "_Dirty", ShaderDatabase.Transparent, this.DrawSize, this.DrawColor, this.DrawColorTwo);
+                }
+                else
+                {
+                    return base.Graphic;
+                }
+            }
+        }
+        public override void PostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
+        {
+            Map?.mapDrawer.MapMeshDirty(Position, MapMeshFlagDefOf.Things);
+            base.PostApplyDamage(dinfo, totalDamageDealt);
         }
     }
     [StaticConstructorOnStartup]
@@ -68,6 +68,25 @@ namespace ZealousInnocence
         {
 
             return base.GetSpecialApparelScoreOffset();
+        }
+        public override Graphic Graphic
+        {
+            get
+            {
+                if (this.HitPoints < this.MaxHitPoints * 0.5f)
+                {
+                    return GraphicDatabase.Get<Graphic_Single>(this.def.graphicData.texPath + "_Dirty", ShaderDatabase.Transparent, this.DrawSize, this.DrawColor, this.DrawColorTwo);
+                }
+                else
+                {
+                    return base.Graphic;
+                }
+            }
+        }
+        public override void PostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
+        {
+            Map?.mapDrawer.MapMeshDirty(Position, MapMeshFlagDefOf.Things);
+            base.PostApplyDamage(dinfo, totalDamageDealt);
         }
     }
     public enum BedwettingSituationCategoryThought : int
@@ -176,7 +195,7 @@ namespace ZealousInnocence
                         switch (preference)
                         {
                             case DiaperLikeCategory.NonAdult:
-                                if(DiaperHelper.isNightDiaper(currDiapie)) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_Clean);
+                                if (DiaperHelper.isNightDiaper(currDiapie)) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_Clean);
                                 else return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Clean);
                             case DiaperLikeCategory.Liked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Clean);
@@ -295,9 +314,9 @@ namespace ZealousInnocence
 
             if (preference == DiaperLikeCategory.NonAdult)
             {
-                if(diaperRequired) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_None);
-                if(diaperRequiredNight) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_None);
-                if(currUnderpants != null) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Underwear_Worn_Non_Adult);
+                if (diaperRequired) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_None);
+                if (diaperRequiredNight) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_None);
+                if (currUnderpants != null) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Underwear_Worn_Non_Adult);
                 return ThoughtState.Inactive;
             }
 
@@ -307,10 +326,10 @@ namespace ZealousInnocence
             }
             else if (preference != DiaperLikeCategory.Disliked)
             {
-                if(diaperRequired) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Night_Protection_Required_None);
+                if (diaperRequired) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Night_Protection_Required_None);
                 if (diaperRequiredNight) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Required_Neutral_None);
             }
-            if(currUnderpants == null) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Underwear_Not_Worn);
+            if (currUnderpants == null) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Underwear_Not_Worn);
             return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Underwear_Worn);
         }
     }

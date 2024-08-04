@@ -15,7 +15,8 @@ namespace ZealousInnocence
         Disliked,
         NonAdult // Feeling based opinion on non-adults
     }
-    public static class OnesieHelper {
+    public static class OnesieHelper
+    {
 
         public static Apparel getOnesie(Pawn p)
         {
@@ -29,7 +30,7 @@ namespace ZealousInnocence
                     {
                         return null;
                     }
-                    
+
                     if (cat.Contains(ThingCategoryDefOf.Onesies))
                     {
                         return wornApparel[i];
@@ -40,7 +41,7 @@ namespace ZealousInnocence
         }
         public static OnesieLikeCategory getOnesiePreference(Pawn pawn)
         {
-            if(!pawn.ageTracker.Adult) return OnesieLikeCategory.NonAdult;
+            if (!pawn.ageTracker.Adult) return OnesieLikeCategory.NonAdult;
             TraitSet traits = pawn?.story?.traits;
             if (traits == null)
             {
