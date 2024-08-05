@@ -35,6 +35,12 @@
 	<SettingNeedPullupsOnBladderControl>Need Pullups on bladder control</SettingNeedPullupsOnBladderControl>
 	<SettingNeedPullupsOnBladderControlHelp>Determines when a pawn will automatically accept that they need nighttime pull-ups at this level of control DURING NIGHTTIME. Modifier applied after everything. Base value is {CHANCE}%.</SettingNeedPullupsOnBladderControlHelp>
 	
+	<SettingUseBedPan>Use bedpans</SettingUseBedPan>
+	<SettingUseBedPanHelp>Enables bedpans for pawns that can't get up from bed, but still have sufficient control over their bladder.</SettingUseBedPanHelp>
+	
+	<SettingUseBedPanIfDiaperEquipped>Use bedpans on equipped diaper</SettingUseBedPanIfDiaperEquipped>
+	<SettingUseBedPanIfDiaperEquippedHelp>Will also enable the option of bedpans for pawns that are wearing diapers. NOTE: This only works if bedpans are enabled.</SettingUseBedPanIfDiaperEquippedHelp>
+	
 	<SettingDebugMode>DEBUGGING Mode</SettingDebugMode>
 	<SettingDebugModeHelp>Activates a lot of debugging logs for dev mode, in case you want to find an error. Restart may be required in certain situations.</SettingDebugModeHelp>
 </LanguageData>

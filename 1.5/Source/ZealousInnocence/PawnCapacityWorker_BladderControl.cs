@@ -43,7 +43,7 @@ namespace ZealousInnocence
 
                 num2 *= LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().generalBladderControlFactor;
 
-                bool needsDiaper = num2 <= DiaperHelper.NeedsDiaperBreakpoint;
+                bool needsDiaper = num2 <= Helper_Diaper.NeedsDiaperBreakpoint;
                 bool awake = (pawn.Awake() || simulateAwake) && !simulateSleep;
                 
                 float whileAsleepFactor = GetSleepingFactor(pawn, false);
@@ -58,7 +58,7 @@ namespace ZealousInnocence
                 }
                 num2 *= sleepFactor;
 
-                float bedwettingChance = DiaperHelper.CalculateProbability(whileAsleepTotal);
+                float bedwettingChance = Helper_Diaper.CalculateProbability(whileAsleepTotal);
                 if (impactors != null)
                 {
                     string bedwetting = "(low)";
@@ -83,13 +83,13 @@ namespace ZealousInnocence
                     }
                     else
                     {
-                        if(whileAsleepTotal <= DiaperHelper.NeedsDiaperNightBreakpoint)
+                        if(whileAsleepTotal <= Helper_Diaper.NeedsDiaperNightBreakpoint)
                         {
                             impactors.Add(new CapacityImpactorCustom { customString = "Needs Pull-Ups" });
                         }
                     }
-                    impactors.Add(new CapacityImpactorCustom { customLabel = "Daytime Accidents", customValue = DiaperHelper.CalculateProbability(whileAwakeTotal) });
-                    impactors.Add(new CapacityImpactorCustom { customLabel = $"Bedwetting {bedwetting}", customValue = DiaperHelper.CalculateProbability(whileAsleepTotal) });
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "Daytime Accidents", customValue = Helper_Diaper.CalculateProbability(whileAwakeTotal) });
+                    impactors.Add(new CapacityImpactorCustom { customLabel = $"Bedwetting {bedwetting}", customValue = Helper_Diaper.CalculateProbability(whileAsleepTotal) });
                 }
             }
             else

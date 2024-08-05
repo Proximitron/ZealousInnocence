@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -15,44 +16,64 @@ namespace ZealousInnocence
     /// <summary>
     /// Testimplementation
     /// </summary>
-
-
     [StaticConstructorOnStartup]
-    public class Apparel_Diaper_Base : Apparel
+    public class Apparel_UnderwearSlot : Apparel
     {
         public override float GetSpecialApparelScoreOffset()
         {
 
             return base.GetSpecialApparelScoreOffset();
         }
-        /*protected override void DrawAt(Vector3 drawLoc, bool flip = false)
-        {
-
-            var hpPercent = (float)HitPoints / MaxHitPoints;
-            string customTexturePath = def.graphicData.texPath;
-            if (hpPercent < 0.5f)
-            {
-                customTexturePath += "_Dirty";
-            }
-            Material material = MaterialPool.MatFrom(customTexturePath, ShaderDatabase.Transparent);
-            Log.Message($"Strangeness.");
-            Graphics.DrawMesh(MeshPool.plane10, drawLoc, Quaternion.identity, material, 0);
-            return;
-
-            //base.DrawAt(drawLoc, flip);
-        }*/
         public override Graphic Graphic
         {
             get
             {
                 if (this.HitPoints < this.MaxHitPoints * 0.5f)
                 {
-                    return GraphicDatabase.Get<Graphic_Single>(this.def.graphicData.texPath + "_Dirty", ShaderDatabase.Transparent, this.DrawSize, this.DrawColor, this.DrawColorTwo);
+                    var graphic = GraphicDatabase.Get<Graphic_Single>(this.def.graphicData.texPath + "_Dirty", ShaderDatabase.Transparent, this.DrawSize, this.DrawColor, this.DrawColorTwo);
+                    return new Graphic_RandomRotated(graphic, this.def.graphicData.onGroundRandomRotateAngle);
                 }
                 else
                 {
                     return base.Graphic;
                 }
+            }
+        }
+        // Suppress the "got destroyed" message
+        public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
+        {
+
+            if(this.WearerPawn != null)
+            {
+                Messages.Message($"{WearerPawn.Name.ToStringShort}'s {this.Label} was destroyed by an accident.", MessageTypeDefOf.NegativeEvent, true);
+                mode = DestroyMode.Vanish;
+            }
+            else
+            {
+                if (this.HitPoints < this.MaxHitPoints * 0.5f)
+                {
+                    if (mode == DestroyMode.KillFinalize)
+                    {
+                        mode = DestroyMode.Vanish;
+                    }
+                }
+            }
+
+            base.Destroy(mode);
+        }
+        private Pawn WearerPawn
+        {
+            get
+            {
+                if (Wearer != null)
+                {
+                    return Wearer;
+                }
+                if (this.ParentHolder is Pawn_ApparelTracker apparelTracker)
+                {
+                    return apparelTracker.pawn;
+                }
+                return null;
             }
         }
         public override void PostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
@@ -61,33 +82,16 @@ namespace ZealousInnocence
             base.PostApplyDamage(dinfo, totalDamageDealt);
         }
     }
-    [StaticConstructorOnStartup]
-    public class Apparel_Underwear_Base : Apparel
-    {
-        public override float GetSpecialApparelScoreOffset()
-        {
 
-            return base.GetSpecialApparelScoreOffset();
-        }
-        public override Graphic Graphic
-        {
-            get
-            {
-                if (this.HitPoints < this.MaxHitPoints * 0.5f)
-                {
-                    return GraphicDatabase.Get<Graphic_Single>(this.def.graphicData.texPath + "_Dirty", ShaderDatabase.Transparent, this.DrawSize, this.DrawColor, this.DrawColorTwo);
-                }
-                else
-                {
-                    return base.Graphic;
-                }
-            }
-        }
-        public override void PostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
-        {
-            Map?.mapDrawer.MapMeshDirty(Position, MapMeshFlagDefOf.Things);
-            base.PostApplyDamage(dinfo, totalDamageDealt);
-        }
+    [StaticConstructorOnStartup]
+    public class Apparel_Diaper_Base : Apparel_UnderwearSlot
+    {
+
+    }
+    [StaticConstructorOnStartup]
+    public class Apparel_Underwear_Base : Apparel_UnderwearSlot
+    {
+
     }
     public enum BedwettingSituationCategoryThought : int
     {
@@ -182,10 +186,10 @@ namespace ZealousInnocence
 
         protected override ThoughtState CurrentStateInternal(Pawn p)
         {
-            var preference = DiaperHelper.getDiaperPreference(p);
-            var currDiapie = DiaperHelper.getDiaper(p);
-            var diaperRequired = DiaperHelper.needsDiaper(p);
-            var diaperRequiredNight = DiaperHelper.needsDiaperNight(p);
+            var preference = Helper_Diaper.getDiaperPreference(p);
+            var currDiapie = Helper_Diaper.getDiaper(p);
+            var diaperRequired = Helper_Diaper.needsDiaper(p);
+            var diaperRequiredNight = Helper_Diaper.needsDiaperNight(p);
             var nonAdult = !p.ageTracker.Adult;
             if (currDiapie != null)
             {
@@ -195,7 +199,7 @@ namespace ZealousInnocence
                         switch (preference)
                         {
                             case DiaperLikeCategory.NonAdult:
-                                if (DiaperHelper.isNightDiaper(currDiapie)) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_Clean);
+                                if (Helper_Diaper.isNightDiaper(currDiapie)) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_Clean);
                                 else return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Clean);
                             case DiaperLikeCategory.Liked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Clean);
@@ -206,7 +210,7 @@ namespace ZealousInnocence
                                 {
                                     return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Required_Neutral_Clean);
                                 }
-                                if (DiaperHelper.isNightDiaper(currDiapie))
+                                if (Helper_Diaper.isNightDiaper(currDiapie))
                                 {
                                     if (diaperRequiredNight)
                                     {
@@ -234,7 +238,7 @@ namespace ZealousInnocence
                                 {
                                     return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Required_Neutral_Used);
                                 }
-                                if (DiaperHelper.isNightDiaper(currDiapie))
+                                if (Helper_Diaper.isNightDiaper(currDiapie))
                                 {
                                     if (diaperRequiredNight)
                                     {
@@ -262,7 +266,7 @@ namespace ZealousInnocence
                                 {
                                     return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Required_Neutral_Spent);
                                 }
-                                if (DiaperHelper.isNightDiaper(currDiapie))
+                                if (Helper_Diaper.isNightDiaper(currDiapie))
                                 {
                                     if (diaperRequiredNight)
                                     {
@@ -290,7 +294,7 @@ namespace ZealousInnocence
                                 {
                                     return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Required_Neutral_Trashed);
                                 }
-                                if (DiaperHelper.isNightDiaper(currDiapie))
+                                if (Helper_Diaper.isNightDiaper(currDiapie))
                                 {
                                     if (diaperRequiredNight)
                                     {
@@ -310,7 +314,7 @@ namespace ZealousInnocence
             }
 
             // After this point it should be clear that no diaper is worn
-            var currUnderpants = DiaperHelper.getUnderwear(p);
+            var currUnderpants = Helper_Diaper.getUnderwear(p);
 
             if (preference == DiaperLikeCategory.NonAdult)
             {

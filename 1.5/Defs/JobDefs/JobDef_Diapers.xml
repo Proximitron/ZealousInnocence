@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<JobDef>
+		<defName>ChangePatientDiaper</defName>
+		<driverClass>ZealousInnocence.JobDriver_ChangePatientDiaper</driverClass>
+		<reportString>changing diaper of TargetB</reportString>
+	</JobDef>
+</Defs>

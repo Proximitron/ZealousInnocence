@@ -23,6 +23,8 @@ namespace ZealousInnocence
 
         public float generalBladderControlFactor = 1.00f;
         public float generalNighttimeControlFactor = 1.00f;
+        public bool useBedPan = false;
+        public bool useBedPanIfDiaperEquipped = true;
 
         public float needDiapers = 0.45f;
         public float needPullUp = 0.6f;
@@ -152,11 +154,18 @@ namespace ZealousInnocence
             generalBladderControlFactor = row.Slider(generalBladderControlFactor, 0f, 2f);
             row.Label("SettingNighttimeControlFactor".Translate() + $": {Math.Round(generalNighttimeControlFactor * 100)}%", tooltip: "SettingNighttimeControlFactorHelp".Translate(NamedArgumentUtility.Named("100", "CHANCE")));
             generalNighttimeControlFactor = row.Slider(generalNighttimeControlFactor, 0f, 2f);
+            row.GapLine(gabSize);
             row.Label("SettingNeedDiapersOnBladderControl".Translate() + $": {Math.Round(needDiapers * 100)}%", tooltip: "SettingNeedDiapersOnBladderControlHelp".Translate(NamedArgumentUtility.Named("45", "CHANCE")));
             needDiapers = row.Slider(needDiapers, 0f, 1f);
             row.Label("SettingNeedPullupsOnBladderControl".Translate() + $": {Math.Round(needPullUp * 100)}%", tooltip: "SettingNeedPullupsOnBladderControlHelp".Translate(NamedArgumentUtility.Named("60", "CHANCE")));
             needPullUp = row.Slider(needPullUp, 0f, 1f);
-
+            row.GapLine(gabSize);
+            row.CheckboxLabeled("SettingUseBedPan".Translate(), ref useBedPan, "SettingUseBedPanHelp".Translate());
+            if (useBedPan)
+            {
+                row.CheckboxLabeled("SettingUseBedPanIfDiaperEquipped".Translate(), ref useBedPanIfDiaperEquipped, "SettingUseBedPanIfDiaperEquippedHelp".Translate());
+            }
+                
             row.End();
 
             /*

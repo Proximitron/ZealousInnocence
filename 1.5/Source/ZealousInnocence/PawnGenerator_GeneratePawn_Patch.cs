@@ -137,12 +137,12 @@ namespace ZealousInnocence
                 if (HasGene(__result, GeneDefOf.BladderSizeBig))
                 {
                     if (debugGenes) Log.Message($"Pawn {__result.LabelShort} patching big");
-                    DiaperHelper.replaceBladderPart(__result, HediffDefOf.BigBladder);
+                    Helper_Diaper.replaceBladderPart(__result, HediffDefOf.BigBladder);
                 }
                 if (HasGene(__result, GeneDefOf.BladderSizeSmall))
                 {
                     if (debugGenes) Log.Message($"Pawn {__result.LabelShort} patching small");
-                    DiaperHelper.replaceBladderPart(__result, HediffDefOf.SmallBladder);
+                    Helper_Diaper.replaceBladderPart(__result, HediffDefOf.SmallBladder);
                 }
             }
 
@@ -160,9 +160,9 @@ namespace ZealousInnocence
             var underwear = __result.apparel.WornApparel.FirstOrDefault(a => a.def.apparel.layers.Contains(ApparelLayerDefOf.Underwear));
             if (underwear != null)
             {
-                if(DiaperHelper.needsDiaper(__result))
+                if(Helper_Diaper.needsDiaper(__result))
                 {
-                    if (!DiaperHelper.isDiaper(underwear) && DiaperHelper.acceptsDiaper(__result))
+                    if (!Helper_Diaper.isDiaper(underwear) && Helper_Diaper.acceptsDiaper(__result))
                     {
                         if (settings.debugging) Log.Message($"PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
                         __result.apparel.Remove(underwear);
@@ -170,9 +170,9 @@ namespace ZealousInnocence
                     }
 
                 }
-                else if(DiaperHelper.needsDiaperNight(__result))
+                else if(Helper_Diaper.needsDiaperNight(__result))
                 {
-                    if (!DiaperHelper.isNightDiaper(underwear) && DiaperHelper.acceptsDiaperNight(__result))
+                    if (!Helper_Diaper.isNightDiaper(underwear) && Helper_Diaper.acceptsDiaperNight(__result))
                     {
                         if (settings.debugging) Log.Message($"PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
                         __result.apparel.Remove(underwear);
@@ -210,11 +210,11 @@ namespace ZealousInnocence
         private static ThingDef ChooseUnderwearFor(Pawn pawn)
         {
             if (pawn.ageTracker.AgeBiologicalYears < 3) return null;
-            if (DiaperHelper.needsDiaper(pawn) && DiaperHelper.acceptsDiaper(pawn))
+            if (Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn))
             {
                 return DefDatabase<ThingDef>.GetNamed("Apparel_Diaper");
             }
-            else if (DiaperHelper.needsDiaperNight(pawn) && DiaperHelper.acceptsDiaperNight(pawn))
+            else if (Helper_Diaper.needsDiaperNight(pawn) && Helper_Diaper.acceptsDiaperNight(pawn))
             {
                 return DefDatabase<ThingDef>.GetNamed("Apparel_Diaper_Night");
             }

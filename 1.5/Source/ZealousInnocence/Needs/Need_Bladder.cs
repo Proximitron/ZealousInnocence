@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
+using Verse.AI;
 
 namespace ZealousInnocence
 {
@@ -32,6 +33,35 @@ namespace ZealousInnocence
             }
 
         }*/
+        public static bool NeedInterval_Prefix(Need_Bladder __instance)
+        {
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debugging = settings.debugging && settings.debuggingCapacities;
+            if (__instance.IsFrozen)
+            {
+                return false;
+            }
+            Pawn pawn = (Pawn)AccessTools.Field(typeof(Need), "pawn").GetValue(__instance);
+            float FallPerTick = (float)AccessTools.Field(typeof(Need), "FallPerTick").GetValue(__instance);
+            __instance.CurLevel -= FallPerTick * 150f * ModOption.BladderRateD.Val;
+            if (__instance.CurLevel < 0f)
+            {
+                __instance.CurLevel = 0f;
+            }
+            
+            if (__instance.CurCategory <= BowelCategory.needBathroom && pawn.CurrentBed() != null && pawn.health.capacities.CanBeAwake && (HealthAIUtility.ShouldSeekMedicalRest(pawn) || HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f || pawn.CurJob.playerForced))
+            {
+                
+                if(settings.useBedPan && (settings.useBedPanIfDiaperEquipped || Helper_Diaper.getDiaper(pawn) == null))
+                {
+                    __instance.CurLevel = 1f;
+                    Thing thing;
+                    GenThing.TryDropAndSetForbidden(ThingMaker.MakeThing(DubDef.BedPan, null), pawn.Position, pawn.Map, ThingPlaceMode.Near, out thing, false);
+                }
+
+            }
+            return false;
+        }
 
         public static void CurCategory_Postfix(Need_Bladder __instance, ref BowelCategory __result)
         {
@@ -41,7 +71,7 @@ namespace ZealousInnocence
             {
                 // Access the private pawn field
                 Pawn pawn = (Pawn)AccessTools.Field(typeof(Need), "pawn").GetValue(__instance);
-                if (!DiaperHelper.remembersPotty(pawn)) __result = BowelCategory.Empty;
+                if (!Helper_Diaper.remembersPotty(pawn)) __result = BowelCategory.Empty;
             }
             // Add your custom logic here
             /*if (pawn.story.traits.HasTrait(TraitDefOf.AnotherTrait))

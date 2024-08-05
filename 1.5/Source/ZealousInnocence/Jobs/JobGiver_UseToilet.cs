@@ -16,7 +16,7 @@ namespace ZealousInnocence
         // Prefix to save runs in unnessesary cases. It tracks if the pawn notices 
         public static bool Prefix(JobGiver_UseToilet __instance, Pawn pawn)
         {
-            return DiaperHelper.remembersPotty(pawn);
+            return Helper_Diaper.remembersPotty(pawn);
         }
         // Postfix to observe or modify the output of TryGiveJob
         public static void Postfix(JobGiver_UseToilet __instance, Pawn pawn, ref Job __result)
@@ -28,10 +28,10 @@ namespace ZealousInnocence
                 var debugBedwetting = debugging || (settings.debugging && settings.debuggingBedwetting && !pawn.Awake());
                 if (pawn.Awake())
                 {
-                    var liked = DiaperHelper.getDiaperPreference(pawn);
+                    var liked = Helper_Diaper.getDiaperPreference(pawn);
                     if (liked == DiaperLikeCategory.Liked)
                     {
-                        var currDiapie = DiaperHelper.getDiaper(pawn);
+                        var currDiapie = Helper_Diaper.getDiaper(pawn);
                         if (currDiapie == null)
                         {
                             pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("HadToGoPotty"), null, null);

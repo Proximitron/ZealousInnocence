@@ -27,7 +27,7 @@ namespace ZealousInnocence
             bool shouldWet = BedWetting_Helper.BedwettingAtAge(pawn, pawn.ageTracker.AgeBiologicalYears);
             //Log.Message($"ZealousInnocence bedwetting interval {Find.TickManager.TicksGame}: Pawn {pawn.LabelShort} {shouldWet}");
             
-            var needDiaper = DiaperHelper.needsDiaper(pawn);
+            var needDiaper = Helper_Diaper.needsDiaper(pawn);
 
 
             if (shouldWet) { 
@@ -161,7 +161,7 @@ namespace ZealousInnocence
                         if (debugging) Log.Message($"ZealousInnocence MIGRATION: Migrating full body small bladder to new bladder size system for {pawn.LabelShort}!");
                         pawn.health.RemoveHediff(hediff);
                     }
-                    DiaperHelper.replaceBladderPart(pawn, HediffDefOf.SmallBladder);
+                    Helper_Diaper.replaceBladderPart(pawn, HediffDefOf.SmallBladder);
                 }
                 if (chance < 0.99f && chance > 0.01f) // if chances are too small or too big. We go with random instead.
                 {

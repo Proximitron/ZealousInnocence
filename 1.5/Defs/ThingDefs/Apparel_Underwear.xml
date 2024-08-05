@@ -63,7 +63,8 @@
 		</stuffCategories>
 		<costStuffCount>10</costStuffCount>
 		<statBases>
-			<Absorbency>0.25</Absorbency>
+			<DiaperSupport>0.15</DiaperSupport>
+			<Absorbency>0.15</Absorbency>
 			<MaxHitPoints>70</MaxHitPoints>
 			<WorkToMake>550</WorkToMake>
 			<Mass>0.2</Mass>
@@ -111,7 +112,8 @@
 		</stuffCategories>
 		<costStuffCount>5</costStuffCount>
 		<statBases>
-			<Absorbency>0.5</Absorbency>
+			<DiaperSupport>0.20</DiaperSupport>
+			<Absorbency>0.3</Absorbency>
 			<MaxHitPoints>70</MaxHitPoints>
 			<WorkToMake>250</WorkToMake>
 			<Mass>0.2</Mass>
@@ -157,7 +159,8 @@
 		</stuffCategories>
 		<costStuffCount>25</costStuffCount>
 		<statBases>
-			<Absorbency>0.3</Absorbency>
+			<DiaperSupport>0.15</DiaperSupport>
+			<Absorbency>0.15</Absorbency>
 			<MaxHitPoints>80</MaxHitPoints>
 			<WorkToMake>700</WorkToMake>
 			<Mass>0.2</Mass>
@@ -204,7 +207,8 @@
 		</stuffCategories>
 		<costStuffCount>25</costStuffCount>
 		<statBases>
-			<Absorbency>0.25</Absorbency>
+			<DiaperSupport>0.10</DiaperSupport>
+			<Absorbency>0.15</Absorbency>
 			<MaxHitPoints>70</MaxHitPoints>
 			<WorkToMake>800</WorkToMake>
 			<Mass>0.2</Mass>

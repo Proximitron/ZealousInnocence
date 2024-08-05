@@ -149,7 +149,7 @@ namespace ZealousInnocence
                 return false;
             }
 
-            return DiaperHelper.getBladderControlLevel(p) <= 0.5f;
+            return Helper_Diaper.getBladderControlLevel(p) <= 0.5f;
         }
     }
     public class ThoughtWorker_Precept_HalfUnbladdered_Social : ThoughtWorker_Precept_Social

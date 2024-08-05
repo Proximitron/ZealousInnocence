@@ -9,7 +9,9 @@ using UnityEngine;
 using Verse;
 
 namespace ZealousInnocence
-{    /*public class Graphic_HpBased : Graphic_Single
+{
+
+    /*public class Graphic_HpBased : Graphic_Single
     {
         public override Material MatSingle
         {

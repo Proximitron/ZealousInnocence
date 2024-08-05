@@ -122,7 +122,8 @@
 		</stuffCategories>
 		<costStuffCount>5</costStuffCount>
 		<statBases>
-			<Absorbency>1.25</Absorbency>
+			<DiaperSupport>0.50</DiaperSupport>
+			<Absorbency>0.75</Absorbency>
 			<MaxHitPoints>60</MaxHitPoints>
 			<WorkToMake>400</WorkToMake>
 			<Mass>0.2</Mass>

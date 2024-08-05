@@ -361,26 +361,26 @@ namespace ZealousInnocence
                 else if(pref == OnesieLikeCategory.Disliked) __result = false;
                 else
                 {
-                    if(DiaperHelper.needsDiaper(pawn) && DiaperHelper.acceptsDiaper(pawn)) __result = true;
+                    if(Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn)) __result = true;
                 }
                 
-                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on not needsDiaper {DiaperHelper.needsDiaper(pawn)} or cat based {pref} age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat based {pref} age {pawn.ageTracker.AgeBiologicalYears}");
             }
             else if (__instance.tags.Contains("DiapersNight"))
             {
-                __result = DiaperHelper.needsDiaperNight(pawn) && DiaperHelper.acceptsDiaperNight(pawn);
-                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on needsNight {DiaperHelper.needsDiaperNight(pawn)} and acceptance {DiaperHelper.acceptsDiaperNight(pawn)} of {DiaperHelper.getDiaperPreference(pawn) != DiaperLikeCategory.Disliked} age {pawn.ageTracker.AgeBiologicalYears}");
+                __result = Helper_Diaper.needsDiaperNight(pawn) && Helper_Diaper.acceptsDiaperNight(pawn);
+                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on needsNight {Helper_Diaper.needsDiaperNight(pawn)} and acceptance {Helper_Diaper.acceptsDiaperNight(pawn)} of {Helper_Diaper.getDiaperPreference(pawn) != DiaperLikeCategory.Disliked} age {pawn.ageTracker.AgeBiologicalYears}");
             }
             else if (__instance.tags.Contains("Diaper"))
             {
-                __result = (DiaperHelper.needsDiaper(pawn) && DiaperHelper.acceptsDiaper(pawn)) || DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked;
-                if (debugging) Log.Message($"Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {DiaperHelper.needsDiaper(pawn)} or cat {DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} age {pawn.ageTracker.AgeBiologicalYears}");
+                __result = (Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn)) || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked;
+                if (debugging) Log.Message($"Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} age {pawn.ageTracker.AgeBiologicalYears}");
 
             }
             else if (__instance.tags.Contains("Underwear"))
             {
-                __result = (!DiaperHelper.needsDiaper(pawn) && !DiaperHelper.needsDiaperNight(pawn)) || DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked;
-                if (debugging) Log.Message($"Apparel DEBUG: Underwear {pawn.LabelShort} value {__result} based on not needsDiaper {DiaperHelper.needsDiaper(pawn)} not needsNight {DiaperHelper.needsDiaperNight(pawn)} or cat {DiaperHelper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked} age {pawn.ageTracker.AgeBiologicalYears}");
+                __result = (!Helper_Diaper.needsDiaper(pawn) && !Helper_Diaper.needsDiaperNight(pawn)) || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked;
+                if (debugging) Log.Message($"Apparel DEBUG: Underwear {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} not needsNight {Helper_Diaper.needsDiaperNight(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked} age {pawn.ageTracker.AgeBiologicalYears}");
             }
 
 
@@ -400,22 +400,22 @@ namespace ZealousInnocence
             if (ap.HasThingCategory(ThingCategoryDefOf.Diapers))
             {
                 __result -= 0.5f; // Diapers by default less likely to be worn
-                var isNightDiaper = DiaperHelper.isNightDiaper(ap);
+                var isNightDiaper = Helper_Diaper.isNightDiaper(ap);
                 if (isNightDiaper) __result += 1f; // Usually better than diapers and better than no underwear
-                if (DiaperHelper.needsDiaper(pawn))
+                if (Helper_Diaper.needsDiaper(pawn))
                 {
                     if (isNightDiaper) __result += 3f; // too thin
                     else __result += 5f;
                 }
                 else
                 {
-                    if (isNightDiaper && DiaperHelper.needsDiaperNight(pawn))
+                    if (isNightDiaper && Helper_Diaper.needsDiaperNight(pawn))
                     {
                         __result += 5f;
                     }
                 }
 
-                var preference = DiaperHelper.getDiaperPreference(pawn);
+                var preference = Helper_Diaper.getDiaperPreference(pawn);
                 if (preference == DiaperLikeCategory.NonAdult)
                 {
                     __result += 0.5f;
@@ -434,7 +434,7 @@ namespace ZealousInnocence
             else if (ap.HasThingCategory(ThingCategoryDefOf.Underwear))
             {
                 __result += 1.5f; // Underwear is default more likely to be worn
-                var preference = DiaperHelper.getDiaperPreference(pawn);
+                var preference = Helper_Diaper.getDiaperPreference(pawn);
                 if (preference == DiaperLikeCategory.Liked)
                 {
                     __result -= 2f;
@@ -472,8 +472,8 @@ namespace ZealousInnocence
                 {
                     __result -= 10f;
                 }
-                if (DiaperHelper.needsDiaper(pawn)) __result += 0.8f;
-                else if (DiaperHelper.needsDiaperNight(pawn)) __result += 0.4f;
+                if (Helper_Diaper.needsDiaper(pawn)) __result += 0.8f;
+                else if (Helper_Diaper.needsDiaperNight(pawn)) __result += 0.4f;
                 if (debugging) Log.Message("Apparel " + ap.Label + " is onesie and rated " + __result + " for " + pawn.LabelShort);
             }
             //JobGiver_OptimizeApparel.ApparelScoreRaw

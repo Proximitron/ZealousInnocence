@@ -13,6 +13,7 @@ namespace ZealousInnocence
     public class PawnCapacityDefOf
     {
         public static PawnCapacityDef BladderControl;
+        public static PawnCapacityDef Moving;
     }
     [DefOf]
     public class BodyPartTagDefOf
@@ -83,6 +84,7 @@ namespace ZealousInnocence
         public static JobDef Phoenix;
         public static JobDef RegressedPlayAround;
         public static JobDef LayDown;
+        public static JobDef ChangePatientDiaper;
         //public static JobDef WearSleepwear;
         // public static JobDef OptimizeApparel;
         //public static JobDef ChangeSleepwear;
