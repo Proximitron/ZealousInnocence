@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Verse.AI;
 using Verse.Sound;
 using Verse;
+using UnityEngine;
 
 namespace ZealousInnocence
 {
@@ -58,10 +59,98 @@ namespace ZealousInnocence
                 SoundStarter.PlayOneShotOnCamera(DiaperChangie.Poop, pawn.Map);
             }
         }
+        private LocalTargetInfo cachedDiaperTarget;
+        private float lastCacheUpdateTime;
+        private const float CacheUpdateInterval = 1f; // 1 second
 
+        public LocalTargetInfo getCachedBestDiaperOrUndie()
+        {
+            if (Time.realtimeSinceStartup - lastCacheUpdateTime > CacheUpdateInterval)
+            {
+                cachedDiaperTarget = getBestDiaperOrUndie(null, pawn);
+                lastCacheUpdateTime = Time.realtimeSinceStartup;
+            }
+            return cachedDiaperTarget;
+        }
+        public static LocalTargetInfo getBestDiaperOrUndie(Pawn caretaker, Pawn patient)
+        {
+            Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
+            if (need_diaper == null || need_diaper.CurLevel >= 0.5f)
+            {
+                if(caretaker != null) JobFailReason.Is("No change needed.");
+                Log.Message("no change needed log");
+                return LocalTargetInfo.Invalid;
+            }
+
+            Apparel oldDiaper = Helper_Diaper.getUnderwearOrDiaper(patient);
+            float minRating = -0.1f;
+            if (oldDiaper != null)
+            {
+                if (!patient.outfits.forcedHandler.AllowedToAutomaticallyDrop(oldDiaper))
+                {
+                    if (caretaker != null) CantRemoveUnderwearReason(oldDiaper);
+                    Log.Message("reason 3");
+                    return LocalTargetInfo.Invalid;
+                }
+                if (patient.apparel.IsLocked(oldDiaper))
+                {
+                    if (caretaker != null) CantRemoveUnderwearReason(oldDiaper);
+                    Log.Message("reason 4");
+                    return LocalTargetInfo.Invalid;
+                }
+                minRating = Helper_Diaper.getDiaperOrUndiesRating(patient, oldDiaper);
+            }
+            Log.Message("pre find undies function");
+            LocalTargetInfo a = findBestUndieOrDiaper(caretaker, patient, minRating);
+            if (a == null || !a.IsValid || !a.HasThing)
+            {
+                Log.Message("not allowed stage 1");
+                if (caretaker != null) JobFailReason.Is("No allowed cloth found.");
+                return LocalTargetInfo.Invalid;
+            }
+            return a;
+        }
+        private static void CantRemoveUnderwearReason(Apparel apparel)
+        {
+            if (Helper_Diaper.isDiaper(apparel))
+            {
+                JobFailReason.Is("Can't remove diaper.");
+            }
+            else if (Helper_Diaper.isNightDiaper(apparel))
+            {
+                JobFailReason.Is("Can't remove pull-ups.");
+            }
+            else
+            {
+                JobFailReason.Is("Can't remove underwear.");
+            }
+        }
+        private static LocalTargetInfo findBestUndieOrDiaper(Pawn caretaker, Pawn patient, float minRating = -0.1f)
+        {
+            Thing bestThing = null;
+            float bestRating = minRating;
+
+            foreach (Thing thing in patient.Map.listerThings.AllThings)
+            {
+                if (thing is Apparel app)
+                {
+                    if (app.HitPoints < (app.MaxHitPoints / 2)) continue;
+
+                    float rating = Helper_Diaper.getDiaperOrUndiesRating(patient, app);
+                    if (rating > bestRating && (caretaker == null || caretaker.CanReserveAndReach(thing, PathEndMode.ClosestTouch, Danger.Deadly)))
+                    {
+                        Log.Message("rating reached");
+                        bestRating = rating;
+                        bestThing = thing;
+                    }
+                }
+            }
+
+            return bestThing != null ? new LocalTargetInfo(bestThing) : LocalTargetInfo.Invalid;
+        }
         public override void SetInitialLevel()
         {
-            base.CurLevelPercentage = 1f;
+            base.CurLevelPercentage = 0f;
         }
 
         public bool hasDiaper()
@@ -104,15 +193,25 @@ namespace ZealousInnocence
 
         public override float CurLevel
         {
-            get => base.CurLevel;
+            get {
+                if (currProtection != null)
+                {
+                    return Math.Max(0f, (float)currProtection.HitPoints / (float)currProtection.MaxHitPoints);
+                }
+                else
+                {
+                    return 0f;
+                }
+                //return base.CurLevel;
+            }
             set
             {
-                DiaperSituationCategory curCategory = CurCategory;
+                /*DiaperSituationCategory curCategory = CurCategory;
                 base.CurLevel = value;
                 if (CurCategory != curCategory)
                 {
                     this.CategoryChanged();
-                }
+                }*/
             }
         }
 
@@ -120,7 +219,7 @@ namespace ZealousInnocence
         {
             get
             {
-                return hasUnderwearOrDiaper();
+                return true;// hasUnderwearOrDiaper();
             }
         }
 
@@ -250,7 +349,19 @@ namespace ZealousInnocence
                 }
             }
         }
+        private Apparel_Diaper_Base currProtectionCache;
 
+        private Apparel_Diaper_Base currProtection
+        {
+            get
+            {
+                return currProtectionCache;
+            }
+            set
+            {
+                currProtectionCache = value;
+            }
+        }
         // Triggers every 150 ticks! (2.5 seconds)
         // 2500 ticks in an ingame hour, 60000 ticks in a day (day is 1000 realtime seconds)
         // That means there are 400 need intervals in a day, meaning a chance of 0.0025 happens once a day
@@ -261,11 +372,11 @@ namespace ZealousInnocence
 
             Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
             if (bladder == null) return;
-
-            var currProtection = Helper_Diaper.getUnderwearOrDiaper(pawn);
-            if (currProtection != null)
+            Apparel diaperSlot = Helper_Diaper.getUnderwearOrDiaper(pawn);
+            currProtection = null;
+            if (diaperSlot is Apparel_Diaper_Base diaperOrUndies)
             {
-                CurLevel = (float)currProtection.HitPoints / (float)currProtection.MaxHitPoints;
+                currProtection = diaperOrUndies;
             }
 
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
@@ -294,7 +405,7 @@ namespace ZealousInnocence
                     if (Rand.ChanceSeeded(0.08f, pawn.HashOffsetTicks()) && !Helper_Diaper.remembersPotty(pawn))
                     {
                         if (debugBedwetting) Log.Message($"Triggering bedwetting incident at {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
-                        startAccident();
+                        startAccident(true);
                     }
                 }
 
@@ -305,7 +416,7 @@ namespace ZealousInnocence
 
             if (!isHavingAccident && bladder.CurLevel <= 0f)
             {
-                startAccident();
+                startAccident(!settings.faecesActive);
             }
 
 
@@ -356,7 +467,10 @@ namespace ZealousInnocence
                 }
                 else
                 {
-                    startAccident();
+                    var pee = true;
+                    if (settings.faecesActive && Rand.ChanceSeeded(0.5f, pawn.HashOffsetTicks() + 922)) pee = false;
+
+                    startAccident(pee);
                     if (debugBedwetting) Log.Message($"doing fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
                 }
             }
@@ -365,9 +479,11 @@ namespace ZealousInnocence
             {
                 if (pawn.Awake())
                 {
-                    if (pawn.story.traits.HasTrait(TraitDef.Named("Potty_Rebel")))
+                    var pee = true;
+                    if (settings.faecesActive && Rand.ChanceSeeded(0.5f, pawn.HashOffsetTicks() + 922)) pee = false;
+                    if (pawn.story.traits.HasTrait(TraitDefOf.Potty_Rebel))
                     {
-                        startAccident();
+                        startAccident(pee);
                         if (debugging) Log.Message("doing trait (Potty_Rebel) for " + pawn.Name);
                     }
                     else
@@ -381,8 +497,8 @@ namespace ZealousInnocence
                             }
                             else
                             {
-                                startAccident();
-                                if (debugging) Log.Message("doing (peeing diaper by preference) for " + pawn.Name);
+                                startAccident(pee);
+                                if (debugging) Log.Message("doing (accident in diaper by preference) for " + pawn.Name);
                             }
                         }
 
@@ -393,7 +509,6 @@ namespace ZealousInnocence
             {
                 if (currProtection != null)
                 {
-
 
                     var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, 0.10f);
                     var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
@@ -406,7 +521,7 @@ namespace ZealousInnocence
                     if (absorbency < 0.1f) absorbency = 0.1f;
                     float hitPointDamage = fluidAmount / (0.05f * absorbency);
 
-                    currProtection.HitPoints -= chancedDamage(hitPointDamage);
+                    currProtection.HitPoints -= Math.Min(currProtection.HitPoints, chancedDamage(hitPointDamage));
                     if (currProtection.HitPoints < 1)
                     {
                         currProtection.Notify_LordDestroyed();
@@ -422,9 +537,9 @@ namespace ZealousInnocence
                     isHavingAccident = false;
                 }
             }
-            if (currProtection != null && !currProtection.DestroyedOrNull())
+            if (!isHavingAccident && currProtection != null && !currProtection.DestroyedOrNull())
             {
-                CurLevel = (float)currProtection.HitPoints / (float)currProtection.MaxHitPoints;
+                //CurLevel = (float)currProtection.HitPoints / (float)currProtection.MaxHitPoints;
 
                 if (currProtection.HitPoints < currProtection.MaxHitPoints / 2)
                 {

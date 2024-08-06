@@ -26,6 +26,8 @@ namespace ZealousInnocence
         public bool useBedPan = false;
         public bool useBedPanIfDiaperEquipped = true;
 
+        public bool faecesActive = false;
+        
         public float needDiapers = 0.45f;
         public float needPullUp = 0.6f;
         
@@ -57,6 +59,11 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref generalNighttimeControlFactor, "generalNighttimeControlFactor", 1.0f);
             Scribe_Values.Look(ref needDiapers, "needDiapers", 0.45f);
             Scribe_Values.Look(ref needPullUp, "needPullUp", 0.6f);
+
+            Scribe_Values.Look(ref useBedPan, "useBedPan", false);
+            Scribe_Values.Look(ref useBedPanIfDiaperEquipped, "useBedPanIfDiaperEquipped", false);
+
+            Scribe_Values.Look(ref faecesActive, "faecesActive", false);
 
             Scribe_Values.Look(ref debugging, "debugging", false);
             Scribe_Values.Look(ref debuggingCloth, "debuggingCloth", false);
@@ -165,7 +172,9 @@ namespace ZealousInnocence
             {
                 row.CheckboxLabeled("SettingUseBedPanIfDiaperEquipped".Translate(), ref useBedPanIfDiaperEquipped, "SettingUseBedPanIfDiaperEquippedHelp".Translate());
             }
-                
+            row.GapLine(gabSize);
+            row.CheckboxLabeled("SettingActivateFaeces".Translate(), ref faecesActive, "SettingActivateFaecesHelp".Translate());
+
             row.End();
 
             /*

@@ -1,21 +1,15 @@
-﻿using HarmonyLib;
-using RimWorld;
+﻿using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
+using UnityEngine.UIElements;
 using Verse;
 
 namespace ZealousInnocence
 {
-
-    /// <summary>
-    /// Testimplementation
-    /// </summary>
     [StaticConstructorOnStartup]
     public class Apparel_UnderwearSlot : Apparel
     {
@@ -43,7 +37,7 @@ namespace ZealousInnocence
         public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
         {
 
-            if(this.WearerPawn != null)
+            if (this.WearerPawn != null)
             {
                 Messages.Message($"{WearerPawn.Name.ToStringShort}'s {this.Label} was destroyed by an accident.", MessageTypeDefOf.NegativeEvent, true);
                 mode = DestroyMode.Vanish;
@@ -93,6 +87,7 @@ namespace ZealousInnocence
     {
 
     }
+
     public enum BedwettingSituationCategoryThought : int
     {
         // Default behaviour if nothing else applies

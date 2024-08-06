@@ -8,24 +8,44 @@ using System.Threading.Tasks;
 using Verse.AI;
 using Verse;
 using UnityEngine;
+using System.Net.NetworkInformation;
+using Verse.Sound;
 
 namespace ZealousInnocence
 {
 
     internal class JobDriver_ChangePatientDiaper : JobDriver
     {
-        protected Thing DiaperThing
+        protected Thing ClothThing
         {
             get
             {
                 return this.job.targetA.Thing;
             }
         }
-        protected Apparel Diaper
+        protected Thing OldClothThing
         {
             get
             {
-                if(DiaperThing is Apparel app)
+                return this.job.targetC.Thing;
+            }
+        }
+        protected Apparel Cloth
+        {
+            get
+            {
+                if(ClothThing is Apparel app)
+                {
+                    return app;
+                }
+                return null;
+            }
+        }
+        protected Apparel OldCloth
+        {
+            get
+            {
+                if (OldClothThing is Apparel app)
                 {
                     return app;
                 }
@@ -57,7 +77,7 @@ namespace ZealousInnocence
             {
                 if (pawn.inventory == null || !pawn.inventory.Contains(base.TargetThingA))
                 {
-                    target = this.DiaperThing;
+                    target = this.ClothThing;
                     if (!pawn.Reserve(target, job, 1, -1, null, errorOnFailed, false))
                     {
                         Log.Message($"JobDriver_ChangePatientDiaper Fails Toil reservations stage 3");
@@ -91,32 +111,50 @@ namespace ZealousInnocence
             
             yield return Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.Touch, false);
 
-            Toil changeDiaper = new Toil();
-            changeDiaper.initAction = () =>
+
+            if (OldCloth != null)
             {
-                this.pawn.jobs.curDriver.ticksLeftThisToil = 300; // 5 seconds at 60 ticks per second
-                Apparel oldDiaper = Patient.apparel.WornApparel.FirstOrDefault(app => Helper_Diaper.isDiaper(app));
-                if (oldDiaper != null)
+                Toil changeDiaper = new Toil();
+                changeDiaper.initAction = () =>
                 {
-                    Patient.apparel.Remove(oldDiaper);
-                    oldDiaper.Destroy();
-                }
-            };
-            changeDiaper.WithProgressBarToilDelay(TargetIndex.B);
-            changeDiaper.FailOnCannotTouch(TargetIndex.B, PathEndMode.Touch);
-            yield return changeDiaper;
+                    if (this.pawn.IsHashIntervalTick(150))
+                    {
+                        SoundStarter.PlayOneShotOnCamera(DiaperChangie.Diapertape, pawn.Map);
+                    }
+                    this.pawn.jobs.curDriver.ticksLeftThisToil = 300; // 5 seconds at 60 ticks per second 
+                };
+                changeDiaper.defaultCompleteMode = ToilCompleteMode.Delay;
+                changeDiaper.WithProgressBarToilDelay(TargetIndex.B);
+                changeDiaper.FailOnCannotTouch(TargetIndex.B, PathEndMode.Touch);
+                changeDiaper.AddFinishAction(() =>
+                {
+
+                    if (OldCloth != null)
+                    {
+                        Apparel resultingAp;
+                        Patient.apparel.TryDrop(OldCloth, out resultingAp, this.pawn.PositionHeld, false);
+                    }
+
+                });
+                yield return changeDiaper;
+            }
 
             Toil changingProgress = new Toil();
             changingProgress.initAction = () =>
             {
-                this.pawn.jobs.curDriver.ticksLeftThisToil = 300; // 5 seconds at 60 ticks per second
+                this.pawn.jobs.curDriver.ticksLeftThisToil = 600; // 10 seconds at 60 ticks per second
+                
             };
             changingProgress.tickAction = () =>
             {
+                if (this.pawn.IsHashIntervalTick(150))
+                {
+                    SoundStarter.PlayOneShotOnCamera(DiaperChangie.Diapertape, pawn.Map);
+                }
                 if (this.pawn.IsHashIntervalTick(30))
                 {
                     MoteMaker.MakeAttachedOverlay(Patient, ThingDefOf.Mote_BabyCryingDots, new Vector3(0.27f, 0f, 0.066f).RotatedBy(90f), 1f, -1f).exactRotation = Rand.Value * 180f;
-                    MoteMaker.MakeAttachedOverlay(Patient, ThingDefOf.Mote_BabyCryingDots, new Vector3(-0.27f, 0f, 0.066f).RotatedBy(90f), 1f, -1f).exactRotation = Rand.Value * 180f;
+                    MoteMaker.MakeAttachedOverlay(Patient, ThingDefOf.Mote_BabyCryingDots, new Vector3(-0.27f, 0f, 0.066f).RotatedBy(45f), 1f, -1f).exactRotation = Rand.Value * 180f;
                 }
             };
             changingProgress.WithProgressBarToilDelay(TargetIndex.B);
@@ -127,12 +165,12 @@ namespace ZealousInnocence
             Toil wearNewDiaper = new Toil();
             wearNewDiaper.initAction = () =>
             {
-                this.pawn.carryTracker.innerContainer.Remove(DiaperThing);
-                Patient.apparel.Wear(Diaper);
+                this.pawn.carryTracker.innerContainer.Remove(ClothThing);
+                Patient.apparel.Wear(Cloth);
             };
             wearNewDiaper.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return wearNewDiaper;
-            Log.Message($"Ended toils for {this.DiaperThing.LabelShort}");
+            Log.Message($"Ended toils for {this.ClothThing.LabelShort}");
             yield break;
         }
     }

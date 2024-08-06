@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using HarmonyLib;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 using Verse.Sound;
 
 namespace ZealousInnocence
@@ -243,5 +245,25 @@ namespace ZealousInnocence
     public class RecipeExtension_RegressionParameter : DefModExtension
     {
         public bool targetMentalRegression = false;
+    }
+
+    [HarmonyPatch(typeof(HealthAIUtility))]
+    public static class Patch_HealthAIUtility
+    {
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(HealthAIUtility.ShouldSeekMedicalRest))]
+        public static void ShouldSeekMedicalRest(Pawn pawn, ref bool __result)
+        {
+            if (__result == false)
+            {
+                Need_Diaper need_diaper = pawn.needs.TryGetNeed<Need_Diaper>();
+                if (need_diaper != null && need_diaper.CurLevel < 0.5f)
+                {
+                    var cloth = need_diaper.getCachedBestDiaperOrUndie();
+                    __result = cloth != null && cloth.IsValid && cloth.HasThing;
+                }
+            }
+        }
     }
 }

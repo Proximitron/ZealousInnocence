@@ -12,7 +12,7 @@
 		<major>false</major>
 		<freezeWhileSleeping>false</freezeWhileSleeping>
 		<freezeInMentalState>false</freezeInMentalState>
-		<showForCaravanMembers>false</showForCaravanMembers>  
+		<showForCaravanMembers>true</showForCaravanMembers>  
 		<fallPerDay>0</fallPerDay>
 	</NeedDef>
 </Defs>

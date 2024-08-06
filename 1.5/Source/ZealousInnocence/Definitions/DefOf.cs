@@ -30,6 +30,7 @@ namespace ZealousInnocence
     {
         public static SoundDef Pee;
         public static SoundDef Poop;
+        public static SoundDef Diapertape;
     }
 
     [DefOf]

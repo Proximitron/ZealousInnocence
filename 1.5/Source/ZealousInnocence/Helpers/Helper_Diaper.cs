@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UIElements.Experimental;
 using Verse;
 using Verse.AI;
 
@@ -343,7 +344,130 @@ namespace ZealousInnocence
             // Perform linear interpolation
             return y0 + (bladderControl - x0) * (y1 - y0) / (x1 - x0);
         }
+        public static bool allowedByPolicy(Pawn pawn, Apparel ap)
+        {
+            var policy = pawn.IsPrisoner ? null : pawn.outfits?.CurrentApparelPolicy;
+            if (policy != null)
+            {
+                if (!policy.filter.Allows(ap))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static float getDiaperOrUndiesRating(Pawn pawn, Apparel ap)
+        {
+            float rating = 0.0f;
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            bool debugging = settings.debugging && settings.debuggingCloth;
+            if (!ap.PawnCanWear(pawn, true)) return -100f;
+            if (!allowedByPolicy(pawn, ap)) return -100f;
 
+            if (ap.HasThingCategory(ThingCategoryDefOf.Diapers))
+            {
+                rating -= 0.5f; // Diapers by default less likely to be worn
+                bool isNightDp = isNightDiaper(ap);
+                if (isNightDp) rating += 1f; // Usually better than diapers and better than no underwear
+                if (needsDiaper(pawn))
+                {
+                    rating += 5f;
+                    if (isNightDp) rating -= 2f; // too thin
+                }
+                else
+                {
+                    if (isNightDp && needsDiaperNight(pawn))
+                    {
+                        rating += 5f;
+                    }
+                }
+
+                if(ap.HitPoints < (ap.MaxHitPoints / 2))
+                {
+                    rating -= 4f;
+                }
+
+                var preference = getDiaperPreference(pawn);
+                if (preference == DiaperLikeCategory.NonAdult)
+                {
+                    rating += 0.5f;
+                }
+                else if (preference == DiaperLikeCategory.Liked)
+                {
+                    rating += 10f;
+                }
+                else if (preference == DiaperLikeCategory.Disliked)
+                {
+                    rating -= 10f;
+                }
+
+                if (debugging) Log.Message("Apparel " + ap.Label + " is diaper and rated " + rating + " for " + pawn.LabelShort);
+            }
+            else if (ap.HasThingCategory(ThingCategoryDefOf.Underwear))
+            {
+                rating += 1.5f; // Underwear is default more likely to be worn
+                var preference = getDiaperPreference(pawn);
+                if (preference == DiaperLikeCategory.Liked)
+                {
+                    rating -= 2f;
+                }
+                else if (preference == DiaperLikeCategory.Disliked)
+                {
+                    rating += 2f;
+                }
+                if (pawn.gender == Gender.Male && ap.HasThingCategory(ThingCategoryDefOf.FemaleCloth))
+                {
+                    rating -= 1f;
+
+                }
+                else if (pawn.gender == Gender.Female && ap.HasThingCategory(ThingCategoryDefOf.MaleCloth))
+                {
+                    rating -= 1f;
+                }
+                if (ap.HitPoints < (ap.MaxHitPoints / 2))
+                {
+                    rating -= 2f;
+                }
+                if (debugging) Log.Message("Apparel " + ap.Label + " is underwear and rated " + rating + " for " + pawn.LabelShort);
+
+            }
+            else
+            {
+                return -100f;
+            }
+            return rating;
+        }
+        public static float getOnesieRating(Pawn pawn, Apparel ap)
+        {
+            float rating = 0.0f;
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debugging = settings.debugging && settings.debuggingCloth;
+            if (!ap.PawnCanWear(pawn, true)) return -100f;
+            if (!allowedByPolicy(pawn, ap)) return -100f;
+
+            if (!ap.HasThingCategory(ThingCategoryDefOf.Onesies)) return -100f;
+            
+            rating -= 0.35f; // Onesies by default are less likely to be worn
+
+            var preference = OnesieHelper.getOnesiePreference(pawn);
+            if (preference == OnesieLikeCategory.NonAdult)
+            {
+                rating += 0.35f; // children don't care
+            }
+            else if (preference == OnesieLikeCategory.Liked)
+            {
+                rating += 5f;
+            }
+            else if (preference == OnesieLikeCategory.Disliked)
+            {
+                rating -= 10f;
+            }
+            if (needsDiaper(pawn)) rating += 0.8f;
+            else if (needsDiaperNight(pawn)) rating += 0.4f;
+            if (debugging) Log.Message("Apparel " + ap.Label + " is onesie and rated " + rating + " for " + pawn.LabelShort);
+
+            return rating;
+        }
 
         public static DiaperLikeCategory getDiaperPreference(Pawn pawn)
         {
@@ -371,7 +495,6 @@ namespace ZealousInnocence
                 Ideo ideo = pawn.Ideo;
                 if (ideo != null)
                 {
-
                     if (ideo.HasPrecept(PreceptDefOf.Diapers_Loved))
                     {
                         return DiaperLikeCategory.Liked;

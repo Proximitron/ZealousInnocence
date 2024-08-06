@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse.AI;
 using Verse;
+using UnityEngine;
 
 namespace ZealousInnocence
 {
@@ -22,7 +23,6 @@ namespace ZealousInnocence
         {
             if (this.def.workType == WorkTypeDefOf.Warden)
             {
-                
                 foreach (Pawn pawn2 in pawn.Map.mapPawns.SlavesAndPrisonersOfColonySpawned)
                 {
                     Need_Diaper need_diaper = pawn2.needs.TryGetNeed<Need_Diaper>();
@@ -45,82 +45,68 @@ namespace ZealousInnocence
             }
             yield break;
         }
+        private LocalTargetInfo cachedDiaperTarget;
+        private float lastCacheUpdateTime;
+        private const float CacheUpdateInterval = 1f; // 1 second
 
-        public Job TryRunJob(Pawn pawn, Pawn patient, Need_Diaper thirst)
+        public LocalTargetInfo getCachedBestDiaperOrUndie(Pawn caretaker, Pawn patient)
         {
-            LocalTargetInfo a = null;
-            /*if (/ != null)
+            if (Time.realtimeSinceStartup - lastCacheUpdateTime > CacheUpdateInterval)
             {
-                a = pawn.inventory.innerContainer.FirstOrDefault((Thing x) => Helper_Diaper.isDiaper(x);
+                cachedDiaperTarget = Need_Diaper.getBestDiaperOrUndie(caretaker, patient);
+                lastCacheUpdateTime = Time.realtimeSinceStartup;
             }
-            */
-            /*if (a.IsValid && a.HasThing)
-            {
-                Job job = JobMaker.MakeJob(JobDefOf.ChangePatientDiaper, a.Thing, patient);
-                job.count = 1;
-                return job;
-            }
-            */
-            a = FindBestDiaper(pawn);
-            if (a == null || !a.IsValid)
-            {
-                return null;
-            }
-            if (a.HasThing)
-            {
-                Job job2 = JobMaker.MakeJob(JobDefOf.ChangePatientDiaper, a.Thing, patient);
-                job2.count = 1;
-                return job2;
-            }
-            return null;
+            return cachedDiaperTarget;
         }
 
-        private LocalTargetInfo FindBestDiaper(Pawn pawn)
-        {
-            foreach (Thing thing in pawn.Map.listerThings.AllThings)
-            {
-                if(thing is Apparel app)
-                {
-                    if (Helper_Diaper.isDiaper(app) && app.HitPoints > (app.MaxHitPoints / 2) && pawn.CanReserveAndReach(thing, PathEndMode.ClosestTouch, Danger.Deadly))
-                    {
-                        return thing;
-                    }
-                }
 
-            }
-            return LocalTargetInfo.Invalid;
-        }
-
-        public override bool HasJobOnThing(Pawn pawn, Thing t, bool forced = false)
+        public override bool HasJobOnThing(Pawn caretaker, Thing t, bool forced = false)
         {
-            if (t is not Pawn patient || patient == pawn)
+            if (t is not Pawn patient || patient == caretaker)
             {
                 return false;
-            }
-
-            Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
-            if (need_diaper == null || need_diaper.CurLevel >= 0.5f || Helper_Diaper.getDiaper(patient) == null)
-            {
-                return false;
-            }
-
-            return FeedPatientUtility.ShouldBeFed(patient) && pawn.CanReserve(patient, 1, -1, null, forced) && TryRunJob(pawn, patient, need_diaper) != null;
-        }
-
-        public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
-        {
-            if (t is not Pawn patient || patient == pawn)
-            {
-                return null;
             }
 
             Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
             if (need_diaper == null || need_diaper.CurLevel >= 0.5f)
             {
+                JobFailReason.Is("No change needed.");
+                return false;
+            }
+
+            if (!FeedPatientUtility.ShouldBeFed(patient))
+            {
+                JobFailReason.Is("Is big enough to do it themselfs.");
+                return false;
+            }
+            if (!caretaker.CanReserve(patient, 1, -1, null, forced)) return false;
+            
+            LocalTargetInfo a = getCachedBestDiaperOrUndie(caretaker, patient);
+            if (a == null || !a.IsValid || !a.HasThing)
+            {
+                //JobFailReason.Is("No allowed cloth found."); reason is cached i hope!
+                return false;
+            }
+            return true;
+        }
+
+        public override Job JobOnThing(Pawn caretaker, Thing t, bool forced = false)
+        {
+            if (t is not Pawn patient || patient == caretaker)
+            {
+                return null;
+            }
+            if (!HasJobOnThing(caretaker, t, forced)) return null;
+
+            LocalTargetInfo a = getCachedBestDiaperOrUndie(caretaker, patient);
+            if (a == null || !a.IsValid || !a.HasThing)
+            {
                 return null;
             }
 
-            return TryRunJob(pawn, patient, need_diaper);
+            Job job2 = JobMaker.MakeJob(JobDefOf.ChangePatientDiaper, a.Thing, patient, Helper_Diaper.getUnderwearOrDiaper(patient));
+            job2.count = 1;
+            return job2;
         }
     }
 }

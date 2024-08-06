@@ -105,7 +105,12 @@ namespace ZealousInnocence
                 prefix: new HarmonyMethod(typeof(Patch_Thing_DrawAt), nameof(Patch_Thing_DrawAt.Prefix)),
                 info: "Thing.DrawAt"
             );*/
-
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(HealthAIUtility), nameof(HealthAIUtility.ShouldSeekMedicalRest)),
+                postfix: new HarmonyMethod(typeof(Patch_HealthAIUtility), nameof(Patch_HealthAIUtility.ShouldSeekMedicalRest)),
+                info: "HealthAIUtility.ShouldSeekMedicalRest"
+            );
+            
 
             ModChecker.ZealousInnocenceActive();
 
@@ -395,92 +400,22 @@ namespace ZealousInnocence
         [HarmonyPatch("ApparelScoreRaw")]
         public static float ApparelScoreRaw(float __result, Pawn pawn, Apparel ap)
         {
-            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            var debugging = settings.debugging && settings.debuggingCloth;
-            if (ap.HasThingCategory(ThingCategoryDefOf.Diapers))
+
+            if (ap.HasThingCategory(ThingCategoryDefOf.Diapers) || ap.HasThingCategory(ThingCategoryDefOf.Underwear))
             {
-                __result -= 0.5f; // Diapers by default less likely to be worn
-                var isNightDiaper = Helper_Diaper.isNightDiaper(ap);
-                if (isNightDiaper) __result += 1f; // Usually better than diapers and better than no underwear
-                if (Helper_Diaper.needsDiaper(pawn))
-                {
-                    if (isNightDiaper) __result += 3f; // too thin
-                    else __result += 5f;
-                }
-                else
-                {
-                    if (isNightDiaper && Helper_Diaper.needsDiaperNight(pawn))
-                    {
-                        __result += 5f;
-                    }
-                }
-
-                var preference = Helper_Diaper.getDiaperPreference(pawn);
-                if (preference == DiaperLikeCategory.NonAdult)
-                {
-                    __result += 0.5f;
-                }
-                else if (preference == DiaperLikeCategory.Liked)
-                {
-                    __result += 10f;
-                }
-                else if (preference == DiaperLikeCategory.Disliked)
-                {
-                    __result -= 10f;
-                }
-
-                if (debugging) Log.Message("Apparel " + ap.Label + " is diaper and rated " + __result + " for " + pawn.LabelShort);
+                __result += Helper_Diaper.getDiaperOrUndiesRating(pawn, ap);
             }
-            else if (ap.HasThingCategory(ThingCategoryDefOf.Underwear))
+            else if(ap.HasThingCategory(ThingCategoryDefOf.Onesies))
             {
-                __result += 1.5f; // Underwear is default more likely to be worn
-                var preference = Helper_Diaper.getDiaperPreference(pawn);
-                if (preference == DiaperLikeCategory.Liked)
-                {
-                    __result -= 2f;
-                }
-                else if (preference == DiaperLikeCategory.Disliked)
-                {
-                    __result += 2f;
-                }
-                if(pawn.gender == Gender.Male && ap.HasThingCategory(ThingCategoryDefOf.FemaleCloth))
-                {
-                    __result -= 1f;
-
-                }
-                else if (pawn.gender == Gender.Female && ap.HasThingCategory(ThingCategoryDefOf.MaleCloth))
-                {
-                   __result -= 1f;
-                }
-                if (debugging) Log.Message("Apparel " + ap.Label + " is underwear and rated " + __result + " for " + pawn.LabelShort);
-
+                __result += Helper_Diaper.getOnesieRating(pawn, ap);
             }
-            else if (ap.HasThingCategory(ThingCategoryDefOf.Onesies))
-            {
-                __result -= 0.35f; // Onesies by default are less likely to be worn
 
-                var preference = OnesieHelper.getOnesiePreference(pawn);
-                if (preference == OnesieLikeCategory.NonAdult)
-                {
-                    __result += 0.35f; // children don't care
-                }
-                else if (preference == OnesieLikeCategory.Liked)
-                {
-                    __result += 5f;
-                }
-                else if (preference == OnesieLikeCategory.Disliked)
-                {
-                    __result -= 10f;
-                }
-                if (Helper_Diaper.needsDiaper(pawn)) __result += 0.8f;
-                else if (Helper_Diaper.needsDiaperNight(pawn)) __result += 0.4f;
-                if (debugging) Log.Message("Apparel " + ap.Label + " is onesie and rated " + __result + " for " + pawn.LabelShort);
-            }
             //JobGiver_OptimizeApparel.ApparelScoreRaw
             //JobGiver_OptimizeApparel.ApparelScoreGain
             return __result;
 
         }
     }
+
 }
 //-----------------------------------------------------------
