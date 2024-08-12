@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<KnowledgeCategoryDef>
+    <defName>Regression</defName>
+    <label>regression</label>
+    <color>(1, 1, 1, 1)</color>
+    <texPath>UI/AnomalyResearchCategoryMarkers/AnomalyResearchCategory_Advanced</texPath>
+    <overflowCategory>Basic</overflowCategory>
+  </KnowledgeCategoryDef>
+
+</Defs>

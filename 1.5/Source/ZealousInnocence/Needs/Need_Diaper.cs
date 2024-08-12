@@ -75,36 +75,32 @@ namespace ZealousInnocence
         public static LocalTargetInfo getBestDiaperOrUndie(Pawn caretaker, Pawn patient)
         {
             Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
-            if (need_diaper == null || need_diaper.CurLevel >= 0.5f)
+            Apparel oldDiaper = Helper_Diaper.getUnderwearOrDiaper(patient);
+            bool oldIsAllowed = oldDiaper == null ? false : Helper_Diaper.allowedByPolicy(patient, oldDiaper);
+            if (oldDiaper != null && oldIsAllowed && need_diaper.CurLevel >= 0.5f)
             {
                 if(caretaker != null) JobFailReason.Is("No change needed.");
-                Log.Message("no change needed log");
                 return LocalTargetInfo.Invalid;
             }
 
-            Apparel oldDiaper = Helper_Diaper.getUnderwearOrDiaper(patient);
             float minRating = -0.1f;
-            if (oldDiaper != null)
+            if (oldIsAllowed)
             {
                 if (!patient.outfits.forcedHandler.AllowedToAutomaticallyDrop(oldDiaper))
                 {
                     if (caretaker != null) CantRemoveUnderwearReason(oldDiaper);
-                    Log.Message("reason 3");
                     return LocalTargetInfo.Invalid;
                 }
                 if (patient.apparel.IsLocked(oldDiaper))
                 {
                     if (caretaker != null) CantRemoveUnderwearReason(oldDiaper);
-                    Log.Message("reason 4");
                     return LocalTargetInfo.Invalid;
                 }
                 minRating = Helper_Diaper.getDiaperOrUndiesRating(patient, oldDiaper);
             }
-            Log.Message("pre find undies function");
             LocalTargetInfo a = findBestUndieOrDiaper(caretaker, patient, minRating);
             if (a == null || !a.IsValid || !a.HasThing)
             {
-                Log.Message("not allowed stage 1");
                 if (caretaker != null) JobFailReason.Is("No allowed cloth found.");
                 return LocalTargetInfo.Invalid;
             }
@@ -139,7 +135,6 @@ namespace ZealousInnocence
                     float rating = Helper_Diaper.getDiaperOrUndiesRating(patient, app);
                     if (rating > bestRating && (caretaker == null || caretaker.CanReserveAndReach(thing, PathEndMode.ClosestTouch, Danger.Deadly)))
                     {
-                        Log.Message("rating reached");
                         bestRating = rating;
                         bestThing = thing;
                     }
@@ -258,6 +253,7 @@ namespace ZealousInnocence
                 if (apparel.HitPoints < 1)
                 {
                     apparel.Notify_LordDestroyed();
+                    Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), apparel.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent,true);
                     apparel.Destroy(DestroyMode.Vanish);
                 }
             }
@@ -275,7 +271,7 @@ namespace ZealousInnocence
                         curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
                     }
                 }
-                if (!pawn.ageTracker.Adult) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
+                if (Helper_Regression.isAdult(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
                 else if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
                 else Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
                 pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
@@ -525,6 +521,7 @@ namespace ZealousInnocence
                     if (currProtection.HitPoints < 1)
                     {
                         currProtection.Notify_LordDestroyed();
+                        Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), this.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent,true);
                         currProtection.Destroy(DestroyMode.Vanish);
                     }
                 }

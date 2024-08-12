@@ -2,4 +2,7 @@
 <LanguageData>
 	<RitualUnbladderingTriggerExtraDesc>Unbladdering is expected for each current and joining {IDEOMEMBER} colonist.</RitualUnbladderingTriggerExtraDesc>
 	<RitualOutcomeExtraDesc_UnbladderingPsylink>Thanks to a satisfying unbladdering ritual, {PAWN_labelShort} gained a psylink level!</RitualOutcomeExtraDesc_UnbladderingPsylink>
+	
+	<!-- Destruction of cloth by accidents (pee/poop) -->
+	<MessageClothDestroyedByAccident>{PAWN_labelShort}'s {CLOTH_labelShort} was destroyed by an accident.</MessageClothDestroyedByAccident>
 </LanguageData>

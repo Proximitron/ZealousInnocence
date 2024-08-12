@@ -24,7 +24,7 @@ namespace ZealousInnocence
             
             if (pawn.health.hediffSet.HasHediff(HediffDefOf.Incontinent)) return;
 
-            bool shouldWet = BedWetting_Helper.BedwettingAtAge(pawn, pawn.ageTracker.AgeBiologicalYears);
+            bool shouldWet = BedWetting_Helper.BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn));
             //Log.Message($"ZealousInnocence bedwetting interval {Find.TickManager.TicksGame}: Pawn {pawn.LabelShort} {shouldWet}");
             
             var needDiaper = Helper_Diaper.needsDiaper(pawn);
@@ -67,11 +67,12 @@ namespace ZealousInnocence
         }
         public static float BedwettingSeverity(Pawn pawn)
         {
-            if (pawn.ageTracker.AgeBiologicalYears <= 12)
+            var age = Helper_Regression.getAgeStageInt(pawn);
+            if (age <= 12)
             {
                 return 0.1f; // Child stage
             }
-            else if (pawn.ageTracker.AgeBiologicalYears <= 16)
+            else if (age <= 16)
             {
                 return 0.4f; // Teen stage
             }
@@ -168,7 +169,7 @@ namespace ZealousInnocence
 
                     while (true)
                     {
-                        if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, pawn.ageTracker.AgeBiologicalYears))
+                        if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn)))
                         {
                             if (debugging) Log.Message($"ZealousInnocence MIGRATION DEBUG: Bedwetting seed {diaperNeed.bedwettingSeed} assigned with matching requirement {pawn.health.hediffSet.HasHediff(def)} for {pawn.LabelShort} after {tries} tries!");
                             break;

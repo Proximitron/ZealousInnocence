@@ -38,6 +38,9 @@
 	<SettingUseBedPan>Use bedpans</SettingUseBedPan>
 	<SettingUseBedPanHelp>Enables bedpans for pawns that can't get up from bed, but still have sufficient control over their bladder.</SettingUseBedPanHelp>
 	
+	<SettingActivateFaeces>Activate poop</SettingActivateFaeces>
+	<SettingActivateFaecesHelp>Will activate the mention, sounds and creation of poop in the world. There are no gameplay changes beyound that.</SettingActivateFaecesHelp>
+	
 	<SettingUseBedPanIfDiaperEquipped>Use bedpans on equipped diaper</SettingUseBedPanIfDiaperEquipped>
 	<SettingUseBedPanIfDiaperEquippedHelp>Will also enable the option of bedpans for pawns that are wearing diapers. NOTE: This only works if bedpans are enabled.</SettingUseBedPanIfDiaperEquippedHelp>
 	

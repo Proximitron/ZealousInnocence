@@ -4,6 +4,7 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
@@ -41,18 +42,18 @@ namespace ZealousInnocence
             {
                 return false;
             }
+
             Pawn pawn = (Pawn)AccessTools.Field(typeof(Need), "pawn").GetValue(__instance);
-            float FallPerTick = (float)AccessTools.Field(typeof(Need), "FallPerTick").GetValue(__instance);
-            __instance.CurLevel -= FallPerTick * 150f * ModOption.BladderRateD.Val;
+            float fallPerTick = (float)AccessTools.Property(typeof(Need_Bladder), "FallPerTick").GetValue(__instance);
+            __instance.CurLevel -= fallPerTick * 150f * ModOption.BladderRateD.Val;
             if (__instance.CurLevel < 0f)
             {
                 __instance.CurLevel = 0f;
             }
-            
+
             if (__instance.CurCategory <= BowelCategory.needBathroom && pawn.CurrentBed() != null && pawn.health.capacities.CanBeAwake && (HealthAIUtility.ShouldSeekMedicalRest(pawn) || HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f || pawn.CurJob.playerForced))
             {
-                
-                if(settings.useBedPan && (settings.useBedPanIfDiaperEquipped || Helper_Diaper.getDiaper(pawn) == null))
+                if (settings.useBedPan && (settings.useBedPanIfDiaperEquipped || Helper_Diaper.getDiaper(pawn) == null))
                 {
                     __instance.CurLevel = 1f;
                     Thing thing;

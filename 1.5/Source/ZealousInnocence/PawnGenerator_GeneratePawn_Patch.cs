@@ -150,7 +150,7 @@ namespace ZealousInnocence
             if (__result.health.hediffSet.HasHediff(HediffDefOf.Incontinent)) return;
 
 
-            if (BedWetting_Helper.BedwettingAtAge(__result, __result.ageTracker.AgeBiologicalYears))
+            if (BedWetting_Helper.BedwettingAtAge(__result, Helper_Regression.getAgeStageInt(__result)))
             {
                 __result.health.AddHediff(bedwettingDef);
                 var hediff = __result.health.hediffSet.GetFirstHediffOfDef(bedwettingDef);
@@ -201,7 +201,7 @@ namespace ZealousInnocence
         {
             if (pawn.Faction == null || pawn.Faction.def.techLevel == TechLevel.Medieval || pawn.Faction.def.techLevel == TechLevel.Neolithic)
             {
-                return ThingDefOf.Leather_Plain;
+                return RimWorld.ThingDefOf.Leather_Plain;
             }
             if(pawn.Faction.def.techLevel == TechLevel.Spacer) return DefDatabase<ThingDef>.GetNamed("Synthread");
             if (pawn.Faction.def.techLevel == TechLevel.Industrial) return DefDatabase<ThingDef>.GetNamed("Cloth");

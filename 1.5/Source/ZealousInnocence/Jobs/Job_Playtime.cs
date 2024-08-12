@@ -35,11 +35,11 @@ namespace ZealousInnocence
                 return 0f;
             }
             */
-            if (!RegressionHelper.isChild(initiator))
+            if (!Helper_Regression.isChild(initiator))
             {
                 return 0f;
             }
-            if (!RegressionHelper.isChild(recipient))
+            if (!Helper_Regression.isChild(recipient))
             {
                 return 0f;
             }
@@ -61,8 +61,8 @@ namespace ZealousInnocence
                 num+= 2f;
             }
            
-            var age1 = RegressionHelper.getAgeStage(recipient);
-            var age2 = RegressionHelper.getAgeStage(initiator);
+            var age1 = Helper_Regression.getAgeStage(recipient);
+            var age2 = Helper_Regression.getAgeStage(initiator);
             if(age1 > age2)
             {
                 num += (1.0f - ((age1 - age2) * 0.2f));

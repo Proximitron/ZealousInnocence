@@ -33,16 +33,11 @@ namespace ZealousInnocence
                 }
             }
         }
-        // Suppress the "got destroyed" message
+        // Suppress the "got destroyed" message of things in the underwear slot
         public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
         {
 
-            if (this.WearerPawn != null)
-            {
-                Messages.Message($"{WearerPawn.Name.ToStringShort}'s {this.Label} was destroyed by an accident.", MessageTypeDefOf.NegativeEvent, true);
-                mode = DestroyMode.Vanish;
-            }
-            else
+            if (this.WearerPawn == null)
             {
                 if (this.HitPoints < this.MaxHitPoints * 0.5f)
                 {
@@ -185,7 +180,6 @@ namespace ZealousInnocence
             var currDiapie = Helper_Diaper.getDiaper(p);
             var diaperRequired = Helper_Diaper.needsDiaper(p);
             var diaperRequiredNight = Helper_Diaper.needsDiaperNight(p);
-            var nonAdult = !p.ageTracker.Adult;
             if (currDiapie != null)
             {
                 switch (p.needs.TryGetNeed<Need_Diaper>().CurCategory)

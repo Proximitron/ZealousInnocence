@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using DubsBadHygiene;
+using HarmonyLib;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using Verse.Sound;
 
 namespace ZealousInnocence
 {
-    public static class RegressionHelper
+    public static class Helper_Regression
     {
         private static Dictionary<Pawn, AgeStageInfo> cachedAgeStages = new Dictionary<Pawn, AgeStageInfo>();
         public static int getAgeStage(Pawn pawn, bool force = false)
@@ -22,7 +23,7 @@ namespace ZealousInnocence
                 refreshAgeStageCache(pawn);
                 cachedAgeStages.TryGetValue(pawn, out value);
             }
-            
+
             return value.cachedAgeStage;
         }
         private static void refreshAgeStageCache(Pawn pawn)
@@ -35,19 +36,23 @@ namespace ZealousInnocence
             };
             dictionary[pawn] = obj;
         }
-        private static int getAgeStageInt(Pawn pawn)
+        public static bool isAdult(Pawn pawn)
+        {
+            return getAgeStageInt(pawn) > 12;
+        }
+        public static int getAgeStageInt(Pawn pawn)
         {
             if (pawn == null)
             {
                 return 14;
             }
 
-            foreach(var curr in pawn.health.hediffSet.hediffs)
+            foreach (var curr in pawn.health.hediffSet.hediffs)
             {
-                if(curr.def == HediffDefOf.RegressionState)
+                if (curr.def == HediffDefOf.RegressionState)
                 {
                     // Regression isn't a thing on children
-                    if(pawn.ageTracker.AgeBiologicalYears < 13)
+                    if (pawn.ageTracker.AgeBiologicalYears < 13)
                     {
                         pawn.health.RemoveHediff(curr);
                         return pawn.ageTracker.AgeBiologicalYears;
@@ -57,8 +62,44 @@ namespace ZealousInnocence
             }
             return pawn.ageTracker.AgeBiologicalYears;
         }
+        public static bool canChangeDiaperOrUnderwear(Pawn pawn)
+        {
+            if (!pawn.IsColonist) return true;
+            return getAgeStageInt(pawn) >= 6;
+        }
+        public static AcceptanceReport canUsePottyReport(Pawn pawn)
+        {
+            var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+            if (diaperNeed == null) return true; // anything without that gets a free pass
+            if (pawn.story.traits.HasTrait(TraitDefOf.Potty_Rebel))
+            {
+                return "ShortReasonNotComply".Translate(); // will never run to a potty!
+            }
+
+            // Mental states can make them unable to remember that
+            MentalState mentalState = pawn.MentalState;
+            if (mentalState != null && mentalState.def != null && (mentalState.def == MentalStateDefOf.PanicFlee || mentalState.def == MentalStateDefOf.Wander_Psychotic))
+            {
+                return "ShortReasonWrongMentalState".Translate(); // wrong mental state
+            }
+
+            var currDiapie = Helper_Diaper.getDiaper(pawn);
+            if (currDiapie != null)
+            {
+                if (pawn.outfits.forcedHandler.IsForced(currDiapie))
+                { 
+                    return "ShortReasonForcedInDiaper".Translate(); // forced in diapers
+                }
+                if (!canChangeDiaperOrUnderwear(pawn))
+                {
+                    return "ShortReasonCantChangeDiaperOrUnderwearSelf".Translate();
+                }
+            }
+            return true;
+        }
         public static bool isChild(Pawn pawn, bool forceRecheck = false)
         {
+            if (!pawn.IsColonist) return false;
             return getAgeStage(pawn, forceRecheck) < 13;
         }
         private static void healPawnBrain(Pawn pawn)
@@ -233,11 +274,11 @@ namespace ZealousInnocence
             {
                 var hediffsRemoved = new List<Hediff>();
                 float ageDifference = 0f;
-                RegressionHelper.reincarnateToChildPawn(pawn, out hediffsRemoved, out ageDifference);
+                Helper_Regression.reincarnateToChildPawn(pawn, out hediffsRemoved, out ageDifference);
             }
             else
             {
-                RegressionHelper.regressPawn(pawn);
+                Helper_Regression.regressPawn(pawn);
             }
         }
     }
@@ -258,7 +299,11 @@ namespace ZealousInnocence
             if (__result == false)
             {
                 Need_Diaper need_diaper = pawn.needs.TryGetNeed<Need_Diaper>();
-                if (need_diaper != null && need_diaper.CurLevel < 0.5f)
+                if (need_diaper == null) return;
+                if (Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return;
+
+                var diaper = Helper_Diaper.getUnderwearOrDiaper(pawn);
+                if (diaper == null || !Helper_Diaper.allowedByPolicy(pawn, diaper) || need_diaper.CurLevel < 0.5f)
                 {
                     var cloth = need_diaper.getCachedBestDiaperOrUndie();
                     __result = cloth != null && cloth.IsValid && cloth.HasThing;
@@ -266,4 +311,51 @@ namespace ZealousInnocence
             }
         }
     }
+    [HarmonyPatch(typeof(JobGiver_OptimizeApparel), "TryGiveJob")]
+    public static class JobGiver_OptimizeApparel_TryGiveJob_Patch
+    {
+        public static bool Prefix(Pawn pawn, ref Job __result)
+        {
+            // Add your condition here to check if the pawn should not dress themselves
+            if (!Helper_Regression.canChangeDiaperOrUnderwear(pawn))
+            {
+                JobFailReason.Is("Can't change their own diaper or underwear.");
+                __result = null; // Prevent the job from being given
+                return false;    // Skip the original method
+            }
+            return true; // Continue with the original method
+        }
+    }
+    [HarmonyPatch(typeof(Pawn_JobTracker), "StartJob")]
+    public static class Pawn_JobTracker_StartJob_Patch
+    {
+        public static bool Prefix(Pawn_JobTracker __instance, Job newJob)
+        {
+            
+            // Check if the job is Wear and if the pawn should not dress themselves
+            if (newJob.def == RimWorld.JobDefOf.Wear)
+            {
+                Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_JobTracker), "pawn").GetValue(__instance);
+                if (Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return true;
+                JobFailReason.Is("Can't change their own diaper or underwear.");
+                // Optionally, send a message to the player or log the action
+                Messages.Message("This pawn can't change their own diaper or underwear.", pawn, MessageTypeDefOf.RejectInput, historical: false);
+                return false; // Prevent the job from being started
+            }
+            if(newJob.def == DubDef.UseToilet)
+            {
+                Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_JobTracker), "pawn").GetValue(__instance);
+                var report = Helper_Regression.canUsePottyReport(pawn);
+                if (!report.Accepted)
+                {
+                    JobFailReason.Is(report.Reason);
+                    Messages.Message(report.Reason, pawn, MessageTypeDefOf.RejectInput, historical: false);
+                    return false; // can't change their own diaper
+                }
+
+            }
+            return true; // Continue with the original method
+        }
+    }
 }
+

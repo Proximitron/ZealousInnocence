@@ -142,17 +142,16 @@ namespace ZealousInnocence
             {
                 var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
                 if (diaperNeed == null) return true; // anything without that gets a free pass
-                if (diaperNeed.IsHavingAccident) return true; // now we notice for sure
                 if (!getBladderControlLevelCapable(pawn)) return false; // incapeable of noticing
-                if (pawn.story.traits.HasTrait(TraitDef.Named("Potty_Rebel"))) return false; // will never run to a potty!
 
-                // Mental states can make them unable to remember that
-                MentalState mentalState = pawn.MentalState;
-                if (mentalState != null && mentalState.def != null && (mentalState.def == MentalStateDefOf.PanicFlee || mentalState.def == MentalStateDefOf.Wander_Psychotic)) return false;
+                var report = Helper_Regression.canUsePottyReport(pawn);
+                if(!report.Accepted)
+                {
+                    JobFailReason.Is(report.Reason);
+                    return false; // can't change their own diaper
+                }
 
-                var currDiapie = getDiaper(pawn);
-                if (currDiapie != null && pawn.outfits.forcedHandler.IsForced(currDiapie)) return false; // forced in diapers
-
+                if (diaperNeed.IsHavingAccident) return true; // now we notice for sure
 
                 float bladderControl = getBladderControlLevel(pawn);
 
@@ -351,10 +350,81 @@ namespace ZealousInnocence
             {
                 if (!policy.filter.Allows(ap))
                 {
+                    JobFailReason.Is("Not allowed to wear that by policy.");
                     return false;
                 }
             }
+            else
+            {
+                if (ap.HasThingCategory(ThingCategoryDefOf.Diapers) && pawn.guest.IsInteractionDisabled(PrisonerInteractionModeDefOf.DiaperChangesAllowed))
+                {
+                    JobFailReason.Is("Diaper changes are not allowed.");
+                    return false;
+                }
+                else if (ap.HasThingCategory(ThingCategoryDefOf.Underwear) && pawn.guest.IsInteractionDisabled(PrisonerInteractionModeDefOf.UnderwearChangesAllowed))
+                {
+                    JobFailReason.Is("Underwear changes are not allowed.");
+                    return false;
+                }
+            } 
+
             return true;
+        }
+        public static float diaperCapacityLeft(Apparel app)
+        {
+            int topHalf = (int)Math.Ceiling(app.MaxHitPoints / 2f);
+            int bottomHalf = app.MaxHitPoints - topHalf;
+
+            int topHalfHp = Math.Min(app.HitPoints - bottomHalf, 0);
+            int bottomHalfHp = Math.Min(app.HitPoints - topHalfHp, 0);
+
+            float topHalfPercent = topHalfHp / topHalf * 0.75f;
+            float bottomHalfPercent = bottomHalfHp / bottomHalf * 0.25f;
+
+            return topHalfPercent + bottomHalfPercent;
+        }
+        public static void reduceCapacity(Pawn pawn, float amount)
+        {
+            float absorbency = pawn.GetStatValue(StatDefOf.DiaperAbsorbency) / 3;
+
+            if (absorbency < 0.1f) absorbency = 0.1f;
+            float hitPointDamage = amount / (0.05f * absorbency);
+
+            var app = getUnderwearOrDiaper(pawn);
+            if(app != null)
+            {
+                int topHalf = (int)Math.Ceiling(app.MaxHitPoints / 2f);
+                int bottomHalf = app.MaxHitPoints - topHalf;
+
+                int chanced = chancedDamage(pawn, hitPointDamage);
+
+                int topHalfHp = Math.Min(app.HitPoints - bottomHalf, 0);
+                int bottomHalfHp = Math.Min(app.HitPoints - topHalfHp, 0);
+
+                int topHalfImpact = Math.Min(topHalfHp, chanced);
+                chanced -= topHalfImpact;
+
+                int bottomHalfImpact = Math.Min(bottomHalfHp, chanced * 2);
+
+                app.HitPoints -= Math.Min(app.HitPoints, topHalfImpact + bottomHalfImpact);
+                if (app.HitPoints < 1)
+                {
+                    app.Notify_LordDestroyed();
+                    Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), app.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent,true);
+                    app.Destroy(DestroyMode.Vanish);
+                }
+            }
+        }
+        public static int chancedDamage(Pawn pawn, float damage)
+        {
+            float halfHitpoints = damage - (float)Math.Floor(damage);
+
+            if (halfHitpoints > 0.0f && Rand.ChanceSeeded(halfHitpoints, pawn.HashOffsetTicks() + 4))
+            {
+                return (int)Math.Ceiling(damage);
+            }
+
+            return (int)Math.Floor(damage);
         }
         public static float getDiaperOrUndiesRating(Pawn pawn, Apparel ap)
         {
@@ -471,7 +541,7 @@ namespace ZealousInnocence
 
         public static DiaperLikeCategory getDiaperPreference(Pawn pawn)
         {
-            if (!pawn.ageTracker.Adult)
+            if (!Helper_Regression.isAdult(pawn))
             {
                 return DiaperLikeCategory.NonAdult;
             }

@@ -5,7 +5,7 @@
       <defName>Diapers</defName>
       <label>diapers</label>
       <parent>Apparel</parent>
-      <iconPath>Apparel/Diaper/Nappy</iconPath>
+      <iconPath>Apparel/Diaper/PlainCloth/PlainCloth</iconPath>
       <resourceReadoutRoot>true</resourceReadoutRoot>
     </ThingCategoryDef>
 	

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Verse.AI;
 using Verse;
+using HarmonyLib;
 
 namespace ZealousInnocence
 {
@@ -47,6 +48,7 @@ namespace ZealousInnocence
                 else
                 {
                     if (debugging || debugBedwetting) Log.Message($"JobGiver_UseToilet not awake for {pawn.Name.ToStringShort}");
+                    JobFailReason.Is("Not awake.");
                     __result = null;
                     return;
                 }
@@ -56,5 +58,21 @@ namespace ZealousInnocence
                 //Log.Message($"JobGiver_UseToilet attempting to assign a job to {pawn.Name.ToStringShort}");
             }
         }
+    }
+    [HarmonyPatch(typeof(Building_AssignableFixture), nameof(Building_AssignableFixture.PawnAllowed))]
+    public static class Building_AssignableFixture_PawnAllowed_Patch
+    {
+        // Prefix to save runs in unnessesary cases. It tracks if the pawn notices 
+        public static bool Prefix(Building_AssignableFixture __instance, Pawn p, ref AcceptanceReport __result)
+        {
+            var report = Helper_Regression.canUsePottyReport(p);
+            if (!report.Accepted)
+            {
+                __result = report;
+                return false;
+            }
+            return true;
+        }
+
     }
 }

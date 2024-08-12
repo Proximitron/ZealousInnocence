@@ -395,11 +395,11 @@ namespace ZealousInnocence
                         {
                             var hediffsRemoved = new List<Hediff>();
                             float ageDifference = 0f;
-                            RegressionHelper.reincarnateToChildPawn(innerPawn, out hediffsRemoved, out ageDifference);
+                            Helper_Regression.reincarnateToChildPawn(innerPawn, out hediffsRemoved, out ageDifference);
                         }
                         else
                         {
-                            RegressionHelper.regressPawn(innerPawn);
+                            Helper_Regression.regressPawn(innerPawn);
                         }
                     }
                     else

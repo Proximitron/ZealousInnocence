@@ -30,14 +30,14 @@ namespace ZealousInnocence
                 float strFactor = GetStrenghFactor(pawn);
                 if (strFactor != 1f && impactors != null)
                 {
-                    impactors.Add(new CapacityImpactorCustom { customLabel = "Bladder Strength", customValue = strFactor });
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "PhraseBladderStrength".Translate(), customValue = strFactor });
                 }
                 num2 *= strFactor;
 
                 float ageFactor = GetAgeFactor(pawn);
                 if (ageFactor != 1f && impactors != null)
                 {
-                    impactors.Add(new CapacityImpactorCustom { customLabel = "Age", customValue = ageFactor});
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "PhraseAge".Translate(), customValue = ageFactor});
                 }
                 num2 *= ageFactor;
 
@@ -54,42 +54,44 @@ namespace ZealousInnocence
 
                 if (sleepFactor < 0.99f && impactors != null)
                 {
-                    impactors.Add(new CapacityImpactorCustom { customLabel = "Sleeping", customValue = sleepFactor });
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "StateSleeping".Translate(), customValue = sleepFactor });
                 }
                 num2 *= sleepFactor;
-
-                float bedwettingChance = Helper_Diaper.CalculateProbability(whileAsleepTotal);
+                bool canChange = Helper_Regression.canChangeDiaperOrUnderwear(pawn);
+                float bedwettingChance = canChange ? Helper_Diaper.CalculateProbability(whileAsleepTotal) : 1f;
                 if (impactors != null)
                 {
-                    string bedwetting = "(low)";
+                    string bedwetting = "StateWordLow";
                     if (bedwettingChance > 0.2f)
                     {
                         if (bedwettingChance > 0.6f)
                         {
-                            bedwetting = $"(very high)";
+                            bedwetting = "StateWordVeryHigh";
                         }
                         else if (bedwettingChance > 0.4f)
                         {
-                            bedwetting = $"(high)";
+                            bedwetting = "StateWordHigh";
                         }
                         else
                         {
-                            bedwetting = $"(medium)";
+                            bedwetting = "StateWordMedium";
                         }
                     }
                     if (needsDiaper)
                     {
-                        impactors.Add(new CapacityImpactorCustom { customString = "Needs Diapers" });
+                        impactors.Add(new CapacityImpactorCustom { customString = "StateNeedsDiapers".Translate() });
                     }
                     else
                     {
                         if(whileAsleepTotal <= Helper_Diaper.NeedsDiaperNightBreakpoint)
                         {
-                            impactors.Add(new CapacityImpactorCustom { customString = "Needs Pull-Ups" });
+                            impactors.Add(new CapacityImpactorCustom { customString = "StateNeedsPullups".Translate() });
                         }
                     }
-                    impactors.Add(new CapacityImpactorCustom { customLabel = "Daytime Accidents", customValue = Helper_Diaper.CalculateProbability(whileAwakeTotal) });
-                    impactors.Add(new CapacityImpactorCustom { customLabel = $"Bedwetting {bedwetting}", customValue = Helper_Diaper.CalculateProbability(whileAsleepTotal) });
+                    if(!canChange && impactors != null) impactors.Add(new CapacityImpactorCustom { customString = "ShortReasonCantChangeDiaperOrUnderwearSelf".Translate() });
+                    impactors.Add(new CapacityImpactorCustom { customLabel = "PhraseDaytimeAccidents".Translate(), customValue = canChange ? Helper_Diaper.CalculateProbability(whileAwakeTotal) : 1f });
+                    string wordBedwetting = "PhraseBedwetting".Translate();
+                    impactors.Add(new CapacityImpactorCustom { customLabel = $"{wordBedwetting} ({bedwetting.Translate()})", customValue = bedwettingChance });
                 }
             }
             else
@@ -108,7 +110,7 @@ namespace ZealousInnocence
         private float GetAgeFactor(Pawn pawn)
         {
             if (!pawn.RaceProps.Humanlike) return 1.0f;
-            int age = pawn.ageTracker.AgeBiologicalYears;
+            int age = Helper_Regression.getAgeStageInt(pawn);
             float factor;
 
             // Young age factor calculation
@@ -155,7 +157,7 @@ namespace ZealousInnocence
             float total = 1.0f;
             if (!isAwake)
             {
-                if (pawn.ageTracker.AgeBiologicalYears < 6 || pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
+                if (Helper_Regression.getAgeStageInt(pawn) < 6 || pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
                 {
                     total -= 0.7f;
                 }

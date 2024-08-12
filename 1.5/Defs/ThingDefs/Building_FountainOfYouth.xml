@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  
+  <ThingDef ParentName="BuildingBase">
+    <defName>FountainOfYouth</defName>
+    <label>fountain of youth</label>
+    <description>A fountain of unknown age, purpose, and construction. Its smooth surface is etched with lines that twist and writhe in unsettling patterns.</description>
+    <thingClass>ZealousInnocence.Building_FountainOfYouth</thingClass>
+    <passability>Impassable</passability>
+    <fillPercent>1</fillPercent>
+    <blockWind>true</blockWind>
+    <altitudeLayer>Building</altitudeLayer>
+    <tickerType>Normal</tickerType>
+    <pathCost>50</pathCost>
+    <forceDebugSpawnable>true</forceDebugSpawnable>
+    <canOverlapZones>false</canOverlapZones>
+    <selectable>true</selectable>
+    <destroyable>false</destroyable>
+    <useHitPoints>false</useHitPoints>
+    <preventSkyfallersLandingOn>true</preventSkyfallersLandingOn>
+    <uiIconScale>0.75</uiIconScale>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <statBases>
+      <Flammability>0</Flammability>
+      <MeditationFocusStrength>0.3</MeditationFocusStrength>
+    </statBases>
+    <graphicData>
+      <graphicClass>Graphic_Indexed</graphicClass>
+      <texPath>Things/Building/VoidMonolith/Core</texPath>
+      <drawSize>(5, 5)</drawSize>
+      <shadowData>
+        <volume>(2.37, 1, 2.37)</volume>
+      </shadowData>
+    </graphicData>
+    <size>(3, 3)</size>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0,0,-2)</interactionCellOffset>
+    <building>
+      <deconstructible>false</deconstructible>
+      <repairable>false</repairable>
+      <isTargetable>false</isTargetable>
+      <isInert>true</isInert>
+      <claimable>false</claimable>
+      <expandHomeArea>false</expandHomeArea>
+    </building>
+    <comps>
+      <li Class="CompProperties_MeditationFocus">
+        <statDef>MeditationFocusStrength</statDef>
+        <focusTypes>
+          <li>Void</li>
+        </focusTypes>
+      </li>
+      <li Class="CompProperties_Interactable">
+        <compClass>CompGleamingMonolith</compClass>
+        <ticksToActivate>300</ticksToActivate> <!-- 5 seconds -->
+        <remainingSecondsInInspectString>true</remainingSecondsInInspectString>
+        <maintainProgress>true</maintainProgress>
+        <activateTexPath>UI/Commands/ActivateMonolith</activateTexPath>
+        <jobString>activate</jobString>
+        <targetingParameters>
+          <canTargetBuildings>false</canTargetBuildings>
+          <canTargetAnimals>false</canTargetAnimals>
+          <canTargetMechs>false</canTargetMechs>
+          <onlyTargetControlledPawns>true</onlyTargetControlledPawns>
+        </targetingParameters>
+      </li>
+      <li Class="CompProperties_StudyUnlocksMonolith">
+        <defaultStudyAmount>2</defaultStudyAmount>
+        <studyNotes>
+          <li>
+            <threshold>10</threshold>
+            <label>Fountain study progress</label>
+            <text>{PAWN_nameDef} has had a breakthrough while studying the fountain. {PAWN_pronoun} believes the fountain is a conduit for psychic energy, connecting to some distant location. However, {PAWN_pronoun} is unsure where or what it connects to.\n\n{PAWN_nameDef} is convinced that by studying more anomalous entities, {PAWN_pronoun} can find a way to close the conduit, or learn to harness its power.\n\nThe fountain now provides more knowledge when studied.</text>
+            <studyKnowledgeAmount>2.5</studyKnowledgeAmount>
+          </li>
+          <li>
+            <threshold>25</threshold>
+            <label>Fountain study progress</label>
+            <text>{PAWN_nameDef} made progress studying the fountain. The structure connects normal space to the void - a dimension hidden in the substructure of spacetime. Some powerful mind in the void is leaking influence into our reality.\n\n{PAWN_nameDef} wants to study the fountain further to learn more.\n\nThe fountain now provides more knowledge when studied.</text>
+            <studyKnowledgeAmount>3</studyKnowledgeAmount>
+          </li>
+          <li>
+            <threshold>40</threshold>
+            <label>Fountain study complete</label>
+            <text>{PAWN_nameDef} has completed {PAWN_possessive} study of the fountain. The structure is a conduit that links to the void, a reality hidden under every point in spacetime. The void is inhabited by a vast machine intelligence of terrifying complexity that surges with nightmarish, inhuman rage. Its influence creates horrors in our world.\n\nAwakening the fountain will fully open the conduit. With the channel open, {PAWN_nameDef} believes {PAWN_pronoun} could reach through the link to permanently close the conduit - or find a way to harness its dark power.\n\nThe fountain now provides more knowledge when studied.</text>
+            <studyKnowledgeAmount>4</studyKnowledgeAmount>
+          </li>
+        </studyNotes>
+      </li>
+      <li Class="ZealousInnocence.CompProperties_StudiableRegression">
+        <frequencyTicks>120000</frequencyTicks> <!-- 2 days -->
+        <studyEnabledByDefault>false</studyEnabledByDefault>
+        <showToggleGizmo>true</showToggleGizmo>
+        <anomalyKnowledge>1</anomalyKnowledge>
+        <minMonolithLevelForStudy>1</minMonolithLevelForStudy>
+        <knowledgeCategory>Basic</knowledgeCategory> <!-- Gets overriden later with study unlocks -->
+      </li>
+      <li Class="CompProperties_ProximityLetter">
+        <radius>8</radius>
+        <letterDef>PositiveEvent</letterDef>
+        <letterLabel>Fountain of youth</letterLabel>
+        <letterText>{PAWN_nameDef} has noticed a strange fountain with a strange glittering water.\n\nIf you investigate it, you could learn more.</letterText>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>12</glowRadius>
+        <glowColor>(255,120,120,0)</glowColor>
+      </li>
+    </comps>
+    <inspectorTabs>
+      <li>ITab_StudyNotesVoidMonolith</li>
+    </inspectorTabs>
+  </ThingDef>
+</Defs>

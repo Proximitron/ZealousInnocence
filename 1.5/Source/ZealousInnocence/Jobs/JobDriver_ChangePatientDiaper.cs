@@ -13,7 +13,6 @@ using Verse.Sound;
 
 namespace ZealousInnocence
 {
-
     internal class JobDriver_ChangePatientDiaper : JobDriver
     {
         protected Thing ClothThing
@@ -45,11 +44,7 @@ namespace ZealousInnocence
         {
             get
             {
-                if (OldClothThing is Apparel app)
-                {
-                    return app;
-                }
-                return null;
+                return Helper_Diaper.getUnderwearOrDiaper(Patient);
             }
         }
 
@@ -102,7 +97,7 @@ namespace ZealousInnocence
         protected override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnDespawnedNullOrForbidden(TargetIndex.B);
-            this.FailOn(() => !FoodUtility.ShouldBeFedBySomeone(this.Patient));
+            this.FailOn(() => !FoodUtility.ShouldBeFedBySomeone(this.Patient) &&  !Patient.IsPrisoner);
             this.FailOn(() => !WorkGiver_Tend.GoodLayingStatusForTend(this.Patient, this.pawn));
 
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch, false).FailOnForbidden(TargetIndex.A);
@@ -153,8 +148,8 @@ namespace ZealousInnocence
                 }
                 if (this.pawn.IsHashIntervalTick(30))
                 {
-                    MoteMaker.MakeAttachedOverlay(Patient, ThingDefOf.Mote_BabyCryingDots, new Vector3(0.27f, 0f, 0.066f).RotatedBy(90f), 1f, -1f).exactRotation = Rand.Value * 180f;
-                    MoteMaker.MakeAttachedOverlay(Patient, ThingDefOf.Mote_BabyCryingDots, new Vector3(-0.27f, 0f, 0.066f).RotatedBy(45f), 1f, -1f).exactRotation = Rand.Value * 180f;
+                    MoteMaker.MakeAttachedOverlay(Patient, RimWorld.ThingDefOf.Mote_BabyCryingDots, new Vector3(0.27f, 0f, 0.066f).RotatedBy(90f), 1f, -1f).exactRotation = Rand.Value * 180f;
+                    MoteMaker.MakeAttachedOverlay(Patient, RimWorld.ThingDefOf.Mote_BabyCryingDots, new Vector3(-0.27f, 0f, 0.066f).RotatedBy(45f), 1f, -1f).exactRotation = Rand.Value * 180f;
                 }
             };
             changingProgress.WithProgressBarToilDelay(TargetIndex.B);
@@ -170,7 +165,7 @@ namespace ZealousInnocence
             };
             wearNewDiaper.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return wearNewDiaper;
-            Log.Message($"Ended toils for {this.ClothThing.LabelShort}");
+            //Log.Message($"Ended toils for {this.ClothThing.LabelShort}");
             yield break;
         }
     }

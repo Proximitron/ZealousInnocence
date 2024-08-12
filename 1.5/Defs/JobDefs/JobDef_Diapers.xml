@@ -4,6 +4,6 @@
 	<JobDef>
 		<defName>ChangePatientDiaper</defName>
 		<driverClass>ZealousInnocence.JobDriver_ChangePatientDiaper</driverClass>
-		<reportString>changing diaper of TargetB</reportString>
+		<reportString>changing TargetB into TargetA</reportString>
 	</JobDef>
 </Defs>

@@ -22,7 +22,7 @@
 			<bodyPartGroups>
 				<li>Legs</li>
 			</bodyPartGroups>
-			<wornGraphicPath>Apparel/Diaper/Nappy</wornGraphicPath>
+			<wornGraphicPath>Apparel/Diaper/PlainCloth/PlainCloth</wornGraphicPath>
 			<layers>
 				<li>Underwear</li>
 			</layers>
@@ -53,7 +53,7 @@
 		<label>diaper</label>
 		<description>A single use, cheap diaper.</description>
 		<graphicData>
-			<texPath>Apparel/Diaper/Nappy_Dirty</texPath>
+			<texPath>Apparel/Diaper/PlainCloth/PlainCloth<</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<costStuffCount>5</costStuffCount>
@@ -95,7 +95,7 @@
 		<label>premium diaper</label>
 		<description>A single use, very puffy and cute diaper from finest fabric.</description>
 		<graphicData>
-			<texPath>Apparel/Diaper/Nappy</texPath>
+			<texPath>Apparel/Diaper/PlainCloth/PlainCloth_Premium</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<costStuffCount>20</costStuffCount>

@@ -67,12 +67,12 @@ namespace ZealousInnocence
             patchFunctionPrefix(
                 original: AccessTools.Method(typeof(JobGiver_UseToilet), "TryGiveJob"),
                 prefix: new HarmonyMethod(typeof(JobGiver_UseToilet_TryGiveJob_Patch), nameof(JobGiver_UseToilet_TryGiveJob_Patch.Prefix)),
-                info: "JobGiver_UseToilet.TryGiveJob"
+                info: "DubsBadHygiene.JobGiver_UseToilet.TryGiveJob"
             );
             patchFunctionPostfix(
                 original: AccessTools.Method(typeof(JobGiver_UseToilet), "TryGiveJob"),
                 postfix: new HarmonyMethod(typeof(JobGiver_UseToilet_TryGiveJob_Patch), nameof(JobGiver_UseToilet_TryGiveJob_Patch.Postfix)),
-                info: "JobGiver_UseToilet.TryGiveJob"
+                info: "DubsBadHygiene.JobGiver_UseToilet.TryGiveJob"
             );
 
             // By default only system defined CapacityImpactor are shown. This patch adds custom ones
@@ -86,15 +86,45 @@ namespace ZealousInnocence
             patchFunctionPostfix(
                 original: AccessTools.PropertyGetter(typeof(Need_Bladder), "CurCategory"),
                 postfix: new HarmonyMethod(typeof(Need_Bladder_Patch), nameof(Need_Bladder_Patch.CurCategory_Postfix)),
-                info: "Property Need_Bladder.CurCategory"
+                info: "Property DubsBadHygiene.Need_Bladder.CurCategory"
             );
 
+            // Patching the need bladder NeedInterval and completly replacing it by custom logic
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Need_Bladder), "NeedInterval"),
+                prefix: new HarmonyMethod(typeof(Need_Bladder_Patch), nameof(Need_Bladder_Patch.NeedInterval_Prefix)),
+                info: "Need_Bladder.NeedInterval"
+            );
 
             patchFunctionPostfix(
                 original: AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new Type[] { typeof(PawnGenerationRequest) }),
                 postfix: new HarmonyMethod(typeof(PawnGenerator_GeneratePawn_Patch), nameof(PawnGenerator_GeneratePawn_Patch.Postfix)),
                 info: "PawnGenerator.GeneratePawn"
             );
+
+            // The following 3 function limits pawns from wearing underwear or diapers on their own and solve this by seeking medical rest for getting changed
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(JobGiver_OptimizeApparel), "TryGiveJob"),
+                prefix: new HarmonyMethod(typeof(JobGiver_OptimizeApparel_TryGiveJob_Patch), nameof(JobGiver_OptimizeApparel_TryGiveJob_Patch.Prefix)),
+                info: "JobGiver_OptimizeApparel.TryGiveJob"
+            );
+
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Building_AssignableFixture), nameof(Building_AssignableFixture.PawnAllowed)),
+                prefix: new HarmonyMethod(typeof(Building_AssignableFixture_PawnAllowed_Patch), nameof(Building_AssignableFixture_PawnAllowed_Patch.Prefix)),
+                info: "DubsBadHygiene.Building_AssignableFixture.PawnAllowed"
+            );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Pawn_JobTracker), "StartJob"),
+                prefix: new HarmonyMethod(typeof(Pawn_JobTracker_StartJob_Patch), nameof(Pawn_JobTracker_StartJob_Patch.Prefix)),
+                info: "Pawn_JobTracker.StartJob"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(HealthAIUtility), nameof(HealthAIUtility.ShouldSeekMedicalRest)),
+                postfix: new HarmonyMethod(typeof(Patch_HealthAIUtility), nameof(Patch_HealthAIUtility.ShouldSeekMedicalRest)),
+                info: "HealthAIUtility.ShouldSeekMedicalRest"
+            );
+
             /*patchFunctionPrefix(
                 original: AccessTools.Method(typeof(Thing), "DrawGUIOverlay"),
                 prefix: new HarmonyMethod(typeof(Thing_DrawGUIOverlay_Patch), nameof(Thing_DrawGUIOverlay_Patch.Prefix)),
@@ -105,12 +135,8 @@ namespace ZealousInnocence
                 prefix: new HarmonyMethod(typeof(Patch_Thing_DrawAt), nameof(Patch_Thing_DrawAt.Prefix)),
                 info: "Thing.DrawAt"
             );*/
-            patchFunctionPostfix(
-                original: AccessTools.Method(typeof(HealthAIUtility), nameof(HealthAIUtility.ShouldSeekMedicalRest)),
-                postfix: new HarmonyMethod(typeof(Patch_HealthAIUtility), nameof(Patch_HealthAIUtility.ShouldSeekMedicalRest)),
-                info: "HealthAIUtility.ShouldSeekMedicalRest"
-            );
-            
+
+
 
             ModChecker.ZealousInnocenceActive();
 
@@ -369,53 +395,27 @@ namespace ZealousInnocence
                     if(Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn)) __result = true;
                 }
                 
-                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat based {pref} age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat based {pref} physical age {pawn.ageTracker.AgeBiologicalYears}");
             }
             else if (__instance.tags.Contains("DiapersNight"))
             {
                 __result = Helper_Diaper.needsDiaperNight(pawn) && Helper_Diaper.acceptsDiaperNight(pawn);
-                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on needsNight {Helper_Diaper.needsDiaperNight(pawn)} and acceptance {Helper_Diaper.acceptsDiaperNight(pawn)} of {Helper_Diaper.getDiaperPreference(pawn) != DiaperLikeCategory.Disliked} age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on needsNight {Helper_Diaper.needsDiaperNight(pawn)} and acceptance {Helper_Diaper.acceptsDiaperNight(pawn)} of {Helper_Diaper.getDiaperPreference(pawn) != DiaperLikeCategory.Disliked} physical age {pawn.ageTracker.AgeBiologicalYears}");
             }
             else if (__instance.tags.Contains("Diaper"))
             {
                 __result = (Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn)) || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked;
-                if (debugging) Log.Message($"Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging) Log.Message($"Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} physical age {pawn.ageTracker.AgeBiologicalYears}");
 
             }
             else if (__instance.tags.Contains("Underwear"))
             {
                 __result = (!Helper_Diaper.needsDiaper(pawn) && !Helper_Diaper.needsDiaperNight(pawn)) || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked;
-                if (debugging) Log.Message($"Apparel DEBUG: Underwear {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} not needsNight {Helper_Diaper.needsDiaperNight(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked} age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging) Log.Message($"Apparel DEBUG: Underwear {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} not needsNight {Helper_Diaper.needsDiaperNight(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked} physical age {pawn.ageTracker.AgeBiologicalYears}");
             }
 
 
         }
     }
-
-    [HarmonyPatch(typeof(JobGiver_OptimizeApparel))]
-    public static class Patch_JobGiver_OptimizeApparel
-    {
-
-        [HarmonyPostfix]
-        [HarmonyPatch("ApparelScoreRaw")]
-        public static float ApparelScoreRaw(float __result, Pawn pawn, Apparel ap)
-        {
-
-            if (ap.HasThingCategory(ThingCategoryDefOf.Diapers) || ap.HasThingCategory(ThingCategoryDefOf.Underwear))
-            {
-                __result += Helper_Diaper.getDiaperOrUndiesRating(pawn, ap);
-            }
-            else if(ap.HasThingCategory(ThingCategoryDefOf.Onesies))
-            {
-                __result += Helper_Diaper.getOnesieRating(pawn, ap);
-            }
-
-            //JobGiver_OptimizeApparel.ApparelScoreRaw
-            //JobGiver_OptimizeApparel.ApparelScoreGain
-            return __result;
-
-        }
-    }
-
 }
 //-----------------------------------------------------------

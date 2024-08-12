@@ -62,29 +62,36 @@ namespace ZealousInnocence
 
         public override bool HasJobOnThing(Pawn caretaker, Thing t, bool forced = false)
         {
+            JobFailReason.Clear();
             if (t is not Pawn patient || patient == caretaker)
             {
                 return false;
             }
 
+            var diaper = Helper_Diaper.getUnderwearOrDiaper(patient);
             Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
-            if (need_diaper == null || need_diaper.CurLevel >= 0.5f)
+
+            if (diaper != null && Helper_Diaper.allowedByPolicy(patient, diaper) && need_diaper.CurLevel >= 0.5f)
             {
                 JobFailReason.Is("No change needed.");
                 return false;
             }
 
-            if (!FeedPatientUtility.ShouldBeFed(patient))
+            if (!FeedPatientUtility.ShouldBeFed(patient) && !patient.IsPrisoner)
             {
                 JobFailReason.Is("Is big enough to do it themselfs.");
                 return false;
             }
+            if(patient.GetPosture() == PawnPosture.Standing)
+            {
+                JobFailReason.Is("Needs to lie down.");
+                return false;
+            }
             if (!caretaker.CanReserve(patient, 1, -1, null, forced)) return false;
             
-            LocalTargetInfo a = getCachedBestDiaperOrUndie(caretaker, patient);
+            LocalTargetInfo a = Need_Diaper.getBestDiaperOrUndie(caretaker, patient);
             if (a == null || !a.IsValid || !a.HasThing)
             {
-                //JobFailReason.Is("No allowed cloth found."); reason is cached i hope!
                 return false;
             }
             return true;
@@ -98,13 +105,13 @@ namespace ZealousInnocence
             }
             if (!HasJobOnThing(caretaker, t, forced)) return null;
 
-            LocalTargetInfo a = getCachedBestDiaperOrUndie(caretaker, patient);
+            LocalTargetInfo a = Need_Diaper.getBestDiaperOrUndie(caretaker, patient);
             if (a == null || !a.IsValid || !a.HasThing)
             {
                 return null;
             }
 
-            Job job2 = JobMaker.MakeJob(JobDefOf.ChangePatientDiaper, a.Thing, patient, Helper_Diaper.getUnderwearOrDiaper(patient));
+            Job job2 = JobMaker.MakeJob(JobDefOf.ChangePatientDiaper, a.Thing, patient);
             job2.count = 1;
             return job2;
         }

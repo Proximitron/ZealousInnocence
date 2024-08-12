@@ -12,6 +12,7 @@ using Verse.AI;
 using System.Drawing;
 using System.Security.Cryptography;
 using UnityEngine;
+using HarmonyLib;
 
 namespace ZealousInnocence
 {
@@ -161,6 +162,30 @@ namespace ZealousInnocence
             {
                 return ThoughtState.Inactive;
             }
+        }
+    }
+    [HarmonyPatch(typeof(JobGiver_OptimizeApparel))]
+    public static class Patch_JobGiver_OptimizeApparel
+    {
+
+        [HarmonyPostfix]
+        [HarmonyPatch("ApparelScoreRaw")]
+        public static float ApparelScoreRaw(float __result, Pawn pawn, Apparel ap)
+        {
+
+            if (ap.HasThingCategory(ThingCategoryDefOf.Diapers) || ap.HasThingCategory(ThingCategoryDefOf.Underwear))
+            {
+                __result += Helper_Diaper.getDiaperOrUndiesRating(pawn, ap);
+            }
+            else if (ap.HasThingCategory(ThingCategoryDefOf.Onesies))
+            {
+                __result += Helper_Diaper.getOnesieRating(pawn, ap);
+            }
+
+            //JobGiver_OptimizeApparel.ApparelScoreRaw
+            //JobGiver_OptimizeApparel.ApparelScoreGain
+            return __result;
+
         }
     }
 }

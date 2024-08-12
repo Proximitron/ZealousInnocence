@@ -22,6 +22,7 @@
       <minSeverity>0.7</minSeverity>
     </li>
   </stages>
+	<everCurableByItem>false</everCurableByItem>
 </HediffDef>
 	
   <HediffDef ParentName="InfectionBase">
@@ -79,6 +80,7 @@
 				</statOffsets>
       </li>
     </stages>
+		<everCurableByItem>false</everCurableByItem>
   </HediffDef>
 	
 	<HediffDef ParentName="AddedBodyPartBase">
@@ -101,6 +103,7 @@
 				</statOffsets>
       </li>
     </stages>
+		<everCurableByItem>false</everCurableByItem>
   </HediffDef>
 		
   <HediffDef ParentName="ChronicDiseaseBase">
@@ -117,7 +120,7 @@
 				</statOffsets>
       </li>
     </stages>
-
+		<everCurableByItem>false</everCurableByItem>
   </HediffDef>
   
 </Defs>

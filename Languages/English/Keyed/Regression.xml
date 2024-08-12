@@ -7,4 +7,25 @@
 	
 	<!-- New Translations for 1.5 -->
 	<MessagePawnResurrectedFailed>{0} could not be resurrected!</MessagePawnResurrectedFailed>
+	
+	<!-- Short words of states and propabilities -->
+	<PhraseBladderStrength>Bladder Strength</PhraseBladderStrength>
+	<PhraseAge>Age</PhraseAge>
+	<PhraseDaytimeAccidents>Daytime Accidents</PhraseDaytimeAccidents>
+	<PhraseBedwetting>Bedwetting</PhraseBedwetting>
+	<StateSleeping>Sleeping</StateSleeping>
+	<StateNeedsDiapers>Needs Diapers</StateNeedsDiapers>
+	<StateNeedsPullups>Needs Pull-Ups</StateNeedsPullups>
+	<StateWordLow>low</StateWordLow>
+	<StateWordMedium>medium</StateWordMedium>
+	<StateWordHigh>high</StateWordHigh>
+	<StateWordVeryHigh>very high</StateWordVeryHigh>
+	
+	<!-- Descriptions why the pawn is now allowed to use the potty -->
+	<ShortReasonNotComply>Doesn't want to</ShortReasonNotComply>
+	<ShortReasonWrongMentalState>Not in a mental state to do so</ShortReasonWrongMentalState>
+	<ShortReasonCantChangeDiaperOrUnderwearSelf>Can't get out of their diaper</ShortReasonCantChangeDiaperOrUnderwearSelf>	
+	<ShortReasonForcedInDiaper>Forced to wear diaper</ShortReasonForcedInDiaper>
+	
+
 </LanguageData>

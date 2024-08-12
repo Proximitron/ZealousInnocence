@@ -10,6 +10,31 @@ using Verse;
 namespace ZealousInnocence
 {
     [DefOf]
+    public class ThingDefOf
+    {
+        public static ThingDef FountainOfYouth;
+    }
+    [DefOf]
+    public class FountainOfYouthLevelDefOf
+    {
+        public static FountainOfYouthLevelDef Inactive;
+        public static FountainOfYouthLevelDef Stirring;
+        public static FountainOfYouthLevelDef Embraced;
+        public static FountainOfYouthLevelDef Disrupted;
+    }
+    [DefOf]
+    public class ResearchTabDefOf
+    {
+        public static ResearchTabDef Regression;
+    }
+    [DefOf]
+    public class PrisonerInteractionModeDefOf
+    {
+        public static PrisonerInteractionModeDef DiaperChangesAllowed;
+        public static PrisonerInteractionModeDef UnderwearChangesAllowed;
+    }
+
+    [DefOf]
     public class PawnCapacityDefOf
     {
         public static PawnCapacityDef BladderControl;
@@ -86,6 +111,9 @@ namespace ZealousInnocence
         public static JobDef RegressedPlayAround;
         public static JobDef LayDown;
         public static JobDef ChangePatientDiaper;
+
+        public static JobDef FountainOfYouthInvestigate;
+        public static JobDef FountainOfYouthActivate;
         //public static JobDef WearSleepwear;
         // public static JobDef OptimizeApparel;
         //public static JobDef ChangeSleepwear;

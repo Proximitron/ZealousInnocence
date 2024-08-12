@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<FountainOfYouthInvestigate>{PAWN_labelShort} is going to investigate this strange fountain.</FountainOfYouthInvestigate>
+	<FountainOfYouthWalkAway>Perhaps it is better to stay away from the water.</FountainOfYouthWalkAway>
+	<FountainOfYouthActivateConfirmationText>The activation of this strange fountain could result in unexpected dangers. Are you sure?</FountainOfYouthActivateConfirmationText>
+	<FountainOfYouthGenerationMethod_Disabled>Fountain of youth disabled</FountainOfYouthGenerationMethod_Disabled>
+	<FountainOfYouthGenerationMethod_NearColonists>Fountain of youth generates close to colonists</FountainOfYouthGenerationMethod_NearColonists>
+</LanguageData>
