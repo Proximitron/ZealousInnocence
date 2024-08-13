@@ -12,8 +12,6 @@ namespace ZealousInnocence
 {
     public class GameComponent_RegressionGame : GameComponent
     {
-        // Token: 0x17001FD8 RID: 8152
-        // (get) Token: 0x0600B65F RID: 46687 RVA: 0x004153B9 File Offset: 0x004135B9
         public bool FountainSpawned
         {
             get
@@ -22,18 +20,14 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x17001FD9 RID: 8153
-        // (get) Token: 0x0600B660 RID: 46688 RVA: 0x004153D0 File Offset: 0x004135D0
         public LargeBuildingSpawnParms FountainSpawnParams
         {
             get
             {
-                return this.monolithSpawnParms;
+                return this.fountainSpawnParams;
             }
         }
 
-        // Token: 0x17001FDA RID: 8154
-        // (get) Token: 0x0600B661 RID: 46689 RVA: 0x004153D8 File Offset: 0x004135D8
         public int Level
         {
             get
@@ -46,8 +40,6 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x17001FDB RID: 8155
-        // (get) Token: 0x0600B662 RID: 46690 RVA: 0x004153EA File Offset: 0x004135EA
         public int HighestLevelReached
         {
             get
@@ -56,8 +48,6 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x17001FDC RID: 8156
-        // (get) Token: 0x0600B663 RID: 46691 RVA: 0x004153F2 File Offset: 0x004135F2
         public FountainOfYouthLevelDef LevelDef
         {
             get
@@ -70,8 +60,6 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x17001FDD RID: 8157
-        // (get) Token: 0x0600B664 RID: 46692 RVA: 0x00415411 File Offset: 0x00413611
         public FountainOfYouthLevelDef NextLevelDef
         {
             get
@@ -112,7 +100,7 @@ namespace ZealousInnocence
         {
             get
             {
-                return this.monolithNextIndex;
+                return this.fountainNextIndex;
             }
         }
 
@@ -120,7 +108,7 @@ namespace ZealousInnocence
         {
             get
             {
-                return this.monolithStudyProgress;
+                return this.fountainStudyProgress;
             }
         }
 
@@ -138,7 +126,7 @@ namespace ZealousInnocence
         {
             this.levelDef = DefDatabase<FountainOfYouthLevelDef>.AllDefs.FirstOrDefault((FountainOfYouthLevelDef x) => x.level == this.level);
             this.level = this.levelDef.level;
-            this.monolithSpawnParms = new LargeBuildingSpawnParms
+            this.fountainSpawnParams = new LargeBuildingSpawnParms
             {
                 minDistanceToColonyBuilding = 30f,
                 minDistToEdge = 10,
@@ -177,8 +165,8 @@ namespace ZealousInnocence
         public void Notify_MonolithStudyIncreased(ChoiceLetter letter, int nextIndex, int studyProgress)
         {
             this.fountainLetters.Add(letter);
-            this.monolithNextIndex = nextIndex;
-            this.monolithStudyProgress = studyProgress;
+            this.fountainNextIndex = nextIndex;
+            this.fountainStudyProgress = studyProgress;
         }
 
         // Token: 0x0600B675 RID: 46709 RVA: 0x00415CA0 File Offset: 0x00413EA0
@@ -259,7 +247,7 @@ namespace ZealousInnocence
             this.highestLevelReached = Mathf.Max(this.highestLevelReached, this.level);
             this.lastLevelChangeTick = Find.TickManager.TicksGame;
             this.levelDef = DefDatabase<FountainOfYouthLevelDef>.AllDefs.FirstOrDefault((FountainOfYouthLevelDef x) => x.level == this.level);
-            Building_FountainOfYouth building_VoidMonolith = this.fountain;
+            Building_FountainOfYouth buildin_FountainOfYouth = this.fountain;
             if (this.fountain != null)
             {
                 this.fountain.SetLevel(this.levelDef);
@@ -386,16 +374,14 @@ namespace ZealousInnocence
             Scribe_References.Look<Pawn>(ref voidNodeActivator, "voidNodeActivator", false);
             Scribe_Values.Look<bool>(ref this.hasBuiltHoldingPlatform, "hasBuiltHoldingPlatform", false, false);
             Scribe_Collections.Look<Pawn, int>(ref this.hypnotisedPawns, "hypnotisedPawns", LookMode.Reference, LookMode.Value, ref this.workingHypnotizedList, ref this.workingHypnotizedTickList, true, false, false);
-            Scribe_Collections.Look<ChoiceLetter>(ref this.fountainLetters, "monolithLetters", LookMode.Deep, Array.Empty<object>());
-            Scribe_Values.Look<int>(ref this.monolithStudyProgress, "monolithStudyProgress", 0, false);
-            Scribe_Values.Look<int>(ref this.monolithNextIndex, "monolithNextIndex", 0, false);
-            Scribe_Values.Look<float>(ref this.monolithAnomalyKnowledge, "monolithAnomalyKnowledge", 0f, false);
+            Scribe_Collections.Look<ChoiceLetter>(ref this.fountainLetters, "fountainLetters", LookMode.Deep, Array.Empty<object>());
+            Scribe_Values.Look<int>(ref this.fountainStudyProgress, "fountainStudyProgress", 0, false);
+            Scribe_Values.Look<int>(ref this.fountainNextIndex, "fountainNextIndex", 0, false);
+            Scribe_Values.Look<float>(ref this.fountainAnomalyKnowledge, "fountainAnomalyKnowledge", 0f, false);
         }
 
         // Token: 0x0600B692 RID: 46738 RVA: 0x004169F0 File Offset: 0x00414BF0
         public const string MonolithLevelChangedSignal = "MonolithLevelChanged";
-
-        private const int GrayPallDelayTicks = 300;
 
         private const int LevelChangeScreenShakeDuration = 300;
 
@@ -429,15 +415,15 @@ namespace ZealousInnocence
 
         private List<ChoiceLetter> fountainLetters = new List<ChoiceLetter>();
 
-        private int monolithNextIndex;
+        private int fountainNextIndex;
 
-        private int monolithStudyProgress;
+        private int fountainStudyProgress;
 
-        public float monolithAnomalyKnowledge;
+        public float fountainAnomalyKnowledge;
 
         public Pawn voidNodeActivator;
 
-        private LargeBuildingSpawnParms monolithSpawnParms;
+        private LargeBuildingSpawnParms fountainSpawnParams;
 
         private List<Pawn> workingPawnList;
 

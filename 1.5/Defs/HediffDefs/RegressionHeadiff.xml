@@ -9,6 +9,7 @@
 		<isBad>false</isBad>
 		<initialSeverity>1</initialSeverity>
 		<maxSeverity>1</maxSeverity>
+		<taleOnVisible>RegressionRevealed</taleOnVisible>
 		<comps>
 			<li Class="HediffCompProperties_Disappears">
 				<disappearsAfterTicks>6000000~6750000</disappearsAfterTicks>

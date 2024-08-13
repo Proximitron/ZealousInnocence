@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Defs>
-  
+<Defs>mo
   <ThingDef ParentName="BuildingBase">
     <defName>FountainOfYouth</defName>
     <label>fountain of youth</label>
@@ -26,10 +25,11 @@
     </statBases>
     <graphicData>
       <graphicClass>Graphic_Indexed</graphicClass>
-      <texPath>Things/Building/VoidMonolith/Core</texPath>
+      <texPath>Things/Building/Misc/FountainOfYouth</texPath>
       <drawSize>(5, 5)</drawSize>
       <shadowData>
-        <volume>(2.37, 1, 2.37)</volume>
+        <volume>(1.5, 7.0, 1.5)</volume>
+				<offset>(0, -2.0, 0)</offset>
       </shadowData>
     </graphicData>
     <size>(3, 3)</size>

@@ -18,23 +18,6 @@ namespace ZealousInnocence
     {
         public override float RandomSelectionWeight(Pawn initiator, Pawn recipient)
         {
-            /*
-            // too big self
-            if(RegressionHelper.isAgeStage(initiator, 10))
-            {
-                return 0f;
-            }
-            // too young self
-            if(RegressionHelper.isAgeStage(initiator, 0))
-            {
-                return 0f;
-            }
-            // too young target
-            if (RegressionHelper.isAgeStage(recipient, 0))
-            {
-                return 0f;
-            }
-            */
             if (!Helper_Regression.isChild(initiator))
             {
                 return 0f;

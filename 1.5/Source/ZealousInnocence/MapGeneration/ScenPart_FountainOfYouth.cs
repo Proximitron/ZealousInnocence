@@ -10,14 +10,12 @@ namespace ZealousInnocence
 {
     public class ScenPart_FountainOfYouthGeneration : ScenPart_DisableMapGen
     {
-        // Token: 0x060083B5 RID: 33717 RVA: 0x002D81CE File Offset: 0x002D63CE
         public override void ExposeData()
         {
             base.ExposeData();
             Scribe_Values.Look<FountainGenerationMethod>(ref this.method, "method", FountainGenerationMethod.Disabled, false);
         }
 
-        // Token: 0x060083B6 RID: 33718 RVA: 0x002D81E8 File Offset: 0x002D63E8
         public override void DoEditInterface(Listing_ScenEdit listing)
         {
             if (Widgets.ButtonText(listing.GetScenPartRect(this, ScenPart.RowHeight), this.method.ToStringHuman(), true, true, true, null))
@@ -36,7 +34,6 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x060083B7 RID: 33719 RVA: 0x002D82D0 File Offset: 0x002D64D0
         public override void PostMapGenerate(Map map)
         {
             if (this.method == FountainGenerationMethod.Disabled)
@@ -48,12 +45,12 @@ namespace ZealousInnocence
                 return;
             }
             IntVec3 loc;
-            if (!LargeBuildingCellFinder.TryFindCell(out loc, map, ScenPart_FountainOfYouthGeneration.StructureSpawnParms.ForThing(ThingDefOf.FountainOfYouth), null, (IntVec3 c) => ScattererValidator_AvoidSpecialThings.IsValid(c, map), true) && !LargeBuildingCellFinder.TryFindCell(out loc, map, ScenPart_FountainOfYouthGeneration.StructureSpawnParmsLoose.ForThing(ThingDefOf.FountainOfYouth), null, (IntVec3 c) => ScattererValidator_AvoidSpecialThings.IsValid(c, map), true))
+            if (!LargeBuildingCellFinder.TryFindCell(out loc, map, StructureSpawnParms.ForThing(ThingDefOf.FountainOfYouth), null, (IntVec3 c) => ScattererValidator_AvoidSpecialThings.IsValid(c, map), true) && !LargeBuildingCellFinder.TryFindCell(out loc, map, StructureSpawnParmsLoose.ForThing(ThingDefOf.FountainOfYouth), null, (IntVec3 c) => ScattererValidator_AvoidSpecialThings.IsValid(c, map), true))
             {
                 Log.Error("Failed to generate fountain of youth.");
                 return;
             }
-            GenStep_Monolith.GenerateMonolith(loc, map);
+            GenStep_FountainOfYouth.GenerateFountain(loc, map);
         }
 
         // Token: 0x060083B8 RID: 33720 RVA: 0x002D838D File Offset: 0x002D658D

@@ -3,7 +3,7 @@
 	
 <HediffDef ParentName="ChronicDiseaseBase">
   <defName>BedWetting</defName>
-  <label>bedwetting</label>
+  <label>Bedwetting</label>
   <description>A condition that affects bedwetting from childhood through adulthood. Adults with the condition can no longer grow out of it.\n\nProtection is needed during the night.</description>
   <hediffClass>HediffWithComps</hediffClass>
   <makesSickThought>false</makesSickThought>
@@ -108,7 +108,7 @@
 		
   <HediffDef ParentName="ChronicDiseaseBase">
     <defName>Incontinent</defName>
-    <label>incontinent</label>
+    <label>Incontinent</label>
     <description>This pawn has no control over their bladder at all. Diapers are strongly recommended.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <makesSickThought>false</makesSickThought>
