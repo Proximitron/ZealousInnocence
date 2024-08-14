@@ -3,18 +3,18 @@
   <ZealousInnocence.FountainOfYouthLevelDef>
     <defName>Inactive</defName>
     <level>0</level>
-    <monolithLabel>fallen monolith</monolithLabel>
+    <fountainLabel>strange fountain</fountainLabel>
     <graphicIndex>0</graphicIndex>
     <advanceThroughActivation>true</advanceThroughActivation>
-    <anomalyThreatTier>0</anomalyThreatTier>
+    <regressionThreatTier>0</regressionThreatTier>
     <useInactiveAnomalyThreatFraction>true</useInactiveAnomalyThreatFraction>
     <levelInspectText>Twisting lines carved into the surface form a disturbing pattern.</levelInspectText>
     <activateGizmoText>investigate</activateGizmoText>
     <activateFloatMenuText>investigate {0}</activateFloatMenuText>
-    <activateGizmoDescription>Send a colonist to investigate the monolith.</activateGizmoDescription>
-    <pawnSentToActivateMessage>{PAWN_nameDef} has been sent to investigate the monolith.</pawnSentToActivateMessage>
-    <monolithCanBeActivatedText>Can be investigated now.</monolithCanBeActivatedText>
-    <activateQuestText>Send a colonist to investigate the monolith.</activateQuestText>
+    <activateGizmoDescription>Send a colonist to investigate the fountain.</activateGizmoDescription>
+    <pawnSentToActivateMessage>{PAWN_nameDef} has been sent to investigate the fountain.</pawnSentToActivateMessage>
+    <fountainCanBeActivatedText>Can be investigated now.</fountainCanBeActivatedText>
+    <activateQuestText>Send a colonist to investigate the fountain.</activateQuestText>
     <anomalyMentalBreakChance>0.05</anomalyMentalBreakChance>
     <activateSound>VoidMonolith_ActivateL0L1</activateSound>
     <uiIconPath>Things/Building/VoidMonolith/Icons/VoidMonolith_A_MenuIcon</uiIconPath>
@@ -23,28 +23,27 @@
   <ZealousInnocence.FountainOfYouthLevelDef>
     <defName>Stirring</defName>
     <level>1</level>
-    <monolithLabel>void monolith</monolithLabel>
+    <fountainLabel>fountain of youth</fountainLabel>
     <graphicIndex>1</graphicIndex>
     <advanceThroughActivation>true</advanceThroughActivation>
-    <anomalyThreatTier>1</anomalyThreatTier>
+    <regressionThreatTier>1</regressionThreatTier>
     <useActiveAnomalyThreatFraction>true</useActiveAnomalyThreatFraction>
     <incidentsOnReached>
       <li>SightstealerArrival</li>
     </incidentsOnReached>
     <triggersGrayPall>true</triggersGrayPall>
     <monolithStudyCategory>Basic</monolithStudyCategory>
-    <desiredHarbingerTreeCount>3</desiredHarbingerTreeCount>
-    <levelInspectText>Level 1: Intermittent psychic humming</levelInspectText>
-    <extraQuestDescription>You've activated the monolith. It is a conduit for psychic energy, just barely cracked open now. A mind of incomprehensible horror stirs on the other side, and is now touching our world.\n\nThe monolith seems to be partly active, and there seems to be no way to shut it down. To learn more you must activate it further, which will require some special research.</extraQuestDescription>
+    <levelInspectText>Level 1: Fountain of youth?</levelInspectText>
+    <extraQuestDescription>You've activated the fountain. Cleaning away the grime and dirt you see glyphs, slowly morphing to readable text.\n\nThe fountain seems to convey the idea of age reverting and living multiple lifetimes. To learn more you must activate it further, which will require some special research.</extraQuestDescription>
     <activateGizmoText>attune</activateGizmoText>
     <activateFloatMenuText>attune {0}</activateFloatMenuText>
-    <activateGizmoDescription>Send a colonist to attune the monolith.\n\nThis will attract new and more dangerous entities.</activateGizmoDescription>
-    <pawnSentToActivateMessage>{PAWN_nameDef} has been sent to attune the monolith.</pawnSentToActivateMessage>
-    <monolithCanBeActivatedText>Can be attuned now.</monolithCanBeActivatedText>
-    <activateQuestText>Send a colonist to attune the monolith.</activateQuestText>
-    <activatableLetterLabel>Attuning the monolith</activatableLetterLabel>
-    <activatableLetterText>You now have sufficient knowledge of void-related phenomena to attune the void monolith and further open its psychic conduit.\n\nThis will draw the attention of more dangerous anomalous entities.</activatableLetterText>
-    <activatedLetterText>As the monolith twisted and changed, {PAWN_nameDef} was overcome with a horrifying vision. In an instant, {PAWN_pronoun} understood.\n\nThe monolith is a doorway, just barely cracked open now. Something dark beyond imagination stirs on the other side, seeping into our reality.\n\nTerrified but excited, {PAWN_nameDef} is convinced {PAWN_pronoun} can learn more if given the time to study the monolith.\n\n - Building category unlocked: Anomaly\n - Research tab unlocked: Anomaly\n - Entity codex unlocked\n - You can now study the monolith and other entities to gain Anomaly research.\n\n(*Gray)Note: You can adjust the percentage of major threats that will be Anomaly-related at any point in the storyteller settings.(/Gray)</activatedLetterText>
+    <activateGizmoDescription>Send a colonist to attune the fountain.\n\nThis will surly cause more questions than it answers and might invite unknown dangers.</activateGizmoDescription>
+    <pawnSentToActivateMessage>{PAWN_nameDef} has been sent to attune the fountain.</pawnSentToActivateMessage>
+    <fountainCanBeActivatedText>Can be attuned now.</fountainCanBeActivatedText>
+    <activateQuestText>Send a colonist to attune the fountain.</activateQuestText>
+    <activatableLetterLabel>Attuning the fountain</activatableLetterLabel>
+    <activatableLetterText>You now have sufficient knowledge of regression to attune the fountain of youth and further its output.\n\nThis will cause more dangerous incidents related to regression.</activatableLetterText>
+    <activatedLetterText>As the fountain glows, {PAWN_nameDef} was overcome visions of a playground, free of grown up troubles. In an instant, {PAWN_pronoun} understood.\n\nThe fountain is more than just water that can revert age. It offers a second chance, luring in anyone looking back to find a second childhood.\n\nExcided like a little child, {PAWN_nameDef} is convinced {PAWN_pronoun} can learn more if given the time to study the fountain.\n\n - Building category unlocked: Regression\n - Research tab unlocked: Regression\n - You can now study the fountain to gain Regression research.\n\n(*Gray)Note: This is an anomaly and as such follows the rules of Anomaly-related features. It can be adjusted in the storyteller settings.(/Gray)</activatedLetterText>
     <anomalyMentalBreakChance>0.2</anomalyMentalBreakChance>
     <activatedSound>VoidMonolith_ActivatedL0L1</activatedSound>
     <activateSound>VoidMonolith_ActivateL1L2</activateSound>
@@ -65,17 +64,19 @@
   </ZealousInnocence.FountainOfYouthLevelDef>
 
   <ZealousInnocence.FountainOfYouthLevelDef>
-    <defName>Embraced</defName>
+    <defName>Attune</defName>
     <level>2</level>
-    <monolithLabel>void monolith</monolithLabel>
+    <fountainLabel>void monolith</fountainLabel>
     <graphicIndex>3</graphicIndex>
     <advanceThroughActivation>false</advanceThroughActivation>
+		<unreachableDuringConditions>
+      <li>UnnaturalDarkness</li> <!-- Just a placeholder, custom conditions? -->
+    </unreachableDuringConditions>
     <postEndgame>true</postEndgame>
-    <anomalyThreatTier>2</anomalyThreatTier>
+    <regressionThreatTier>2</regressionThreatTier>
     <useActiveAnomalyThreatFraction>true</useActiveAnomalyThreatFraction>
-    <monolithStudyCategory>Advanced</monolithStudyCategory>
-    <desiredHarbingerTreeCount>9</desiredHarbingerTreeCount>
-    <levelInspectText>Level 4: Awakened</levelInspectText>
+    <monolithStudyCategory>AdvRegression</monolithStudyCategory>
+    <levelInspectText>Level 3: Attuned</levelInspectText>
     <anomalyMentalBreakChance>0.2</anomalyMentalBreakChance>
     <attachments>
       <li>
@@ -110,15 +111,14 @@
   <ZealousInnocence.FountainOfYouthLevelDef>
     <defName>Disrupted</defName>
     <level>3</level>
-    <monolithLabel>collapsed monolith</monolithLabel>
-    <monolithDescription>The remnants of the monolith which linked our world to the void lie broken. The twisted patterns that once writhed across its surface are now motionless. You can study the broken stones to gain further knowledge of the void phenomena.</monolithDescription>
+    <fountainLabel>collapsed fountain</fountainLabel>
+    <fountainDescription>The remnants of the fountain of youth, broken. The once glowing runes across its surface are withered, any water dried up. You can study the broken stones to gain further knowledge of regression.</fountainDescription>
     <graphicIndex>5</graphicIndex>
     <advanceThroughActivation>false</advanceThroughActivation>
     <postEndgame>true</postEndgame>
-    <anomalyThreatTier>0</anomalyThreatTier>
+    <regressionThreatTier>0</regressionThreatTier>
     <useInactiveAnomalyThreatFraction>true</useInactiveAnomalyThreatFraction>
-    <monolithStudyCategory>Advanced</monolithStudyCategory>
-    <desiredHarbingerTreeCount>0</desiredHarbingerTreeCount>
+    <monolithStudyCategory>AdvRegression</monolithStudyCategory>
     <anomalyMentalBreakChance>0</anomalyMentalBreakChance>
     <uiIconPath>Things/Building/VoidMonolith/Icons/VoidMonolith_F_MenuIcon</uiIconPath>
   </ZealousInnocence.FountainOfYouthLevelDef>

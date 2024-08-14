@@ -51,7 +51,7 @@ namespace ZealousInnocence
         {
             get
             {
-                return Find.Anomaly.LevelDef.UIIcon;
+                return regression.LevelDef.UIIcon;
             }
         }
 
@@ -59,9 +59,9 @@ namespace ZealousInnocence
         {
             get
             {
-                if (Find.Anomaly.LevelDef.monolithLabel != null)
+                if (regression.LevelDef.fountainLabel != null)
                 {
-                    return Find.Anomaly.LevelDef.monolithLabel;
+                    return regression.LevelDef.fountainLabel;
                 }
                 return base.LabelNoCount;
             }
@@ -194,14 +194,8 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x06008AF4 RID: 35572 RVA: 0x002F7734 File Offset: 0x002F5934
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
-            if (!ModLister.CheckAnomaly("Void monolith"))
-            {
-                this.Destroy(DestroyMode.Vanish);
-                return;
-            }
             if (!respawningAfterLoad)
             {
                 if (regression.Level > 0)
@@ -288,7 +282,7 @@ namespace ZealousInnocence
                 this.autoActivateEffecter.Cleanup();
                 this.autoActivateEffecter = null;
             }
-            if (Find.Anomaly.Level == MonolithLevelDefOf.Gleaming.level && Find.CurrentMap == base.MapHeld)
+            /*if (Find.Anomaly.Level == MonolithLevelDefOf.Gleaming.level && Find.CurrentMap == base.MapHeld)
             {
                 if (this.gleamingEffecter == null)
                 {
@@ -315,7 +309,7 @@ namespace ZealousInnocence
                     effecter4.Cleanup();
                 }
                 this.gleamingVoidNodeEffecter = null;
-            }
+            }*/
             if (this.activatedDialogTick > 0 && Find.TickManager.TicksGame > this.activatedDialogTick)
             {
                 this.OpenActivatedDialog();
@@ -331,18 +325,18 @@ namespace ZealousInnocence
             {
                 return false;
             }
-            MonolithLevelDef nextLevelDef = Find.Anomaly.NextLevelDef;
+            var nextLevelDef = regression.NextLevelDef;
             if (nextLevelDef == null)
             {
                 return false;
             }
-            if (nextLevelDef.entityCatagoryCompletionRequired != null && Find.EntityCodex.DiscoveredCount(nextLevelDef.entityCatagoryCompletionRequired) < nextLevelDef.entityCountCompletionRequired)
+            /*if (nextLevelDef.entityCatagoryCompletionRequired != null && Find.EntityCodex.DiscoveredCount(nextLevelDef.entityCatagoryCompletionRequired) < nextLevelDef.entityCountCompletionRequired)
             {
                 int value = nextLevelDef.entityCountCompletionRequired - Find.EntityCodex.DiscoveredCount(nextLevelDef.entityCatagoryCompletionRequired);
                 reason = string.Format("{0}:\n  - {1}", "VoidMonolithRequiresDiscovery".Translate(), "VoidMonolithRequiresCategory".Translate(value, nextLevelDef.entityCatagoryCompletionRequired.label));
                 reasonShort = "VoidMonolithRequiresDiscoveryShort".Translate();
                 return false;
-            }
+            }*/
             foreach (GameCondition gameCondition in base.Map.GameConditionManager.ActiveConditions)
             {
                 List<GameConditionDef> unreachableDuringConditions = nextLevelDef.unreachableDuringConditions;
@@ -386,7 +380,7 @@ namespace ZealousInnocence
         private void OpenActivatedDialog()
         {
             DiaNode diaNode = new DiaNode(Find.Anomaly.LevelDef.activatedLetterText.Formatted(this.activatorPawn.Named("PAWN")));
-            diaNode.options.Add(new DiaOption("VoidMonolithViewQuest".Translate())
+            diaNode.options.Add(new DiaOption("VoidMonolithViewQuest".Translate()) // "View quest"
             {
                 action = delegate ()
                 {
@@ -398,7 +392,7 @@ namespace ZealousInnocence
             if (true)
             {
                 List<DiaOption> options = diaNode.options;
-                DiaOption diaOption = new DiaOption("VoidMonolithViewResearch".Translate());
+                DiaOption diaOption = new DiaOption("FountainOfYouthViewResearch".Translate());
                 diaOption.action = delegate ()
                 {
                     Find.MainTabsRoot.SetCurrentTab(MainButtonDefOf.Research, true);
@@ -424,7 +418,7 @@ namespace ZealousInnocence
             {
                 options =
                 {
-                    new DiaOption("FountainOfYouthInvestigate".Translate())
+                    new DiaOption("FountainOfYouthInvestigate".Translate(pawn.Named("PAWN")))
                     {
                         action = delegate()
                         {
@@ -450,7 +444,7 @@ namespace ZealousInnocence
         public void SetLevel(FountainOfYouthLevelDef levelDef)
         {
             CompGlower comp = base.GetComp<CompGlower>();
-            int monolithGlowRadiusOverride = levelDef.monolithGlowRadiusOverride;
+            int monolithGlowRadiusOverride = levelDef.fountainGlowRadiusOverride;
             if (monolithGlowRadiusOverride != -1)
             {
                 comp.GlowRadius = (float)monolithGlowRadiusOverride;
@@ -519,7 +513,7 @@ namespace ZealousInnocence
             {
                 IntVec3 position = Find.Anomaly.monolith.Position;
                 Map map3 = map;
-                int squareRadius = 5;
+                int squareRadius = CollapseScatterRadius;
 
                 if (validator == null)
                 {
@@ -538,7 +532,7 @@ namespace ZealousInnocence
             {
                 IntVec3 position2 = Find.Anomaly.monolith.Position;
                 Map map2 = map;
-                int squareRadius2 = 5;
+                int squareRadius2 = CollapseScatterRadius;
 
                 if (validator == null)
                 {
@@ -579,7 +573,7 @@ namespace ZealousInnocence
             {
                 if (showMessages)
                 {
-                    Messages.Message("VoidMonolithActivatorDowned".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false);
+                    Messages.Message("VoidMonolithActivatorDowned".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false); // "Target is down"
                 }
                 return false;
             }
@@ -587,7 +581,7 @@ namespace ZealousInnocence
             {
                 if (showMessages)
                 {
-                    Messages.Message("VoidMonolithActivatorMentalState".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false);
+                    Messages.Message("VoidMonolithActivatorMentalState".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false); // "Target in mental state"
                 }
                 return false;
             }
@@ -595,7 +589,7 @@ namespace ZealousInnocence
             {
                 if (showMessages)
                 {
-                    Messages.Message("VoidMonolithActivatorBusy".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false);
+                    Messages.Message("VoidMonolithActivatorBusy".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false); // "Target is busy"
                 }
                 return false;
             }
@@ -654,7 +648,7 @@ namespace ZealousInnocence
 
         public void OnGUI(LocalTargetInfo target)
         {
-            Widgets.MouseAttachedLabel("VoidMonolithChooseActivator".Translate(), 0f, 0f);
+            Widgets.MouseAttachedLabel("VoidMonolithChooseActivator".Translate(), 0f, 0f); // "Choose who should do this"
             if (this.ValidateTarget(target, false) && this.targetParams.CanTarget(target.Pawn, this))
             {
                 GenUI.DrawMouseAttachment(this.UIIcon);
@@ -677,7 +671,7 @@ namespace ZealousInnocence
                 string text2;
                 if (this.CanActivate(out text, out text2))
                 {
-                    stringBuilder.AppendLineIfNotEmpty().Append(Find.Anomaly.LevelDef.monolithCanBeActivatedText);
+                    stringBuilder.AppendLineIfNotEmpty().Append(regression.LevelDef.fountainCanBeActivatedText);
                 }
                 else if (!text.NullOrEmpty())
                 {
@@ -686,7 +680,7 @@ namespace ZealousInnocence
             }
             else
             {
-                stringBuilder.AppendLineIfNotEmpty().Append("VoidMonolithUndiscovered".Translate());
+                stringBuilder.AppendLineIfNotEmpty().Append("VoidMonolithUndiscovered".Translate()); // "Investigate to learn more."
             }
             if (!inspectString.NullOrEmpty())
             {
@@ -719,8 +713,8 @@ namespace ZealousInnocence
                 }
                 Command_Action command_Action = new Command_Action
                 {
-                    defaultLabel = Find.Anomaly.LevelDef.activateGizmoText.CapitalizeFirst() + "...",
-                    defaultDesc = Find.Anomaly.LevelDef.activateGizmoDescription,
+                    defaultLabel = regression.LevelDef.activateGizmoText.CapitalizeFirst() + "...",
+                    defaultDesc = regression.LevelDef.activateGizmoDescription,
                     icon = this.UIIcon,
                     Disabled = !text.NullOrEmpty(),
                     disabledReason = text,
@@ -752,7 +746,7 @@ namespace ZealousInnocence
                     {
                         yield return new Command_Action
                         {
-                            defaultLabel = "DEV: Relink Monolith",
+                            defaultLabel = "DEV: Relink fountain",
                             action = delegate ()
                             {
                                 regression.fountain = this;
@@ -773,7 +767,7 @@ namespace ZealousInnocence
                 yield return floatMenuOption;
             }
             IEnumerator<FloatMenuOption> enumerator = null;
-            if (Find.Anomaly.Level == 0)
+            if (regression.Level == 0)
             {
                 yield return new FloatMenuOption(regression.LevelDef.activateFloatMenuText.Formatted(this.Label).CapitalizeFirst(), delegate ()
                 {
@@ -789,7 +783,7 @@ namespace ZealousInnocence
             {
                 if (!selPawn.CanReach(this, PathEndMode.InteractionCell, Danger.Deadly, false, false, TraverseMode.ByPawn))
                 {
-                    yield return new FloatMenuOption("CantActivateMonolith".Translate(Find.Anomaly.LevelDef.activateGizmoText) + ": " + "NoPath".Translate().CapitalizeFirst(), null, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0);
+                    yield return new FloatMenuOption("FountainOfYouthCantActivate".Translate(regression.LevelDef.activateGizmoText) + ": " + "NoPath".Translate().CapitalizeFirst(), null, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0);
                 }
                 else
                 {
@@ -801,7 +795,7 @@ namespace ZealousInnocence
             }
             else if (regression.LevelDef.advanceThroughActivation)
             {
-                yield return new FloatMenuOption("CantActivateMonolith".Translate(Find.Anomaly.LevelDef.activateGizmoText) + ": " + t, null, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0);
+                yield return new FloatMenuOption("FountainOfYouthCantActivate".Translate(regression.LevelDef.activateGizmoText) + ": " + t, null, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0);
             }
             yield break;
             yield break;
@@ -813,12 +807,6 @@ namespace ZealousInnocence
         private const int DisturbingVisionRetryTicks = 15000;
 
         public const int ActivateLetterDelayTicks = 360;
-
-        private const int AutoActivateAlertTicks = 300000;
-
-        private const int MonolithFragmentCount = 3;
-
-        private const int MonolithShardCount = 10;
 
         private const int CollapseScatterRadius = 5;
 
@@ -836,9 +824,6 @@ namespace ZealousInnocence
 
         private Pawn activatorPawn;
 
-        private Effecter gleamingEffecter;
-
-        private Effecter gleamingVoidNodeEffecter;
 
         private Effecter autoActivateEffecter;
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
+using System.Reflection;
 
 namespace ZealousInnocence
 {
@@ -237,13 +238,9 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x0600B67D RID: 46717 RVA: 0x00415FBC File Offset: 0x004141BC
+
         private void Notify_LevelChanged(bool silent = false)
         {
-            if (!ModLister.CheckAnomaly("Monolith level"))
-            {
-                return;
-            }
             this.highestLevelReached = Mathf.Max(this.highestLevelReached, this.level);
             this.lastLevelChangeTick = Find.TickManager.TicksGame;
             this.levelDef = DefDatabase<FountainOfYouthLevelDef>.AllDefs.FirstOrDefault((FountainOfYouthLevelDef x) => x.level == this.level);
@@ -252,7 +249,28 @@ namespace ZealousInnocence
             {
                 this.fountain.SetLevel(this.levelDef);
             }
-            Find.ResearchManager.Notify_MonolithLevelChanged(this.level);
+
+            // Access the private field 'tabInfoVisibility' in the ResearchManager class
+            FieldInfo tabInfoVisibilityField = typeof(ResearchManager).GetField("tabInfoVisibility", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // Get the current ResearchManager instance
+            ResearchManager researchManager = Find.ResearchManager;
+
+            // Get the value of the 'tabInfoVisibility' field (DefMap<ResearchTabDef, bool>)
+            DefMap<ResearchTabDef, bool> tabInfoVisibility = (DefMap<ResearchTabDef, bool>)tabInfoVisibilityField.GetValue(researchManager);
+
+            foreach (ResearchTabDef researchTabDef in DefDatabase<ResearchTabDef>.AllDefs)
+            {
+                
+                if (!researchManager.TabInfoVisible(researchTabDef) && researchTabDef.tutorTag == "Research-Tab-Regression" && level >= 1)
+                {
+                    tabInfoVisibility[researchTabDef] = true;
+                }
+            }
+
+            // Set the modified DefMap back to the 'tabInfoVisibility' field
+            tabInfoVisibilityField.SetValue(researchManager, tabInfoVisibility);
+
             if (!silent)
             {
                 if (this.Level > 0)
@@ -260,7 +278,7 @@ namespace ZealousInnocence
                     Find.CameraDriver.shaker.DoShake(0.05f, 300);
                 }
             }
-            Find.SignalManager.SendSignal(new Signal("MonolithLevelChanged", true));
+            Find.SignalManager.SendSignal(new Signal("FountainOfYouthLevelChanged", true));
             if (this.level == 1)
             {
                 LessonAutoActivator.TeachOpportunity(ConceptDefOf.StudyingEntities, OpportunityType.Important);
@@ -271,7 +289,7 @@ namespace ZealousInnocence
                     points = StorytellerUtility.DefaultThreatPointsNow(this.fountain.Map),
                     forced = true
                 };
-                Find.Storyteller.incidentQueue.Add(IncidentDefOf.VoidCuriosity, Find.TickManager.TicksGame + Mathf.RoundToInt(GameComponent_RegressionGame.RegressionCuriosityIncidentDelayRangeDays.RandomInRange * 60000f), parms, 0);
+                Find.Storyteller.incidentQueue.Add(IncidentDefOf.VoidCuriosity, Find.TickManager.TicksGame + Mathf.RoundToInt(RegressionCuriosityIncidentDelayRangeDays.RandomInRange * 60000f), parms, 0);
             }
         }
 

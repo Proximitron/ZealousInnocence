@@ -5,10 +5,12 @@
 	<ResearchTabDef>
 		<defName>Regression</defName>
 		<label>Regression</label>
+		<visibleByDefault>false</visibleByDefault>
+		<tutorTag>Research-Tab-Regression</tutorTag>
 	</ResearchTabDef>
 
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>SewageSludgeComposting</defName>
 		<label>sewage sludge composting</label>
 		<tab>Regression</tab>
@@ -19,7 +21,7 @@
 		<researchViewY>1</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>MultiSplitAirCon</defName>
 		<label>multi-split air conditioning</label>
 		<tab>Regression</tab>
@@ -34,7 +36,7 @@
 	</ResearchProjectDef>
 
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>Plumbing</defName>
 		<label>plumbing</label>
 		<tab>Regression</tab>
@@ -51,7 +53,7 @@
 
 
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>LogBoilers</defName>
 		<label>heating</label>
 		<tab>Regression</tab>
@@ -65,7 +67,7 @@
 		<researchViewY>0</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>CentralHeating</defName>
 		<label>central heating</label>
 		<tab>Regression</tab>
@@ -84,7 +86,7 @@
 		<researchViewY>0</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>GeothermalHeating</defName>
 		<label>Geothermal Heating</label>
 		<tab>Regression</tab>
@@ -132,7 +134,7 @@
 		<researchViewY>2</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>ElectricPumps</defName>
 		<label>electric pumps</label>
 		<tab>Regression</tab>
@@ -163,7 +165,7 @@
 		<baseCost>800</baseCost>
 		<techLevel>Industrial</techLevel>
 		<prerequisites>
-			<li MayRequire="dbhlitemode">ElectricPumps</li>
+			<li>ElectricPumps</li>
 		</prerequisites>
 		<researchViewX>5</researchViewX>
 		<researchViewY>0.5</researchViewY>
@@ -177,7 +179,7 @@
 		<baseCost>1500</baseCost>
 		<techLevel>Industrial</techLevel>
 		<prerequisites>
-			<li MayRequire="dbhlitemode">ElectricPumps</li>
+			<li>ElectricPumps</li>
 		</prerequisites>
 		<researchViewX>5</researchViewX>
 		<researchViewY>1</researchViewY>
@@ -191,14 +193,14 @@
 		<baseCost>2000</baseCost>
 		<techLevel>Industrial</techLevel>
 		<prerequisites>
-			<li MayRequire="dbhlitemode">ElectricPumps</li>
+			<li>ElectricPumps</li>
 		</prerequisites>
 		<researchViewX>5</researchViewX>
 		<researchViewY>1.5</researchViewY>
 	</ResearchProjectDef>
 
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>LargeWaterPumps</defName>
 		<label>industrial-scale pumps</label>
 		<tab>Regression</tab>
@@ -212,7 +214,7 @@
 		<researchViewY>2</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>DeepWells</defName>
 		<label>deep wells</label>
 		<tab>Regression</tab>
@@ -226,7 +228,7 @@
 		<researchViewY>2.5</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>WashingMachines</defName>
 		<label>washing machines</label>
 		<tab>Regression</tab>
@@ -240,7 +242,7 @@
 		<researchViewY>3</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>WaterFiltration</defName>
 		<label>water filtration</label>
 		<tab>Regression</tab>
@@ -254,7 +256,7 @@
 		<researchViewY>3.5</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>HygieneBionics</defName>
 		<label>Hygiene Bionics</label>
 		<tab>Regression</tab>
@@ -273,7 +275,7 @@
 
 
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>SepticTanks</defName>
 		<label>septic tanks</label>
 		<tab>Regression</tab>
@@ -287,7 +289,7 @@
 		<researchViewY>1</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>SewageTreatment</defName>
 		<label>sewage treatment</label>
 		<tab>Regression</tab>
@@ -311,7 +313,7 @@
 
 
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>SwimmingPools</defName>
 		<label>swimming pools</label>
 		<tab>Regression</tab>
@@ -326,7 +328,7 @@
 	</ResearchProjectDef>
 
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>Irrigation</defName>
 		<label>irrigation</label>
 		<tab>Regression</tab>
@@ -343,7 +345,7 @@
 		<researchViewY>3</researchViewY>
 	</ResearchProjectDef>
 
-	<ResearchProjectDef DBHLite="true">
+	<ResearchProjectDef>
 		<defName>FireSuppression</defName>
 		<label>fire suppression</label>
 		<tab>Regression</tab>

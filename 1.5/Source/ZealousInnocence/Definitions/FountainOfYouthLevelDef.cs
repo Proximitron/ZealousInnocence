@@ -55,7 +55,7 @@ namespace ZealousInnocence
         public bool monolithGlows;
 
         // Token: 0x040034A5 RID: 13477
-        public int anomalyThreatTier;
+        public int regressionThreatTier;
 
         // Token: 0x040034A6 RID: 13478
         public bool useInactiveAnomalyThreatFraction;
@@ -81,14 +81,11 @@ namespace ZealousInnocence
         // Token: 0x040034AD RID: 13485
         public bool advanceThroughActivation;
 
-        // Token: 0x040034AE RID: 13486
-        public int desiredHarbingerTreeCount;
-
         // Token: 0x040034AF RID: 13487
         public bool postEndgame;
 
         // Token: 0x040034B0 RID: 13488
-        public int monolithGlowRadiusOverride = -1;
+        public int fountainGlowRadiusOverride = -1;
 
         // Token: 0x040034B1 RID: 13489
         public KnowledgeCategoryDef monolithStudyCategory;
@@ -119,11 +116,11 @@ namespace ZealousInnocence
 
         // Token: 0x040034BA RID: 13498
         [MustTranslate]
-        public string monolithLabel;
+        public string fountainLabel;
 
         // Token: 0x040034BB RID: 13499
         [MustTranslate]
-        public string monolithDescription;
+        public string fountainDescription;
 
         // Token: 0x040034BC RID: 13500
         [MustTranslate]
@@ -151,7 +148,7 @@ namespace ZealousInnocence
 
         // Token: 0x040034C2 RID: 13506
         [MustTranslate]
-        public string monolithCanBeActivatedText;
+        public string fountainCanBeActivatedText;
 
         // Token: 0x040034C3 RID: 13507
         [MustTranslate]

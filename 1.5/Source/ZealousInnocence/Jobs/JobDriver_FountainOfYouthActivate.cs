@@ -20,7 +20,6 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x060043B5 RID: 17333 RVA: 0x0018E660 File Offset: 0x0018C860
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
             if (base.TargetThingC != null)
@@ -44,7 +43,7 @@ namespace ZealousInnocence
                 string text2;
                 return !this.Fountain.CanActivate(out text, out text2);
             });
-            if (true) // always show confirm
+            if (regression.Level == 0) // show confirm if not yet active
             {
                 yield return Toils_General.Do(delegate
                 {
