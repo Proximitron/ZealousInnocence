@@ -1,0 +1,41 @@
+<Defs>
+  <!-- <ThinkNode_SubtreeDef>
+    <defName>JobGiver_WearSleepwearSubtree</defName>
+    <nodeClass>ThinkNode_Subtree</nodeClass>
+    <thinkRoot>JobGiver_WearSleepwear</thinkRoot>
+  </ThinkNode_SubtreeDef>
+  <ThinkNode_SubtreeDef>
+    <defName>JobGiver_ChangeSleepwearSubtree</defName>
+    <nodeClass>ThinkNode_Subtree</nodeClass>
+    <thinkRoot>JobGiver_ChangeSleepwear</thinkRoot>
+  </ThinkNode_SubtreeDef>
+	
+  <ThinkTreeDef>
+    <defName>Humanlike</defName>
+    <thinkNodes>
+      Existing ThinkNodes 
+      <li>
+        <nodeClass>ThinkNode_Subtree</nodeClass>
+        <def>JobGiver_WearSleepwearSubtree</def>
+      </li>
+			<li>
+        <nodeClass>ThinkNode_Subtree</nodeClass>
+        <def>JobGiver_ChangeSleepwearSubtree</def>
+      </li>
+    </thinkNodes>
+  </ThinkTreeDef>
+	<ThinkTreeDef>
+		<defName>ChangeSleepwear</defName>
+		<insertTag>Humanlike_PostMentalState</insertTag>
+		<insertPriority>100</insertPriority>
+		<thinkRoot Class="ZealousInnocence.ThinkNode_ConditionalHasSleepwearAndDontWantIt">
+			<subNodes>
+				<li Class="ThinkNode_Priority">
+					<subNodes>
+						<li Class="ZealousInnocence.JobGiver_ChangeSleepwear" />
+					</subNodes>
+				</li>
+			</subNodes>
+		</thinkRoot>
+	</ThinkTreeDef>-->
+</Defs>

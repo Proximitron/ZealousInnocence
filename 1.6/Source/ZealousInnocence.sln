@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZealousInnocence", "ZealousInnocence\ZealousInnocence.csproj", "{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}.Debug|x86.Build.0 = Debug|Any CPU
+		{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}.Release|x86.ActiveCfg = Release|x86
+		{45FE7C89-AFEE-42A1-90AA-CC5EA67AB40C}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19153964-7E8E-40D6-816F-55FEEC47A864}
+	EndGlobalSection
+EndGlobal

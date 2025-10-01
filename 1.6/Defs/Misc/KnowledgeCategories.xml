@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<KnowledgeCategoryDef>
+    <defName>Regression</defName>
+    <label>regression</label>
+    <color>(1, 1, 1, 1)</color>
+    <texPath>Apparel/Diaper/PullupsPlain/PullupsPlain</texPath>
+  </KnowledgeCategoryDef>
+
+	<KnowledgeCategoryDef>
+    <defName>AdvRegression</defName>
+    <label>advanced regression</label>
+    <color>(1, 1, 1, 1)</color>
+    <texPath>Apparel/Diaper/Nappy/Nappy</texPath>
+    <overflowCategory>Regression</overflowCategory>
+  </KnowledgeCategoryDef>
+
+</Defs>

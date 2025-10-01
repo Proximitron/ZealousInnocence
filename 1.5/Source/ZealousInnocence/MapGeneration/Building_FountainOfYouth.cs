@@ -212,7 +212,6 @@ namespace ZealousInnocence
             this.UpdateAttachments();
         }
 
-        // Token: 0x06008AF5 RID: 35573 RVA: 0x002F77C0 File Offset: 0x002F59C0
         public override void Tick()
         {
             base.Tick();
@@ -316,7 +315,6 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x06008AF6 RID: 35574 RVA: 0x002F7B10 File Offset: 0x002F5D10
         public bool CanActivate(out string reason, out string reasonShort)
         {
             reason = "";
@@ -367,7 +365,6 @@ namespace ZealousInnocence
             this.autoActivateTick = -99999;
         }
 
-        // Token: 0x06008AF8 RID: 35576 RVA: 0x002F7CF0 File Offset: 0x002F5EF0
         public void CheckAndGenerateQuest()
         {
             if (regression.fountain == null)
@@ -376,7 +373,6 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x06008AF9 RID: 35577 RVA: 0x002F7D84 File Offset: 0x002F5F84
         private void OpenActivatedDialog()
         {
             DiaNode diaNode = new DiaNode(Find.Anomaly.LevelDef.activatedLetterText.Formatted(this.activatorPawn.Named("PAWN")));
@@ -440,7 +436,6 @@ namespace ZealousInnocence
             Find.WindowStack.Add(dialog_NodeTree);
         }
 
-        // Token: 0x06008AFB RID: 35579 RVA: 0x002F7FB8 File Offset: 0x002F61B8
         public void SetLevel(FountainOfYouthLevelDef levelDef)
         {
             CompGlower comp = base.GetComp<CompGlower>();

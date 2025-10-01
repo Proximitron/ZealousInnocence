@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<RecipeDef ParentName="SurgeryFlesh">
+		<defName>SurgeryRegression</defName>
+		<label>Physical Regression</label>
+		<description>A dangerous operation to heal the brain using a very powerful drug, this comes with a side effect of physical regression. The patient's brain will be restored, but the patient will also become a child again.</description>
+		<workerClass>ZealousInnocence.Recipe_Regression</workerClass>
+		<jobString>Performing physical regression operation.</jobString>
+		<workAmount>5000</workAmount>
+		<deathOnFailedSurgeryChance>0.1</deathOnFailedSurgeryChance>
+		<skillRequirements>
+			<Medicine>1</Medicine>
+		</skillRequirements>
+		<targetsBodyPart>true</targetsBodyPart>
+		<recipeUsers>
+			<li>Human</li>
+		</recipeUsers>
+		<ingredients>
+			<li>
+				<filter>
+					<categories>
+						<li>Medicine</li>
+					</categories>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<categories>
+				<li>Medicine</li>
+			</categories>
+		</fixedIngredientFilter>
+	</RecipeDef>
+	
+	<RecipeDef ParentName="SurgeryFlesh">
+		<defName>SurgeryRegressionMental</defName>
+		<label>Mental Regression</label>
+		<description>A dangerous operation to heal the brain using a powerful drug, this comes with a side effect of mental regression. Despite healing the brain physically, it shifts and supresses major brain functionality, the patient's brain is essentially reverted to that of a newborn</description>
+		<workerClass>ZealousInnocence.Recipe_Regression</workerClass>
+		<jobString>Performing mental regression operation.</jobString>
+		<modExtensions>
+			<li Class="ZealousInnocence.RecipeExtension_RegressionParameter">
+				<targetMentalRegression>true</targetMentalRegression>
+			</li>
+		</modExtensions>
+		<workAmount>5000</workAmount>
+		<deathOnFailedSurgeryChance>0.1</deathOnFailedSurgeryChance>
+		<skillRequirements>
+			<Medicine>1</Medicine>
+		</skillRequirements>
+		<targetsBodyPart>true</targetsBodyPart>
+		<recipeUsers>
+			<li>Human</li>
+		</recipeUsers>
+		<ingredients>
+			<li>
+				<filter>
+					<categories>
+						<li>Medicine</li>
+					</categories>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<categories>
+				<li>Medicine</li>
+			</categories>
+		</fixedIngredientFilter>
+	</RecipeDef>
+</Defs>

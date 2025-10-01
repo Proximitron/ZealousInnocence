@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- Regressor -->
+  <HediffDef ParentName="ImplantHediffBase" MayRequire="Ludeon.RimWorld.Royality">
+    <defName>Regressor</defName>
+    <label>regressor</label>
+    <labelNoun>a regressor</labelNoun>
+    <description>An installed regressor. A chip installed in the brain that keeps the users mind in a constant state of a toddler. Some even install them voluntarily as a demonstration of ideological or religious devotion.</description>
+    <descriptionHyperlinks><ThingDef>Regressor</ThingDef></descriptionHyperlinks>
+    <spawnThingOnRemoved>Regressor</spawnThingOnRemoved>
+    <priceOffset>-110</priceOffset>
+    <stages>
+      <li>
+        <painOffset>0.2</painOffset>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <ThingDef ParentName="BodyPartProstheticImperialBase" MayRequire="Ludeon.RimWorld.Royality">
+    <defName>Regressor</defName>
+    <label>regressor</label>
+    <description>An installed regressor. A chip, to be installed in the brain, that keeps the users mind in a constant state of a toddler. Some even install them voluntarily as a demonstration of ideological or religious devotion.</description>
+    <descriptionHyperlinks><RecipeDef>InstallRegressor</RecipeDef></descriptionHyperlinks>
+    <techHediffsTags>
+      <li>PainCauser</li>
+    </techHediffsTags>
+    <thingSetMakerTags><li>RewardStandardLowFreq</li></thingSetMakerTags>
+    <costList>
+      <Steel>15</Steel>
+      <ComponentIndustrial>4</ComponentIndustrial>
+    </costList>
+    <recipeMaker>
+      <researchPrerequisite MayRequire="Ludeon.RimWorld.Royality">BrainWiring</researchPrerequisite>
+    </recipeMaker>
+  </ThingDef>
+
+  <RecipeDef ParentName="SurgeryInstallImplantBase" MayRequire="Ludeon.RimWorld.Royality">
+    <defName>InstallRegressor</defName>
+    <label>install regressor</label>
+    <description>Install a regressor.</description>
+    <descriptionHyperlinks>
+      <ThingDef>Regressor</ThingDef>
+      <HediffDef>Regressor</HediffDef>
+    </descriptionHyperlinks>
+    <jobString>Installing regressor.</jobString>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>Regressor</li>
+          </thingDefs>
+        </filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Regressor</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <appliedOnFixedBodyParts>
+      <li>Brain</li>
+    </appliedOnFixedBodyParts>
+    <addsHediff>Regressor</addsHediff>
+  </RecipeDef>
+</Defs>

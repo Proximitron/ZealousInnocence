@@ -8,7 +8,7 @@
     <advanceThroughActivation>true</advanceThroughActivation>
     <regressionThreatTier>0</regressionThreatTier>
     <useInactiveAnomalyThreatFraction>true</useInactiveAnomalyThreatFraction>
-    <levelInspectText>Twisting lines carved into the surface form a disturbing pattern.</levelInspectText>
+    <levelInspectText>A bit carved into the surface form a disturbing pattern.</levelInspectText>
     <activateGizmoText>investigate</activateGizmoText>
     <activateFloatMenuText>investigate {0}</activateFloatMenuText>
     <activateGizmoDescription>Send a colonist to investigate the fountain.</activateGizmoDescription>
@@ -23,7 +23,7 @@
   <ZealousInnocence.FountainOfYouthLevelDef>
     <defName>Stirring</defName>
     <level>1</level>
-    <fountainLabel>fountain of youth</fountainLabel>
+    <fountainLabel>fountain of youth?</fountainLabel>
     <graphicIndex>1</graphicIndex>
     <advanceThroughActivation>true</advanceThroughActivation>
     <regressionThreatTier>1</regressionThreatTier>
@@ -64,10 +64,10 @@
   </ZealousInnocence.FountainOfYouthLevelDef>
 
   <ZealousInnocence.FountainOfYouthLevelDef>
-    <defName>Attune</defName>
+    <defName>Bathe</defName>
     <level>2</level>
-    <fountainLabel>void monolith</fountainLabel>
-    <graphicIndex>3</graphicIndex>
+    <fountainLabel>fountain of youth</fountainLabel>
+    <graphicIndex>2</graphicIndex>
     <advanceThroughActivation>false</advanceThroughActivation>
 		<unreachableDuringConditions>
       <li>UnnaturalDarkness</li> <!-- Just a placeholder, custom conditions? -->
@@ -76,7 +76,17 @@
     <regressionThreatTier>2</regressionThreatTier>
     <useActiveAnomalyThreatFraction>true</useActiveAnomalyThreatFraction>
     <monolithStudyCategory>AdvRegression</monolithStudyCategory>
-    <levelInspectText>Level 3: Attuned</levelInspectText>
+    <levelInspectText>Level 2: Inviting</levelInspectText>
+		
+		<activateGizmoText>regress</activateGizmoText>
+    <activateFloatMenuText>regress {0}</activateFloatMenuText>
+    <activateGizmoDescription>Send a colonist to regress them to the age of a child.\n\nMore to come...</activateGizmoDescription>
+    <pawnSentToActivateMessage>{PAWN_nameDef} has been sent to bathe in the fountain.</pawnSentToActivateMessage>
+    <fountainCanBeActivatedText>Can be bathed in.</fountainCanBeActivatedText>
+    <activateQuestText>Send a colonist to bath there.</activateQuestText>
+    <activatableLetterLabel>Bathing in fountain</activatableLetterLabel>
+    <activatableLetterText>You have regressed another pawn.\n\nMore to come in the future.</activatableLetterText>
+    <activatedLetterText>As {PAWN_nameDef} takes a bath in the fountain, they are overcome with visions of a playground, free of grown up troubles. In an instant, {PAWN_pronoun} was regressed.\n\nMore to come in the future...\n\n(*Gray)Note: This is an anomaly and as such follows the rules of Anomaly-related features. It can be adjusted in the storyteller settings.(/Gray)</activatedLetterText>
     <anomalyMentalBreakChance>0.2</anomalyMentalBreakChance>
     <attachments>
       <li>
@@ -106,14 +116,61 @@
       </li>
     </attachments>
     <sizeIncludingAttachments>(5, 5)</sizeIncludingAttachments>
+		<uiIconPath>Things/Building/VoidMonolith/Icons/VoidMonolith_C_MenuIcon</uiIconPath>
   </ZealousInnocence.FountainOfYouthLevelDef>
 
+  <ZealousInnocence.FountainOfYouthLevelDef>
+    <defName>Embraced</defName>
+    <level>3</level>
+    <fountainLabel>fountain of youth</fountainLabel>
+    <graphicIndex>3</graphicIndex>
+    <advanceThroughActivation>false</advanceThroughActivation>
+		<unreachableDuringConditions>
+      <li>UnnaturalDarkness</li> <!-- Just a placeholder, custom conditions? -->
+    </unreachableDuringConditions>
+    <postEndgame>true</postEndgame>
+    <regressionThreatTier>3</regressionThreatTier>
+    <useActiveAnomalyThreatFraction>true</useActiveAnomalyThreatFraction>
+    <monolithStudyCategory>AdvRegression</monolithStudyCategory>
+    <levelInspectText>Level 3: Embraced</levelInspectText>
+    <anomalyMentalBreakChance>0.2</anomalyMentalBreakChance>
+    <attachments>
+      <li>
+        <def>VoidMonolithAttachmentLeft</def>
+        <graphicIndex>2</graphicIndex>
+        <offset>(-2, 0)</offset>
+      </li>
+      <li>
+        <def>VoidMonolithAttachmentRight</def>
+        <graphicIndex>2</graphicIndex>
+        <offset>(2, 0)</offset>
+      </li>
+      <li>
+        <def>VoidMonolithAttachmentTop</def>
+        <graphicIndex>1</graphicIndex>
+        <offset>(0, 2)</offset>
+      </li>
+      <li>
+        <def>VoidMonolithAttachmentBottomLeft</def>
+        <graphicIndex>1</graphicIndex>
+        <offset>(-1, -2)</offset>
+      </li>
+      <li>
+        <def>VoidMonolithAttachmentBottomRight</def>
+        <graphicIndex>1</graphicIndex>
+        <offset>(1, -2)</offset>
+      </li>
+    </attachments>
+    <sizeIncludingAttachments>(5, 5)</sizeIncludingAttachments>
+		<uiIconPath>Things/Building/VoidMonolith/Icons/VoidMonolith_D_MenuIcon</uiIconPath>
+  </ZealousInnocence.FountainOfYouthLevelDef>
+	
   <ZealousInnocence.FountainOfYouthLevelDef>
     <defName>Disrupted</defName>
     <level>3</level>
     <fountainLabel>collapsed fountain</fountainLabel>
     <fountainDescription>The remnants of the fountain of youth, broken. The once glowing runes across its surface are withered, any water dried up. You can study the broken stones to gain further knowledge of regression.</fountainDescription>
-    <graphicIndex>5</graphicIndex>
+    <graphicIndex>4</graphicIndex>
     <advanceThroughActivation>false</advanceThroughActivation>
     <postEndgame>true</postEndgame>
     <regressionThreatTier>0</regressionThreatTier>

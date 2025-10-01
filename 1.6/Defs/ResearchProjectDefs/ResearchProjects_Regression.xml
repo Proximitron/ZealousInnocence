@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+
+	<ResearchTabDef>
+		<defName>Regression</defName>
+		<label>Regression</label>
+		<visibleByDefault>false</visibleByDefault>
+		<tutorTag>Research-Tab-Regression</tutorTag>
+	</ResearchTabDef>
+
+
+	<ResearchProjectDef MayRequire="Ludeon.RimWorld.Anomaly">
+		<defName>TemporaryRegression</defName>
+		<label>temporary regression</label>
+		<tab>Regression</tab>
+		<description>Describes the research into short term mental regression. Often causes the loss of control and makes it easier to overpower the individual affected. Probably could be used to cancle mental breaks...</description>
+		<knowledgeCost>5</knowledgeCost>
+    <knowledgeCategory>Regression</knowledgeCategory>
+		<techLevel>Medieval</techLevel>
+		<researchViewX>0</researchViewX>
+		<researchViewY>1</researchViewY>
+	</ResearchProjectDef>
+
+</Defs>

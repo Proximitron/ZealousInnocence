@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	
+<HediffDef ParentName="ChronicDiseaseBase">
+  <defName>BedWetting</defName>
+  <label>Bedwetting</label>
+  <description>A condition that affects bedwetting from childhood through adulthood. Adults with the condition can no longer grow out of it.\n\nProtection is needed during the night.</description>
+  <hediffClass>HediffWithComps</hediffClass>
+  <makesSickThought>false</makesSickThought>
+  <tendable>false</tendable>
+  <stages>
+    <li>
+      <label>childhood</label>
+      <minSeverity>0</minSeverity>
+    </li>
+    <li>
+      <label>teenage</label>
+      <minSeverity>0.4</minSeverity>
+    </li>
+    <li>
+      <label>adulthood</label>
+      <minSeverity>0.7</minSeverity>
+    </li>
+  </stages>
+	<everCurableByItem>false</everCurableByItem>
+</HediffDef>
+	
+  <HediffDef ParentName="InfectionBase">
+    <defName>BladderInfection</defName>
+    <label>Bladder infection</label>
+    <description>A temporary infection of the bladder. They will have great trouble making it to the toilet in time. Accidents might occur randomly and/or during the night.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <makesSickThought>true</makesSickThought>
+    <tendable>true</tendable>
+		<stages>
+      <li>
+        <partEfficiencyOffset>-0.75</partEfficiencyOffset>
+      </li>
+    </stages>
+		<comps>
+      <li Class="HediffCompProperties_TendDuration">
+        <baseTendDurationHours>48</baseTendDurationHours>
+        <disappearsAtTotalTendQuality>3</disappearsAtTotalTendQuality>
+      </li>
+		</comps>
+
+  </HediffDef>
+  
+	<HediffDef ParentName="ChronicDiseaseBase">
+    <defName>WeakBladder</defName>
+    <label>Weak bladder</label>
+    <description>A very weak bladder. Accidents might occur randomly and/or during the night.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <makesSickThought>false</makesSickThought>
+    <tendable>false</tendable>
+		<stages>
+      <li>
+        <partEfficiencyOffset>-0.35</partEfficiencyOffset>
+      </li>
+    </stages>
+  </HediffDef>
+	
+	<HediffDef ParentName="AddedBodyPartBase">
+		<defName>SmallBladder</defName>
+    <label>Small bladder</label>
+    <description>A bladder that is smaller than normal. They will visit the toilet more frequently, if they can make it.</description>
+    <labelNoun>a small bladder</labelNoun>
+    <descriptionHyperlinks><ThingDef>BladderSmall</ThingDef></descriptionHyperlinks>
+    <spawnThingOnRemoved>BladderSmall</spawnThingOnRemoved>
+    <addedPartProps>
+      <solid>true</solid>
+      <partEfficiency>1.0</partEfficiency>
+      <betterThanNatural>false</betterThanNatural>
+    </addedPartProps>
+		<countsAsAddedPartOrImplant>false</countsAsAddedPartOrImplant>
+		<stages>
+      <li>
+			  <statOffsets>
+					<BladderRateMultiplier>0.75</BladderRateMultiplier>
+				</statOffsets>
+      </li>
+    </stages>
+		<everCurableByItem>false</everCurableByItem>
+  </HediffDef>
+	
+	<HediffDef ParentName="AddedBodyPartBase">
+    <defName>BigBladder</defName>
+    <label>Big Bladder</label>
+    <description>A bladder that is bigger than normal. They will visit the toilet less frequently.</description>
+    <labelNoun>a big bladder</labelNoun>
+    <descriptionHyperlinks><ThingDef>BladderBig</ThingDef></descriptionHyperlinks>
+    <spawnThingOnRemoved>BladderBig</spawnThingOnRemoved>
+    <addedPartProps>
+      <solid>true</solid>
+      <partEfficiency>1.0</partEfficiency>
+      <betterThanNatural>false</betterThanNatural>
+    </addedPartProps>
+		<countsAsAddedPartOrImplant>false</countsAsAddedPartOrImplant>
+		<stages>
+      <li>
+			  <statOffsets>
+					<BladderRateMultiplier>-0.2</BladderRateMultiplier>
+				</statOffsets>
+      </li>
+    </stages>
+		<everCurableByItem>false</everCurableByItem>
+  </HediffDef>
+		
+  <HediffDef ParentName="ChronicDiseaseBase">
+    <defName>Incontinent</defName>
+    <label>Incontinent</label>
+    <description>This pawn has no control over their bladder at all. Diapers are strongly recommended.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <makesSickThought>false</makesSickThought>
+    <tendable>false</tendable>
+		<stages>
+      <li>
+        <statOffsets>
+					<BladderStrengh>-10.0</BladderStrengh>
+				</statOffsets>
+      </li>
+    </stages>
+		<everCurableByItem>false</everCurableByItem>
+  </HediffDef>
+  
+</Defs>

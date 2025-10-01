@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Rah's Bionics and Surgery Expansion</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<success>Always</success>
+			<operations>
+				<!--li Class="PatchOperationAdd">
+				<xpath>Defs/RecipeDef[defName="InstallNaturalStomach"]</xpath>
+				<value>
+					<descriptionHyperlinks><ThingDef>Stomach</ThingDef></descriptionHyperlinks>
+				</value>
+			</li-->
+				<li Class="PatchOperationAdd">
+					<xpath>Defs</xpath>
+					<value>
+						<ThingDef ParentName="BodyPartNaturalBase">
+							<defName>Bladder</defName>
+							<label>bladder</label>
+							<description>A biological human bladder. Is obviously required for bladder control.</description>
+							<statBases>
+								<MarketValue>150</MarketValue>
+								<Mass>0.4</Mass>
+							</statBases>
+							<tickerType>Rare</tickerType>
+							<comps>
+								<li Class="CompProperties_Rottable">
+									<daysToRotStart>0.6</daysToRotStart>
+									<rotDestroys>true</rotDestroys>
+								</li>
+							</comps>
+						</ThingDef>
+						<HediffDef ParentName="addedPartPropsBase">
+							<defName>Bladder</defName>
+							<label>Bladder transplant</label>
+							<description>A transplanted Bladder.</description>
+							<lethalSeverity>1</lethalSeverity>
+							<minSeverity>0.001</minSeverity>
+							<tendable>true</tendable>
+							<descriptionHyperlinks><RecipeDef>InstallNaturalBladder</RecipeDef></descriptionHyperlinks>
+							<spawnThingOnRemoved>Bladder</spawnThingOnRemoved>
+							<comps>
+								<li Class="HediffCompProperties_TendDuration">
+									<baseTendDurationHours>96</baseTendDurationHours>
+									<severityPerDayTended>-0.8</severityPerDayTended>
+								</li>
+								<li Class="HediffCompProperties_Immunizable">
+									<severityPerDayNotImmune>0.3</severityPerDayNotImmune>
+								</li>
+							</comps>
+							<addedPartProps>
+								<solid>true</solid>
+								<partEfficiency>1.0</partEfficiency>
+							</addedPartProps>
+							<stages>
+								<li>
+									<label>mild rejection</label>
+									<partEfficiencyOffset>-0.05</partEfficiencyOffset>
+								</li>
+								<li>
+									<label>moderate rejection</label>
+									<minSeverity>0.3</minSeverity>
+									<partEfficiencyOffset>-0.3</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.15</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.2</offset>
+											<statOffsets>
+												<BladderRateMultiplier>0.6</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+								<li>
+									<label>serious rejection</label>
+									<minSeverity>0.6</minSeverity>
+									<partEfficiencyOffset>-0.5</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.25</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.4</offset>
+											<statOffsets>
+												<BladderRateMultiplier>1.2</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+								<li>
+									<label>deadly rejection</label>
+									<minSeverity>0.8</minSeverity>
+									<partEfficiencyOffset>-0.7</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.4</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.6</offset>
+											<statOffsets>
+												<BladderRateMultiplier>1.8</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+							</stages>
+						</HediffDef>
+						<RecipeDef ParentName="SurgeryInstallBodyPartNaturalBase">
+							<defName>InstallNaturalBladder</defName>
+							<label>install bladder</label>
+							<description>Installs bladder.</description>
+							<descriptionHyperlinks>
+								<ThingDef>Bladder</ThingDef>
+							</descriptionHyperlinks>
+							<workerClass>Recipe_InstallArtificialBodyPart</workerClass>
+							<jobString>Installing Bladder.</jobString>
+							<deathOnFailedSurgeryChance>0.2</deathOnFailedSurgeryChance>
+							<workAmount>4000</workAmount>
+							<ingredients>
+								<li>
+									<filter>
+										<categories>
+											<li>Medicine</li>
+										</categories>
+									</filter>
+									<count>3</count>
+								</li>
+								<li>
+									<filter>
+										<thingDefs>
+											<li>Bladder</li>
+										</thingDefs>
+									</filter>
+									<count>1</count>
+								</li>
+							</ingredients>
+							<fixedIngredientFilter>
+								<categories>
+									<li>Medicine</li>
+								</categories>
+								<thingDefs>
+									<li>Bladder</li>
+								</thingDefs>
+							</fixedIngredientFilter>
+							<appliedOnFixedBodyParts>
+								<li>Bladder</li>
+							</appliedOnFixedBodyParts>
+							<addsHediff>Bladder</addsHediff>
+							<researchPrerequisite>OrganTransplantation</researchPrerequisite>
+						</RecipeDef>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs</xpath>
+					<value>
+						<ThingDef ParentName="BodyPartNaturalBase">
+							<defName>BladderBig</defName>
+							<label>big bladder</label>
+							<description>A big biological human bladder. Is obviously required for bladder control.</description>
+							<descriptionHyperlinks><RecipeDef>InstallNaturalBigBladder</RecipeDef></descriptionHyperlinks>
+							<statBases>
+								<MarketValue>250</MarketValue>
+								<Mass>0.4</Mass>
+							</statBases>
+							<tickerType>Rare</tickerType>
+							<comps>
+								<li Class="CompProperties_Rottable">
+									<daysToRotStart>0.6</daysToRotStart>
+									<rotDestroys>true</rotDestroys>
+								</li>
+							</comps>
+						</ThingDef>
+						<HediffDef ParentName="addedPartPropsBase">
+							<defName>BladderBig</defName>
+							<label>Bladder transplant (big)</label>
+							<description>A transplanted big bladder.</description>
+							<lethalSeverity>1</lethalSeverity>
+							<minSeverity>0.001</minSeverity>
+							<tendable>true</tendable>
+							<spawnThingOnRemoved>BladderBig</spawnThingOnRemoved>
+							<comps>
+								<li Class="HediffCompProperties_TendDuration">
+									<baseTendDurationHours>96</baseTendDurationHours>
+									<severityPerDayTended>-0.8</severityPerDayTended>
+								</li>
+								<li Class="HediffCompProperties_Immunizable">
+									<severityPerDayNotImmune>0.3</severityPerDayNotImmune>
+								</li>
+							</comps>
+							<addedPartProps>
+								<solid>true</solid>
+								<partEfficiency>1.0</partEfficiency>
+							</addedPartProps>
+							<stages>
+								<li>
+									<label>mild rejection</label>
+									<partEfficiencyOffset>-0.05</partEfficiencyOffset>
+									<statOffsets>
+										<BladderRateMultiplier>-0.2</BladderRateMultiplier>
+									</statOffsets>
+								</li>
+								<li>
+									<label>moderate rejection</label>
+									<minSeverity>0.3</minSeverity>
+									<partEfficiencyOffset>-0.3</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.15</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.2</offset>
+											<statOffsets>
+												<BladderRateMultiplier>0.2</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+								<li>
+									<label>serious rejection</label>
+									<minSeverity>0.6</minSeverity>
+									<partEfficiencyOffset>-0.5</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.25</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.4</offset>
+											<statOffsets>
+												<BladderRateMultiplier>0.8</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+								<li>
+									<label>deadly rejection</label>
+									<minSeverity>0.8</minSeverity>
+									<partEfficiencyOffset>-0.7</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.4</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.6</offset>
+											<statOffsets>
+												<BladderRateMultiplier>1.5</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+							</stages>
+						</HediffDef>
+						<RecipeDef ParentName="SurgeryInstallBodyPartNaturalBase">
+							<defName>InstallNaturalBigBladder</defName>
+							<label>install big bladder</label>
+							<description>Installs big bladder.</description>
+							<descriptionHyperlinks>
+								<ThingDef>BladderBig</ThingDef>
+							</descriptionHyperlinks>
+							<workerClass>Recipe_InstallArtificialBodyPart</workerClass>
+							<jobString>Installing big bladder.</jobString>
+							<deathOnFailedSurgeryChance>0.2</deathOnFailedSurgeryChance>
+							<workAmount>4000</workAmount>
+							<ingredients>
+								<li>
+									<filter>
+										<categories>
+											<li>Medicine</li>
+										</categories>
+									</filter>
+									<count>3</count>
+								</li>
+								<li>
+									<filter>
+										<thingDefs>
+											<li>BladderBig</li>
+										</thingDefs>
+									</filter>
+									<count>1</count>
+								</li>
+							</ingredients>
+							<fixedIngredientFilter>
+								<categories>
+									<li>Medicine</li>
+								</categories>
+								<thingDefs>
+									<li>BladderBig</li>
+								</thingDefs>
+							</fixedIngredientFilter>
+							<appliedOnFixedBodyParts>
+								<li>Bladder</li>
+							</appliedOnFixedBodyParts>
+							<addsHediff>BladderBig</addsHediff>
+							<researchPrerequisite>OrganTransplantation</researchPrerequisite>
+						</RecipeDef>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs</xpath>
+					<value>
+						<ThingDef ParentName="BodyPartNaturalBase">
+							<defName>BladderSmall</defName>
+							<label>small bladder</label>
+							<description>A small biological human bladder. Is obviously required for bladder control.</description>
+							<descriptionHyperlinks><RecipeDef>InstallNaturalBladderSmall</RecipeDef></descriptionHyperlinks>
+							<statBases>
+								<MarketValue>50</MarketValue>
+								<Mass>0.2</Mass>
+							</statBases>
+							<tickerType>Rare</tickerType>
+							<comps>
+								<li Class="CompProperties_Rottable">
+									<daysToRotStart>0.6</daysToRotStart>
+									<rotDestroys>true</rotDestroys>
+								</li>
+							</comps>
+						</ThingDef>
+						<HediffDef ParentName="addedPartPropsBase">
+							<defName>BladderSmall</defName>
+							<label>Bladder transplant</label>
+							<description>A transplanted small bladder.</description>
+							<lethalSeverity>1</lethalSeverity>
+							<minSeverity>0.001</minSeverity>
+							<tendable>true</tendable>
+							<spawnThingOnRemoved>Bladder</spawnThingOnRemoved>
+							<comps>
+								<li Class="HediffCompProperties_TendDuration">
+									<baseTendDurationHours>96</baseTendDurationHours>
+									<severityPerDayTended>-0.8</severityPerDayTended>
+								</li>
+								<li Class="HediffCompProperties_Immunizable">
+									<severityPerDayNotImmune>0.3</severityPerDayNotImmune>
+								</li>
+							</comps>
+							<addedPartProps>
+								<solid>true</solid>
+								<partEfficiency>1.0</partEfficiency>
+							</addedPartProps>
+							<stages>
+								<li>
+									<label>mild rejection</label>
+									<partEfficiencyOffset>-0.05</partEfficiencyOffset>
+									<statOffsets>
+										<BladderRateMultiplier>0.75</BladderRateMultiplier>
+									</statOffsets>
+								</li>
+								<li>
+									<label>moderate rejection</label>
+									<minSeverity>0.3</minSeverity>
+									<partEfficiencyOffset>-0.3</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.15</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.2</offset>
+											<statOffsets>
+												<BladderRateMultiplier>1.0</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+								<li>
+									<label>serious rejection</label>
+									<minSeverity>0.6</minSeverity>
+									<partEfficiencyOffset>-0.5</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.25</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.4</offset>
+											<statOffsets>
+												<BladderRateMultiplier>1.5</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+								<li>
+									<label>deadly rejection</label>
+									<minSeverity>0.8</minSeverity>
+									<partEfficiencyOffset>-0.7</partEfficiencyOffset>
+									<vomitMtbDays>1</vomitMtbDays>
+									<painOffset>0.4</painOffset>
+									<capMods>
+										<li>
+											<capacity>Consciousness</capacity>
+											<offset>-0.6</offset>
+											<statOffsets>
+												<BladderRateMultiplier>2.0</BladderRateMultiplier>
+											</statOffsets>
+										</li>
+									</capMods>
+								</li>
+							</stages>
+						</HediffDef>
+						<RecipeDef ParentName="SurgeryInstallBodyPartNaturalBase">
+							<defName>InstallNaturalBladderSmall</defName>
+							<label>install small bladder</label>
+							<description>Installs small bladder.</description>
+							<descriptionHyperlinks>
+								<ThingDef>BladderSmall</ThingDef>
+							</descriptionHyperlinks>
+							<workerClass>Recipe_InstallArtificialBodyPart</workerClass>
+							<jobString>Installing small bladder.</jobString>
+							<deathOnFailedSurgeryChance>0.2</deathOnFailedSurgeryChance>
+							<workAmount>4000</workAmount>
+							<ingredients>
+								<li>
+									<filter>
+										<categories>
+											<li>Medicine</li>
+										</categories>
+									</filter>
+									<count>3</count>
+								</li>
+								<li>
+									<filter>
+										<thingDefs>
+											<li>BladderSmall</li>
+										</thingDefs>
+									</filter>
+									<count>1</count>
+								</li>
+							</ingredients>
+							<fixedIngredientFilter>
+								<categories>
+									<li>Medicine</li>
+								</categories>
+								<thingDefs>
+									<li>BladderSmall</li>
+								</thingDefs>
+							</fixedIngredientFilter>
+							<appliedOnFixedBodyParts>
+								<li>Bladder</li>
+							</appliedOnFixedBodyParts>
+							<addsHediff>BladderSmall</addsHediff>
+							<researchPrerequisite>OrganTransplantation</researchPrerequisite>
+						</RecipeDef>
+					</value>
+				</li>
+			</operations>
+		</match>
+		<nomatch Class="PatchOperationSequence">
+			<success>Always</success>
+			<operations>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs</xpath>
+					<value>
+						<ThingDef ParentName="BodyPartNaturalBase">
+							<defName>Bladder</defName>
+							<label>bladder</label>
+							<description>A biological human bladder. Is obviously required for bladder control.</description>
+							<descriptionHyperlinks>
+								<RecipeDef>InstallNaturalBladder</RecipeDef>
+							</descriptionHyperlinks>
+							<statBases>
+								<MarketValue>100</MarketValue>
+								<Mass>1</Mass>
+							</statBases>
+						</ThingDef>
+						<RecipeDef ParentName="SurgeryFlesh">
+							<defName>InstallNaturalBladder</defName>
+							<label>install bladder</label>
+							<description>Install a biological bladder.</description>
+							<descriptionHyperlinks>
+								<ThingDef>Bladder</ThingDef>
+							</descriptionHyperlinks>
+							<jobString>Installing bladder.</jobString>
+							<workerClass>Recipe_InstallNaturalBodyPart</workerClass>
+							<workAmount>4000</workAmount>
+							<skillRequirements>
+								<Medicine>5</Medicine>
+							</skillRequirements>
+							<recipeUsers>
+								<li>Human</li>
+							</recipeUsers>
+							<ingredients>
+								<li>
+									<filter>
+										<categories>
+											<li>Medicine</li>
+										</categories>
+									</filter>
+									<count>2</count>
+								</li>
+								<li>
+									<filter>
+										<thingDefs>
+											<li>Bladder</li>
+										</thingDefs>
+									</filter>
+									<count>1</count>
+								</li>
+							</ingredients>
+							<fixedIngredientFilter>
+								<categories>
+									<li>Medicine</li>
+								</categories>
+								<thingDefs>
+									<li>Bladder</li>
+								</thingDefs>
+							</fixedIngredientFilter>
+							<appliedOnFixedBodyParts>
+								<li>Bladder</li>
+							</appliedOnFixedBodyParts>
+						</RecipeDef>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs</xpath>
+					<value>
+						<ThingDef ParentName="BodyPartNaturalBase">
+							<defName>BladderBig</defName>
+							<label>big bladder</label>
+							<description>A biological human big bladder. Is obviously required for bladder control.</description>
+							<descriptionHyperlinks>
+								<RecipeDef>InstallNaturalBladderBig</RecipeDef>
+							</descriptionHyperlinks>
+							<statBases>
+								<MarketValue>150</MarketValue>
+								<Mass>1</Mass>
+							</statBases>
+						</ThingDef>
+						<RecipeDef ParentName="SurgeryInstallBodyPartArtificialBase">
+							<defName>InstallNaturalBladderBig</defName>
+							<label>install big bladder</label>
+							<description>Install a big biological bladder.</description>
+							<descriptionHyperlinks>
+								<ThingDef>BladderBig</ThingDef>
+							</descriptionHyperlinks>
+							<jobString>Installing big bladder.</jobString>
+							<workAmount>4000</workAmount>
+							<skillRequirements>
+								<Medicine>5</Medicine>
+							</skillRequirements>
+							<recipeUsers>
+								<li>Human</li>
+							</recipeUsers>
+							<ingredients>
+								<li>
+									<filter>
+										<categories>
+											<li>Medicine</li>
+										</categories>
+									</filter>
+									<count>2</count>
+								</li>
+								<li>
+									<filter>
+										<thingDefs>
+											<li>BladderBig</li>
+										</thingDefs>
+									</filter>
+									<count>1</count>
+								</li>
+							</ingredients>
+							<fixedIngredientFilter>
+								<categories>
+									<li>Medicine</li>
+								</categories>
+								<thingDefs>
+									<li>BladderBig</li>
+								</thingDefs>
+							</fixedIngredientFilter>
+							<appliedOnFixedBodyParts>
+								<li>Bladder</li>
+							</appliedOnFixedBodyParts>
+							<addsHediff>BigBladder</addsHediff>
+						</RecipeDef>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs</xpath>
+					<value>
+						<ThingDef ParentName="BodyPartNaturalBase">
+							<defName>BladderSmall</defName>
+							<label>small bladder</label>
+							<description>A biological small human bladder. Is obviously required for bladder control.</description>
+							<descriptionHyperlinks>
+								<RecipeDef>InstallNaturalBladderSmall</RecipeDef>
+							</descriptionHyperlinks>
+							<statBases>
+								<MarketValue>50</MarketValue>
+								<Mass>1</Mass>
+							</statBases>
+						</ThingDef>
+						<RecipeDef ParentName="SurgeryInstallBodyPartArtificialBase">
+							<defName>InstallNaturalBladderSmall</defName>
+							<label>install small bladder</label>
+							<description>Install a small biological bladder.</description>
+							<descriptionHyperlinks>
+								<ThingDef>BladderSmall</ThingDef>
+							</descriptionHyperlinks>
+							<jobString>Installing small bladder.</jobString>
+							<workAmount>4000</workAmount>
+							<skillRequirements>
+								<Medicine>5</Medicine>
+							</skillRequirements>
+							<recipeUsers>
+								<li>Human</li>
+							</recipeUsers>
+							<ingredients>
+								<li>
+									<filter>
+										<categories>
+											<li>Medicine</li>
+										</categories>
+									</filter>
+									<count>2</count>
+								</li>
+								<li>
+									<filter>
+										<thingDefs>
+											<li>BladderSmall</li>
+										</thingDefs>
+									</filter>
+									<count>1</count>
+								</li>
+							</ingredients>
+							<fixedIngredientFilter>
+								<categories>
+									<li>Medicine</li>
+								</categories>
+								<thingDefs>
+									<li>BladderSmall</li>
+								</thingDefs>
+							</fixedIngredientFilter>
+							<appliedOnFixedBodyParts>
+								<li>Bladder</li>
+							</appliedOnFixedBodyParts>
+							<addsHediff>SmallBladder</addsHediff>
+						</RecipeDef>
+					</value>
+				</li>
+			</operations>
+		</nomatch>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Harvest Everything!</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<!--<success>Always</success>-->
+			<operations>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Rah's Bionics and Surgery Expansion</li>
+					</mods>
+					<nomatch Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationConditional">
+								<xpath>/Defs/BodyPartDef[defName="Bladder"]/spawnThingOnRemoved</xpath>
+								<!--success>Always</success-->
+								<match Class="PatchOperationAdd">
+									<success>Always</success>
+									<xpath>/Defs/BodyPartDef[defName="Bladder"]</xpath>
+									<value>
+										<modExtensions>
+											<li Class="Harvest_Everything.ModExtension">
+												<requireCleanChildrenToRemove>true</requireCleanChildrenToRemove>
+											</li>
+										</modExtensions>
+									</value>
+								</match>
+								<nomatch Class="PatchOperationAdd">
+									<xpath>/Defs/BodyPartDef[defName="Bladder"]</xpath>
+									<value>
+										<spawnThingOnRemoved>Bladder</spawnThingOnRemoved>
+										<modExtensions>
+											<li Class="Harvest_Everything.ModExtension">
+												<requireCleanChildrenToRemove>true</requireCleanChildrenToRemove>
+											</li>
+										</modExtensions>
+									</value>
+								</nomatch>
+							</li>
+						</operations>
+					</nomatch>
+					<match Class="PatchOperationSequence">
+						<success>Always</success>
+						<operations>
+							<li Class="PatchOperationConditional">
+								<xpath>/Defs/BodyPartDef[defName="Bladder"]/spawnThingOnRemoved</xpath>
+								<!--success>Always</success-->
+								<match Class="PatchOperationAdd">
+									<success>Always</success>
+									<xpath>/Defs/BodyPartDef[defName="Bladder"]</xpath>
+									<value>
+										<modExtensions>
+											<li Class="Harvest_Everything.ModExtension">
+												<requireCleanChildrenToRemove>true</requireCleanChildrenToRemove>
+											</li>
+										</modExtensions>
+									</value>
+								</match>
+								<nomatch Class="PatchOperationAdd">
+									<xpath>/Defs/BodyPartDef[defName="Bladder"]</xpath>
+									<value>
+										<spawnThingOnRemoved>Bladder</spawnThingOnRemoved>
+										<modExtensions>
+											<li Class="Harvest_Everything.ModExtension">
+												<requireCleanChildrenToRemove>true</requireCleanChildrenToRemove>
+											</li>
+										</modExtensions>
+									</value>
+								</nomatch>
+							</li>
+						</operations>
+					</match>
+				</li>
+			</operations>
+		</match>
+		<nomatch Class="PatchOperationSequence">
+			<success>Always</success>
+			<operations>
+			
+			</operations>
+		</nomatch>
+	</Operation>
+</Patch>

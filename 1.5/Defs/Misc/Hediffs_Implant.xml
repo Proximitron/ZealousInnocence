@@ -17,7 +17,7 @@
     </stages>
   </HediffDef>
 
-  <ThingDef ParentName="BodyPartProstheticImperialBase">
+  <ThingDef ParentName="BodyPartProstheticImperialBase" MayRequire="Ludeon.RimWorld.Royality">
     <defName>Regressor</defName>
     <label>regressor</label>
     <description>An installed regressor. A chip, to be installed in the brain, that keeps the users mind in a constant state of a toddler. Some even install them voluntarily as a demonstration of ideological or religious devotion.</description>
@@ -35,7 +35,7 @@
     </recipeMaker>
   </ThingDef>
 
-  <RecipeDef ParentName="SurgeryInstallImplantBase">
+  <RecipeDef ParentName="SurgeryInstallImplantBase" MayRequire="Ludeon.RimWorld.Royality">
     <defName>InstallRegressor</defName>
     <label>install regressor</label>
     <description>Install a regressor.</description>

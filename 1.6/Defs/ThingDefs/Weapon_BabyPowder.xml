@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>Gun_BabyPowderLauncher</defName>
+    <label>baby powder launcher</label>
+    <description>A wide-barreled baby powder launcher. The shell will upon impact release a cloud of powder, obscuring incoming shots and making everyone cough.</description>
+    <graphicData>
+      <texPath>Things/Item/Equipment/WeaponRanged/SmokeLauncher</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <soundInteract>Interact_Rifle</soundInteract>
+    <generateCommonality>0.3</generateCommonality>
+    <weaponClasses>
+      <li>RangedHeavy</li>
+    </weaponClasses>
+    <statBases>
+      <WorkToMake>30000</WorkToMake>
+      <Mass>3.4</Mass>
+      <RangedWeapon_Cooldown>4.5</RangedWeapon_Cooldown>
+    </statBases>
+    <costList>
+      <Steel>75</Steel>
+      <ComponentIndustrial>4</ComponentIndustrial>
+    </costList>
+    <weaponTags Inherit="False">
+      <li>GrenadeSmoke</li>
+    </weaponTags>
+    <recipeMaker>
+      <skillRequirements>
+        <Crafting>4</Crafting>
+      </skillRequirements>
+      <displayPriority>465</displayPriority>
+    </recipeMaker>
+    <verbs>
+      <li>
+        <verbClass>Verb_Shoot</verbClass>
+        <hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>Bullet_BabyPowderLauncher</defaultProjectile>
+        <warmupTime>3.5</warmupTime>
+        <range>23.9</range>
+        <forcedMissRadius>1.9</forcedMissRadius>
+        <burstShotCount>1</burstShotCount>
+        <soundCast>Shot_IncendiaryLauncher</soundCast>
+        <soundCastTail>GunTail_Medium</soundCastTail>
+        <muzzleFlashScale>14</muzzleFlashScale>
+        <targetParams>
+          <canTargetLocations>true</canTargetLocations>
+        </targetParams>
+      </li>
+    </verbs>
+    <tools>
+      <li>
+        <label>stock</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+      <li>
+        <label>barrel</label>
+        <capacities>
+          <li>Blunt</li>
+          <li>Poke</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+    </tools>
+  </ThingDef>
+
+  
+	<!-- Damage -->
+	<DamageDef>
+		<defName>BabyPowderDamage</defName> <!-- independent -->
+		<label>baby powder</label>
+		<!-- <workerClass>OPToxic.DamageWorker_OPToxic</workerClass> -->
+		<canInterruptJobs>true</canInterruptJobs>
+		<makesBlood>false</makesBlood>
+		<defaultDamage>0</defaultDamage>
+		<explosionCellFleck>BlastExtinguisher</explosionCellFleck>
+		<explosionColorEdge>(134,144,22,0.05)</explosionColorEdge>
+		<harmsHealth>false</harmsHealth>
+		<soundExplosion>Explosion_Smoke</soundExplosion>
+		<combatLogRules>Damage_Extinguish</combatLogRules>
+  	</DamageDef>
+  
+	<!-- Gas : Thing -->
+	<ThingDef ParentName="BaseBullet">
+		<defName>Bullet_BabyPowderLauncher</defName>
+		<label>baby powder shell</label>
+		<graphicData>
+		  <texPath>Things/Projectile/LauncherShot</texPath>
+		  <graphicClass>Graphic_Single</graphicClass>
+		  <shaderType>TransparentPostLight</shaderType>
+		  <color>(140,135,156)</color>
+		</graphicData>
+		<thingClass>Projectile_Explosive</thingClass>
+		<projectile>
+		  <speed>40</speed>
+		  <damageDef>BabyPowderDamage</damageDef>
+		  <!-- Use default damage from explosion def -->
+		  <explosionRadius>2.4</explosionRadius>
+		  <postExplosionGasType>BlindSmoke</postExplosionGasType>
+		  <ai_IsIncendiary>true</ai_IsIncendiary>
+		  <arcHeightFactor>0.2</arcHeightFactor>
+		  <shadowSize>0.6</shadowSize>
+		  <screenShakeFactor>0.5</screenShakeFactor>
+		</projectile>
+	</ThingDef>
+
+ 
+  
+</Defs>

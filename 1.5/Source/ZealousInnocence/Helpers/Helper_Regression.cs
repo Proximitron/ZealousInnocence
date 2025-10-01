@@ -1,5 +1,6 @@
 ﻿using DubsBadHygiene;
 using HarmonyLib;
+using JetBrains.Annotations;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -241,6 +242,63 @@ namespace ZealousInnocence
                 pawn.apparel.TryDrop(wornApparel[num], out resultingAp, pawn.Position, forbid: false);
             }
         }
+        public static bool CanBeRegressed(Pawn pawn)
+        {
+            if (!pawn.Dead && pawn.IsColonist) return true;
+            return false;
+        }
+        public static DamageInfo ReduceDamage(DamageInfo dInfo) //we want to reduce the damage so weapons look more damage then they actually are 
+        {
+            float reduceAmount = 1f;
+            var extensionInfo = dInfo.Def.GetModExtension<RegressionDamageExtension>();
+            if (extensionInfo != null)
+            {
+                reduceAmount = extensionInfo.reduceValue;
+            }
+            float reducedDamage = dInfo.Amount * reduceAmount;
+
+            dInfo = new DamageInfo(dInfo.Def, reducedDamage, dInfo.ArmorPenetrationInt, dInfo.Angle, dInfo.Instigator,
+                                   dInfo.HitPart, dInfo.Weapon, dInfo.Category, dInfo.intendedTargetInt);
+            return dInfo;
+        }
+        public static float GetSeverityPerDamage(this DamageInfo dInfo, float originalDamage)
+        {
+            var extensionInfo = dInfo.Def.GetModExtension<RegressionDamageExtension>();
+            if (extensionInfo != null)
+            {
+                return extensionInfo.severityPerDamage;
+            }
+            return 0.01f;
+        }
+        public static void ApplyPureRegressionDamage(DamageInfo dInfo, [NotNull] Pawn pawn, DamageWorker.DamageResult result, float originalDamage)
+        {
+            float severityPerDamage = GetSeverityPerDamage(dInfo, originalDamage);
+
+            var extensionInfo = dInfo.Def.GetModExtension<RegressionDamageExtension>();
+            if (extensionInfo == null)
+            {
+                Log.Warning("Damage caused by regression weapon does not contain damage extension!");
+            }
+
+            float severityToAdd = Mathf.Clamp(originalDamage * severityPerDamage, 0, extensionInfo.regressionBuildup.maxSeverity);
+
+            Hediff hediff = HediffMaker.MakeHediff(extensionInfo.regressionBuildup, pawn);
+            hediff.Severity = severityToAdd;
+            hediff.sourceDef = dInfo.Weapon;
+            /*if (hediff is ICaused caused)
+            {
+                if (dInfo.Weapon != null)
+                    caused.Causes.Add(MutationCauses.WEAPON_PREFIX, dInfo.Weapon);
+
+                if (mutagen != null)
+                    caused.Causes.Add(MutationCauses.MUTAGEN_PREFIX, mutagen);
+
+                if (dInfo.Def != null)
+                    caused.Causes.Add(string.Empty, dInfo.Def);
+            }*/
+            Log.Message($"original damage:{originalDamage}, reducedDamage{dInfo.Amount}, severity:{severityToAdd}");
+            pawn.health.AddHediff(hediff,null,dInfo,result);
+        }
     }
 
     public class AgeStageInfo
@@ -355,6 +413,36 @@ namespace ZealousInnocence
 
             }
             return true; // Continue with the original method
+        }
+    }
+
+    public class Hediff_RegressionDamage : HediffWithComps
+    {
+        public override void PostAdd(DamageInfo? dinfo)
+        {
+            Log.Message($"Hit by {dinfo.Value}");
+            base.PostAdd(dinfo);
+            // Additional logic when this hediff is added, like notifications or initial setup
+        }
+
+        public override void Tick()
+        {
+            base.Tick();
+            // Custom logic to be executed every tick if needed
+        }
+
+        public override void PostTick()
+        {
+            base.PostTick();
+            // You can add logic here if you want something to happen at each tick.
+        }
+
+        public override string TipStringExtra
+        {
+            get
+            {
+                return $"Regression Level: {Severity * 100:F1}%";
+            }
         }
     }
 }

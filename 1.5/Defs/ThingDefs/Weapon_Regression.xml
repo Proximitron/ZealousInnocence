@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>Gun_RegressionPistol</defName>
+    <label>foy water pistol</label>
+    <description>A fast firing water pistol, based on regression research. Makes your enemy smaller than you fast!</description>
+    <graphicData>
+      <texPath>Things/Item/Equipment/WeaponRanged/MachinePistol</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <uiIconScale>1.4</uiIconScale>
+    <soundInteract>Interact_SMG</soundInteract>
+    <weaponClasses>
+      <li>RangedLight</li>
+      <li>ShortShots</li>
+    </weaponClasses>
+    <weaponTags>
+      <li>ShortShots</li>
+			<li>RegressionWeapon</li>
+    </weaponTags>
+    <recipeMaker>
+      <researchPrerequisite>BlowbackOperation</researchPrerequisite>
+      <skillRequirements>
+        <Crafting>4</Crafting>
+      </skillRequirements>
+      <displayPriority>411</displayPriority>
+    </recipeMaker>
+    <statBases>
+      <WorkToMake>11000</WorkToMake>
+      <Mass>2.5</Mass>
+      <AccuracyTouch>0.90</AccuracyTouch>
+      <AccuracyShort>0.65</AccuracyShort>
+      <AccuracyMedium>0.35</AccuracyMedium>
+      <AccuracyLong>0.15</AccuracyLong>
+      <RangedWeapon_Cooldown>0.9</RangedWeapon_Cooldown>
+    </statBases>
+    <costList>
+      <Steel>45</Steel>
+      <ComponentIndustrial>3</ComponentIndustrial>
+    </costList>
+    <verbs>
+      <li>
+        <verbClass>Verb_Shoot</verbClass>
+        <hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>Bullet_RegressionSpit</defaultProjectile>
+        <warmupTime>0.5</warmupTime>
+        <range>19.9</range>
+        <burstShotCount>3</burstShotCount>
+        <ticksBetweenBurstShots>7</ticksBetweenBurstShots>
+        <soundCast>Shot_MachinePistol</soundCast>
+        <soundCastTail>GunTail_Light</soundCastTail>
+        <muzzleFlashScale>9</muzzleFlashScale>
+      </li>
+    </verbs>
+    <tools>
+      <li>
+        <label>grip</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+      <li>
+        <label>barrel</label>
+        <capacities>
+          <li>Blunt</li>
+          <li>Poke</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+    </tools>
+  </ThingDef>
+	
+	<ThingDef ParentName="BaseBullet">
+		<defName>Bullet_RegressionDart</defName>
+		<label>tranquilizer dart</label>
+		<graphicData>
+			<texPath>Things/Projectile/DartSmall</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<projectile>
+      <damageDef>RegressionEffectDamage</damageDef>
+      <damageAmountBase>10</damageAmountBase>
+      <stoppingPower>2</stoppingPower>
+      <speed>55</speed>
+		</projectile>
+	</ThingDef>
+	
+	<ThingDef ParentName="BaseBullet">
+    <defName>Bullet_RegressionSpit</defName>
+    <label>foy concentrate</label>
+    <graphicData>
+      <texPath>Things/Projectile/Bullet_Small</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <projectile>
+      <damageDef>RegressionEffectDamage</damageDef>
+      <damageAmountBase>10</damageAmountBase>
+      <stoppingPower>1</stoppingPower>
+      <speed>55</speed>
+    </projectile>
+  </ThingDef>
+	
+	<DamageDef>
+		<defName>RegressionEffectDamage_Dart</defName>
+		<label>regression dart</label>
+		<workerClass>ZealousInnocence.Worker_RegressionDamage</workerClass>
+		<externalViolence>true</externalViolence>
+		<deathMessage>{0} has been shot to death by a dart.</deathMessage>
+		<hediff>Gunshot</hediff>
+		<harmAllLayersUntilOutside>true</harmAllLayersUntilOutside>
+		<impactSoundType>Bullet</impactSoundType>
+		<armorCategory>Sharp</armorCategory>
+		<overkillPctToDestroyPart>0~0.7</overkillPctToDestroyPart>
+		<isRanged>true</isRanged>
+		<makesAnimalsFlee>true</makesAnimalsFlee>
+		<modExtensions>
+			<li Class="ZealousInnocence.RegressionDamageExtension">
+				<regressionBuildup>RegressionDamage</regressionBuildup>
+				<severityPerDamage>0.012</severityPerDamage>
+				<reduceValue>0.5</reduceValue>
+			</li>
+		</modExtensions>
+	</DamageDef>
+	
+	<DamageDef>
+		<defName>RegressionEffectDamage</defName>
+		<label>regression effect damage</label>
+		<workerClass>ZealousInnocence.Worker_RegressionDamage</workerClass>
+		<externalViolence>true</externalViolence>
+		<deathMessage>{0} has been shot to death.</deathMessage>
+		<hediff>Gunshot</hediff>
+		<harmAllLayersUntilOutside>true</harmAllLayersUntilOutside>
+		<impactSoundType>Bullet</impactSoundType>
+		<armorCategory>Sharp</armorCategory>
+		<overkillPctToDestroyPart>0~0.7</overkillPctToDestroyPart>
+		<isRanged>true</isRanged>
+		<makesAnimalsFlee>true</makesAnimalsFlee>
+		<modExtensions>
+			<li Class="ZealousInnocence.RegressionDamageExtension">
+				<regressionBuildup>RegressionDamage</regressionBuildup>
+				<severityPerDamage>0.012</severityPerDamage>
+				<reduceValue>0.5</reduceValue>
+			</li>
+		</modExtensions>
+	</DamageDef>
+
+	<HediffDef>
+		<defName>RegressionDamage</defName>
+		<description>This person has received a dose of regressive nanites found only in the fountain of youth. Depending on severity this pawn will be affected in multiple ways, possibly forever.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionDamage</hediffClass>
+		<label>regression damage</label>
+		<everCurableByItem>false</everCurableByItem>
+		<isBad>false</isBad>
+		<taleOnVisible>RegressionRevealed</taleOnVisible>
+		<comps>
+		  <!-- <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-0.1</severityPerDay>This controls how the severity changes over time, if at all 
+      </li>-->
+		</comps>
+		<initialSeverity>0.01</initialSeverity>
+		<minSeverity>0</minSeverity>
+		<maxSeverity>1</maxSeverity>
+		<tendable>false</tendable>
+	</HediffDef>
+</Defs>

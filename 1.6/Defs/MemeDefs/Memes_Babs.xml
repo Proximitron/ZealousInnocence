@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- Category: None -->
+
+  <MemeGroupDef>
+    <defName>Misc</defName>
+    <drawOffset>(0.05, 0.46)</drawOffset>
+    <maxRows>2</maxRows>
+    <renderOrder>1000</renderOrder>
+    <renderWithGap>true</renderWithGap>
+  </MemeGroupDef>
+
+ <MemeDef>
+    <defName>Babs</defName>
+    <label>babs</label>
+    <description>Going to the potty is a waste of time. Free yourself from this evil!</description>
+    <iconPath>Apparel/Diaper/PlainCloth/PlainCloth</iconPath>
+    <groupDef>Misc</groupDef>
+    <impact>2</impact>
+    <renderOrder>999</renderOrder>
+		<symbolPackOverride>true</symbolPackOverride>
+    <preventApparelRequirements>false</preventApparelRequirements>
+		<worshipRoomLabel>daycare</worshipRoomLabel>
+    <consumableBuildings>
+      <li MayRequire="Ludeon.RimWorld.Ideology">Effigy</li>
+    </consumableBuildings>
+		<requireOne>
+      <li>
+        <li>CribBed_Preferred</li>
+      </li>
+      <li>
+        <li>Diapers_Loved</li>
+      </li>
+      <li>
+        <li>Onesies_Loved</li>
+        <li>Onesies_Neutral</li>
+      </li>
+    </requireOne>
+    <generalRules>
+      <rulesStrings>
+        <li>memeAdjective->pampered</li>
+        <li>memeAdjective->diapered</li>
+        <li>memeAdjective->protected</li>
+				<li>memeAdjective->powdered</li>
+				<li>memeAdjective->wet</li>
+        <li>memeHyphenPrefix->diapered</li>
+        <li>memeConcept->baby</li>
+        <li>memeConcept->diaper</li>
+				<li>memeConcept->rattle</li>
+				<li>memeConcept->rattle</li>
+        <li>memeLeaderNoun->overbab</li>
+        <li>memeLeaderNoun->bab</li>
+        <li>memeLeaderNoun->powdered</li>
+        <li>memeLeaderNoun->wet</li>
+				<li>memeCreed->playground</li>
+      </rulesStrings>
+    </generalRules>
+    <descriptionMaker>
+      <rules>
+        <rulesStrings>
+          <!-- theist myth -->
+          <li>creation(tag=meme_Babs)           ->In a pure and pristine void, [deity0_name] looked on, and wished for children in [deity0_possessive] own image, and made mankind.</li>
+          <li>episode(uses=1,tag=meme_Babs)     ->The children wore underwear, and looking up at [deity0_name] asked, "Why can't we just wear diapers? It is very inconvenient." And the [deity0_type] replied, "Free yourself from the shackels of the potty. Enjoy going anywhere, any time."</li>
+          <!-- theist founder -->
+          <!-- theist founder -->
+          <li>intro(tag=meme_Babs)              ->On the [place_summary] [place_name], a tradition began at the [altarRoomLabel] of [deity0_name] where people would first embraced going in their diapers, and this pleased the [deity0_type].</li>
+          <li>conflict(tag=meme_Babs)           ->A prudish [foeLeader] took power, and demanded that everyone has to wear undies and goes to the potty.</li>
+          <li>founderJoin(tag=meme_Babs)        ->[deity0_name]'s truest follower [founderName] stood before the [place_powerCenter], tore off [founder_possessive] underwear, and displayed [founder_objective]self peeing on the couch.</li>
+          <li>victory(tag=meme_Babs)            ->[founderName] prayed to [deity0_name], took away everyones ability to control themselfs. So the [foeSoldiers] started to having accidents, having to use diapers again and the [foeLeader] fled in shame.</li>
+          <!-- ideological founder -->
+          <li>setup(tag=meme_Babs)              ->[founderName] was enslaved by the potty, uniformed and controlled like the others. One day, [founder_pronoun] put on a diaper and felt safe and protected. There our movement was born.</li>
+          <li>story(uses=1,tag=meme_Babs)       ->[founderName] showed everyone how useful and delightful a diaper can be. To keep believers focused on the truth, instead of their daily need to go to the potty.</li>
+          <!-- ideological lesson -->
+          <li>lessonIntro(tag=meme_Babs)         ->For the first few years, being diapered was embarrassing. But later, it became freeing. I learned things from the people who passed. For example - </li>
+          <li>lesson(tag=meme_Babs)              ->all human evil is done wearing underwear, human good is done in diapers</li>
+          <li>lessonReinforcement(tag=meme_Babs) ->When you see one of us, sucking on a pacifier, peeing their diapers, you'll know that they've accepted the truth.</li>
+          <!-- archist -->
+          <li>archistBasis(tag=meme_Babs)       ->When the archotechs appeared they were never concerned for appearances; diaper, onesie; they showed us that the mind stands above the physical form.</li>
+          <li>archistFact(tag=meme_Babs)        ->Archotechs sometimes directly touch human minds, but if we continue trying to control ourselfs and hold on to our potty training, we will never be free enough to feel their voices.</li>
+          <li>archistProphecy(tag=meme_Babs)    ->[inTheEnd], they will seek out those who, like themselves, don't attempt to hold back or appear as anything other than what they are.</li>
+          <!-- animist -->
+          <li>animistFact(tag=meme_Babs)        ->To trying to control the urges of going, is the nature of the spirits within us, and making ourselfs restless.</li>
+        </rulesStrings>
+      </rules>
+    </descriptionMaker>
+		<selectOneOrNone>
+      <noneChance>0</noneChance>
+      <preceptThingPairs>
+        <li>
+          <precept MayRequire="Ludeon.RimWorld.Ideology">ApparelDesired_Strong_Subordinate</precept>
+          <thing>Apparel_Premium_Diaper</thing>
+        </li>
+      </preceptThingPairs>
+    </selectOneOrNone>
+    <symbolPacks>
+      <li>
+        <ideoName>babs</ideoName>
+        <theme>diapers</theme>
+        <adjective>babs</adjective>
+        <member>children</member>
+      </li>
+    </symbolPacks>
+    <styleItemTags>
+      <li>
+        <tag>NoBeard</tag>
+        <baseWeight>1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+    </styleItemTags>
+    <agreeableTraits>
+      <li>Potty_Rebel</li>
+    </agreeableTraits>
+		<disagreeableTraits>
+      <li>Big_Boy</li>
+    </disagreeableTraits>
+  </MemeDef>
+  
+ </Defs>

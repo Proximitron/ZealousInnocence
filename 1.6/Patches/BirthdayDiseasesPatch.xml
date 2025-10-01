@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationAdd">
+		<xpath>*/HediffGiverSetDef[defName="OrganicStandard"]/hediffGivers</xpath>
+		<value>
+			<li Class="HediffGiver_Birthday">
+				<hediff>WeakBladder</hediff>
+				<partsToAffect>
+					<li>Bladder</li>
+				</partsToAffect>
+				<ageFractionChanceCurve>
+					<points>
+            <li>(0, 0.001)</li>
+						<li>(0.7, 0.005)</li>
+            <li>(0.7, 0.01)</li>
+            <li>(0.9, 0.05)</li>
+            <li>(1, 0.4)</li>
+            <li>(1.5, 0.8)</li>
+					</points>
+				</ageFractionChanceCurve>
+			</li>
+			<li Class="HediffGiver_Birthday">
+				<hediff>Incontinent</hediff>
+				<partsToAffect>
+					<li>Bladder</li>
+				</partsToAffect>
+				<ageFractionChanceCurve>
+					<points>
+            <li>(0, 0.00061)</li>
+            <li>(0.7, 0.0012)</li>
+            <li>(0.9, 0.0035)</li>
+            <li>(1, 0.05)</li>
+            <li>(1.5, 0.4)</li>
+					</points>
+				</ageFractionChanceCurve>
+			</li>
+			<li Class="HediffGiver_RandomAgeCurved">
+				<hediff>BladderInfection</hediff>
+				<partsToAffect>
+					<li>Bladder</li>
+				</partsToAffect>
+				<allowOnLodgers>false</allowOnLodgers>
+				<allowOnQuestRewardPawns>false</allowOnQuestRewardPawns>
+				<allowOnQuestReservedPawns>false</allowOnQuestReservedPawns>
+				<ageFractionMtbDaysCurve>
+					<points>
+						<li>(0.4, 9999999)</li>
+						<li>(0.6, 2500)</li>
+						<li>(1, 300)</li>
+					</points>
+				</ageFractionMtbDaysCurve>
+			</li>
+			<li Class="ZealousInnocence.HediffGiver_BedWetting">
+				<hediff>BedWetting</hediff>
+			</li>
+		</value>
+	</Operation>
+</Patch>

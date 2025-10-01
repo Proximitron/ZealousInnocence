@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<StatDef>
+		<defName>BladderStrengh</defName>
+		<category>BasicsPawn</category>
+		<label>bladder strength</label>
+    <description>Bladder strength determines how much control a pawn has over their bladder.\n\nIt reduces the chance of unfortunate accidents.</description>
+    
+    <defaultBaseValue>1.0</defaultBaseValue>
+    <minValue>0.0</minValue>
+    <toStringStyle>PercentZero</toStringStyle>
+    <showOnHumanlikes>true</showOnHumanlikes>
+    <showOnAnimals>true</showOnAnimals>
+    <showOnMechanoids>false</showOnMechanoids>
+    <showOnEntities>false</showOnEntities>
+    <showDevelopmentalStageFilter>Adult, Child</showDevelopmentalStageFilter>
+  </StatDef>
+	
+	<StatDef>
+		<defName>BedwettingChance</defName>
+		<category>BasicsPawn</category>
+		<label>bedwetting modifier</label>
+    <description>Describes the chance this pawn will develop issues with bedwetting in their lifetime.\n\nShould they do so, this will only cause issues while being asleep. Nighttime protection is recommended in such cases.</description>
+    
+    <defaultBaseValue>1.0</defaultBaseValue>
+    <minValue>0.0</minValue>
+    <toStringStyle>PercentZero</toStringStyle>
+    <showOnHumanlikes>true</showOnHumanlikes>
+    <showOnAnimals>true</showOnAnimals>
+    <showOnMechanoids>false</showOnMechanoids>
+    <showOnEntities>false</showOnEntities>
+    <showDevelopmentalStageFilter>Adult, Child</showDevelopmentalStageFilter>
+  </StatDef>
+</Defs>

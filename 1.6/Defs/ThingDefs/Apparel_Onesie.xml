@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThingDef Name="Apparel_OnesieBase" ParentName="ApparelMakeableBase" Abstract="True">
+    <techLevel>Industrial</techLevel>
+    <stuffCategories>
+      <li>Fabric</li>
+      <li>Leathery</li>
+    </stuffCategories>
+    <tradeability>Sellable</tradeability>
+    <generateCommonality>0.5</generateCommonality>
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <WorkToMake>2000</WorkToMake>
+      <Mass>1</Mass>
+      <StuffEffectMultiplierArmor>0.10</StuffEffectMultiplierArmor>
+      <StuffEffectMultiplierInsulation_Cold>0.85</StuffEffectMultiplierInsulation_Cold>
+      <StuffEffectMultiplierInsulation_Heat>0.85</StuffEffectMultiplierInsulation_Heat>
+      <EquipDelay>5</EquipDelay>
+    </statBases>
+    <equippedStatOffsets>
+      <MoveSpeed>0.2</MoveSpeed>
+      <SlaveSuppressionOffset MayRequire="Ludeon.RimWorld.Ideology">0.1</SlaveSuppressionOffset>
+    </equippedStatOffsets>
+    <thingCategories>
+      <li>Onesies</li>
+    </thingCategories>
+		<apparel>
+			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups>
+        <li>Neck</li>
+        <li>Shoulders</li>
+        <li>Torso</li>
+        <li>Arms</li>
+        <li>Legs</li>
+      </bodyPartGroups>
+      <layers>
+        <li>OnSkin</li>
+      </layers>
+      <tags>
+        <li>IndustrialBasic</li>
+        <li>IndustrialAdvanced</li>
+        <li>Onesies</li>
+      </tags>
+      <defaultOutfitTags>
+        <li>Worker</li>
+        <li>Soldier</li>
+      </defaultOutfitTags>
+    </apparel>
+    <recipeMaker>
+      <researchPrerequisite>ComplexClothing</researchPrerequisite>
+      <recipeUsers>
+        <li>ElectricTailoringBench</li>
+        <li>HandTailoringBench</li>
+      </recipeUsers>
+    </recipeMaker>
+    <colorGenerator Class="ColorGenerator_Options">
+      <options>
+        <li>
+          <weight>10</weight>
+          <only>(0.33,0.33,0.33)</only>
+        </li>
+        <li>
+          <weight>10</weight>
+          <only>(0.65,0.65,0.65)</only>
+        </li>
+        <li>
+          <weight>10</weight>
+          <only>(0.4,0.3,0.15)</only>
+        </li>
+        <li>
+          <weight>15</weight>
+          <min>(0.3,0.3,0.3)</min>
+          <max>(0.5,0.5,0.5)</max>
+        </li>
+        <li>
+          <weight>6</weight>
+          <min>(0.5,0.5,0.5)</min>
+          <max>(1,1,1)</max>
+        </li>
+      </options>
+    </colorGenerator>
+  </ThingDef>
+
+  <ThingDef ParentName="Apparel_OnesieBase">
+    <defName>Apparel_Simplie</defName>
+    <label>Simplie</label>
+    <description>A one-piece, full-body garment. You may look like a baby in it, but are you?</description>
+    <graphicData>
+      <texPath>Apparel/Onesie/Simplie/Simplie</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+		<costStuffCount>50</costStuffCount>
+    <generateCommonality>0.5</generateCommonality>
+    <statBases>
+      <DiaperSupport>0.5</DiaperSupport>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToMake>2000</WorkToMake>
+      <Mass>1</Mass>
+      <StuffEffectMultiplierArmor>0.10</StuffEffectMultiplierArmor>
+      <StuffEffectMultiplierInsulation_Cold>0.85</StuffEffectMultiplierInsulation_Cold>
+      <StuffEffectMultiplierInsulation_Heat>0.85</StuffEffectMultiplierInsulation_Heat>
+    </statBases>
+		<apparel>
+			<wornGraphicPath>Apparel/Onesie/Simplie/Simplie</wornGraphicPath>
+		</apparel>
+  </ThingDef>
+
+  <ThingDef ParentName="Apparel_OnesieBase">
+    <defName>Apparel_Onesie</defName>
+    <label>Onesie</label>
+    <description>This totally grown-up, full-body jumpsuit is loved by all babs and at least practical for everyone else.</description>
+    <graphicData>
+      <texPath>Apparel/Onesie/Onesie/Onesie</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <costStuffCount>70</costStuffCount>
+    <generateCommonality>0.3</generateCommonality>
+    <statBases>
+      <DiaperSupport>0.75</DiaperSupport>
+      <MaxHitPoints>100</MaxHitPoints>
+      <WorkToMake>4000</WorkToMake>
+      <Mass>1</Mass>
+      <StuffEffectMultiplierArmor>0.35</StuffEffectMultiplierArmor>
+      <StuffEffectMultiplierInsulation_Cold>0.95</StuffEffectMultiplierInsulation_Cold>
+      <StuffEffectMultiplierInsulation_Heat>0.75</StuffEffectMultiplierInsulation_Heat>
+    </statBases>
+    <equippedStatOffsets>
+      <SlaveSuppressionOffset MayRequire="Ludeon.RimWorld.Ideology">0.1</SlaveSuppressionOffset>
+      <MoveSpeed>0.2</MoveSpeed>
+      <SocialImpact>0.05</SocialImpact>
+      <NegotiationAbility>0.05</NegotiationAbility>
+      <TradePriceImprovement>0.02</TradePriceImprovement>
+    </equippedStatOffsets>
+		<apparel>
+			<wornGraphicPath>Apparel/Onesie/Onesie/Onesie</wornGraphicPath>
+		</apparel>
+  </ThingDef>
+
+  <ThingDef ParentName="Apparel_OnesieBase">
+    <defName>Apparel_Worksie</defName>
+    <label>Worksie</label>
+    <description>Sadly a bit impractical on potty runs. Otherwise great to work in and loved by babs.</description>
+    <graphicData>
+      <texPath>Apparel/Onesie/Worksie/Worksie</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <costStuffCount>80</costStuffCount>
+    <generateCommonality>0.5</generateCommonality>
+    <statBases>
+      <DiaperSupport>0.5</DiaperSupport>
+      <MaxHitPoints>100</MaxHitPoints>
+      <WorkToMake>4000</WorkToMake>
+      <Mass>0.5</Mass>
+      <StuffEffectMultiplierArmor>0.15</StuffEffectMultiplierArmor>
+      <StuffEffectMultiplierInsulation_Cold>0.55</StuffEffectMultiplierInsulation_Cold>
+      <StuffEffectMultiplierInsulation_Heat>0.55</StuffEffectMultiplierInsulation_Heat>
+    </statBases>
+    <equippedStatOffsets>
+      <SlaveSuppressionOffset MayRequire="Ludeon.RimWorld.Ideology">0.1</SlaveSuppressionOffset>
+      <MoveSpeed>0.05</MoveSpeed>
+      <WorkSpeedGlobal>0.15</WorkSpeedGlobal>
+      <ConstructSuccessChance>0.15</ConstructSuccessChance>
+      <FixBrokenDownBuildingSuccessChance>0.15</FixBrokenDownBuildingSuccessChance>
+    </equippedStatOffsets>
+		<apparel>
+			<wornGraphicPath>Apparel/Onesie/Worksie/Worksie</wornGraphicPath>
+		</apparel>
+  </ThingDef>
+
+  <ThingDef ParentName="Apparel_OnesieBase">
+    <defName>Apparel_Gunsie</defName>
+    <label>Gunsie</label>
+    <description>For babs with guns and everyone else that values function over people's opinion.</description>
+    <graphicData>
+      <texPath>Apparel/Onesie/Gunsie/Gunsie</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <costStuffCount>120</costStuffCount>
+    <generateCommonality>0.2</generateCommonality>
+    <statBases>
+      <MaxHitPoints>140</MaxHitPoints>
+      <WorkToMake>5000</WorkToMake>
+      <Mass>1</Mass>
+      <StuffEffectMultiplierArmor>0.55</StuffEffectMultiplierArmor>
+      <StuffEffectMultiplierInsulation_Cold>0.40</StuffEffectMultiplierInsulation_Cold>
+      <StuffEffectMultiplierInsulation_Heat>0.40</StuffEffectMultiplierInsulation_Heat>
+    </statBases>
+    <equippedStatOffsets>
+      <DiaperSupport>0.4</DiaperSupport>
+      <SuppressionPower MayRequire="Ludeon.RimWorld.Ideology">0.08</SuppressionPower>
+      <MoveSpeed>0.1</MoveSpeed>
+      <AimingDelayFactor>-0.1</AimingDelayFactor>
+      <ShootingAccuracyPawn>0.4</ShootingAccuracyPawn>
+      <MeleeDodgeChance>0.4</MeleeDodgeChance>
+      <PainShockThreshold>0.05</PainShockThreshold>
+    </equippedStatOffsets>
+		<apparel>
+			<wornGraphicPath>Apparel/Onesie/Gunsie/Gunsie</wornGraphicPath>
+		</apparel>
+  </ThingDef>
+
+</Defs>

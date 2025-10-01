@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <StatDef>
+    <defName>MentalAge</defName>
+    <label>mental age</label>
+    <description>This value, a combination of physical age, personal preference, development and regression effects controls the behaviour of this pawn in multiple situations.\n\nA 40 year old pawn can still behave like a 3 year old toddler, while a 12 year old can be very grown up for their age and behave like a 16 year old for example.</description>
+    <category>BasicsPawn</category>
+    <defaultBaseValue>0</defaultBaseValue>
+    <toStringStyle>FloatOne</toStringStyle>
+		<formatString>{0} years</formatString>
+    <minValue>0</minValue>
+    <maxValue>200</maxValue>
+    <scenarioRandomizable>false</scenarioRandomizable>
+    <displayPriorityInCategory>1900</displayPriorityInCategory>
+		<parts>
+			<!-- The maximum impact can be the absolut value of Absorbency (the limit is a doubeling) -->
+			<li Class="ZealousInnocence.StatPart_PhysicalAge">
+        <minConciousness>0.25</minConciousness>
+      </li>
+			
+			<li Class="ZealousInnocence.StatPart_MentalRegression" />
+		</parts>
+  </StatDef>
+	
+	<StatDef>
+    <defName>MentalRegression</defName>
+    <label>mental regression</label>
+    <description>This value represents the amount of mental regression affecting this pawn. It makes the pawn behave younger, the higher the amount is.\n\nHas a direct affect on mental age.</description>
+    <category>BasicsPawn</category>
+    <defaultBaseValue>0.0</defaultBaseValue>
+    <minValue>0.0</minValue>
+		<maxValue>1.0</maxValue>
+    <toStringStyle>PercentZero</toStringStyle>
+    <scenarioRandomizable>false</scenarioRandomizable>
+    <displayPriorityInCategory>1900</displayPriorityInCategory>
+  </StatDef>
+	
+	<StatDef>
+    <defName>MentalAgeLimit</defName>
+    <label>mental age limit</label>
+    <description>The maximum mental age can be limited by behaviour preferences, mental capacity, chemical or physical intervention.</description>
+    <category>BasicsPawn</category>
+    <defaultBaseValue>0.0</defaultBaseValue>
+    <minValue>0.0</minValue>
+		<maxValue>200.0</maxValue>
+    <toStringStyle>FloatOne</toStringStyle>
+		<formatString>{0} years</formatString>
+    <scenarioRandomizable>false</scenarioRandomizable>
+    <displayPriorityInCategory>1900</displayPriorityInCategory>
+  </StatDef>
+</Defs>

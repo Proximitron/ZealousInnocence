@@ -27,5 +27,9 @@
 	<ShortReasonCantChangeDiaperOrUnderwearSelf>Can't get out of their diaper</ShortReasonCantChangeDiaperOrUnderwearSelf>	
 	<ShortReasonForcedInDiaper>Forced to wear diaper</ShortReasonForcedInDiaper>
 	
+	<StatPartPhysicalAgeDescriptor>Physical age: {0}} years</StatPartPhysicalAgeDescriptor>
+	<!-- Description why the pawn is not affected by its physical age at the moment -->
+	<ShortReasonPhysicalAgeNoEffect>Physical age has no affect due to insufficient awareness.</ShortReasonPhysicalAgeNoEffect>
+	
 
 </LanguageData>

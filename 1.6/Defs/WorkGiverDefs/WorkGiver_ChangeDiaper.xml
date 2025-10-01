@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <WorkGiverDef>
+    <defName>ChangePatientDiaperDoctor</defName>
+    <label>changing diaper</label>
+    <giverClass>ZealousInnocence.WorkGiver_ChangePatientDiaper</giverClass>
+    <workType>Doctor</workType>
+    <verb>change diaper</verb>
+    <gerund>changing diaper</gerund>
+    <priorityInType>79</priorityInType>
+    <prioritizeSustains>true</prioritizeSustains>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <feedHumanlikesOnly>true</feedHumanlikesOnly>
+  </WorkGiverDef>
+
+  <WorkGiverDef>
+    <defName>ChangePatientDiaperWarden</defName>
+    <label>changing diaper</label>
+    <giverClass>ZealousInnocence.WorkGiver_ChangePatientDiaper</giverClass>
+    <workType>Warden</workType>
+    <verb>change diaper</verb>
+    <gerund>changing diaper</gerund>
+    <priorityInType>79</priorityInType>
+    <prioritizeSustains>true</prioritizeSustains>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <feedHumanlikesOnly>true</feedHumanlikesOnly>
+  </WorkGiverDef>
+</Defs>

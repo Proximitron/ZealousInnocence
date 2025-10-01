@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<!---->
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/BodyDef[defName="Human"]/corePart/parts</xpath>
+		<value>
+			<li>
+				<def>Bladder</def>
+				<coverage>0.05</coverage>
+				<depth>Inside</depth>
+				<groups>
+					<li>Torso</li>
+				</groups>
+			</li>
+		</value>
+	</Operation>
+	<!---->
+	<Operation Class="PatchOperationConditional">
+		<xpath>Defs/BodyDef[defName="DAKK_Riolu"]/corePart/parts</xpath>
+		<match Class="PatchOperationAdd">
+			<xpath>Defs/BodyDef[defName="DAKK_Riolu"]/corePart/parts</xpath>
+			<value>
+				<li>
+					<def>Bladder</def>
+					<coverage>0.05</coverage>
+					<depth>Inside</depth>
+					<groups>
+						<li>Torso</li>
+					</groups>
+				</li>
+			</value>
+		</match>
+	</Operation>
+	<!---->
+	<Operation Class="PatchOperationConditional">
+		<xpath>Defs/BodyDef[defName="DAKK_MegaLucario"]/corePart/parts</xpath>
+		<match Class="PatchOperationAdd">
+			<xpath>Defs/BodyDef[defName="DAKK_MegaLucario"]/corePart/parts</xpath>
+			<value>
+				<li>
+					<def>Bladder</def>
+					<coverage>0.05</coverage>
+					<depth>Inside</depth>
+					<groups>
+						<li>Torso</li>
+					</groups>
+				</li>
+			</value>
+		</match>
+	</Operation>
+	<!---->
+	<Operation Class="PatchOperationConditional">
+		<xpath>Defs/BodyDef[defName="DAKK_Lucario"]/corePart/parts</xpath>
+		<match Class="PatchOperationAdd">
+			<xpath>Defs/BodyDef[defName="DAKK_Lucario"]/corePart/parts</xpath>
+			<value>
+				<li>
+					<def>Bladder</def>
+					<coverage>0.05</coverage>
+					<depth>Inside</depth>
+					<groups>
+						<li>Torso</li>
+					</groups>
+				</li>
+			</value>
+		</match>
+	</Operation>
+	<!---->
+	<Operation Class="PatchOperationConditional">
+		<xpath>Defs/BodyDef[defName="ATK_Anthromorph"]/corePart/parts</xpath>
+		<match Class="PatchOperationAdd">
+			<xpath>Defs/BodyDef[defName="ATK_Anthromorph"]/corePart/parts</xpath>
+			<value>
+				<li>
+					<def>Bladder</def>
+					<coverage>0.05</coverage>
+					<depth>Inside</depth>
+					<groups>
+						<li>Torso</li>
+					</groups>
+				</li>
+			</value>
+		</match>
+	</Operation>
+</Patch>

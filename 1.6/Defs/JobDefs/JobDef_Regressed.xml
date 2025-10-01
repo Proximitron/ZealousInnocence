@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <JobDef>
+    <defName>RegressedPlayAround</defName>
+    <driverClass>ZealousInnocence.JobDriver_RegressedPlayAround</driverClass>
+    <reportString>playing.</reportString>
+  </JobDef>
+
+
+  <JobDef>
+    <defName>FountainOfYouthInvestigate</defName>
+    <driverClass>ZealousInnocence.JobDriver_FountainOfYouthInvestigate</driverClass>
+    <reportString>investigating fountain.</reportString>
+  </JobDef>
+	<JobDef>
+    <defName>FountainOfYouthActivate</defName>
+    <driverClass>ZealousInnocence.JobDriver_FountainOfYouthActivate</driverClass>
+    <reportString>activating fountain.</reportString>
+  </JobDef>
+</Defs>
