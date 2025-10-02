@@ -15,9 +15,10 @@
 			</layers>
 			<canBeGeneratedToSatisfyWarmth>true</canBeGeneratedToSatisfyWarmth>
       <canBeGeneratedToSatisfyToxicEnvironmentResistance>false</canBeGeneratedToSatisfyToxicEnvironmentResistance>
-			<defaultOutfitTags>
+      <defaultOutfitTags>
         <li>Worker</li>
         <li>Soldier</li>
+        <li>Spacefarer</li>
       </defaultOutfitTags>
 			<tags>
 				<li>Underwear</li>

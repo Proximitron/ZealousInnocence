@@ -81,8 +81,7 @@ namespace ZealousInnocence
             if (p.InMentalState && p.MentalStateDef.blockNormalThoughts) return false;
 
             return getAgeStageInt(p) >= 6;
-        }
-   
+        }   
 
         public static AcceptanceReport canUsePottyReport(Pawn pawn)
         {

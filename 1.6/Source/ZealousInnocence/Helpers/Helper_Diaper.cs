@@ -136,6 +136,14 @@ namespace ZealousInnocence
                 return 1.0f;
             }
         }
+        public static bool shouldStayPut(Pawn pawn)
+        {
+            if (pawn == null) return false;
+            if (!pawn.IsColonist) return false;
+            if (!pawn.Spawned) return false;
+
+            return HealthAIUtility.ShouldSeekMedicalRest(pawn) || HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || (pawn.health?.capacities != null && pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f) || (pawn.CurJob != null &&  pawn.CurJob.playerForced) || (pawn.health?.capacities != null && !pawn.health.capacities.CanBeAwake);
+        }
         public static bool remembersPotty(Pawn pawn)
         {
             if (pawn != null && pawn.RaceProps.Humanlike)
@@ -202,6 +210,7 @@ namespace ZealousInnocence
 
         public static bool needsDiaper(Pawn pawn)
         {
+            if (Helper_Diaper.shouldStayPut(pawn)) return true;
             if (pawn.Awake()) return getBladderControlLevel(pawn) <= NeedsDiaperBreakpoint;
 
             var bladderControlWorker = new PawnCapacityWorker_BladderControl();

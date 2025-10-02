@@ -18,6 +18,7 @@
 			<defaultOutfitTags>
         <li>Worker</li>
         <li>Soldier</li>
+        <li>Spacefarer</li>
       </defaultOutfitTags>
 			<tags>
 				<li>Underwear</li>
@@ -94,6 +95,9 @@
 			<tags>
         <li>Neolithic</li>
 			</tags>
+			<defaultOutfitTags>
+				<li>Slave</li>
+      </defaultOutfitTags>
     </apparel>
 	</ThingDef>
 	

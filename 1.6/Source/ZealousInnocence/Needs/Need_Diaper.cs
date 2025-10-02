@@ -92,12 +92,12 @@ namespace ZealousInnocence
             float minRating = -0.1f;
             if (oldIsAllowed)
             {
-                if (!patient.outfits.forcedHandler.AllowedToAutomaticallyDrop(oldDiaper))
+                if (patient.outfits?.forcedHandler != null && !patient.outfits.forcedHandler.AllowedToAutomaticallyDrop(oldDiaper))
                 {
                     if (caretaker != null) CantRemoveUnderwearReason(oldDiaper);
                     return LocalTargetInfo.Invalid;
                 }
-                if (patient.apparel.IsLocked(oldDiaper))
+                if (patient.apparel != null && patient.apparel.IsLocked(oldDiaper))
                 {
                     if (caretaker != null) CantRemoveUnderwearReason(oldDiaper);
                     return LocalTargetInfo.Invalid;
@@ -445,7 +445,7 @@ namespace ZealousInnocence
             if (!isHavingAccident && bladder.CurLevel <= 0.5f && bladder.CurLevel <= Helper_Diaper.getBladderControlFailPoint(pawn))
             {
                 bool startPottyRun = false;
-                bool shouldStayPut = (HealthAIUtility.ShouldSeekMedicalRest(pawn) || HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f || pawn.CurJob.playerForced);
+                bool shouldStayPut = Helper_Diaper.shouldStayPut(pawn);
                 if (pawn.CurJobDef == JobDefOf.LayDown && pawn.Awake() == false && pawn.health.capacities.CanBeAwake && !shouldStayPut && Helper_Diaper.remembersPotty(pawn))
                 {
                     // Interrupt the current sleep job
