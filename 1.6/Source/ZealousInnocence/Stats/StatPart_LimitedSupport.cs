@@ -22,11 +22,14 @@ namespace ZealousInnocence
                 Pawn pawn = req.Thing as Pawn;
                 if (pawn != null)
                 {
-                    float mainValue = pawn.apparel.WornApparel.Sum(a => a.GetStatValue(mainStat));
-                    float supportValue = pawn.apparel.WornApparel.Sum(a => a.GetStatValue(supportStat));
+                    if (pawn.apparel?.WornApparel != null)
+                    {
+                        float mainValue = pawn.apparel.WornApparel.Sum(a => a.GetStatValue(mainStat));
+                        float supportValue = pawn.apparel.WornApparel.Sum(a => a.GetStatValue(supportStat));
 
-                    // Add support but limit it to not exceed the main stat value
-                    val += Mathf.Min(supportValue, mainValue);
+                        // Add support but limit it to not exceed the main stat value
+                        val += Mathf.Min(supportValue, mainValue);
+                    }
                 }
             }
         }
