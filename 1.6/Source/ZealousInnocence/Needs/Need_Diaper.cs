@@ -24,6 +24,7 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref this.sleepTrack, "sleepTrack", 0);
         }
         private bool isHavingAccident;
+        private bool isAdditionalCrapPants;
         public bool IsHavingAccident { get => isHavingAccident; }
 
         private bool peeing;
@@ -268,26 +269,33 @@ namespace ZealousInnocence
                 var bed = pawn.CurrentBed();
                 float damage = ((float)bed.MaxHitPoints / 2f) * fluidAmount;
                 bed.HitPoints -= Math.Min(bed.HitPoints - 1, chancedDamage(damage));
-                foreach (var curr in pawn.CurrentBed().CurOccupants)
+                if (!isAdditionalCrapPants)
                 {
-                    if (curr != pawn)
+                    foreach (var curr in pawn.CurrentBed().CurOccupants)
                     {
-                        curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PeedOnMe"), pawn, null);
-                        curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
+                        if (curr != pawn)
+                        {
+                            curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PeedOnMe"), pawn, null);
+                            curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
+                        }
                     }
+                    if (Helper_Regression.isAdult(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
+                    else if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
+                    else Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
+                    pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
                 }
-                if (Helper_Regression.isAdult(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
-                else if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
-                else Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
-                pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
+
             }
 
             if (peeing) FilthMaker.TryMakeFilth(this.pawn.Position, this.pawn.Map, ThingDef.Named("FilthUrine"), filth, FilthSourceFlags.Pawn);
             else FilthMaker.TryMakeFilth(this.pawn.Position, this.pawn.Map, ThingDef.Named("FilthFaeces"), filth, FilthSourceFlags.Pawn);
+
+            isAdditionalCrapPants = true; // Additional triggers of this function will be ignored until current accident is done
         }
 
         public void startAccident(bool pee = true)
         {
+            if (IsHavingAccident) return;
             StartSound(pee);
             FailureSeed = 0;
             isHavingAccident = true;
@@ -534,6 +542,7 @@ namespace ZealousInnocence
                 if (bladder.CurLevel >= 0.95f)
                 {
                     isHavingAccident = false;
+                    isAdditionalCrapPants = false;
                 }
                 if (currProtection == null && isHavingAccident)
                 {
