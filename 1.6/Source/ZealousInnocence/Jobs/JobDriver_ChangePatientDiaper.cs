@@ -174,7 +174,7 @@ namespace ZealousInnocence
                     {
                         SoundStarter.PlayOneShotOnCamera(DiaperChangie.Diapertape, pawn.Map);
                     }
-                    this.pawn.jobs.curDriver.ticksLeftThisToil = 300; // 5 seconds at 60 ticks per second 
+                    this.pawn.jobs.curDriver.ticksLeftThisToil = 150; // 2.5 seconds at 60 ticks per second 
                 };
                 changeDiaper.defaultCompleteMode = ToilCompleteMode.Delay;
                 changeDiaper.WithProgressBarToilDelay(TargetIndex.B);
@@ -196,7 +196,7 @@ namespace ZealousInnocence
             Toil changingProgress = new Toil();
             changingProgress.initAction = () =>
             {
-                this.pawn.jobs.curDriver.ticksLeftThisToil = 600; // 10 seconds at 60 ticks per second
+                this.pawn.jobs.curDriver.ticksLeftThisToil = 300; // 5 seconds at 60 ticks per second
                 
             };
             changingProgress.tickAction = () =>
