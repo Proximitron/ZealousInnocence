@@ -379,11 +379,11 @@
 			<li>
 				<label>Sudden bedwetting</label>
 				<description>I wet my diaper last night! Why?</description>
-				<baseMoodEffect>-4</baseMoodEffect>
+				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 			<li>
 				<label>Bedwetting</label>
-				<description>It's a good thing I wore a diaper. I guess.</description>
+				<description>It's a good thing I wore a diaper, i guess.</description>
 				<baseMoodEffect>0</baseMoodEffect>
 			</li>
 			
@@ -418,7 +418,7 @@
 			<!-- Default behaviour if nothing else applies -->
 			<li>
 				<label>Wet a diaper</label>
-				<description>Having to go in a diaper makes me feel small.</description>
+				<description>Having to go in a diaper made me feel small.</description>
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			

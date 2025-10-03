@@ -225,6 +225,14 @@ namespace ZealousInnocence
             wearNewDiaper.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return wearNewDiaper;
 
+            Toil triggerDiaperChangeInteractionResult = new Toil();
+            triggerDiaperChangeInteractionResult.initAction = () =>
+            {
+                Helper_Diaper.triggerDiaperChangeInteractionResult(this.pawn,Patient);
+            };
+            triggerDiaperChangeInteractionResult.defaultCompleteMode = ToilCompleteMode.Instant;
+            yield return triggerDiaperChangeInteractionResult;
+
             yield return releasePatient();
 
             //Log.Message($"Ended toils for {this.ClothThing.LabelShort}");

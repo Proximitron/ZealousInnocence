@@ -132,6 +132,11 @@ namespace ZealousInnocence
             Thing bestThing = null;
             float bestRating = minRating;
 
+            if (caretaker == null || patient == null) return LocalTargetInfo.Invalid;
+            if (!caretaker.IsColonist || !patient.IsColonist) return LocalTargetInfo.Invalid;
+            if (!caretaker.Spawned || !patient.Spawned) return LocalTargetInfo.Invalid;
+            if (caretaker.Map == null || patient.Map == null) return LocalTargetInfo.Invalid;
+
             foreach (Thing thing in patient.Map.listerThings.AllThings)
             {
                 if (thing is Apparel app)
@@ -243,24 +248,27 @@ namespace ZealousInnocence
             {
                 bladder.CurLevel += peeAmountPercentile;
             }
-            List<Apparel> legApparel = pawn.apparel.WornApparel.Where(apparel => apparel.def.apparel.bodyPartGroups.Contains(BodyPartGroupDefOf.Legs)).ToList();
-            int splitOfDamage = legApparel.Count;
-            int damageBase = 25; // damage for a full bladder in hp
-            for (int i = legApparel.Count - 1; i >= 0; i--)
+            if (!pawn.InBed())
             {
-                Apparel apparel = legApparel[i];
-                float damage = damageBase * (peeAmountPercentile / splitOfDamage);
-                int finDamage = chancedDamage(damage);
-                if (debugging) Log.Message($"crapPants: causing {finDamage} damage to {apparel.LabelShort} for {pawn.LabelShort} " + pawn.Name);
-                apparel.HitPoints -= Math.Min(apparel.HitPoints, finDamage);
-                pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
-
-                // Check if the apparel gets destroyed during this process
-                if (apparel.HitPoints < 1)
+                List<Apparel> legApparel = pawn.apparel.WornApparel.Where(apparel => apparel.def.apparel.bodyPartGroups.Contains(BodyPartGroupDefOf.Legs)).ToList();
+                int splitOfDamage = legApparel.Count;
+                int damageBase = 25; // damage for a full bladder in hp
+                for (int i = legApparel.Count - 1; i >= 0; i--)
                 {
-                    apparel.Notify_LordDestroyed();
-                    Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), apparel.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent,true);
-                    apparel.Destroy(DestroyMode.Vanish);
+                    Apparel apparel = legApparel[i];
+                    float damage = damageBase * (peeAmountPercentile / splitOfDamage);
+                    int finDamage = chancedDamage(damage);
+                    if (debugging) Log.Message($"crapPants: causing {finDamage} damage to {apparel.LabelShort} for {pawn.LabelShort} " + pawn.Name);
+                    apparel.HitPoints -= Math.Min(apparel.HitPoints, finDamage);
+                    pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
+
+                    // Check if the apparel gets destroyed during this process
+                    if (apparel.HitPoints < 1)
+                    {
+                        apparel.Notify_LordDestroyed();
+                        Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), apparel.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent, true);
+                        apparel.Destroy(DestroyMode.Vanish);
+                    }
                 }
             }
 
@@ -279,7 +287,7 @@ namespace ZealousInnocence
                             curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
                         }
                     }
-                    if (Helper_Regression.isAdult(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
+                    if (!Helper_Regression.isAdult(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
                     else if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
                     else Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
                     pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
@@ -335,6 +343,11 @@ namespace ZealousInnocence
                     default:
                         throw new NotImplementedException();
                 }
+            }
+            else if (pawn.InBed())
+            {
+                // We ignore this case and assume the pawn has no pants on in bed
+                // Thoughts will be handled by the wet bed incidents
             }
             else
             {
@@ -445,8 +458,7 @@ namespace ZealousInnocence
             if (!isHavingAccident && bladder.CurLevel <= 0.5f && bladder.CurLevel <= Helper_Diaper.getBladderControlFailPoint(pawn))
             {
                 bool startPottyRun = false;
-                bool shouldStayPut = Helper_Diaper.shouldStayPut(pawn);
-                if (pawn.CurJobDef == JobDefOf.LayDown && pawn.Awake() == false && pawn.health.capacities.CanBeAwake && !shouldStayPut && Helper_Diaper.remembersPotty(pawn))
+                if (pawn.CurJobDef == JobDefOf.LayDown && pawn.Awake() == false && pawn.health.capacities.CanBeAwake && !Helper_Diaper.shouldStayPut(pawn) && Helper_Diaper.remembersPotty(pawn))
                 {
                     // Interrupt the current sleep job
                     pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, true);
@@ -534,7 +546,7 @@ namespace ZealousInnocence
                     if (currProtection.HitPoints < 1)
                     {
                         currProtection.Notify_LordDestroyed();
-                        Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), this.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent,true);
+                        Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), currProtection.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent,true);
                         currProtection.Destroy(DestroyMode.Vanish);
                         currProtection = null;
                     }

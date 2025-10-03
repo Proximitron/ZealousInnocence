@@ -82,7 +82,7 @@ namespace ZealousInnocence
                 return false;
             }
 
-            if (Helper_Regression.canChangeDiaperOrUnderwear(patient) && !Helper_Diaper.shouldStayPut(patient))
+            if (!patient.IsPrisoner && !patient.IsSlaveOfColony && Helper_Regression.canChangeDiaperOrUnderwear(patient) && !Helper_Diaper.shouldStayPut(patient))
             {
                 JobFailReason.Is("Is big enough to do it themselfs.");
                 return false;

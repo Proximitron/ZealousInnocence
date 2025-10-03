@@ -5,10 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
 using Verse;
 using Verse.AI;
+using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace ZealousInnocence
 {
@@ -142,7 +144,7 @@ namespace ZealousInnocence
             if (!pawn.IsColonist) return false;
             if (!pawn.Spawned) return false;
 
-            return HealthAIUtility.ShouldSeekMedicalRest(pawn) || HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || (pawn.health?.capacities != null && pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f) || (pawn.CurJob != null &&  pawn.CurJob.playerForced) || (pawn.health?.capacities != null && !pawn.health.capacities.CanBeAwake);
+            return HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || (pawn.health?.capacities != null && pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f) || (pawn.CurJob != null &&  pawn.CurJob.playerForced) || (pawn.health?.capacities != null && !pawn.health.capacities.CanBeAwake);
         }
         public static bool remembersPotty(Pawn pawn)
         {
@@ -185,6 +187,146 @@ namespace ZealousInnocence
             return true;
         }
 
+        public static void triggerDiaperChangeInteractionResult(Pawn initiator, Pawn recipient)
+        {
+            if(JobDebugEnabled) Log.Message($"triggerDiaperChangeInteractionResult: primary trigger");
+            triggerDiaperChangeInteractionResult_Ideology(initiator,recipient);
+            triggerDiaperChangeInteractionResult_Enslavement(initiator, recipient);
+            triggerDiaperChangeInteractionResult_Recruit(initiator, recipient);
+        }
+
+        public static void triggerDiaperChangeInteractionResult_Ideology(Pawn initiator, Pawn recipient)
+        {
+            
+            if (!ModsConfig.IdeologyActive || Find.IdeoManager.classicMode)
+            {
+                return;
+            }
+            if (initiator.Ideo == null || !recipient.RaceProps.Humanlike || initiator.Ideo == recipient.Ideo)
+            {
+                return;
+            }
+            if (recipient.guest == null) return;
+            if (!recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.Convert)) return;
+
+            if (JobDebugEnabled) Log.Message($"triggerDiaperChangeInteractionResult_Ideology: all checks met for conversion");
+
+            float num = InteractionWorker_ConvertIdeoAttempt.CertaintyReduction(initiator, recipient);
+            recipient.ideo.IdeoConversionAttempt(num, initiator.Ideo, true);
+        }
+        public static void triggerDiaperChangeInteractionResult_Enslavement(Pawn initiator, Pawn recipient)
+        {
+            if (recipient.guest == null) return;
+            if (!recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.Enslave) && !recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.ReduceWill)) return;
+            if (recipient.guest.will > 0f)
+            {
+                if (JobDebugEnabled) Log.Message($"triggerDiaperChangeInteractionResult_Enslavement: all checks met for enslavement");
+                float num = 1f;
+                num *= initiator.GetStatValue(RimWorld.StatDefOf.NegotiationAbility, true, -1);
+                num = Mathf.Min(num, recipient.guest.will);
+                float will = recipient.guest.will;
+                recipient.guest.will = Mathf.Max(0f, recipient.guest.will - num);
+                float will2 = recipient.guest.will;
+                string text = "TextMote_WillReduced".Translate(will.ToString("F1"), recipient.guest.will.ToString("F1"));
+                if (recipient.needs.mood != null && recipient.needs.mood.CurLevelPercentage < 0.4f)
+                {
+                    text += "\n(" + "lowMood".Translate() + ")";
+                }
+                MoteMaker.ThrowText((initiator.DrawPos + recipient.DrawPos) / 2f, initiator.Map, text, 8f);
+                if (recipient.guest.will == 0f)
+                {
+                    TaggedString taggedString = "MessagePrisonerWillBroken".Translate(initiator, recipient);
+                    if (recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.AttemptRecruit))
+                    {
+                        taggedString += " " + "MessagePrisonerWillBroken_RecruitAttempsWillBegin".Translate();
+                    }
+                    Messages.Message(taggedString, recipient, MessageTypeDefOf.PositiveEvent, true);
+                }
+            }
+        }
+        public static void triggerDiaperChangeInteractionResult_Recruit(Pawn initiator, Pawn recipient)
+        {
+            if (recipient.guest == null) return;
+            if (!recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.AttemptRecruit) && !recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.ReduceResistance) && !recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.MaintainOnly)) return;
+            if (recipient.AnimalOrWildMan()) return;
+            Pawn_RelationsTracker relations = recipient.relations;
+            int num = (relations != null) ? relations.OpinionOf(initiator) : 0;
+            if (recipient.guest.resistance > 0f)
+            {
+                if (JobDebugEnabled) Log.Message($"triggerDiaperChangeInteractionResult_Recruit: all checks met for recruitment");
+                float num2 = ResistanceImpactFactorCurve_Mood.Evaluate((recipient.needs.mood == null) ? 1f : recipient.needs.mood.CurInstantLevelPercentage);
+                float num3 = ResistanceImpactFactorCurve_Opinion.Evaluate((float)num);
+                float statValue = initiator.GetStatValue(RimWorld.StatDefOf.NegotiationAbility, true, -1);
+                float num4 = 1f;
+                num4 *= statValue;
+                num4 *= num2;
+                num4 *= num3;
+                float resistanceReduce = num4;
+                num4 = Mathf.Min(num4, recipient.guest.resistance);
+                float resistance = recipient.guest.resistance;
+                recipient.guest.resistance = Mathf.Max(0f, recipient.guest.resistance - num4);
+                float resistance2 = recipient.guest.resistance;
+                if (recipient.guest.resistance <= 0f)
+                {
+                    recipient.guest.SetLastResistanceReduceData(initiator, resistanceReduce, statValue, num2, num3);
+                }
+                float num5 = (resistance > 0f) ? Mathf.Max(0.1f, resistance) : 0f;
+                float num6 = (recipient.guest.resistance > 0f) ? Mathf.Max(0.1f, recipient.guest.resistance) : 0f;
+                string text = "TextMote_ResistanceReduced".Translate(num5.ToString("F1"), num6.ToString("F1"));
+                if (recipient.needs.mood != null && recipient.needs.mood.CurLevelPercentage < 0.4f)
+                {
+                    text += "\n(" + "lowMood".Translate() + ")";
+                }
+                if (recipient.relations != null && (float)recipient.relations.OpinionOf(initiator) < -0.01f)
+                {
+                    text += "\n(" + "lowOpinion".Translate() + ")";
+                }
+                MoteMaker.ThrowText((initiator.DrawPos + recipient.DrawPos) / 2f, initiator.Map, text, 8f);
+                if (recipient.guest.resistance == 0f)
+                {
+                    TaggedString taggedString = "MessagePrisonerResistanceBroken".Translate(recipient.LabelShort, initiator.LabelShort, initiator.Named("WARDEN"), recipient.Named("PRISONER"));
+                    if (recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.AttemptRecruit))
+                    {
+                        taggedString += " " + "MessagePrisonerResistanceBroken_RecruitAttempsWillBegin".Translate();
+                    }
+                    Messages.Message(taggedString, recipient, MessageTypeDefOf.PositiveEvent, true);
+                    return;
+                }
+            }
+        }
+        private static readonly SimpleCurve ResistanceImpactFactorCurve_Mood = new SimpleCurve
+        {
+            {
+                new CurvePoint(0f, 0.2f),
+                true
+            },
+            {
+                new CurvePoint(0.5f, 1f),
+                true
+            },
+            {
+                new CurvePoint(1f, 1.5f),
+                true
+            }
+        };
+
+        // Token: 0x040088B0 RID: 34992
+        private static readonly SimpleCurve ResistanceImpactFactorCurve_Opinion = new SimpleCurve
+        {
+            {
+                new CurvePoint(-100f, 0.5f),
+                true
+            },
+            {
+                new CurvePoint(0f, 1f),
+                true
+            },
+            {
+                new CurvePoint(100f, 1.5f),
+                true
+            }
+        };
+
         public static bool isWearingNightDiaper(Pawn pawn)
         {
             List<Apparel> wornApparel = pawn?.apparel?.WornApparel;
@@ -207,7 +349,14 @@ namespace ZealousInnocence
 
         public static float NeedsDiaperBreakpoint { get => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().needDiapers; }
         public static float NeedsDiaperNightBreakpoint { get => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().needPullUp; }
-
+        public static bool JobDebugEnabled
+        {
+            get
+            {
+                var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+                return debugging.debugging && debugging.debuggingJobs;
+            }
+        }
         public static bool needsDiaper(Pawn pawn)
         {
             if (Helper_Diaper.shouldStayPut(pawn)) return true;
@@ -419,7 +568,7 @@ namespace ZealousInnocence
                 if (app.HitPoints < 1)
                 {
                     app.Notify_LordDestroyed();
-                    Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), app.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent,true);
+                    Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), app.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent, true);
                     app.Destroy(DestroyMode.Vanish);
                 }
             }
