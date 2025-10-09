@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using DubsBadHygiene;
+using HarmonyLib;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -13,54 +14,89 @@ using Verse.AI;
 
 namespace ZealousInnocence
 {
+    public class Hediff_BedWetting : HediffWithComps
+    {
+        // --- Migration/visibility state ---
+        private bool lastBedwettingState = false;
+        private bool lastNeedDiapers = false;
+
+        public bool ShouldHaveBedwetting
+        {
+            get
+            {
+                return Helper_Bedwetting.BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn));
+            }
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref lastBedwettingState, "ZI_bw_lastBedwettingState", false);
+            Scribe_Values.Look(ref lastNeedDiapers, "ZI_bw_lastNeedDiapers", false);
+        }
+
+
+        public override void PostAdd(DamageInfo? dinfo)
+        {
+            base.PostAdd(dinfo);
+        }
+
+        public override bool Visible
+        {
+            get
+            {
+                if (lastNeedDiapers) return false;
+                return lastBedwettingState;
+            }
+        }
+
+        public override void Tick()
+        {
+            base.Tick();
+            if (!this.pawn.IsHashIntervalTick(350)) return;
+
+            Severity = Helper_Bedwetting.BedwettingSeverity(pawn);
+            
+            if (lastBedwettingState != ShouldHaveBedwetting)
+            {
+
+                lastNeedDiapers = Helper_Diaper.needsDiaper(pawn);
+                lastBedwettingState = ShouldHaveBedwetting;
+            }
+        }
+    }
     public class HediffGiver_BedWetting : HediffGiver
     {
         public override void OnIntervalPassed(Pawn pawn, Hediff cause)
         {
-            if (!pawn.IsColonist) return;
+            if (pawn == null || !pawn.IsColonist || pawn.Dead || !pawn.Spawned || !pawn.RaceProps.Humanlike) return;
             var def = HediffDefOf.BedWetting;
-            var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);
-            if(hediff != null)
+
+            bool shouldWet = Helper_Bedwetting.BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn));
+            if (shouldWet)
             {
-                hediff.Severity = BedWetting_Helper.BedwettingSeverity(pawn);
-            }
-            
-            if (pawn.health.hediffSet.HasHediff(HediffDefOf.Incontinent)) return;
-
-            bool shouldWet = BedWetting_Helper.BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn));
-            //Log.Message($"ZealousInnocence bedwetting interval {Find.TickManager.TicksGame}: Pawn {pawn.LabelShort} {shouldWet}");
-            
-            var needDiaper = Helper_Diaper.needsDiaper(pawn);
-
-
-            if (shouldWet) { 
-                if (!pawn.health.hediffSet.HasHediff(def)) {
-                    if (!needDiaper)
-                    {
-                        BedWetting_Helper.AddHediff(pawn);
-                        Messages.Message($"{pawn.Name.ToStringShort} has developed a bedwetting condition.", MessageTypeDefOf.NegativeEvent, true);
-                    } 
+                if (!pawn.health.hediffSet.HasHediff(def))
+                {
+                    var hediff = Helper_Bedwetting.AddHediff(pawn);
+                    Messages.Message($"{pawn.Name.ToStringShort} has developed a bedwetting condition.", MessageTypeDefOf.NegativeEvent, true);
                 }
             }
             else
             {
                 if (pawn.health.hediffSet.HasHediff(def))
                 {
-                    if (!needDiaper){
-                        pawn.health.RemoveHediff(pawn.health.hediffSet.GetFirstHediffOfDef(def));
-
-                        Messages.Message($"{pawn.Name.ToStringShort} has outgrown their bedwetting condition.", MessageTypeDefOf.PositiveEvent, true);
-                    }
+                    pawn.health.RemoveHediff(pawn.health.hediffSet.GetFirstHediffOfDef(def));
+                    Messages.Message($"{pawn.Name.ToStringShort} has outgrown their bedwetting condition.", MessageTypeDefOf.PositiveEvent, true);
                 }
             }
         }
     }
-    public static class BedWetting_Helper
+    public static class Helper_Bedwetting
     {
         public static Hediff AddHediff(Pawn pawn)
         {
             var newHediff = HediffMaker.MakeHediff(HediffDefOf.BedWetting, pawn);
-            newHediff.Severity = BedWetting_Helper.BedwettingSeverity(pawn);
+            newHediff.Severity = Helper_Bedwetting.BedwettingSeverity(pawn);
             pawn.health.AddHediff(newHediff);
             return newHediff;
         }
@@ -153,15 +189,17 @@ namespace ZealousInnocence
             {
                 int tries = 0;
                 diaperNeed.bedwettingSeed = pawn.thingIDNumber;
+                var debugging = settings.debugging && settings.debuggingBedwetting;
+                if (debugging) Log.Message($"[ZI]: Setting initial bedwetting seed of {pawn.LabelShort} to {diaperNeed.bedwettingSeed}!");
                 var def = HediffDefOf.BedWetting;
                 
-                var debugging = settings.debugging && settings.debuggingBedwetting;
+                
                 if (pawn.health.hediffSet.HasHediff(def))
                 {
                     var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);
                     if (hediff.Part != null)
                     {
-                        if (debugging) Log.Message($"ZealousInnocence MIGRATION: Migrating organ related bedwetting to body for {pawn.LabelShort}!");
+                        if (debugging)  Log.Message($"[ZI]ZealousInnocence MIGRATION: Migrating organ related bedwetting to body for {pawn.LabelShort}!");
                         pawn.health.RemoveHediff(hediff);
 
                         AddHediff(pawn);
@@ -172,7 +210,7 @@ namespace ZealousInnocence
                     var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);
                     if (hediff.Part == null)
                     {
-                        if (debugging) Log.Message($"ZealousInnocence MIGRATION: Migrating full body small bladder to new bladder size system for {pawn.LabelShort}!");
+                        if (debugging)  Log.Message($"[ZI]ZealousInnocence MIGRATION: Migrating full body small bladder to new bladder size system for {pawn.LabelShort}!");
                         pawn.health.RemoveHediff(hediff);
                     }
                     Helper_Diaper.replaceBladderPart(pawn, HediffDefOf.SmallBladder);
@@ -184,7 +222,7 @@ namespace ZealousInnocence
                     {
                         if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn)))
                         {
-                            if (debugging) Log.Message($"ZealousInnocence MIGRATION DEBUG: Bedwetting seed {diaperNeed.bedwettingSeed} assigned with matching requirement {pawn.health.hediffSet.HasHediff(def)} for {pawn.LabelShort} after {tries} tries!");
+                            if (debugging)  Log.Message($"[ZI]ZealousInnocence MIGRATION DEBUG: Bedwetting seed {diaperNeed.bedwettingSeed} assigned with matching requirement {pawn.health.hediffSet.HasHediff(def)} for {pawn.LabelShort} after {tries} tries!");
                             break;
                         }
                         RandomizeBedwettingSeed(pawn);
@@ -195,6 +233,10 @@ namespace ZealousInnocence
                         }
                     }
                 }
+                else
+                {
+                    if (debugging) Log.Message($"[ZI]ZealousInnocence MIGRATION DEBUG: Bedwetting chance is out of range for migration. Chance is {chance:F2}!");
+                }
             }
 
             return Rand.ChanceSeeded(chance, diaperNeed.bedwettingSeed);
@@ -202,6 +244,8 @@ namespace ZealousInnocence
         public static void RandomizeBedwettingSeed(Pawn pawn)
         {
             var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            if (settings.debugging && settings.debuggingBedwetting) Log.Message($"[ZI] RandomizeBedwettingSeed: Executing for {pawn.LabelShort}!");
             if (diaperNeed == null)
             {
                 Log.WarningOnce($"ZealousInnocence Warning: Pawn {pawn.LabelShort} has no Need_Diaper for BedwettingAtAge check, skipping all bedwetting related features.", pawn.thingIDNumber - 9242);

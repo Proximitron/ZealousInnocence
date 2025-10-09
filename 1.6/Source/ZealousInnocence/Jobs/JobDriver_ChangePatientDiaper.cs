@@ -64,7 +64,7 @@ namespace ZealousInnocence
 
             if (!pawn.Reserve(target, job, 1, -1, null, errorOnFailed, false))
             {
-                Log.Message($"JobDriver_ChangePatientDiaper Fails Toil reservations stage 2");
+                 Log.Message($"[ZI]JobDriver_ChangePatientDiaper Fails Toil reservations stage 2");
                 return false;
             }
             
@@ -75,7 +75,7 @@ namespace ZealousInnocence
                     target = this.ClothThing;
                     if (!pawn.Reserve(target, job, 1, -1, null, errorOnFailed, false))
                     {
-                        Log.Message($"JobDriver_ChangePatientDiaper Fails Toil reservations stage 3");
+                         Log.Message($"[ZI]JobDriver_ChangePatientDiaper Fails Toil reservations stage 3");
                         return false;
                     }
                 }
@@ -149,12 +149,18 @@ namespace ZealousInnocence
                 startedPatientHoldJob = false;
             });
         }
+        public static bool immediateFailReasons(Pawn patient, Pawn actor)
+        {
+            if (patient == null || patient.Dead || patient.GetPosture() == PawnPosture.Standing) return true;
+            if (actor == null || actor.Dead || actor.Downed) return true;
+            return false;
+        }
         protected override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnDespawnedNullOrForbidden(TargetIndex.B);
             //this.FailOn(() => !FoodUtility.ShouldBeFedBySomeone(this.Patient) &&  !Patient.IsPrisoner);
             //this.FailOn(() => !WorkGiver_Tend.GoodLayingStatusForTend(this.Patient, this.pawn));
-            this.FailOn(() => Patient == null || Patient.Dead || Patient.Downed && Patient.InBed() == false);
+            this.FailOn(() => immediateFailReasons(Patient, this.pawn));
             releasePatientFinal();
 
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch, false).FailOnForbidden(TargetIndex.A);
@@ -235,7 +241,7 @@ namespace ZealousInnocence
 
             yield return releasePatient();
 
-            //Log.Message($"Ended toils for {this.ClothThing.LabelShort}");
+            // Log.Message($"[ZI]Ended toils for {this.ClothThing.LabelShort}");
             yield break;
         }
     }

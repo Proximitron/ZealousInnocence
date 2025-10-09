@@ -358,7 +358,7 @@ namespace ZealousInnocence
             
             if (regression.Level == 1)
             {
-                BedWetting_Helper.ForceBedwetting(pawn);
+                Helper_Bedwetting.ForceBedwetting(pawn);
                 CompStudiable comp = base.GetComp<CompStudiable>();
                 if (comp != null)
                 {
@@ -367,10 +367,10 @@ namespace ZealousInnocence
             }
             else if (regression.Level == 2)
             {
-                BedWetting_Helper.RandomizeBedwettingSeed(pawn);
+                Helper_Bedwetting.RandomizeBedwettingSeed(pawn);
                 var removedHediffs = new List<Hediff>();
                 var pawnAgeDelta = 0f;
-                Helper_Regression.regressOrReincarnateToChild(pawn, out removedHediffs,out pawnAgeDelta);
+                Helper_Regression.regressOrReincarnateToChild(pawn, this, false, out removedHediffs,out pawnAgeDelta);
 
             }
             this.autoActivateTick = -99999;

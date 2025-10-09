@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DubsBadHygiene;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,8 +16,6 @@ namespace ZealousInnocence
         public float targetChronoAge = 10f;
         public bool formerAdultsNeedLearning = true;
         public bool formerAdultsCanHaveIdeoRoles = true;
-        public bool formerAdultsGetGrowthMoments = false;
-
 
         public bool dynamicGenetics = true;
         public float adultBedwetters = 0.05f;
@@ -37,6 +36,7 @@ namespace ZealousInnocence
         public bool debuggingCapacities = false;
         public bool debuggingGenes = false;
         public bool debuggingBedwetting = false;
+        public bool debuggingRegression = false;
         public bool debuggingApparelGenerator = false;
         public bool debuggingRects = false; // draw layout boxes
 
@@ -63,6 +63,40 @@ namespace ZealousInnocence
         // --- proportions ---
         public float maxLeftFrac = 0.58f; // cap for left label width as fraction of content area
 
+        /// <summary>
+        /// Base amount of regression severity healed per in-game day under neutral conditions.
+        /// </summary>
+        public float Regression_BaseRecoveryPerDay = 0.03f;
+
+        /// <summary>
+        /// Multiplier applied when pawn is in bed (resting bonus).
+        /// </summary>
+        public float Regression_RestingMultiplier = 1.5f;
+
+        /// <summary>
+        /// Multiplier applied when pawn is not yet adult (child bonus).
+        /// </summary>
+        public float Regression_ChildMultiplier = 1.3f;
+
+        /// <summary>
+        /// Multiplier applied when the hediff has been tended.
+        /// </summary>
+        public float Regression_TendedMultiplier = 1.15f;
+
+
+
+        // ========== Skill Masking ==========
+
+        /// <summary>
+        /// The amount of the skill levels that are hidden while max severity
+        /// </summary>
+        public float Regression_LevelMaskBySeverity = 0.8f;
+
+
+        // Ageing complications caused by regress being reversed
+        public bool AgingComplications_Enabled = true;
+        public float AgingComplications_RiskPerYear = 0.15f; // chance per crossed birthday
+        public int AgingComplications_MaxNew = 1;      // cap per aging event
 
 
         public float gabSize = 12f;
@@ -74,7 +108,6 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref targetChronoAge, "targetChronoAge", 10f);
             Scribe_Values.Look(ref formerAdultsNeedLearning, "formerAdultsNeedLearning", true);
             Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);
-            Scribe_Values.Look(ref formerAdultsGetGrowthMoments, "formerAdultsGetGrowthMoments", false);
 
 
             Scribe_Values.Look(ref dynamicGenetics, "dynamicGenetics", true);
@@ -96,6 +129,7 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref debuggingCapacities, "debuggingCapacities", false);
             Scribe_Values.Look(ref debuggingGenes, "debuggingGenes", false);
             Scribe_Values.Look(ref debuggingBedwetting, "debuggingBedwetting", false);
+            Scribe_Values.Look(ref debuggingRegression, "debuggingRegression", false);
             Scribe_Values.Look(ref debuggingApparelGenerator, "debuggingApparelGenerator", false);
 
             Scribe_Values.Look(ref debuggingRects, "debuggingRects", false);
@@ -117,6 +151,12 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref extraRowSpacing, "extraRowSpacing", 0f);
 
             Scribe_Values.Look(ref maxLeftFrac, "maxLeftFrac", 0.58f);
+
+            Scribe_Values.Look(ref Regression_BaseRecoveryPerDay, "Regression_BaseRecoveryPerDay", 0.03f);
+            Scribe_Values.Look(ref Regression_RestingMultiplier, "Regression_RestingMultiplier", 1.0f);
+            Scribe_Values.Look(ref Regression_ChildMultiplier, "Regression_ChildMultiplier", 1.0f);
+            Scribe_Values.Look(ref Regression_TendedMultiplier, "Regression_TendedMultiplier", 1.15f);
+            Scribe_Values.Look(ref Regression_LevelMaskBySeverity, "Regression_LevelMaskBySeverity", 0.8f);
         }
 
         public Listing_Standard list;
@@ -135,27 +175,36 @@ namespace ZealousInnocence
                     this.tab = 0;
                     base.Write();
                 }, this.tab == 0),
-                new TabRecord("dbh.ExtraFeatures".Translate(), delegate()
+                new TabRecord("SettingRegressionFeatures".Translate(), delegate()
                 {
                     this.tab = 1;
                     base.Write();
                 }, this.tab == 1),
-                new TabRecord("Debugging", delegate()
+                new TabRecord("dbh.ExtraFeatures".Translate(), delegate()
                 {
                     this.tab = 2;
                     base.Write();
                 }, this.tab == 2),
+                new TabRecord("Debugging", delegate()
+                {
+                    this.tab = 3;
+                    base.Write();
+                }, this.tab == 3),
             };
             TabDrawer.DrawTabs<TabRecord>(baseRect, tabs, 200f);
             if (this.tab == 0)
             {
                 this.DoMainTab(canvas.ContractedBy(10f));
             }
-            if (this.tab == 1)
+            else if (this.tab == 1)
+            {
+                this.DoRegression(canvas.ContractedBy(10f));
+            }
+            else if (this.tab == 2)
             {
                 this.DoExtraTab(canvas.ContractedBy(10f));
             }
-            if (this.tab == 2)
+            else if (this.tab == 3)
             {
                 this.DebuggingTab(canvas.ContractedBy(10f));
             }
@@ -177,7 +226,6 @@ namespace ZealousInnocence
             {
                 list.GapLine(gabSize);
                 list.TextEntry("SettingNotWithForeverYoung".Translate());
-                list.CheckboxLabeled("SettingExtraGrowthMoments", ref formerAdultsGetGrowthMoments, "SettingExtraGrowthMomentsHelp".Translate());
 
                 if (ModsConfig.IdeologyActive)
                 {
@@ -234,126 +282,188 @@ namespace ZealousInnocence
             this.row.GapLine(12f);
             */
         }
+        public void DoRegression(Rect inRect)
+        {
+            list = new Listing_Standard();
+            list.ColumnWidth = (inRect.width - 40f);
+            list.Begin(inRect);
+            list.GapLine(gabSize);
+
+            // --- Regression Healing / Decay ---
+            list.Label("SettingRegressionHealing".Translate(), -1f, tooltip: "SettingRegressionHealingHelp".Translate());
+
+            SliderPct(list, "SettingBaseRecovery".Translate(), ref Regression_BaseRecoveryPerDay,
+                0f, Prefs.DevMode ? 3.6f : 0.3f, 0.03f,
+                "SettingBaseRecoveryHelp".Translate());
+
+            SliderPct(list, "SettingRestingMultiplier".Translate(), ref Regression_RestingMultiplier,
+                0.25f, 3f, 1.0f,
+                "SettingRestingMultiplierHelp".Translate());
+
+            SliderPct(list, "SettingChildMultiplier".Translate(), ref Regression_ChildMultiplier,
+                0.25f, 3f, 1.0f,
+                "SettingChildMultiplierHelp".Translate());
+
+            SliderPct(list, "SettingTendedMultiplier".Translate(), ref Regression_TendedMultiplier,
+                0.25f, 3f, 1.15f,
+                "SettingTendedMultiplierHelp".Translate());
+
+            list.GapLine();
+
+            // --- Skill Masking ---
+            list.Label("SettingSkillMasking".Translate(), -1f, tooltip: "SettingSkillMaskingHelp".Translate());
+
+            SliderPct(list, "SettingLevelMaskBySeverity".Translate(), ref Regression_LevelMaskBySeverity,
+                0f, 1f, 0.8f,
+                "SettingLevelMaskBySeverityHelp".Translate());
+
+            if (list.ButtonText("SettingResetDefaults".Translate()))
+                ResetRegressionToDefaults();
+
+            list.End();
+        }
         public void DoExtraTab(Rect inRect)
         {
             list = new Listing_Standard();
             list.ColumnWidth = (inRect.width - 40f) * 0.5f;
             list.Begin(inRect);
             list.GapLine(gabSize);
-            // toggles
-            list.CheckboxLabeled("Enable two-up layout", ref enableTwoUp, "Render two rows side-by-side when there’s enough width.");
-            list.CheckboxLabeled("Snap to UI scale", ref snapToUIScale, "Snap rectangles like vanilla Label() to avoid blurry text at fractional UI scales.");
-            list.CheckboxLabeled("Use Tiny font fallback", ref tinyFontFallback, "Allow switching the right label to Tiny font when it reduces height.");
-            list.CheckboxLabeled("Allow two columns (right text)", ref enableTwoColRight, "Split long right text into two narrow columns.");
+
+            // --- Toggles ---
+            list.CheckboxLabeled("SettingEnableTwoUp".Translate(), ref enableTwoUp, "SettingEnableTwoUpHelp".Translate());
+            list.CheckboxLabeled("SettingSnapToUiScale".Translate(), ref snapToUIScale, "SettingSnapToUiScaleHelp".Translate());
+            list.CheckboxLabeled("SettingTinyFontFallback".Translate(), ref tinyFontFallback, "SettingTinyFontFallbackHelp".Translate());
+            list.CheckboxLabeled("SettingEnableTwoColRight".Translate(), ref enableTwoColRight, "SettingEnableTwoColRightHelp".Translate());
             list.GapLine(gabSize);
 
-            // thresholds
-            SliderPx(list, "Min two-up cell width", ref minTwoUpCellWidth, 200f, 400f, 260f, "Minimum width of each half-cell to attempt two-up.");
-            SliderPx(list, "Full-width height gate", ref fullWidthHeightGate, 32f, 96f, 48f, "If a half-cell would be taller than this, render full width instead.");
-            SliderPx(list, "Two-column trigger height", ref twoColTriggerH, 24f, 80f, 36f, "If the right text wraps taller than this, use two internal columns.");
-            SliderPx(list, "Two-column min width", ref twoColMinWidth, 120f, 260f, 160f, "Require at least this width for the right area to split in two.");
+            // --- Thresholds ---
+            SliderPx(list, "SettingMinTwoUpCellWidth".Translate(), ref minTwoUpCellWidth, 200f, 400f, 260f,
+                "SettingMinTwoUpCellWidthHelp".Translate());
+            SliderPx(list, "SettingFullWidthHeightGate".Translate(), ref fullWidthHeightGate, 32f, 96f, 48f,
+                "SettingFullWidthHeightGateHelp".Translate());
+            SliderPx(list, "SettingTwoColTriggerHeight".Translate(), ref twoColTriggerH, 24f, 80f, 36f,
+                "SettingTwoColTriggerHeightHelp".Translate());
+            SliderPx(list, "SettingTwoColMinWidth".Translate(), ref twoColMinWidth, 120f, 260f, 160f,
+                "SettingTwoColMinWidthHelp".Translate());
 
-            this.list.NewColumn();
+            list.NewColumn();
             list.ColumnWidth = (inRect.width - 40f) * 0.5f;
-            // spacing
-            SliderPx(list, "Pair gap (between cells)", ref pairGap, 4f, 32f, 12f);
-            SliderPx(list, "Padding X (inside cell)", ref paddingX, 8f, 28f, 17f);
-            SliderPx(list, "Gap inside (left ↔ right)", ref gapInside, 6f, 24f, 10f);
-            SliderPx(list, "Two-column gap", ref twoColGap, 3f, 18f, 6f);
-            SliderPx(list, "Row min height", ref rowMinHeight, 18f, 32f, 20f);
-            SliderPx(list, "Extra row spacing", ref extraRowSpacing, 0f, 12f, 0f, "Add vertical spacing after each completed row (or pair).");
 
-            // proportions
-            SliderPct(list, "Max left width fraction", ref maxLeftFrac, 0.40f, 0.80f, 0.58f, "Upper bound for the left label width as a fraction of the inner content area.");
+            // --- Spacing ---
+            SliderPx(list, "SettingPairGap".Translate(), ref pairGap, 4f, 32f, 12f, "SettingPairGapHelp".Translate());
+            SliderPx(list, "SettingPaddingX".Translate(), ref paddingX, 8f, 28f, 17f, "SettingPaddingXHelp".Translate());
+            SliderPx(list, "SettingGapInside".Translate(), ref gapInside, 6f, 24f, 10f, "SettingGapInsideHelp".Translate());
+            SliderPx(list, "SettingTwoColGap".Translate(), ref twoColGap, 3f, 18f, 6f, "SettingTwoColGapHelp".Translate());
+            SliderPx(list, "SettingRowMinHeight".Translate(), ref rowMinHeight, 18f, 32f, 20f, "SettingRowMinHeightHelp".Translate());
+            SliderPx(list, "SettingExtraRowSpacing".Translate(), ref extraRowSpacing, 0f, 12f, 0f, "SettingExtraRowSpacingHelp".Translate());
 
-            if (list.ButtonText("Reset to defaults")) ResetUiToDefaults();
+            // --- Proportions ---
+            SliderPct(list, "SettingMaxLeftWidthFrac".Translate(), ref maxLeftFrac, 0.40f, 0.80f, 0.58f,
+                "SettingMaxLeftWidthFracHelp".Translate());
+
+            if (list.ButtonText("SettingResetDefaults".Translate()))
+                ResetUiToDefaults();
 
             list.End();
         }
+        /*
+this.DoLinks(canvas);
+this.row.GapLine(12f);
 
+if (Current.ProgramState == ProgramState.Playing)
+{
+    GUI.color = Color.red;
+    this.row.Label("QuitToMenuToChange".Translate(), -1f, null);
+    GUI.color = Color.white;
+
+    this.< DoConfigurationTab > g__joe | 49_0("PassiveWaterCoolersLink".Translate(), ref this.PassiveWaterCoolers, "PassiveWaterCoolersLinkTip".Translate());
+    this.< DoConfigurationTab > g__joe | 49_0("fixtureQuality".Translate(), ref this.QualityComps, "fixtureQualityTip".Translate());
+}
+else
+{
+
+    this.row.CheckboxLabeledWithAction("PassiveWaterCoolersLink".Translate(), ref this.PassiveWaterCoolers, "PassiveWaterCoolersLinkTip".Translate(), new Action(Settings.< DoConfigurationTab > g__resolver | 49_4));
+    bool qualityComps = this.QualityComps;
+    this.row.CheckboxLabeledWithAction("fixtureQuality".Translate(), ref this.QualityComps, "fixtureQualityTip".Translate(), new Action(Settings.< DoConfigurationTab > g__resolver | 49_4));
+    if (!qualityComps && this.QualityComps)
+    {
+        base.Write();
+        TaggedString taggedString3 = "dbh.restartconfirm".Translate();
+        TaggedString taggedString4 = "GoBack".Translate();
+        Find.WindowStack.Add(new Dialog_MessageBox("fixtureQualityRequiresRestart".Translate(), taggedString4, new Action(this.< DoConfigurationTab > g__coooom | 49_5), taggedString3, new Action(GenCommandLine.Restart), null, true, null, null, WindowLayer.Dialog));
+    }
+}
+this.row.GapLine(12f);
+
+this.row.CheckboxLabeled("PrivacyChecks".Translate(), ref this.PrivacyChecks, "PrivacyChecksTip".Translate(), 0f, 1f);
+
+this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.PriorityIndoorCleaning, "dbh.PriorityIndoorCleaningTip".Translate(), 0f, 1f);
+*/
+        private bool fyChecked;
+        private bool fyActive;
         public void DebuggingTab(Rect canvas)
         {
-            this.list = new Listing_Standard();
-            this.list.ColumnWidth = (canvas.width - 40f) * 0.34f;
-            this.list.Begin(canvas);
+            list = new Listing_Standard();
+            list.ColumnWidth = (canvas.width - 40f) * 0.34f;
+            list.Begin(canvas);
             list.GapLine(gabSize);
 
-            list.CheckboxLabeled("SettingDebugMode".Translate(), ref debugging, "".Translate());
+            list.CheckboxLabeled("SettingDebugMode".Translate(), ref debugging, "SettingDebugModeHelp".Translate());
 
-            /*
-            this.DoLinks(canvas);
-            this.row.GapLine(12f);
-           
-            if (Current.ProgramState == ProgramState.Playing)
-            {
-                GUI.color = Color.red;
-                this.row.Label("QuitToMenuToChange".Translate(), -1f, null);
-                GUI.color = Color.white;
-
-                this.< DoConfigurationTab > g__joe | 49_0("PassiveWaterCoolersLink".Translate(), ref this.PassiveWaterCoolers, "PassiveWaterCoolersLinkTip".Translate());
-                this.< DoConfigurationTab > g__joe | 49_0("fixtureQuality".Translate(), ref this.QualityComps, "fixtureQualityTip".Translate());
-            }
-            else
-            {
-
-                this.row.CheckboxLabeledWithAction("PassiveWaterCoolersLink".Translate(), ref this.PassiveWaterCoolers, "PassiveWaterCoolersLinkTip".Translate(), new Action(Settings.< DoConfigurationTab > g__resolver | 49_4));
-                bool qualityComps = this.QualityComps;
-                this.row.CheckboxLabeledWithAction("fixtureQuality".Translate(), ref this.QualityComps, "fixtureQualityTip".Translate(), new Action(Settings.< DoConfigurationTab > g__resolver | 49_4));
-                if (!qualityComps && this.QualityComps)
-                {
-                    base.Write();
-                    TaggedString taggedString3 = "dbh.restartconfirm".Translate();
-                    TaggedString taggedString4 = "GoBack".Translate();
-                    Find.WindowStack.Add(new Dialog_MessageBox("fixtureQualityRequiresRestart".Translate(), taggedString4, new Action(this.< DoConfigurationTab > g__coooom | 49_5), taggedString3, new Action(GenCommandLine.Restart), null, true, null, null, WindowLayer.Dialog));
-                }
-            }
-            this.row.GapLine(12f);
-            
-            this.row.CheckboxLabeled("PrivacyChecks".Translate(), ref this.PrivacyChecks, "PrivacyChecksTip".Translate(), 0f, 1f);
-            
-            this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.PriorityIndoorCleaning, "dbh.PriorityIndoorCleaningTip".Translate(), 0f, 1f);
-            */
-            this.list.NewColumn();
-            this.list.ColumnWidth = (canvas.width - 40f) * 0.33f;
+            list.NewColumn();
+            list.ColumnWidth = (canvas.width - 40f) * 0.33f;
             list.GapLine(gabSize);
 
             if (debugging)
             {
-                list.CheckboxLabeled("DEBUG Cloth", ref debuggingCloth, "Generates debugging related to cloth.");
-                list.CheckboxLabeled("DEBUG Jobs", ref debuggingJobs, "Generates debugging related to jobs.");
-                list.CheckboxLabeled("DEBUG Capacities", ref debuggingCapacities, "Generates debugging related to capacities like bladder control.");
-                list.CheckboxLabeled("DEBUG Genes", ref debuggingGenes, "Generates debugging related to genes and creation of gene related conditions and changes.");
-                list.CheckboxLabeled("DEBUG Bedwetting", ref debuggingBedwetting, "Generates debugging related to all bedwetting related functions and calls.");
-                list.CheckboxLabeled("DEBUG Apparel", ref debuggingApparelGenerator, "Generates debugging related the apparel generator, used on generating new pawns.");
+                list.CheckboxLabeled("SettingDebugCloth".Translate(), ref debuggingCloth, "SettingDebugClothHelp".Translate());
+                list.CheckboxLabeled("SettingDebugJobs".Translate(), ref debuggingJobs, "SettingDebugJobsHelp".Translate());
+                list.CheckboxLabeled("SettingDebugCapacities".Translate(), ref debuggingCapacities, "SettingDebugCapacitiesHelp".Translate());
+                list.CheckboxLabeled("SettingDebugGenes".Translate(), ref debuggingGenes, "SettingDebugGenesHelp".Translate());
+                list.CheckboxLabeled("SettingDebugBedwetting".Translate(), ref debuggingBedwetting, "SettingDebugBedwettingHelp".Translate());
+                list.CheckboxLabeled("SettingDebugRegression".Translate(), ref debuggingRegression, "SettingDebugRegressionHelp".Translate());
+                list.CheckboxLabeled("SettingDebugApparel".Translate(), ref debuggingApparelGenerator, "SettingDebugApparelHelp".Translate());
+            }
 
-            }
-            this.list.NewColumn();
-            this.list.ColumnWidth = (canvas.width - 40f) * 0.33f;
+            list.NewColumn();
+            list.ColumnWidth = (canvas.width - 40f) * 0.33f;
             list.GapLine(gabSize);
-            if (debugging && list.ButtonText("Check ForeverYoung active"))
+
+            if (debugging)
             {
-                if (ModChecker.ForeverYoungActive())
+                if (list.ButtonText("SettingCheckForeverYoung".Translate()))
                 {
-                    list.GapLine(gabSize);
-                    list.TextEntry("'ForeverYoung' IS active!");
+                    fyActive = ModChecker.ForeverYoungActive();
+                    fyChecked = true;
                 }
-                else
+
+                if (fyChecked)
                 {
                     list.GapLine(gabSize);
-                    list.TextEntry("'ForeverYoung' NOT active!");
+                    list.Label(fyActive
+                        ? "SettingForeverYoungActive".Translate()
+                        : "SettingForeverYoungNotActive".Translate());
                 }
             }
-            this.list.End();
+
+            list.End();
         }
         private static void SliderPx(Listing_Standard list, string label, ref float val, float min, float max, float def, string tooltip = null)
         {
             val = Mathf.Round(list.SliderLabeled($"{label}: {val:F0}px", val, min, max, tooltip: tooltip));
-            if (list.ButtonTextLabeled($"↺ {label}", "Reset")) val = def;
+            if (list.ButtonTextLabeled($"↺ {label}", "SettingResetSingle".Translate())) val = def;
         }
         private static void SliderPct(Listing_Standard list, string label, ref float val, float min, float max, float def, string tooltip = null)
         {
             val = Mathf.Round(list.SliderLabeled($"{label}: {(val * 100f):F0}%", val, min, max, tooltip: tooltip) * 100f) / 100f;
-            if (list.ButtonTextLabeled($"↺ {label}", "Reset")) val = def;
+            if (list.ButtonTextLabeled($"↺ {label}", "SettingResetSingle".Translate())) val = def;
+        }
+        private void SliderInt(Listing_Standard list, string label, ref int val, int min, int max, int def, string tooltip = null)
+        {
+            float f = val;
+            f = list.SliderLabeled($"{label}: {val}", f, min, max, tooltip: tooltip);
+            if (list.ButtonTextLabeled($"↺ {label}", "SettingResetSingle".Translate())) val = def;
+            val = Mathf.RoundToInt(f);
         }
         private void ResetUiToDefaults()
         {
@@ -376,5 +486,15 @@ namespace ZealousInnocence
 
             maxLeftFrac = 0.58f;
         }
+
+        private void ResetRegressionToDefaults()
+        {
+            Regression_BaseRecoveryPerDay = 0.3f;
+            Regression_RestingMultiplier = 1.0f;
+            Regression_ChildMultiplier = 1.0f;
+            Regression_TendedMultiplier = 1.15f;
+            Regression_LevelMaskBySeverity = 0.8f;
+        }
+
     }
 }

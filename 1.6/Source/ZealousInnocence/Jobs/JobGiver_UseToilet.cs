@@ -39,7 +39,7 @@ namespace ZealousInnocence
                         }
                         else
                         {
-                            if (debugging) Log.Message($"JobGiver_UseToilet postfix null for {pawn.Name.ToStringShort}");
+                            if (debugging)  Log.Message($"[ZI]JobGiver_UseToilet postfix null for {pawn.Name.ToStringShort}");
                             __result = null;
                             return;
                         }
@@ -47,7 +47,7 @@ namespace ZealousInnocence
                 }
                 else
                 {
-                    if (debugging || debugBedwetting) Log.Message($"JobGiver_UseToilet not awake for {pawn.Name.ToStringShort}");
+                    if (debugging || debugBedwetting)  Log.Message($"[ZI]JobGiver_UseToilet not awake for {pawn.Name.ToStringShort}");
                     JobFailReason.Is("Not awake.");
                     __result = null;
                     return;
@@ -55,7 +55,7 @@ namespace ZealousInnocence
                 var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
                 if (diaperNeed != null) diaperNeed.FailureSeed = 0; // resetting seed
 
-                //Log.Message($"JobGiver_UseToilet attempting to assign a job to {pawn.Name.ToStringShort}");
+                // Log.Message($"[ZI]JobGiver_UseToilet attempting to assign a job to {pawn.Name.ToStringShort}");
             }
         }
     }

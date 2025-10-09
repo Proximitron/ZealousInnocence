@@ -221,7 +221,7 @@ namespace ZealousInnocence
         {
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             var debugging = settings.debugging && settings.debuggingJobs;
-            if(debugging) Log.Message($"JobGiver_RegressedPlayTime: TryGiveJob called for pawn: {pawn?.Name?.ToStringFull}");
+            if(debugging)  Log.Message($"[ZI]JobGiver_RegressedPlayTime: TryGiveJob called for pawn: {pawn?.Name?.ToStringFull}");
 
             // Check if pawn or its lord is null
             if (pawn == null)
@@ -333,7 +333,7 @@ namespace ZealousInnocence
                     pawn.Map.pawnDestinationReservationManager.Reserve(pawn, job2, result2);
                     return job2;
                 }
-                if (debugging) Log.Message($"JobGiver_RegressedPlayTime: Post block 5");
+                if (debugging)  Log.Message($"[ZI]JobGiver_RegressedPlayTime: Post block 5");
                 pawn.rotationTracker.FaceCell(friend.Position);
                 return null;
             }

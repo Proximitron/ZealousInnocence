@@ -28,22 +28,27 @@ namespace ZealousInnocence
         }
         public static void replaceBladderPart(Pawn pawn, HediffDef bladderSize)
         {
+#if DEBUG
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             var debugGenes = settings.debugging && settings.debuggingGenes;
-            if (debugGenes) Log.Message($"Pawn {pawn.LabelShort} searching bladder");
+            if (debugGenes)  Log.Message($"[ZI]Pawn {pawn.LabelShort} searching bladder");
+#endif
             BodyPartRecord originalBladder = getBladderControlSourcePart(pawn);
             if (originalBladder != null)
             {
                 // Remove the original Bladder part
                 pawn.health.hediffSet.hediffs.RemoveAll(hediff => hediff.Part == originalBladder);
-                if (debugGenes) Log.Message($"Pawn {pawn.LabelShort} removing old hediff");
-
+#if DEBUG
+                if (debugGenes)  Log.Message($"[ZI]Pawn {pawn.LabelShort} removing old hediff");
+#endif
                 // Check if the new bladder part is already defined in the pawn's body
                 BodyPartRecord newBladderPart = pawn.RaceProps.body.AllParts.Find(part => part.def == BodyPartDefOf.Bladder);
 
                 if (newBladderPart != null)
                 {
-                    if (debugGenes) Log.Message($"Restore procedure to {pawn.LabelShort}");
+#if DEBUG
+                    if (debugGenes)  Log.Message($"[ZI]Restore procedure to {pawn.LabelShort}");
+#endif
                     pawn.health.AddHediff(RimWorld.HediffDefOf.MissingBodyPart, newBladderPart); // Mark the original bladder as missing
                     pawn.health.RestorePart(newBladderPart); // Restore the new bladder part
                     if (bladderSize == HediffDefOf.BigBladder)
@@ -71,20 +76,30 @@ namespace ZealousInnocence
         }
         public static void getMemory(Pawn pawn, ThoughtDef thought, int stage = 0)
         {
+#if DEBUG
             var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().debugging;
+#endif
             if (!pawn.health.capacities.CanBeAwake)
             {
+#if DEBUG
                 if (debugging) Log.Message("Can't gain Memory for unconcious " + pawn.Name + ", thought " + thought.defName + " at stage " + stage.ToString());
+#endif
+                return;
             }
 
             var memories = pawn.needs.mood.thoughts.memories;
-            if (debugging) Log.Message("Creating Memory for " + pawn.Name + ", thought " + thought.defName + " at stage " + stage.ToString());
 
             Thought_Memory firstMemoryOfDef = memories.GetFirstMemoryOfDef(thought);
             if (firstMemoryOfDef != null)
             {
                 firstMemoryOfDef.SetForcedStage(stage); // Making sure that merge works on TryGainMemory
+#if DEBUG
+                if (debugging) Log.Message("Forcing state for Memory of " + pawn.Name + ", thought " + thought.defName + " at stage " + stage.ToString());
+#endif
             }
+#if DEBUG
+            if (debugging) Log.Message("Creating Memory for " + pawn.Name + ", thought " + thought.defName + " at stage " + stage.ToString());
+#endif
             var newThought = ThoughtMaker.MakeThought(thought, null);
             newThought.SetForcedStage(stage);
             memories.TryGainMemory(newThought);
@@ -119,17 +134,17 @@ namespace ZealousInnocence
 
             if (bladderControl >= 0.8f)
             {
-                // Range 1.0 to 0.75: 1%-5% chance
+                // Range 1.0 to 0.75: 0.5%-3% chance
                 return Mathf.Lerp(0.005f, 0.03f, Mathf.InverseLerp(1.2f, 0.8f, bladderControl));
             }
             else if (bladderControl >= 0.5f)
             {
-                // Range 0.75 to 0.5: 5%-30% chance
-                return Mathf.Lerp(0.05f, 0.20f, Mathf.InverseLerp(0.8f, 0.5f, bladderControl));
+                // Range 0.75 to 0.5: 3%-20% chance
+                return Mathf.Lerp(0.03f, 0.20f, Mathf.InverseLerp(0.8f, 0.5f, bladderControl));
             }
             else if (bladderControl >= 0.15f)
             {
-                // Range 0.5 to 0.25: 30%-80% chance
+                // Range 0.5 to 0.25: 20%-90% chance
                 return Mathf.Lerp(0.20f, 0.90f, Mathf.InverseLerp(0.5f, 0.15f, bladderControl));
             }
             else
@@ -176,12 +191,12 @@ namespace ZealousInnocence
                 var debug = settings.debugging && (settings.debuggingCapacities || debugBedwetting);
                 if (Rand.ChanceSeeded(probability, diaperNeed.FailureSeed))
                 {
-                    if (debug) Log.Message($"JobGiver_UseToilet prefix: job denied, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                    if (debug)  Log.Message($"[ZI]JobGiver_UseToilet prefix: job denied, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
                     return false; // depending on the level on control
                 }
                 else
                 {
-                    if (debug) Log.Message($"JobGiver_UseToilet prefix: job given, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                    if (debug)  Log.Message($"[ZI]JobGiver_UseToilet prefix: job given, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
                 }
             }
             return true;
@@ -189,7 +204,7 @@ namespace ZealousInnocence
 
         public static void triggerDiaperChangeInteractionResult(Pawn initiator, Pawn recipient)
         {
-            if(JobDebugEnabled) Log.Message($"triggerDiaperChangeInteractionResult: primary trigger");
+            if(JobDebugEnabled)  Log.Message($"[ZI]triggerDiaperChangeInteractionResult: primary trigger");
             triggerDiaperChangeInteractionResult_Ideology(initiator,recipient);
             triggerDiaperChangeInteractionResult_Enslavement(initiator, recipient);
             triggerDiaperChangeInteractionResult_Recruit(initiator, recipient);
@@ -209,7 +224,7 @@ namespace ZealousInnocence
             if (recipient.guest == null) return;
             if (!recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.Convert)) return;
 
-            if (JobDebugEnabled) Log.Message($"triggerDiaperChangeInteractionResult_Ideology: all checks met for conversion");
+            if (JobDebugEnabled)  Log.Message($"[ZI]triggerDiaperChangeInteractionResult_Ideology: all checks met for conversion");
 
             float num = InteractionWorker_ConvertIdeoAttempt.CertaintyReduction(initiator, recipient);
             recipient.ideo.IdeoConversionAttempt(num, initiator.Ideo, true);
@@ -220,7 +235,7 @@ namespace ZealousInnocence
             if (!recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.Enslave) && !recipient.guest.IsInteractionEnabled(RimWorld.PrisonerInteractionModeDefOf.ReduceWill)) return;
             if (recipient.guest.will > 0f)
             {
-                if (JobDebugEnabled) Log.Message($"triggerDiaperChangeInteractionResult_Enslavement: all checks met for enslavement");
+                if (JobDebugEnabled)  Log.Message($"[ZI]triggerDiaperChangeInteractionResult_Enslavement: all checks met for enslavement");
                 float num = 1f;
                 num *= initiator.GetStatValue(RimWorld.StatDefOf.NegotiationAbility, true, -1);
                 num = Mathf.Min(num, recipient.guest.will);
@@ -253,7 +268,7 @@ namespace ZealousInnocence
             int num = (relations != null) ? relations.OpinionOf(initiator) : 0;
             if (recipient.guest.resistance > 0f)
             {
-                if (JobDebugEnabled) Log.Message($"triggerDiaperChangeInteractionResult_Recruit: all checks met for recruitment");
+                if (JobDebugEnabled)  Log.Message($"[ZI]triggerDiaperChangeInteractionResult_Recruit: all checks met for recruitment");
                 float num2 = ResistanceImpactFactorCurve_Mood.Evaluate((recipient.needs.mood == null) ? 1f : recipient.needs.mood.CurInstantLevelPercentage);
                 float num3 = ResistanceImpactFactorCurve_Opinion.Evaluate((float)num);
                 float statValue = initiator.GetStatValue(RimWorld.StatDefOf.NegotiationAbility, true, -1);
@@ -591,12 +606,24 @@ namespace ZealousInnocence
             bool debugging = settings.debugging && settings.debuggingCloth;
             if (!ap.PawnCanWear(pawn, true)) return -100f;
             if (!allowedByPolicy(pawn, ap)) return -100f;
-
+            
             if (ap.HasThingCategory(ThingCategoryDefOf.Diapers))
             {
                 rating -= 0.5f; // Diapers by default less likely to be worn
                 bool isNightDp = isNightDiaper(ap);
-                if (isNightDp) rating += 1f; // Usually better than diapers and better than no underwear
+                if (pawn.IsPrisoner)
+                {
+                    rating += 1.5f; // If allowed for prisoner, we give it a blanket pass but don't overwrite underwear
+                    if (isNightDp) rating -= 0.3f; // We don't give prisoners special diapers for the night if we have other choises
+                    if(ap.def?.apparel?.defaultOutfitTags != null && ap.def.apparel.defaultOutfitTags.Contains("Slave"))
+                    {
+                        rating += 0.4f; // We prefer cheap cloth for this case if available
+                    }
+                }
+                else
+                {
+                    if (isNightDp) rating += 1f; // Usually better than diapers and better than no underwear
+                }
                 if (needsDiaper(pawn))
                 {
                     rating += 5f;
@@ -604,13 +631,14 @@ namespace ZealousInnocence
                 }
                 else
                 {
-                    if (isNightDp && needsDiaperNight(pawn))
+                    // If we don't allow underwear, we also don't really intend to put prisoners in night diapers
+                    if (isNightDp && needsDiaperNight(pawn) && (!pawn.IsPrisoner || pawn.guest?.IsInteractionEnabled(PrisonerInteractionModeDefOf.UnderwearChangesAllowed) == true))
                     {
                         rating += 5f;
                     }
                 }
 
-                if(ap.HitPoints < (ap.MaxHitPoints / 2))
+                if (ap.HitPoints < (ap.MaxHitPoints / 2))
                 {
                     rating -= 4f;
                 }

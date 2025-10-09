@@ -121,6 +121,7 @@
 				<regressionBuildup>RegressionDamage</regressionBuildup>
 				<severityPerDamage>0.012</severityPerDamage>
 				<reduceValue>0.5</reduceValue>
+				<maxSeverity>1.0</maxSeverity>
 			</li>
 		</modExtensions>
 	</DamageDef>
@@ -143,26 +144,8 @@
 				<regressionBuildup>RegressionDamage</regressionBuildup>
 				<severityPerDamage>0.012</severityPerDamage>
 				<reduceValue>0.5</reduceValue>
+				<maxSeverity>1.0</maxSeverity>
 			</li>
 		</modExtensions>
 	</DamageDef>
-
-	<HediffDef>
-		<defName>RegressionDamage</defName>
-		<description>This person has received a dose of regressive nanites found only in the fountain of youth. Depending on severity this pawn will be affected in multiple ways, possibly forever.</description>
-		<hediffClass>ZealousInnocence.Hediff_RegressionDamage</hediffClass>
-		<label>regression damage</label>
-		<everCurableByItem>false</everCurableByItem>
-		<isBad>false</isBad>
-		<taleOnVisible>RegressionRevealed</taleOnVisible>
-		<comps>
-		  <!-- <li Class="HediffCompProperties_SeverityPerDay">
-        <severityPerDay>-0.1</severityPerDay>This controls how the severity changes over time, if at all 
-      </li>-->
-		</comps>
-		<initialSeverity>0.01</initialSeverity>
-		<minSeverity>0</minSeverity>
-		<maxSeverity>1</maxSeverity>
-		<tendable>false</tendable>
-	</HediffDef>
 </Defs>

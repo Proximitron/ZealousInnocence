@@ -22,7 +22,7 @@ namespace ZealousInnocence
                 var apparel = this.currentlyRenderedThing as Apparel;
                 if (apparel != null)
                 {
-                    Log.Message($"Changing render.");
+                     Log.Message($"[ZI]Changing render.");
                     var hpPercent = (float)apparel.HitPoints / apparel.MaxHitPoints;
                     if (hpPercent < 0.5f)
                     {
@@ -33,11 +33,11 @@ namespace ZealousInnocence
                 {
                     if(currentlyRenderedThing != null)
                     {
-                        Log.Message($"Is reported {currentlyRenderedThing.LabelShort}.");
+                         Log.Message($"[ZI]Is reported {currentlyRenderedThing.LabelShort}.");
                     }
                     else
                     {
-                        Log.Message($"Is reported null.");
+                         Log.Message($"[ZI]Is reported null.");
                     }
                     
                 }
@@ -65,7 +65,7 @@ namespace ZealousInnocence
         public override void DrawWorker(Vector3 loc, Rot4 rot, ThingDef thingDef, Thing thing, float extraRotation)
 		{
             this.currentlyRenderedThing = thing;
-            Log.Message($"Call draw.");
+             Log.Message($"[ZI]Call draw.");
             base.DrawWorker(loc, rot, thingDef, thing, extraRotation);
 		}
         private void LogStackTrace()

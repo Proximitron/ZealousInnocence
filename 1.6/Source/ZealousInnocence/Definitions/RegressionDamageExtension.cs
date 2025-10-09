@@ -23,6 +23,8 @@ namespace ZealousInnocence
         /// <summary>the amount by which to reduce the raw damage to the pawn</summary>
         public float reduceValue = 1 / 3f;
 
+        /// <summary>the maximum severity this damage can cause. 1.0f is 3 years for humans. Anything over that would be a baby.</summary>
+        public float maxSeverity = 1.0f;
 
         /// <summary>
         /// gets all Configuration errors with this instance.

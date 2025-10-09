@@ -23,12 +23,12 @@ namespace ZealousInnocence
             float bladderStrength = pawn.GetStatValue(StatDefOf.BladderStrengh, true);
             var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             var dbug = true; // debugging.debugging && debugging.debuggingCapacities;
-            if (dbug) Log.Message($"BladderRate_Postfix: {pawn.Name} changing rate from {__result} on {bladderStrength}");
+            if (dbug)  Log.Message($"[ZI]BladderRate_Postfix: {pawn.Name} changing rate from {__result} on {bladderStrength}");
             if (bladderStrength != 1f)
             {
                 float factor = 1f / bladderStrength;
                
-                if (dbug) Log.Message($"BladderRate_Postfix: {pawn.Name} changing rate from {__result} to {__result*factor}");
+                if (dbug)  Log.Message($"[ZI]BladderRate_Postfix: {pawn.Name} changing rate from {__result} to {__result*factor}");
                 
                 __result *= factor;
             }

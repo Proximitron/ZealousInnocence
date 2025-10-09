@@ -393,7 +393,7 @@ namespace ZealousInnocence
 
                         var hediffsRemoved = new List<Hediff>();
                         float ageDifference = 0f;
-                        Helper_Regression.regressOrReincarnateToChild(innerPawn, out hediffsRemoved, out ageDifference);                        
+                        Helper_Regression.regressOrReincarnateToChild(innerPawn,pawn, false, out hediffsRemoved, out ageDifference);                        
                     }
                     else
                     {

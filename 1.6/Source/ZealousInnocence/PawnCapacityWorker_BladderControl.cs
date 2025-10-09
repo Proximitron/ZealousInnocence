@@ -62,7 +62,7 @@ namespace ZealousInnocence
                 if (impactors != null)
                 {
                     string bedwetting = "StateWordLow";
-                    if (bedwettingChance > 0.2f)
+                    if (bedwettingChance > 0.1f)
                     {
                         if (bedwettingChance > 0.6f)
                         {
@@ -159,7 +159,7 @@ namespace ZealousInnocence
             {
                 if (Helper_Regression.getAgeStageInt(pawn) < 6 || pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
                 {
-                    total -= 0.7f;
+                    total -= 0.6f;
                 }
                 else
                 {

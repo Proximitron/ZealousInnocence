@@ -10,6 +10,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 using Verse;
 using Verse.AI;
 using Verse.Noise;
@@ -141,18 +142,32 @@ namespace ZealousInnocence
                 prefix: new HarmonyMethod(typeof(Patch_HealthCardUtility_DrawLeftRow), nameof(Patch_HealthCardUtility_DrawLeftRow.Prefix)),
                 info: "HealthCardUtility.DrawLeftRow"
             );
-            /*patchFunctionPrefix(
-                original: AccessTools.Method(typeof(Thing), "DrawGUIOverlay"),
-                prefix: new HarmonyMethod(typeof(Thing_DrawGUIOverlay_Patch), nameof(Thing_DrawGUIOverlay_Patch.Prefix)),
-                info: "Thing.DrawGUIOverlay"
+
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(SkillRecord), nameof(SkillRecord.GetLevel)),
+                postfix: new HarmonyMethod(typeof(Patch_GetLevel_MaskByRegression), nameof(Patch_GetLevel_MaskByRegression.Postfix)),
+                info: "SkillRecord.GetLevel"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(SkillRecord), nameof(SkillRecord.GetLevelForUI)),
+                postfix: new HarmonyMethod(typeof(Patch_GetLevelForUI_MaskByRegression), nameof(Patch_GetLevel_MaskByRegression.Postfix)),
+                info: "SkillRecord.GetLevelForUI"
             );
             patchFunctionPrefix(
-                original: AccessTools.Method(typeof(Thing), "DrawAt"),
-                prefix: new HarmonyMethod(typeof(Patch_Thing_DrawAt), nameof(Patch_Thing_DrawAt.Prefix)),
-                info: "Thing.DrawAt"
-            );*/
-
-
+                original: AccessTools.Method(typeof(Pawn_AgeTracker), "TryChildGrowthMoment"),
+                prefix: new HarmonyMethod(typeof(Patch_TryChildGrowthMoment), nameof(Patch_TryChildGrowthMoment.Prefix)),
+                info: "Pawn_AgeTracker.TryChildGrowthMoment"
+            );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Pawn_AgeTracker), "BirthdayBiological"),
+                prefix: new HarmonyMethod(typeof(Patch_SuppressBirthdayBiological), nameof(Patch_SuppressBirthdayBiological.Prefix)),
+                info: "Pawn_AgeTracker.BirthdayBiological"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(Pawn_AgeTracker), nameof(Pawn_AgeTracker.AgeTickMothballed)),
+                postfix: new HarmonyMethod(typeof(Patch_AgeTickMothballed_Postfix), nameof(Patch_AgeTickMothballed_Postfix.Postfix)),
+                info: "Pawn_AgeTracker.AgeTickMothballed"
+            );
 
             ModChecker.ZealousInnocenceActive();
 
@@ -180,7 +195,7 @@ namespace ZealousInnocence
                 original: original,
                 postfix: postfix
             );
-            Log.Message($"ZealousInnocence harmony patching: Postfix {info}");
+             Log.Message($"[ZI]harmony patching: Postfix {info}");
             if (settings.debugging) DoCheckOnHarmonyMethode(original, false, true);
         }
         private void patchFunctionPrefix(MethodInfo original, HarmonyMethod prefix, string info)
@@ -190,7 +205,7 @@ namespace ZealousInnocence
                 original: original,
                 prefix: prefix
             );
-            Log.Message($"ZealousInnocence harmony patching: Prefix {info}");
+             Log.Message($"[ZI]harmony patching: Prefix {info}");
             if (settings.debugging) DoCheckOnHarmonyMethode(original,true,false);
         }
 
@@ -203,14 +218,14 @@ namespace ZealousInnocence
                 {
                     foreach (var prefix in patches.Prefixes)
                     {
-                        Log.Message($"Prefix patch from {prefix.owner}");
+                         Log.Message($"[ZI]Prefix patch from {prefix.owner}");
                     }
                 }
                 if (checkPostfix)
                 {
                     foreach (var postfix in patches.Postfixes)
                     {
-                        Log.Message($"Postfix patch from {postfix.owner}");
+                         Log.Message($"[ZI]Postfix patch from {postfix.owner}");
                     }
                 }
 
@@ -411,23 +426,23 @@ namespace ZealousInnocence
                     if(Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn)) __result = true;
                 }
                 
-                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat based {pref} physical age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging)  Log.Message($"[ZI]Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat based {pref} physical age {pawn.ageTracker.AgeBiologicalYears}");
             }
             else if (__instance.tags.Contains("DiapersNight"))
             {
                 __result = Helper_Diaper.needsDiaperNight(pawn) && Helper_Diaper.acceptsDiaperNight(pawn);
-                if (debugging) Log.Message($"Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on needsNight {Helper_Diaper.needsDiaperNight(pawn)} and acceptance {Helper_Diaper.acceptsDiaperNight(pawn)} of {Helper_Diaper.getDiaperPreference(pawn) != DiaperLikeCategory.Disliked} physical age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging)  Log.Message($"[ZI]Apparel DEBUG: DiapersNight {pawn.LabelShort} value {__result} based on needsNight {Helper_Diaper.needsDiaperNight(pawn)} and acceptance {Helper_Diaper.acceptsDiaperNight(pawn)} of {Helper_Diaper.getDiaperPreference(pawn) != DiaperLikeCategory.Disliked} physical age {pawn.ageTracker.AgeBiologicalYears}");
             }
             else if (__instance.tags.Contains("Diaper"))
             {
                 __result = (Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn)) || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked;
-                if (debugging) Log.Message($"Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} physical age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging)  Log.Message($"[ZI]Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} physical age {pawn.ageTracker.AgeBiologicalYears}");
 
             }
             else if (__instance.tags.Contains("Underwear"))
             {
                 __result = (!Helper_Diaper.needsDiaper(pawn) && !Helper_Diaper.needsDiaperNight(pawn)) || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked;
-                if (debugging) Log.Message($"Apparel DEBUG: Underwear {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} not needsNight {Helper_Diaper.needsDiaperNight(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked} physical age {pawn.ageTracker.AgeBiologicalYears}");
+                if (debugging)  Log.Message($"[ZI]Apparel DEBUG: Underwear {pawn.LabelShort} value {__result} based on not needsDiaper {Helper_Diaper.needsDiaper(pawn)} not needsNight {Helper_Diaper.needsDiaperNight(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Disliked} physical age {pawn.ageTracker.AgeBiologicalYears}");
             }
 
 

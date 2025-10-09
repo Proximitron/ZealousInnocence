@@ -92,7 +92,7 @@ namespace ZealousInnocence
                     {
                         rand = Rand.ValueSeeded(diaperNeed.bedwettingSeed + 8292);
                         // If they are prone to bedwetting by seed as adult, they carry the gene
-                        if (BedWetting_Helper.BedwettingAtAge(__result, 20))
+                        if (Helper_Bedwetting.BedwettingAtAge(__result, 20))
                         {
                             if (rand < 0.3f)
                             {
@@ -133,15 +133,15 @@ namespace ZealousInnocence
             if (HasGeneWithExclusionTag(__result, "BladderSize"))
             {
                 var debugGenes = settings.debugging && settings.debuggingGenes;
-                if (debugGenes) Log.Message($"Pawn {__result.LabelShort} has a bladder size gene");
+                if (debugGenes)  Log.Message($"[ZI]Pawn {__result.LabelShort} has a bladder size gene");
                 if (HasGene(__result, GeneDefOf.BladderSizeBig))
                 {
-                    if (debugGenes) Log.Message($"Pawn {__result.LabelShort} patching big");
+                    if (debugGenes)  Log.Message($"[ZI]Pawn {__result.LabelShort} patching big");
                     Helper_Diaper.replaceBladderPart(__result, HediffDefOf.BigBladder);
                 }
                 if (HasGene(__result, GeneDefOf.BladderSizeSmall))
                 {
-                    if (debugGenes) Log.Message($"Pawn {__result.LabelShort} patching small");
+                    if (debugGenes)  Log.Message($"[ZI]Pawn {__result.LabelShort} patching small");
                     Helper_Diaper.replaceBladderPart(__result, HediffDefOf.SmallBladder);
                 }
             }
@@ -150,11 +150,9 @@ namespace ZealousInnocence
             if (__result.health.hediffSet.HasHediff(HediffDefOf.Incontinent)) return;
 
 
-            if (BedWetting_Helper.BedwettingAtAge(__result, Helper_Regression.getAgeStageInt(__result)))
+            if (Helper_Bedwetting.BedwettingAtAge(__result, Helper_Regression.getAgeStageInt(__result)))
             {
-                __result.health.AddHediff(bedwettingDef);
-                var hediff = __result.health.hediffSet.GetFirstHediffOfDef(bedwettingDef);
-                hediff.Severity = BedWetting_Helper.BedwettingSeverity(__result);
+                Helper_Bedwetting.AddHediff(__result);
             }
 
             var underwear = __result.apparel.WornApparel.FirstOrDefault(a => a.def.apparel.layers.Contains(ApparelLayerDefOf.Underwear));
@@ -164,7 +162,7 @@ namespace ZealousInnocence
                 {
                     if (!Helper_Diaper.isDiaper(underwear) && Helper_Diaper.acceptsDiaper(__result))
                     {
-                        if (settings.debugging) Log.Message($"PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
+                        if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
                         __result.apparel.Remove(underwear);
                         underwear = null;
                     }
@@ -174,7 +172,7 @@ namespace ZealousInnocence
                 {
                     if (!Helper_Diaper.isNightDiaper(underwear) && Helper_Diaper.acceptsDiaperNight(__result))
                     {
-                        if (settings.debugging) Log.Message($"PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
+                        if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
                         __result.apparel.Remove(underwear);
                         underwear = null;
                     }
@@ -188,11 +186,11 @@ namespace ZealousInnocence
                     underwear = (Apparel)ThingMaker.MakeThing(underwearDef, ChooseMaterialFor(__result, underwearDef));
                     underwear.SetStyleDef(__result.StyleDef);
                     __result.apparel.Wear(underwear, true);
-                    if(settings.debugging) Log.Message($"PawnGenerator: Fixed underwear issue for {__result.LabelShort} with {underwear.LabelShort}");
+                    if(settings.debugging)  Log.Message($"[ZI]PawnGenerator: Fixed underwear issue for {__result.LabelShort} with {underwear.LabelShort}");
                 }
                 else
                 {
-                    if (settings.debugging) Log.Message($"PawnGenerator: Could not fix underwear issue for {__result.LabelShort}");
+                    if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Could not fix underwear issue for {__result.LabelShort}");
                 }
             }
 

@@ -3,8 +3,8 @@
 	<NeedDef>
 		<defName>Diaper</defName>
 		<needClass>ZealousInnocence.Need_Diaper</needClass>
-		<label>pants status</label>
-		<description>The current state of pawns diaper or underwear.</description>
+		<label>underwear status</label>
+		<description>The current state of pawns underwear or diaper.</description>
 		<showOnNeedList>true</showOnNeedList>
 		<minIntelligence>Humanlike</minIntelligence>
 		<baseLevel>0</baseLevel>

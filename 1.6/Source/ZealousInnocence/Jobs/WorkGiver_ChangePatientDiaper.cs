@@ -67,6 +67,10 @@ namespace ZealousInnocence
             {
                 return false;
             }
+            if (JobDriver_ChangePatientDiaper.immediateFailReasons(patient, caretaker))
+            {
+                return false;
+            }
 
             var diaper = Helper_Diaper.getUnderwearOrDiaper(patient);
             Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
@@ -76,9 +80,15 @@ namespace ZealousInnocence
                 JobFailReason.Is("No change needed.");
                 return false;
             }
+
             if (patient.GetPosture() == PawnPosture.Standing)
             {
                 JobFailReason.Is("Needs to lie down.");
+                return false;
+            }
+            if (!patient.InBed())
+            {
+                JobFailReason.Is("Needs to be in a bed.");
                 return false;
             }
 

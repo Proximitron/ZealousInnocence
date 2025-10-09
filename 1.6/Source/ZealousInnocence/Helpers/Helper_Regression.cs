@@ -5,12 +5,15 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.Networking.UnityWebRequest;
 
 namespace ZealousInnocence
 {
@@ -123,13 +126,15 @@ namespace ZealousInnocence
             if (!pawn.IsColonist) return false;
             return getAgeStage(pawn, forceRecheck) < 13;
         }
-        private static void healPawnBrain(Pawn pawn)
+        public static void healPawnBrain(Pawn pawn)
         {
             for (int num = pawn.health.hediffSet.hediffs.Count - 1; num >= 0; num--)
             {
                 var curr = pawn.health.hediffSet.hediffs[num];
-                if (curr.Part?.def == RimWorld.BodyPartDefOf.Head)
+                if (curr.Part?.def == RimWorld.BodyPartDefOf.Head || curr.Part?.def.tags?.Contains(RimWorld.BodyPartTagDefOf.ConsciousnessSource) == true)
                 {
+                    // Always preserve implants/added parts.
+                    if (curr.def.countsAsAddedPartOrImplant) continue;
                     pawn.health.RemoveHediff(curr);
                 }
             }
@@ -141,13 +146,32 @@ namespace ZealousInnocence
             }*/
 
         }
-        public static bool regressOrReincarnateToChild(Pawn pawn, out List<Hediff> removedHediffs, out float pawnAgeDelta)
+
+        private static void healPawnMissingBodyparts(Pawn pawn, bool healAddictions = false)
+        {
+            if (pawn?.health?.hediffSet == null) return;
+            var hediffs = new List<Hediff>(pawn.health.hediffSet.hediffs);
+            // --- 1) Restore missing natural parts (no implant replacement)
+            foreach (var h in hediffs)
+            {
+                if (h is Hediff_MissingPart miss && miss.Part != null)
+                {
+                    IntVec3 pos = pawn.Spawned ? pawn.Position : IntVec3.Invalid;
+                    Map map = pawn.Spawned ? pawn.Map : null;
+                    MedicalRecipesUtility.RestorePartAndSpawnAllPreviousParts(pawn, miss.Part, pos, map);
+                }
+            }
+
+            pawn.health.hediffSet.DirtyCache();
+        }
+
+        public static bool regressOrReincarnateToChild(Pawn pawn,ThingWithComps cause,  bool targetMentalRegression, out List<Hediff> removedHediffs, out float pawnAgeDelta)
         {
             removedHediffs = new List<Hediff>();
             pawnAgeDelta = 0f;
-            if (LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().reduceAge)
+            if (LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().reduceAge && !targetMentalRegression)
             {
-                return reincarnateToChildPawn(pawn, out removedHediffs, out pawnAgeDelta);
+                return reincarnateToChildPawn(pawn, cause, out removedHediffs, out pawnAgeDelta);
             }
             else
             {
@@ -159,23 +183,44 @@ namespace ZealousInnocence
         {
             healPawnBrain(pawn);
             Hediff hediff = HediffMaker.MakeHediff(HediffDefOf.RegressionState, pawn);
-            if (!pawn.health.WouldDieAfterAddingHediff(hediff))
-            {
-                pawn.health.AddHediff(hediff);
-            }
+            pawn.health.AddHediff(hediff);
+
+            healPawnMissingBodyparts(pawn, true);
             refreshAgeStageCache(pawn);
             Messages.Message("MessagePawnRegressed".Translate(pawn), pawn, MessageTypeDefOf.CautionInput);
         }
 
-        public static bool reincarnateToChildPawn(Pawn pawn, out List<Hediff> removedHediffs, out float pawnAgeDelta)
+        public static void dropAllUnwearable(Pawn pawn)
         {
-            int oldAge = pawn.ageTracker.AgeBiologicalYears;
+            if (pawn?.apparel == null) return;
+
+            // Snapshot list since Drop() mutates the collection.
+            var worn = pawn.apparel.WornApparel.ListFullCopy();
+            IntVec3 pos = pawn.PositionHeld;
+
+            foreach (var apparel in worn)
+            {
+                if (!apparel.PawnCanWear(pawn, true) || !Helper_Diaper.allowedByPolicy(pawn, apparel))
+                {
+                    // Drop it on the ground but keep all other apparel.
+                    pawn.apparel.TryDrop(apparel, out Apparel dropped, pos, forbid: false);
+                }
+            }
+        }
+
+        public static bool reincarnateToChildPawn(Pawn pawn, ThingWithComps cause, out List<Hediff> removedHediffs, out float pawnAgeDelta)
+        {
+            ApplyRegressionSeverity(pawn, cause, 1.0f);
             removedHediffs = new List<Hediff>();
-            float num = pawn.ageTracker.AgeBiologicalYears;
             pawnAgeDelta = 0;
+            return false;
+
+            int oldAge = pawn.ageTracker.AgeBiologicalYears;
+            float num = pawn.ageTracker.AgeBiologicalYears;
+            
             if (pawn.ageTracker.Adult)
             {
-                num = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge; // Mathf.Max(pawn.ageTracker.AgeBiologicalYearsFloat - years, LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge);
+                num = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge;
                 pawnAgeDelta = pawn.ageTracker.AgeBiologicalYearsFloat - num;
                 pawn.ageTracker.AgeBiologicalTicks = Mathf.RoundToInt(num * 3600000f);
             }
@@ -200,7 +245,7 @@ namespace ZealousInnocence
                 pawn.Drawer.renderer.SetAllGraphicsDirty();
                 Find.ColonistBar.MarkColonistsDirty();
 
-                pawn.apparel.DropAll(pawn.Position, false);
+                dropAllUnwearable(pawn);
             }
 
             if (pawn.ageTracker.AgeBiologicalYears < 13)
@@ -209,73 +254,70 @@ namespace ZealousInnocence
             }
 
             healPawnBrain(pawn);
+            
             List<HediffGiverSetDef> hediffGiverSets = pawn.RaceProps.hediffGiverSets;
-            if (hediffGiverSets == null)
+            if (hediffGiverSets != null)
             {
-                return false;
-            }
-            List<Hediff> resultHediffs = new List<Hediff>();
-            foreach (HediffGiverSetDef item in hediffGiverSets)
-            {
-                List<HediffGiver> hediffGivers = item.hediffGivers;
-                if (hediffGivers == null)
+                List<Hediff> resultHediffs = new List<Hediff>();
+                foreach (HediffGiverSetDef item in hediffGiverSets)
                 {
-                    continue;
-                }
-                foreach (HediffGiver item2 in hediffGivers)
-                {
-                    HediffGiver_Birthday agb;
-                    if ((agb = item2 as HediffGiver_Birthday) == null)
+                    List<HediffGiver> hediffGivers = item.hediffGivers;
+                    if (hediffGivers == null)
                     {
                         continue;
                     }
-                    float num2 = num / pawn.RaceProps.lifeExpectancy;
-                    float x = agb.ageFractionChanceCurve.Points[0].x;
-                    if (!(num2 < x))
+                    foreach (HediffGiver item2 in hediffGivers)
                     {
-                        continue;
-                    }
-                    pawn.health.hediffSet.GetHediffs(ref resultHediffs, (Hediff hd) => hd.def == agb.hediff);
-                    foreach (Hediff item3 in resultHediffs)
-                    {
-                        pawn.health.RemoveHediff(item3);
-                        removedHediffs.Add(item3);
-                    }
-                }
-            }
-            int num3 = Rand.RangeInclusive(1, 2);
-            for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
-            {
-                Hediff hediff = pawn.health.hediffSet.hediffs[num4];
-                if (hediff is Hediff_Injury && hediff.IsPermanent())
-                {
-                    pawn.health.RemoveHediff(hediff);
-                    removedHediffs.Add(hediff);
-                    num3--;
-                    if (num3 <= 0)
-                    {
-                        break;
+                        HediffGiver_Birthday agb;
+                        if ((agb = item2 as HediffGiver_Birthday) == null)
+                        {
+                            continue;
+                        }
+                        float num2 = num / pawn.RaceProps.lifeExpectancy;
+                        float x = agb.ageFractionChanceCurve.Points[0].x;
+                        if (!(num2 < x))
+                        {
+                            continue;
+                        }
+                        pawn.health.hediffSet.GetHediffs(ref resultHediffs, (Hediff hd) => hd.def == agb.hediff);
+                        foreach (Hediff item3 in resultHediffs)
+                        {
+                            pawn.health.RemoveHediff(item3);
+                            removedHediffs.Add(item3);
+                        }
                     }
                 }
+
             }
+            ApplyRegressionSeverity(pawn, cause, 0.7f);
+
             HediffGiver_BedWetting bedWettingGiver = new HediffGiver_BedWetting();
             bedWettingGiver.OnIntervalPassed(pawn, null);
             refreshAgeStageCache(pawn);
+
             return false;
         }
 
-        public static void dropAllGear(Pawn pawn)
+
+        /*int num3 = Rand.RangeInclusive(1, 2);
+for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
+{
+    Hediff hediff = pawn.health.hediffSet.hediffs[num4];
+    if (hediff is Hediff_Injury && hediff.IsPermanent())
+    {
+        pawn.health.RemoveHediff(hediff);
+        removedHediffs.Add(hediff);
+        num3--;
+        if (num3 <= 0)
         {
-            List<Apparel> wornApparel = pawn.apparel.WornApparel;
-            foreach (Apparel item in pawn.apparel.WornApparel)
-            {
-            }
-            for (int num = wornApparel.Count - 1; num >= 0; num--)
-            {
-                Apparel resultingAp;
-                pawn.apparel.TryDrop(wornApparel[num], out resultingAp, pawn.Position, forbid: false);
-            }
+            break;
         }
+    }
+}*/
+
+        //healPawnMissingBodyparts(pawn, true);
+
+
         public static bool CanBeRegressed(Pawn pawn)
         {
             if (!pawn.Dead && pawn.IsColonist) return true;
@@ -295,7 +337,7 @@ namespace ZealousInnocence
                                    dInfo.HitPart, dInfo.Weapon, dInfo.Category, dInfo.intendedTargetInt);
             return dInfo;
         }
-        public static float GetSeverityPerDamage(this DamageInfo dInfo, float originalDamage)
+       public static float GetSeverityPerDamage(this DamageInfo dInfo)
         {
             var extensionInfo = dInfo.Def.GetModExtension<RegressionDamageExtension>();
             if (extensionInfo != null)
@@ -304,21 +346,49 @@ namespace ZealousInnocence
             }
             return 0.01f;
         }
+        public static void ApplyRegressionSeverity([NotNull] Pawn pawn, [NotNull] ThingWithComps instigator, float severityAmount)
+        {
+            if (pawn == null || severityAmount <= 0f) return;
+
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamage);
+            if (hediff == null)
+            {
+                hediff = HediffMaker.MakeHediff(HediffDefOf.RegressionDamage, pawn);
+                pawn.health.AddHediff(hediff);
+                hediff.Severity = severityAmount;
+            }
+            else
+            {
+                hediff.Severity += severityAmount;
+            }
+            
+        }
         public static void ApplyPureRegressionDamage(DamageInfo dInfo, [NotNull] Pawn pawn, DamageWorker.DamageResult result, float originalDamage)
         {
-            float severityPerDamage = GetSeverityPerDamage(dInfo, originalDamage);
-
-            var extensionInfo = dInfo.Def.GetModExtension<RegressionDamageExtension>();
-            if (extensionInfo == null)
+            var ext = dInfo.Def.GetModExtension<RegressionDamageExtension>();
+            if (ext == null)
             {
                 Log.Warning("Damage caused by regression weapon does not contain damage extension!");
+                return;
+            }
+            float severityPerDamage = GetSeverityPerDamage(dInfo);
+            float severityToAdd = Mathf.Clamp(originalDamage * severityPerDamage, 0, Mathf.Min(ext.regressionBuildup.maxSeverity,ext.maxSeverity) );
+
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(ext.regressionBuildup);
+            if (hediff == null)
+            {
+                hediff = HediffMaker.MakeHediff(ext.regressionBuildup, pawn);
+                pawn.health.AddHediff(hediff, null, dInfo, result);
+                hediff.Severity = severityToAdd;
+                hediff.sourceDef = dInfo.Weapon;
+            }
+            else
+            {
+                hediff.Severity = severityToAdd + hediff.Severity;
+                hediff.sourceDef = dInfo.Weapon;
             }
 
-            float severityToAdd = Mathf.Clamp(originalDamage * severityPerDamage, 0, extensionInfo.regressionBuildup.maxSeverity);
 
-            Hediff hediff = HediffMaker.MakeHediff(extensionInfo.regressionBuildup, pawn);
-            hediff.Severity = severityToAdd;
-            hediff.sourceDef = dInfo.Weapon;
             /*if (hediff is ICaused caused)
             {
                 if (dInfo.Weapon != null)
@@ -330,8 +400,7 @@ namespace ZealousInnocence
                 if (dInfo.Def != null)
                     caused.Causes.Add(string.Empty, dInfo.Def);
             }*/
-            Log.Message($"original damage:{originalDamage}, reducedDamage{dInfo.Amount}, severity:{severityToAdd}");
-            pawn.health.AddHediff(hediff,null,dInfo,result);
+             Log.Message($"[ZI]original damage:{originalDamage}, reducedDamage{dInfo.Amount}, severity:{severityToAdd}");
         }
     }
 
@@ -363,7 +432,7 @@ namespace ZealousInnocence
             }
             var hediffsRemoved = new List<Hediff>();
             float ageDifference = 0f;
-            Helper_Regression.regressOrReincarnateToChild(pawn, out hediffsRemoved, out ageDifference);
+            Helper_Regression.regressOrReincarnateToChild(pawn,billDoer, targetMentalRegression,  out hediffsRemoved, out ageDifference);
 
         }
     }
@@ -443,11 +512,11 @@ namespace ZealousInnocence
         }
     }
 
-    public class Hediff_RegressionDamage : HediffWithComps
+    /*public class Hediff_RegressionDamage : HediffWithComps
     {
         public override void PostAdd(DamageInfo? dinfo)
         {
-            Log.Message($"Hit by {dinfo.Value}");
+             Log.Message($"[ZI]Hit by {dinfo.Value}");
             base.PostAdd(dinfo);
             // Additional logic when this hediff is added, like notifications or initial setup
         }
@@ -471,6 +540,6 @@ namespace ZealousInnocence
                 return $"Regression Level: {Severity * 100:F1}%";
             }
         }
-    }
+    }*/
 }
 
