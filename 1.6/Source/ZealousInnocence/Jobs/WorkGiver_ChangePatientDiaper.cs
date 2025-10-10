@@ -91,8 +91,8 @@ namespace ZealousInnocence
                 JobFailReason.Is("Needs to be in a bed.");
                 return false;
             }
-
-            if (!patient.IsPrisoner && !patient.IsSlaveOfColony && Helper_Regression.canChangeDiaperOrUnderwear(patient) && !Helper_Diaper.shouldStayPut(patient))
+            bool isGuest = patient.guest != null && patient.guest.GuestStatus == GuestStatus.Guest;
+            if (!isGuest && !patient.IsPrisoner && !patient.IsSlaveOfColony && Helper_Regression.canChangeDiaperOrUnderwear(patient) && !Helper_Diaper.shouldStayPut(patient))
             {
                 JobFailReason.Is("Is big enough to do it themselfs.");
                 return false;

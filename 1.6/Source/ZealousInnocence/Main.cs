@@ -76,11 +76,34 @@ namespace ZealousInnocence
                 info: "DubsBadHygiene.JobGiver_UseToilet.TryGiveJob"
             );
 
-            // By default only system defined CapacityImpactor are shown. This patch adds custom ones
             patchFunctionPostfix(
                 original: AccessTools.Method(typeof(HealthCardUtility), "GetPawnCapacityTip"),
                 postfix: new HarmonyMethod(typeof(HealthCardUtility_GetPawnCapacityTip_Patch), nameof(HealthCardUtility_GetPawnCapacityTip_Patch.Postfix)),
                 info: "HealthCardUtility.GetPawnCapacityTip"
+            );
+
+            // Guests on spawn → add hidden flag hediff
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(Pawn), nameof(Pawn.SpawnSetup), new[] { typeof(Map), typeof(bool) }),
+                postfix: new HarmonyMethod(typeof(ZI_FlagGuestsOnSpawn), nameof(ZI_FlagGuestsOnSpawn.Postfix)),
+                info: "Pawn.SpawnSetup"
+            );
+
+            // Guests on despawn → remove flag hediff
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Pawn), nameof(Pawn.DeSpawn)),
+                prefix: new HarmonyMethod(typeof(ZI_UnflagGuestsOnDespawn), nameof(ZI_UnflagGuestsOnDespawn.Prefix)),
+                info: "Pawn.DeSpawn"
+            );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Pawn_NeedsTracker), "ShouldHaveNeed"),
+                prefix: new HarmonyMethod(typeof(Patch_ShouldHaveNeed), nameof(Patch_ShouldHaveNeed.Prefix)),
+                info: "Pawn_NeedsTracker.ShouldHaveNeed"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(Pawn_NeedsTracker), nameof(Pawn_NeedsTracker.AddOrRemoveNeedsAsAppropriate)),
+                postfix: new HarmonyMethod(typeof(Patch_AddOrRemoveNeedsAsAppropriate), nameof(Patch_AddOrRemoveNeedsAsAppropriate.Postfix)),
+                info: "Pawn_NeedsTracker.AddOrRemoveNeedsAsAppropriate"
             );
 
             // The category can be different, depending on if the paw can feel the need to go potty

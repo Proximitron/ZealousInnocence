@@ -55,7 +55,7 @@ namespace ZealousInnocence
                 var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
                 if (diaperNeed != null) diaperNeed.FailureSeed = 0; // resetting seed
 
-                // Log.Message($"[ZI]JobGiver_UseToilet attempting to assign a job to {pawn.Name.ToStringShort}");
+                if(debugging) Log.Message($"[ZI]JobGiver_UseToilet attempting to assign a job to {pawn.Name.ToStringShort}");
             }
         }
     }

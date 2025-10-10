@@ -1,6 +1,7 @@
 ﻿using DubsBadHygiene;
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,7 @@ namespace ZealousInnocence
             }
 
         }*/
+
         public static bool NeedInterval_Prefix(Need_Bladder __instance)
         {
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
@@ -84,4 +86,151 @@ namespace ZealousInnocence
             }*/
         }
     }
+    [HarmonyPatch(typeof(Pawn), nameof(Pawn.SpawnSetup))]
+    public static class ZI_FlagGuestsOnSpawn
+    {
+        public static void Postfix(Pawn __instance, Map map, bool respawningAfterLoad)
+        {
+            var p = __instance;
+            if (p == null || !p.Spawned || p.Dead) return;
+            if (p.RaceProps?.Humanlike != true) return;
+
+            // exclude colony-controlled pawns
+            if (p.IsColonist || p.IsPrisonerOfColony || p.IsSlaveOfColony) return;
+
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debug = settings.debugging && settings.debuggingCapacities;
+            if (debug) Log.Message($"[ZI]ZI_FlagGuestsOnSpawn: Pawn {__instance.LabelShort} is considered for patch");
+
+            // visiting/trading guests hosted by the player
+            /*var g = p.guest;
+            bool isVisitor = g != null &&
+                             (g.GuestStatus == GuestStatus.Guest || g.HostFaction == Faction.OfPlayer);
+            if (!isVisitor) return;
+            */
+
+            var flag = DefDatabase<HediffDef>.GetNamedSilentFail("ZI_GuestHygieneFlag");
+            if (flag == null) return;
+
+            if (!p.health.hediffSet.HasHediff(flag))
+            {
+                p.health.AddHediff(flag);
+                if (debug) Log.Message($"[ZI]ZI_FlagGuestsOnSpawn: Pawn {__instance.LabelShort} was patched");
+                if (debug) Log.Message(p.health.hediffSet.HasHediff(DefDatabase<HediffDef>.GetNamed("ZI_GuestHygieneFlag")).ToString());
+            }
+        }
+    }
+    [HarmonyPatch(typeof(Pawn), nameof(Pawn.DeSpawn))]
+    public static class ZI_UnflagGuestsOnDespawn
+    {
+        public static void Prefix(Pawn __instance)
+        {
+            var p = __instance;
+            if (p == null) return;
+
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debug = settings.debugging && settings.debuggingCapacities;
+            if (debug) Log.Message($"[ZI]ZI_UnflagGuestsOnDespawn: Pawn {__instance.LabelShort} is prepared for patch removal");
+
+            var flag = DefDatabase<HediffDef>.GetNamedSilentFail("ZI_GuestHygieneFlag");
+            if (flag == null) return;
+
+            var h = p.health?.hediffSet?.GetFirstHediffOfDef(flag);
+            if (h != null) p.health.RemoveHediff(h);
+            if (debug) Log.Message($"[ZI]ZI_UnflagGuestsOnDespawn: Pawn {__instance.LabelShort} patch removed");
+        }
+    }
+
+    public static class Patch_ShouldHaveNeed
+    {
+        // Access private field "pawn" from Pawn_NeedsTracker
+        private static readonly AccessTools.FieldRef<Pawn_NeedsTracker, Pawn> pawnRef =
+            AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>("pawn");
+
+        /// <summary>
+        /// Intercept only the "Bladder" NeedDef for player-hosted guests (visitors/traders),
+        /// and force true; otherwise let vanilla run.
+        /// </summary>
+        public static bool Prefix(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result)
+        {
+            // Only care about the DBH need named "Bladder"
+            if (nd == null || nd.defName != "Bladder")
+                return true; // run vanilla
+
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debug = settings.debugging && settings.debuggingCapacities;
+
+
+
+            var pawn = pawnRef(__instance);
+            if (debug) Log.Message($"[ZI]Patch_ForceBladderForGuests: Pawn {pawn.LabelShort} processing");
+            if (pawn == null || pawn.Dead)
+                return true; // let vanilla decide / avoid NRE during load
+
+            // We only extend to humanlike visitors; animals/raiders unchanged.
+            if (pawn.RaceProps?.Humanlike != true)
+                return true;
+
+            // Skip pawns vanilla already handles (colonists/prisoners/slaves)
+            if (pawn.IsColonist || pawn.IsPrisonerOfColony || pawn.IsSlaveOfColony)
+                return true;
+
+            // All vanilla preconditions (intelligence, dev stage, etc.) have already
+            // been applied in the original method. We’re explicitly overriding the
+            // remaining blockers (e.g. onlyIfCausedByHediff) for this one need.
+            if (debug) Log.Message($"[ZI]Patch_ForceBladderForGuests: Pawn {pawn.LabelShort} force true");
+            __result = true;
+            return false; // skip original for Bladder on player-hosted guests
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_NeedsTracker), nameof(Pawn_NeedsTracker.AddOrRemoveNeedsAsAppropriate))]
+    public static class Patch_AddOrRemoveNeedsAsAppropriate
+    {
+        static readonly MethodInfo MI_AddNeed =
+            AccessTools.Method(typeof(Pawn_NeedsTracker), "AddNeed", new[] { typeof(NeedDef) });
+
+        public static void Postfix(Pawn_NeedsTracker __instance)
+        {
+            // Never touch during load/scribe or worldgen/init — this caused your SaveableFromNode crash
+            if (Scribe.mode != LoadSaveMode.Inactive) return;
+            if (Current.ProgramState != ProgramState.Playing) return;
+
+            // Resolve pawn safely
+            var pawn = AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>("pawn")(__instance);
+            if (pawn == null || pawn.Dead) return;
+
+            
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debug = settings.debugging && settings.debuggingCapacities;
+            if (debug) Log.Message($"[ZI]Patch_AddOrRemoveNeedsAsAppropriate: Pawn {pawn.LabelShort} is considered for patch");
+
+            if (!pawn.Spawned) return;
+
+            // Already has it?
+            if (pawn.needs?.TryGetNeed<Need_Bladder>() != null) return;
+
+            // Only humanlikes; and don't touch colonists/prisoners/slaves
+            if (pawn.RaceProps?.Humanlike != true) return;
+            if (pawn.IsColonist || pawn.IsPrisonerOfColony || pawn.IsSlaveOfColony) return;
+            if (debug) Log.Message($"[ZI]Patch_AddOrRemoveNeedsAsAppropriate: Pawn {pawn.LabelShort} hurdles done, going to final");
+            // Add via vanilla path
+            var def = DefDatabase<NeedDef>.GetNamedSilentFail("Bladder");
+            if (def == null || MI_AddNeed == null) return;
+
+            try
+            {
+                if (debug) Log.Message($"[ZI]Patch_AddOrRemoveNeedsAsAppropriate: Pawn {pawn.LabelShort} invoked add!");
+                MI_AddNeed.Invoke(__instance, new object[] { def });
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                Log.Warning($"[ZI] AddNeed(Bladder) failed: {e}");
+#endif
+            }
+        }
+    }
 }
+
+
