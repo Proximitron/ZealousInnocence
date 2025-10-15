@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-  <HediffDef>
+  <!--<HediffDef>
     <defName>ZI_GuestHygieneFlag</defName>
     <hediffClass>HediffWithComps</hediffClass>
     <label>guest hygiene flag</label>
@@ -10,7 +10,6 @@
     <tendable>false</tendable>
     <everCurableByItem>false</everCurableByItem>
 
-    <!-- Start at/above the visible stage -->
     <initialSeverity>1</initialSeverity>
 
     <stages>
@@ -19,14 +18,14 @@
         <minSeverity>0</minSeverity>
         <becomeVisible>true</becomeVisible>
 				<enablesNeeds>
-					<li>Bladder</li> <!-- NeedDef.defName from DBH -->
+					<li>Bladder</li>
 				</enablesNeeds>
       </li>
     </stages>
 
-    <!-- Optional: keep it around; not required for visibility -->
+
     <comps>
 
     </comps>
-  </HediffDef>
+  </HediffDef>-->
 </Defs>

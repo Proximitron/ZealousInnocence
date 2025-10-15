@@ -3,12 +3,14 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Jobs;
+using UnityEngine;
+using Verse;
 using Verse.AI;
 using Verse.Sound;
-using Verse;
-using UnityEngine;
 
 namespace ZealousInnocence
 {
@@ -474,44 +476,82 @@ namespace ZealousInnocence
 
 
 
-            if (!isHavingAccident && bladder.CurLevel <= 0.5f && bladder.CurLevel <= Helper_Diaper.getBladderControlFailPoint(pawn))
+            if (!isHavingAccident && bladder.CurLevel <= 0.5f && pawn.CurJobDef != DubDef.UseToilet)
             {
-                bool startPottyRun = false;
-                if (pawn.CurJobDef == JobDefOf.LayDown && pawn.Awake() == false && pawn.health.capacities.CanBeAwake && !Helper_Diaper.shouldStayPut(pawn) && Helper_Diaper.remembersPotty(pawn))
+                if (bladder.CurLevel <= Helper_Diaper.getBladderControlFailPoint(pawn))
                 {
-                    // Interrupt the current sleep job
-                    pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, true);
-
-                    JobGiver_UseToilet jobGiver = new JobGiver_UseToilet();
-
-                    // Get a toilet job for the pawn
-                    Job job = jobGiver.TryGiveJob(pawn);
-                    if (debugBedwetting)  Log.Message($"[ZI]conditions met for wakeup call at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
-                    // If a job is found, start the job
-                    if (job != null)
+                    bool startPottyRunBed = false;
+                    bool startPottyRun = false;
+                    if (pawn.health.capacities.CanBeAwake && !Helper_Diaper.shouldStayPut(pawn) && Helper_Diaper.remembersPotty(pawn))
                     {
-                        startPottyRun = true;
-                        pawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                    }
-                }
-                //float failChance = ((remainingControl * -1.0f) * 0.06f) - 0.01f;
-                /*Log.Message("debug: bladder control of " + remainingControl + " lower then 0, calculated fail of " + failChance.ToString() + " for " + pawn.Name);
+                        if (pawn.CurJobDef == JobDefOf.LayDown && pawn.Awake() == false)
+                        {
+                            // Interrupt the current sleep job
+                            pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, true);
 
-                bool trigger = Rand.ChanceSeeded(failChance, pawn.HashOffsetTicks());
-                if (trigger)
-                {
-                    */
-                if (startPottyRun)
-                {
-                    if (debugBedwetting)  Log.Message($"[ZI]prevent fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                            var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
+
+                            // Get a toilet job for the pawn
+                            Job job = jobGiver.TryGiveJob(pawn);
+                            if (debugBedwetting) Log.Message($"[ZI]conditions met for wakeup call at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                            // If a job is found, start the job
+                            if (job != null)
+                            {
+                                startPottyRunBed = true;
+                                pawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                            }
+                        }
+                        else if (CanPolitelyInterrupt(pawn, pawn.CurJob))
+                        {
+                            if (debugging) Log.Message($"[ZI] polite override: interrupting {pawn.CurJobDef?.defName} for toilet ({pawn.LabelShort})");
+
+                            // End the current trivial job
+                            pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, startNewJob: true);
+
+                            var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
+                            Job toiletJob = jobGiver.TryGiveJob(pawn);
+                            if (toiletJob != null)
+                            {
+                                startPottyRun = true;
+                                pawn.jobs.StartJob(toiletJob, JobCondition.InterruptForced, cancelBusyStances: true);
+                            }
+                            else
+                            {
+                                // If we failed to create a toilet job, no harm done: the Lord/think tree will give them a new wander/Wait job.
+                                if (debugging) Log.Message($"[ZI] no toilet job available for {pawn.LabelShort} after polite override");
+                            }
+                        }
+                    }
+
+                    if (startPottyRunBed)
+                    {
+                        if (debugBedwetting) Log.Message($"[ZI]Bedtime prevent fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                    }
+                    else if (startPottyRun)
+                    {
+                        if (debugging) Log.Message($"[ZI]prevent fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                    }
+                    else
+                    {
+                        var pee = true;
+                        if (settings.faecesActive && Rand.ChanceSeeded(0.5f, pawn.HashOffsetTicks() + 922)) pee = false;
+
+                        startAccident(pee);
+                        if (debugBedwetting) Log.Message($"[ZI]doing fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                    }
                 }
                 else
                 {
-                    var pee = true;
-                    if (settings.faecesActive && Rand.ChanceSeeded(0.5f, pawn.HashOffsetTicks() + 922)) pee = false;
-
-                    startAccident(pee);
-                    if (debugBedwetting)  Log.Message($"[ZI]doing fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                    if (bladder.CurLevel <= 0.28f && Rand.Chance(1f / 32f) && bladder.CurLevel <= (Helper_Diaper.getBladderControlFailPoint(pawn) + 0.1f) && Helper_Diaper.remembersPotty(pawn) && CanPolitelyInterrupt(pawn, pawn.CurJob))
+                    {
+                        var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
+                        Job toiletJob = jobGiver.TryGiveJob(pawn);
+                        if (toiletJob != null)
+                        {
+                            pawn.jobs.jobQueue.EnqueueFirst(toiletJob);
+                            if (debugging) Log.Message($"[ZI]random potty assignment: interrupting {pawn.CurJobDef?.defName} for toilet ({pawn.LabelShort})");
+                        }
+                    }
                 }
             }
 
@@ -619,6 +659,52 @@ namespace ZealousInnocence
             }
 
 
+        }
+
+        private static bool CanPolitelyInterrupt(Pawn pawn, Job curJob)
+        {
+            if (pawn == null || curJob == null) return false;
+            if (pawn.Downed || pawn.InMentalState) return false;
+            if(pawn.CurJob?.playerForced == true) return false;
+
+            // If job def says it’s NOT interruptible for the player, treat it as essential
+            if (curJob.def?.playerInterruptible == false) return false;
+            if (curJob.locomotionUrgency == LocomotionUrgency.Sprint) return false;
+            // Avoid interrupting critical things
+            if (IsEssentialJob(curJob)) return false;
+            if(ForbidsLongNeeds(pawn)) return false;
+
+            return true;
+        }
+        private static bool ForbidsLongNeeds(Pawn pawn)
+        {
+            var duty = pawn?.mindState?.duty;
+            if (duty == null) return false;
+
+            // Try common names across versions
+            var t = duty.GetType();
+            var f = t.GetField("allowSatisfyLongNeeds", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (f?.FieldType == typeof(bool)) return !(bool)f.GetValue(duty);
+            var p = t.GetProperty("allowSatisfyLongNeeds", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (p?.PropertyType == typeof(bool)) return !(bool)p.GetValue(duty);
+
+            return false; // unknown => don’t block
+        }
+
+        private static bool IsEssentialJob(Job job)
+        {
+            if (job?.def == null) return false;
+            var def = job.def;
+
+            // conservative deny-list: combat, emergency, tending, rescuing, hauling a downed pawn, arrest, manhunter-like, fleeing, ingest while starving, etc.
+            if (def == RimWorld.JobDefOf.AttackMelee || def == RimWorld.JobDefOf.AttackStatic || def == RimWorld.JobDefOf.Wait_Combat || def == RimWorld.JobDefOf.Hunt)
+                return true;
+            if (def == RimWorld.JobDefOf.Flee || def == RimWorld.JobDefOf.TakeWoundedPrisonerToBed || def == RimWorld.JobDefOf.Rescue || def == RimWorld.JobDefOf.Capture || def == RimWorld.JobDefOf.Arrest)
+                return true;
+            if (def == RimWorld.JobDefOf.TendPatient || def == RimWorld.JobDefOf.TendEntity || def == RimWorld.JobDefOf.BeatFire || def == RimWorld.JobDefOf.ExtinguishSelf)
+                return true;
+
+            return false;
         }
         void CategoryChanged()
         {

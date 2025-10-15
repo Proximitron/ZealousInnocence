@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Defs>mo
+<Defs>
   <ThingDef ParentName="BuildingBase">
     <defName>FountainOfYouth</defName>
     <label>fountain of youth</label>
@@ -50,21 +50,7 @@
           <li MayRequire="Ludeon.RimWorld.Anomaly">Void</li>
         </focusTypes>
       </li>
-      <li Class="CompProperties_Interactable">
-        <compClass>CompGleamingMonolith</compClass>
-        <ticksToActivate>300</ticksToActivate> <!-- 5 seconds -->
-        <remainingSecondsInInspectString>true</remainingSecondsInInspectString>
-        <maintainProgress>true</maintainProgress>
-        <activateTexPath>UI/Commands/ActivateMonolith</activateTexPath>
-        <jobString>activate</jobString>
-        <targetingParameters>
-          <canTargetBuildings>false</canTargetBuildings>
-          <canTargetAnimals>false</canTargetAnimals>
-          <canTargetMechs>false</canTargetMechs>
-          <onlyTargetControlledPawns>true</onlyTargetControlledPawns>
-        </targetingParameters>
-      </li>
-      <li Class="CompProperties_StudyUnlocksMonolith">
+      <li Class="ZealousInnocence.CompProperties_StudyUnlocksRegression">
         <defaultStudyAmount>2</defaultStudyAmount>
         <studyNotes>
           <li>
@@ -93,7 +79,7 @@
         <showToggleGizmo>true</showToggleGizmo>
         <anomalyKnowledge>1</anomalyKnowledge>
         <minMonolithLevelForStudy>1</minMonolithLevelForStudy>
-        <knowledgeCategory>Regression</knowledgeCategory> <!-- Gets overriden later with study unlocks -->
+        <knowledgeCategory>Basic</knowledgeCategory> <!-- Gets overriden later with study unlocks -->
       </li>
       <li Class="CompProperties_ProximityLetter">
         <radius>8</radius>
@@ -101,6 +87,13 @@
         <letterLabel>Fountain of youth</letterLabel>
         <letterText>{PAWN_nameDef} has noticed a strange fountain with a strange glittering water.\n\nIf you investigate it, you could learn more.</letterText>
       </li>
+			<li Class="ZealousInnocence.CompProperties_FOYReservoir">
+				<capacity>20</capacity>
+				<ticksPerUnit>6000</ticksPerUnit> <!-- 10 per 1 day -->
+				<extractTicks>1200</extractTicks>
+				<productDef>ZI_Foy_Vial</productDef>
+				<productCount>2</productCount>
+			</li>
       <li Class="CompProperties_Glower">
         <glowRadius>12</glowRadius>
         <glowColor>(255,120,120,0)</glowColor>
@@ -110,4 +103,39 @@
       <li>ITab_StudyNotesVoidMonolith</li>
     </inspectorTabs>
   </ThingDef>
+	
+	<WorkTypeDef>
+		<defName>ZI_RegressionHandling</defName>
+		<label>regression handling</label>
+		<gerundLabel>handling regression</gerundLabel>
+		<workTags>ManualSkilled</workTags>
+		<relevantSkills>
+			<li>Crafting</li>
+		</relevantSkills>
+		<naturalPriority>35</naturalPriority>
+	</WorkTypeDef>
+
+	<!-- Work giver -->	
+	<WorkGiverDef>
+    <defName>ZI_ExtractFOY</defName>
+    <label>extract FOY water</label>
+    <giverClass>ZealousInnocence.WorkGiver_ExtractFOY</giverClass>
+    <workType>ZI_RegressionHandling</workType>
+    <verb>extract</verb>
+    <gerund>extracting</gerund>
+		<scanThings>true</scanThings>
+    <priorityInType>90</priorityInType>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+  </WorkGiverDef>
+	
+	<!-- Job -->
+	<JobDef>
+		<defName>ZI_ExtractFOY</defName>
+		<driverClass>ZealousInnocence.JobDriver_ExtractFOY</driverClass>
+		<reportString>extracting water from TargetA</reportString>
+		<casualInterruptible>true</casualInterruptible>
+		<playerInterruptible>true</playerInterruptible>
+	</JobDef>
 </Defs>

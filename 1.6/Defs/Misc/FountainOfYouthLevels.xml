@@ -17,7 +17,7 @@
     <activateQuestText>Send a colonist to investigate the fountain.</activateQuestText>
     <anomalyMentalBreakChance>0.05</anomalyMentalBreakChance>
     <activateSound MayRequire="Ludeon.RimWorld.Anomaly">VoidMonolith_ActivateL0L1</activateSound>
-    <uiIconPath>Things/Building/Misc/FountainOfYouth/FountainOfYouth_B</uiIconPath>
+    <uiIconPath>Things/Building/Misc/FountainOfYouth/FountainOfYouth_A</uiIconPath>
   </ZealousInnocence.FountainOfYouthLevelDef>
   
   <ZealousInnocence.FountainOfYouthLevelDef>
@@ -34,7 +34,7 @@
     <triggersGrayPall>true</triggersGrayPall>
     <monolithStudyCategory>Regression</monolithStudyCategory>
     <levelInspectText>Level 1: Fountain of youth?</levelInspectText>
-    <extraQuestDescription>You've activated the fountain. Cleaning away the grime and dirt you see glyphs, slowly morphing to readable text.\n\nThe fountain seems to convey the idea of age reverting and living multiple lifetimes. To learn more you must activate it further, which will require some special research.</extraQuestDescription>
+    <extraQuestDescription>You've activated the fountain. Cleaning away the grime and dirt you see glyphs, slowly morphing to readable text.\n\nThe fountain seems to convey the idea of age reverting and living multiple lifetimes. To learn more you must activate it further, which would come at personal cost for the one researching.</extraQuestDescription>
     <activateGizmoText>attune</activateGizmoText>
     <activateFloatMenuText>attune {0}</activateFloatMenuText>
     <activateGizmoDescription>Send a colonist to attune the fountain.\n\nThis will surly cause more questions than it answers and might invite unknown dangers.</activateGizmoDescription>
@@ -42,8 +42,8 @@
     <fountainCanBeActivatedText>Can be attuned now.</fountainCanBeActivatedText>
     <activateQuestText>Send a colonist to attune the fountain.</activateQuestText>
     <activatableLetterLabel>Attuning the fountain</activatableLetterLabel>
-    <activatableLetterText>You now have sufficient knowledge of regression to attune the fountain of youth and further its output.\n\nThis will cause more dangerous incidents related to regression.</activatableLetterText>
-    <activatedLetterText>As the fountain glows, {PAWN_nameDef} was overcome visions of a playground, free of grown up troubles. In an instant, {PAWN_pronoun} understood.\n\nThe fountain is more than just water that can revert age. It offers a second chance, luring in anyone looking back to find a second childhood.\n\nExcided like a little child, {PAWN_nameDef} is convinced {PAWN_pronoun} can learn more if given the time to study the fountain.\n\n - Building category unlocked: Regression\n - Research tab unlocked: Regression\n - You can now study the fountain to gain Regression research.\n\n(*Gray)Note: This is an anomaly and as such follows the rules of Anomaly-related features. It can be adjusted in the storyteller settings.(/Gray)</activatedLetterText>
+    <activatableLetterText>You now have sufficient knowledge of regression to attune the fountain of youth and further its output.\n\nThis will cause the researcher to be regressed and enable research.</activatableLetterText>
+    <activatedLetterText>As the fountain glows, {PAWN_nameDef} was overcome visions of a playground, free of grown up troubles. In an instant, {PAWN_pronoun} understood.\n\nThe fountain is more than just water that can revert age. It offers a second chance, luring in anyone looking back to find a second childhood.\n\nExcided like a little child, {PAWN_nameDef} is convinced {PAWN_pronoun} can learn more if given the time to study the fountain.\n\n(*Gray)Note: This is an anomaly and as such follows the rules of Anomaly-related features. It can be adjusted in the storyteller settings.(/Gray)</activatedLetterText>
     <anomalyMentalBreakChance>0.2</anomalyMentalBreakChance>
     <activatedSound MayRequire="Ludeon.RimWorld.Anomaly">VoidMonolith_ActivatedL0L1</activatedSound>
     <activateSound MayRequire="Ludeon.RimWorld.Anomaly">VoidMonolith_ActivateL1L2</activateSound>
@@ -75,18 +75,18 @@
     <postEndgame>true</postEndgame>
     <regressionThreatTier>2</regressionThreatTier>
     <useActiveAnomalyThreatFraction>true</useActiveAnomalyThreatFraction>
-    <monolithStudyCategory>AdvRegression</monolithStudyCategory>
+    <monolithStudyCategory>Regression</monolithStudyCategory>
     <levelInspectText>Level 2: Inviting</levelInspectText>
 		
 		<activateGizmoText>regress</activateGizmoText>
-    <activateFloatMenuText>regress {0}</activateFloatMenuText>
+    <activateFloatMenuText>bathe in {0}</activateFloatMenuText>
     <activateGizmoDescription>Send a colonist to regress them to the age of a child.\n\nMore to come...</activateGizmoDescription>
     <pawnSentToActivateMessage>{PAWN_nameDef} has been sent to bathe in the fountain.</pawnSentToActivateMessage>
     <fountainCanBeActivatedText>Can be bathed in.</fountainCanBeActivatedText>
     <activateQuestText>Send a colonist to bath there.</activateQuestText>
     <activatableLetterLabel>Bathing in fountain</activatableLetterLabel>
     <activatableLetterText>You have regressed another pawn.\n\nMore to come in the future.</activatableLetterText>
-    <activatedLetterText>As {PAWN_nameDef} takes a bath in the fountain, they are overcome with visions of a playground, free of grown up troubles. In an instant, {PAWN_pronoun} was regressed.\n\nMore to come in the future...\n\n(*Gray)Note: This is an anomaly and as such follows the rules of Anomaly-related features. It can be adjusted in the storyteller settings.(/Gray)</activatedLetterText>
+    <activatedLetterText>As {PAWN_nameDef} takes a bath in the fountain, they are overcome with visions of a playground, free of grown up troubles. In an instant, {PAWN_pronoun} was regressed, but knowledge was gained.\n\n - Building category unlocked: Regression\n - Research tab unlocked: Regression\n - You can now research Regression.\n\nMore to come in the future...\n\n(*Gray)Note: This is an anomaly and as such follows the rules of Anomaly-related features. It can be adjusted in the storyteller settings.(/Gray)</activatedLetterText>
     <anomalyMentalBreakChance>0.2</anomalyMentalBreakChance>
     <attachments>
       <li MayRequire="Ludeon.RimWorld.Anomaly">
@@ -116,14 +116,14 @@
       </li>
     </attachments>
     <sizeIncludingAttachments>(5, 5)</sizeIncludingAttachments>
-		<uiIconPath>Things/Building/Misc/FountainOfYouth/FountainOfYouth_A</uiIconPath>
+		<uiIconPath>Things/Building/Misc/FountainOfYouth/FountainOfYouth_C</uiIconPath>
   </ZealousInnocence.FountainOfYouthLevelDef>
 
   <ZealousInnocence.FountainOfYouthLevelDef>
     <defName>Embraced</defName>
     <level>3</level>
     <fountainLabel>fountain of youth</fountainLabel>
-    <graphicIndex>3</graphicIndex>
+    <graphicIndex>1</graphicIndex>
     <advanceThroughActivation>false</advanceThroughActivation>
 		<unreachableDuringConditions>
       <li MayRequire="Ludeon.RimWorld.Anomaly">UnnaturalDarkness</li> <!-- Just a placeholder, custom conditions? -->
@@ -162,7 +162,7 @@
       </li>
     </attachments>
     <sizeIncludingAttachments>(5, 5)</sizeIncludingAttachments>
-		<uiIconPath>Things/Building/Misc/FountainOfYouth/FountainOfYouth_A</uiIconPath>
+		<uiIconPath>Things/Building/Misc/FountainOfYouth/FountainOfYouth_B</uiIconPath>
   </ZealousInnocence.FountainOfYouthLevelDef>
 	
   <ZealousInnocence.FountainOfYouthLevelDef>
@@ -170,14 +170,14 @@
     <level>4</level>
     <fountainLabel>collapsed fountain</fountainLabel>
     <fountainDescription>The remnants of the fountain of youth, broken. The once glowing runes across its surface are withered, any water dried up. You can study the broken stones to gain further knowledge of regression.</fountainDescription>
-    <graphicIndex>4</graphicIndex>
+    <graphicIndex>1</graphicIndex>
     <advanceThroughActivation>false</advanceThroughActivation>
     <postEndgame>true</postEndgame>
     <regressionThreatTier>0</regressionThreatTier>
     <useInactiveAnomalyThreatFraction>true</useInactiveAnomalyThreatFraction>
     <monolithStudyCategory>AdvRegression</monolithStudyCategory>
     <anomalyMentalBreakChance>0</anomalyMentalBreakChance>
-    <uiIconPath>Things/Building/Misc/FountainOfYouth/FountainOfYouth_A</uiIconPath>
+    <uiIconPath>Things/Building/Misc/FountainOfYouth/FountainOfYouth_B</uiIconPath>
   </ZealousInnocence.FountainOfYouthLevelDef>
 
 </Defs>

@@ -3,8 +3,10 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using Verse;
 using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
@@ -31,7 +33,8 @@ namespace ZealousInnocence
         private int lastWholeYears = -1;
         public bool forceTick = false;
         private BeardDef lastBeardType = null;
-
+        private TickTimer resurrectTimer = new TickTimer();
+        private TickTimer resurrectTimerLetter = new TickTimer();
         // Growth moments
         public static bool AllowBirthdayThrough = false;
         public bool suppressVanillaBirthdays = true;
@@ -58,7 +61,9 @@ namespace ZealousInnocence
             if (bioTicks < childEdge) return AgeStage3.Child;
             return AgeStage3.Adult;
         }
-
+        private float ResurrectDurationSeconds = 60f;
+        private float ResurrectMoveDurationSeconds = 30f;
+        public Corpse Corpse { get => pawn.ParentHolder as Corpse; }
         public float BaseAgeYearFloat {
             get
             {
@@ -73,6 +78,21 @@ namespace ZealousInnocence
                 return (float)pawn.ageTracker.AgeBiologicalTicks / GenDate.TicksPerYear;
             }
         }
+        public bool PlayerControlled
+        {
+            get
+            {
+                return this.pawn.IsColonist && (this.pawn.HostFaction == null || this.pawn.IsSlave);
+            }
+        }
+        public bool InProgress
+        {
+            get
+            {
+                return !this.resurrectTimer.Finished;
+            }
+        }
+
         public CompRegressionMemory Memory
         {
             get
@@ -85,6 +105,7 @@ namespace ZealousInnocence
             return pawn.TryGetComp<CompRegressionMemory>();
         }
 
+
         //public override bool Visible => !dormant && base.Visible;
         public override void ExposeData()
         {
@@ -95,10 +116,19 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref lastBioSeen, "ZI_reg_lastBioSeen", -1);
 
             Scribe_Defs.Look(ref lastBeardType, "ZI_reg_lastBeardType");
-            if (Scribe.mode == LoadSaveMode.PostLoadInit && lastBeardType == null)
+            Scribe_Deep.Look<TickTimer>(ref resurrectTimerLetter, "ZI_reg_resurrectTimerLetter", Array.Empty<object>());
+            Scribe_Deep.Look<TickTimer>(ref resurrectTimer, "ZI_reg_resurrectTimer", Array.Empty<object>());
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                lastBeardType = BeardDefOf.NoBeard;
-                if (pawn.style?.beardDef != null) lastBeardType = pawn.style.beardDef;
+                if(resurrectTimer == null) resurrectTimer = new TickTimer();
+                if(resurrectTimerLetter == null) resurrectTimerLetter = new TickTimer();
+                resurrectTimer.OnFinish = new Action(Resurrect);
+                resurrectTimerLetter.OnFinish = new Action(ResurrectLetterTrigger);
+                if (lastBeardType == null)
+                {
+                    lastBeardType = BeardDefOf.NoBeard;
+                    if (pawn.style?.beardDef != null) lastBeardType = pawn.style.beardDef;
+                }
             }
 
             Scribe_Collections.Look(ref deferredBirthdays, "ZI_deferredBirthdays", LookMode.Value);
@@ -137,12 +167,12 @@ namespace ZealousInnocence
         const double babyExp = 0.75;       // curve shape (higher = gentler)
 
         // Convert a target age (years) to the severity s that would produce it.
-        private float SeverityForTargetYears(float targetYears)
+        public float SeverityForTargetYears(float targetYears)
         {
             long targetTicks = Mathf.RoundToInt(targetYears * GenDate.TicksPerYear);
             return SeverityForTargetTicks(targetTicks);
         }
-        private float SeverityForTargetTicks(long targetTicks)
+        public float SeverityForTargetTicks(long targetTicks)
         {
             float life = pawn.RaceProps.lifeExpectancy;
             float baseYears = baselineBioTicks / (float)GenDate.TicksPerYear;
@@ -188,7 +218,7 @@ namespace ZealousInnocence
                 return (float)s; // can exceed 1.0 when pushing into baby age
             }
         }
-        private long BioTicksForSeverity(float s)
+        public long BioTicksForSeverity(float s)
         {
             var (childCore, childEdge) = ChildBandTicks(pawn);
 
@@ -262,6 +292,12 @@ namespace ZealousInnocence
                 if (Settings.debugging && Settings.debuggingRegression)
                     Log.Message($"[ZI] Regression now {desiredBio} at {Severity}");
 #endif
+                
+
+                if(StageFor(desiredBio) != AgeStage3.Adult)
+                {
+                    Helper_Regression.healPawnBrain(pawn);
+                }
                 int curYears = pawn.ageTracker.AgeBiologicalYears;
                 if (curYears != lastWholeYears)
                 {
@@ -269,7 +305,6 @@ namespace ZealousInnocence
                     if (Settings.debugging && Settings.debuggingRegression)
                         Log.Message($"[ZI] Regression Year change {lastWholeYears} => {curYears}");
 #endif
-
                     var curStage = StageFor(desiredBio);
                     if (curStage != StageFor(prevBio))
                     {
@@ -424,9 +459,7 @@ namespace ZealousInnocence
         }
 
         private void OnEnterChild(Pawn p)
-        {
-            Helper_Regression.healPawnBrain(p);
-            
+        {            
             if (IsHumanlike(p))
             {
                 p.story.bodyType = BodyTypeDefOf.Child;
@@ -447,9 +480,7 @@ namespace ZealousInnocence
             Helper_Regression.dropAllUnwearable(p);
         }
         private void OnEnterBaby(Pawn p)
-        {
-            Helper_Regression.healPawnBrain(p);
-                        
+        {      
             if (IsHumanlike(p))
             {
                 p.story.bodyType = BodyTypeDefOf.Baby;
@@ -467,7 +498,7 @@ namespace ZealousInnocence
             }
             Helper_Regression.dropAllUnwearable(p);
         }
-        static (int core, int edge) ChildBandTicks(Pawn p)
+        public static (int core, int edge) ChildBandTicks(Pawn p)
         {
             if (IsHumanlike(p))
                 return (Mathf.RoundToInt(3f * GenDate.TicksPerYear),
@@ -546,13 +577,13 @@ namespace ZealousInnocence
                 float p_y = Mathf.Clamp01(agb.ageFractionChanceCurve?.Evaluate(Mathf.Clamp01(y / life)) ?? 0f);
                 if (p_y > 0f && p_y < 1f)
                 {
-                    double logMass = logSurvival + System.Math.Log(p_y);
+                    double logMass = logSurvival + Math.Log(p_y);
                     if (logMass > bestLogMass)
                     {
                         bestLogMass = logMass;
                         bestYear = y;
                     }
-                    logSurvival += System.Math.Log(1.0 - p_y); // advance survival
+                    logSurvival += Math.Log(1.0 - p_y); // advance survival
                 }
                 else
                 {
@@ -750,7 +781,53 @@ namespace ZealousInnocence
             pawn.skills?.Notify_SkillDisablesChanged();
             Find.ColonistBar?.MarkColonistsDirty();
         }
+        bool debugging => (Settings.debugging && Settings.debuggingRegression);
+        public void TickRare()
+        {
 
+            if (Severity == def.maxSeverity)
+            {
+#if DEBUG
+                if (debugging) Log.Message($"[ZI]Start Resurrection Timer {Severity} == {def.maxSeverity}");
+#endif
+                TaggedString taggedString = "LetterResurrectStart".Translate(pawn.Named("PAWN"));
+                Find.LetterStack.ReceiveLetter("LetterLabelResurrectStart".Translate(), taggedString, LetterDefOf.NeutralEvent, pawn);
+                resurrectTimer.Start(GenTicks.TicksGame, ResurrectDurationSeconds.SecondsToTicks(), new Action(Resurrect));
+                resurrectTimerLetter.Start(GenTicks.TicksGame, ResurrectMoveDurationSeconds.SecondsToTicks(), new Action(ResurrectLetterTrigger));
+                Severity -= 0.01f;
+            }
+            if (!resurrectTimer.Finished)
+            {
+#if DEBUG
+                if (debugging) Log.Message($"[ZI]Ticking Resurrection");
+#endif
+                resurrectTimer.TickIntervalDelta();
+                if (!resurrectTimerLetter.Finished) resurrectTimerLetter.TickIntervalDelta();
+            }
+        }
+        private void ResurrectLetterTrigger()
+        {
+            TaggedString taggedString = "LetterResurrectMove".Translate(pawn.Named("PAWN"));
+            Find.LetterStack.ReceiveLetter("LetterLabelResurrectMove".Translate(), taggedString, LetterDefOf.NeutralEvent, pawn);
+        }
+        
+        private void Resurrect()
+        {
+            Messages.Message("MessagePawnResurrected".Translate(pawn), pawn, MessageTypeDefOf.PositiveEvent);
+            Find.LetterStack.ReceiveLetter("MessagePawnResurrected".Translate(pawn), "MessagePawnResurrected".Translate(pawn), LetterDefOf.PositiveEvent, pawn);
+            this.pawn.Drawer.renderer.SetAnimation(null);
+            ResurrectionUtility.TryResurrect(this.pawn, new ResurrectionParams
+            {
+                gettingScarsChance = 0.1f,
+                canKidnap = false,
+                canTimeoutOrFlee = false,
+                useAvoidGridSmart = true,
+                canSteal = false,
+                invisibleStun = true,
+                removeDiedThoughts = true
+            });
+            Severity = def.maxSeverity;
+        }
         public override void Tick()
         {
             base.Tick();
@@ -833,9 +910,9 @@ namespace ZealousInnocence
                 {
                     tip += $"\nBase Age: {BaseAgeYearFloat:F1} years";
                     tip += $"\nAge Stage: {Helper_Regression.getAgeStage(pawn)} years";
-                    if(Memory != null && Memory.desiredAgeMin != -1 && Memory.desiredAgeMax != -1)
+                    if(Memory != null && Memory.desiredAgeYears != -1)
                     {
-                        tip += $"\nDesired Age: {Memory.desiredAgeMin}-{Memory.desiredAgeMax}";
+                        tip += $"\nDesired Age: {Memory.desiredAgeYears}";
                     }
                     
                     var reducePercent = Mathf.CeilToInt(Hediff_RegressionDamage.LevelsModifierToMask(pawn) * 100f);
@@ -869,15 +946,15 @@ namespace ZealousInnocence
             foreach (var g in base.GetGizmos()) yield return g;
 
             var mem = Memory;
-            string label = (mem != null && mem.desiredAgeMin >= 0 && mem.desiredAgeMax >= 0)
-    ? $"Desired age: {mem.desiredAgeMin}-{mem.desiredAgeMax}"
+            string label = (mem != null && mem.desiredAgeYears >= 0)
+    ? $"Desired age: {mem.desiredAgeYears}"
     : "Set desired age...";
             yield return new Command_Action
             {
                 defaultLabel = label,
                 defaultDesc = "Choose a target biological age range to maintain.",
-                icon = ContentFinder<Texture2D>.Get("Things/Building/Misc/FountainOfYouth/FountainOfYouth_A"), // optional
-                action = () => Find.WindowStack.Add(new Dialog_DesiredAgeRange(pawn, mem))
+                icon = ContentFinder<Texture2D>.Get("Things/Building/Misc/FountainOfYouth/FountainOfYouth_A"),
+                action = () => Find.WindowStack.Add(new Dialog_DesiredAge(pawn, mem))
             };
             if (!Prefs.DevMode) yield break;
 
@@ -898,39 +975,38 @@ namespace ZealousInnocence
 
     }
 
-    public class Dialog_DesiredAgeRange : Window
+    public class Dialog_DesiredAge : Window
     {
         private readonly Pawn pawn;
         private readonly CompRegressionMemory mem;
-        private int minY;
-        private int maxY;
+
+        private int desiredY;
         private readonly int minAllowed = 0;
         private readonly int maxAllowed;
 
-        public override Vector2 InitialSize => new Vector2(460f, 210f);
+        public override Vector2 InitialSize => new Vector2(460f, 180f);
         public override bool IsDebug => false;
 
-        public Dialog_DesiredAgeRange(Pawn pawn, CompRegressionMemory mem)
+        public Dialog_DesiredAge(Pawn pawn, CompRegressionMemory mem)
         {
             this.pawn = pawn;
             this.mem = mem;
 
-            // Window flags available on RimWorld.Window
             doWindowBackground = true;
             doCloseX = true;
             closeOnClickedOutside = true;
             absorbInputAroundWindow = true;
             forcePause = false;
 
-            int life2 = Mathf.Max(10, Mathf.RoundToInt(pawn.RaceProps.lifeExpectancy)*2);
+            // Allow up to ~2× life expectancy (or tweak as you like)
+            int life2 = Mathf.Max(10, Mathf.RoundToInt(pawn.RaceProps.lifeExpectancy) * 2);
             maxAllowed = life2;
 
-            // seed from memory or sensible defaults
+            // seed from memory or sensible default (current age)
             int cur = pawn.ageTracker.AgeBiologicalYears;
-            minY = (mem != null && mem.desiredAgeMin >= 0) ? mem.desiredAgeMin : Mathf.Clamp(cur, minAllowed, maxAllowed - 1);
-            maxY = (mem != null && mem.desiredAgeMax >= 0) ? mem.desiredAgeMax : Mathf.Clamp(maxAllowed, minAllowed + 1, maxAllowed);
-
-            if (maxY <= minY) maxY = Mathf.Min(maxAllowed, minY + 1);
+            desiredY = (mem != null && mem.desiredAgeYears >= 0)
+                ? Mathf.Clamp(mem.desiredAgeYears, minAllowed, maxAllowed)
+                : Mathf.Clamp(cur, minAllowed, maxAllowed);
         }
 
         public override void DoWindowContents(Rect inRect)
@@ -942,54 +1018,34 @@ namespace ZealousInnocence
             list.GapLine();
             list.Gap(6f);
 
-            // MIN slider (cap so it can't reach/exceed max)
-            int minCap = Mathf.Min(maxAllowed - 1, maxY - 1);
-            Rect rMin = list.GetRect(24f);
-            int newMin = Mathf.RoundToInt(Widgets.HorizontalSlider(
-                rMin, minY, minAllowed, minCap, middleAlignment: true,
-                label: $"Min age: {minY}", roundTo: 1f));
-            if (newMin != minY) minY = newMin;
-
-            list.Gap(6f);
-
-            // MAX slider (floor so it stays above min)
-            int maxFloor = Mathf.Max(minAllowed + 1, minY + 1);
-            Rect rMax = list.GetRect(24f);
-            int newMax = Mathf.RoundToInt(Widgets.HorizontalSlider(
-                rMax, maxY, maxFloor, maxAllowed, middleAlignment: true,
-                label: $"Max age: {maxY}", roundTo: 1f));
-            if (newMax != maxY) maxY = newMax;
+            // Single desired-age slider
+            Rect r = list.GetRect(24f);
+            int newVal = Mathf.RoundToInt(Widgets.HorizontalSlider(
+                r, desiredY, minAllowed, maxAllowed, middleAlignment: true,
+                label: $"Desired age: {desiredY}", roundTo: 1f));
+            if (newVal != desiredY) desiredY = newVal;
 
             list.Gap(10f);
 
-            // Buttons
+            // Buttons row
             Rect row = list.GetRect(30f);
             float bw = (row.width - 8f) / 3f;
 
             if (Widgets.ButtonText(new Rect(row.x, row.y, bw, row.height), "Use current"))
             {
                 int cur = pawn.ageTracker.AgeBiologicalYears;
-                minY = Mathf.Clamp(cur, minAllowed, maxAllowed - 1);
-                maxY = Mathf.Clamp(cur + 10, minY + 1, maxAllowed);
+                desiredY = Mathf.Clamp(cur, minAllowed, maxAllowed);
             }
 
             if (Widgets.ButtonText(new Rect(row.x + bw + 4f, row.y, bw, row.height), "Clear"))
             {
-                if (mem != null)
-                {
-                    mem.desiredAgeMin = 0;
-                    mem.desiredAgeMax = maxAllowed;
-                }
+                if (mem != null) mem.desiredAgeYears = -1; // disable auto-dosing
                 Close();
             }
 
             if (Widgets.ButtonText(new Rect(row.x + (bw + 4f) * 2f, row.y, bw, row.height), "OK"))
             {
-                if (mem != null)
-                {
-                    mem.desiredAgeMin = minY;
-                    mem.desiredAgeMax = maxY;
-                }
+                if (mem != null) mem.desiredAgeYears = desiredY;
                 Close();
             }
 
@@ -1095,16 +1151,16 @@ namespace ZealousInnocence
 
         public List<StoredHediff> removedBirthday = new();
         
-        public int desiredAgeMax = -1;
-        public int desiredAgeMin = -1;
+        public int desiredAgeYears = -1;
+        public int desiredAgeDoseTick = -1;
         public int pendingPassionSwaps = 0;
         public override void PostExposeData()
         {
             base.PostExposeData();
             Scribe_Collections.Look(ref removedBirthday, "ZI_removedBirthday", LookMode.Deep);
             if (removedBirthday == null) removedBirthday = new List<StoredHediff>();
-            Scribe_Values.Look(ref desiredAgeMax, "desiredAgeMax", -1);
-            Scribe_Values.Look(ref desiredAgeMin, "desiredAgeMin", -1);
+            Scribe_Values.Look(ref desiredAgeYears, "desiredAgeYears", -1);
+            Scribe_Values.Look(ref desiredAgeDoseTick, "desiredAgeDoseTick", -1);
             Scribe_Values.Look(ref pendingPassionSwaps, "ZI_pendingPassionSwaps", 0);
 
         }
@@ -1130,6 +1186,25 @@ namespace ZealousInnocence
                 bool exists = def.comps.Any(c => c?.compClass == typeof(CompRegressionMemory));
                 if (!exists)
                     def.comps.Add(new CompProperties_RegressionMemory());
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Corpse), nameof(Corpse.TickRare))]
+    public static class Patch_Corpse_TickRare
+    {
+        public static void Postfix(Corpse __instance)
+        {
+            var pawn = __instance?.InnerPawn;
+            var hediffs = pawn?.health?.hediffSet?.hediffs;
+            if (hediffs == null) return;
+
+            if (__instance.GetRotStage() == RotStage.Dessicated) return;
+
+            Hediff_RegressionDamage firstHediff = pawn.health.hediffSet.GetFirstHediff<Hediff_RegressionDamage>();
+            if (firstHediff != null)
+            {
+                firstHediff.TickRare();
             }
         }
     }

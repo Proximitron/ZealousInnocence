@@ -86,150 +86,265 @@ namespace ZealousInnocence
             }*/
         }
     }
-    [HarmonyPatch(typeof(Pawn), nameof(Pawn.SpawnSetup))]
-    public static class ZI_FlagGuestsOnSpawn
-    {
-        public static void Postfix(Pawn __instance, Map map, bool respawningAfterLoad)
-        {
-            var p = __instance;
-            if (p == null || !p.Spawned || p.Dead) return;
-            if (p.RaceProps?.Humanlike != true) return;
 
-            // exclude colony-controlled pawns
-            if (p.IsColonist || p.IsPrisonerOfColony || p.IsSlaveOfColony) return;
-
-            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            var debug = settings.debugging && settings.debuggingCapacities;
-            if (debug) Log.Message($"[ZI]ZI_FlagGuestsOnSpawn: Pawn {__instance.LabelShort} is considered for patch");
-
-            // visiting/trading guests hosted by the player
-            /*var g = p.guest;
-            bool isVisitor = g != null &&
-                             (g.GuestStatus == GuestStatus.Guest || g.HostFaction == Faction.OfPlayer);
-            if (!isVisitor) return;
-            */
-
-            var flag = DefDatabase<HediffDef>.GetNamedSilentFail("ZI_GuestHygieneFlag");
-            if (flag == null) return;
-
-            if (!p.health.hediffSet.HasHediff(flag))
-            {
-                p.health.AddHediff(flag);
-                if (debug) Log.Message($"[ZI]ZI_FlagGuestsOnSpawn: Pawn {__instance.LabelShort} was patched");
-                if (debug) Log.Message(p.health.hediffSet.HasHediff(DefDatabase<HediffDef>.GetNamed("ZI_GuestHygieneFlag")).ToString());
-            }
-        }
-    }
-    [HarmonyPatch(typeof(Pawn), nameof(Pawn.DeSpawn))]
-    public static class ZI_UnflagGuestsOnDespawn
-    {
-        public static void Prefix(Pawn __instance)
-        {
-            var p = __instance;
-            if (p == null) return;
-
-            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            var debug = settings.debugging && settings.debuggingCapacities;
-            if (debug) Log.Message($"[ZI]ZI_UnflagGuestsOnDespawn: Pawn {__instance.LabelShort} is prepared for patch removal");
-
-            var flag = DefDatabase<HediffDef>.GetNamedSilentFail("ZI_GuestHygieneFlag");
-            if (flag == null) return;
-
-            var h = p.health?.hediffSet?.GetFirstHediffOfDef(flag);
-            if (h != null) p.health.RemoveHediff(h);
-            if (debug) Log.Message($"[ZI]ZI_UnflagGuestsOnDespawn: Pawn {__instance.LabelShort} patch removed");
-        }
-    }
-
-    public static class Patch_ShouldHaveNeed
+    [HarmonyPatch(typeof(Pawn_NeedsTracker), "ShouldHaveNeed")]
+    public class Patch_ShouldHaveNeed
     {
         // Access private field "pawn" from Pawn_NeedsTracker
         private static readonly AccessTools.FieldRef<Pawn_NeedsTracker, Pawn> pawnRef =
             AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>("pawn");
 
-        /// <summary>
-        /// Intercept only the "Bladder" NeedDef for player-hosted guests (visitors/traders),
-        /// and force true; otherwise let vanilla run.
-        /// </summary>
-        public static bool Prefix(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result)
+
+        public static void Postfix(Pawn_NeedsTracker __instance, ref bool __result, NeedDef nd)
         {
             // Only care about the DBH need named "Bladder"
             if (nd == null || nd.defName != "Bladder")
-                return true; // run vanilla
+                return; // run vanilla
+
+            if (__result) return; // We don't touch anything that is already allowed
 
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             var debug = settings.debugging && settings.debuggingCapacities;
 
-
+            if (!settings.bladderForRaidCaravanVisitors) return; // Deactivated by setting. We keep it untouched!
 
             var pawn = pawnRef(__instance);
-            if (debug) Log.Message($"[ZI]Patch_ForceBladderForGuests: Pawn {pawn.LabelShort} processing");
             if (pawn == null || pawn.Dead)
-                return true; // let vanilla decide / avoid NRE during load
+                return; // let vanilla decide / avoid NRE during load
+
+            // If Guest or everyone don't get bladder need, this overwrite will also not be used
+            if (!DubsBadHygieneMod.Settings.BladderNeed) return;
+            if (!DubsBadHygieneMod.Settings.GuestsGetBladder) return; 
 
             // We only extend to humanlike visitors; animals/raiders unchanged.
             if (pawn.RaceProps?.Humanlike != true)
-                return true;
+                return;
 
             // Skip pawns vanilla already handles (colonists/prisoners/slaves)
             if (pawn.IsColonist || pawn.IsPrisonerOfColony || pawn.IsSlaveOfColony)
-                return true;
+                return;
+
+            var bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderRace : DubDef.Bladder.Exemptions.RaceDefs;
+            if (bs?.Contains(pawn.def?.defName) == true) return;
+
+            bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderHediff : DubDef.Bladder.Exemptions.Hediffs;
+            bool HasAnyHediffByDefName(List<string> list, out string hit)
+            {
+                hit = null;
+                var hediffs = pawn?.health?.hediffSet?.hediffs;
+                if (list == null || hediffs == null) return false;
+                foreach (var h in hediffs)
+                {
+                    var dn = h?.def?.defName;
+                    if (dn != null && list.Contains(dn))
+                    {
+                        hit = dn;
+                        return true;
+                    }
+                }
+                return false;
+            }
+            if (HasAnyHediffByDefName(bs, out var hitH)) return;
+            if (pawn.RaceProps?.EatsFood != true) return;
+            if (pawn.ageTracker?.CurLifeStage == LifeStageDefOf.HumanlikeBaby) return;
 
             // All vanilla preconditions (intelligence, dev stage, etc.) have already
             // been applied in the original method. We’re explicitly overriding the
             // remaining blockers (e.g. onlyIfCausedByHediff) for this one need.
             if (debug) Log.Message($"[ZI]Patch_ForceBladderForGuests: Pawn {pawn.LabelShort} force true");
             __result = true;
-            return false; // skip original for Bladder on player-hosted guests
         }
-    }
-
-    [HarmonyPatch(typeof(Pawn_NeedsTracker), nameof(Pawn_NeedsTracker.AddOrRemoveNeedsAsAppropriate))]
-    public static class Patch_AddOrRemoveNeedsAsAppropriate
-    {
-        static readonly MethodInfo MI_AddNeed =
-            AccessTools.Method(typeof(Pawn_NeedsTracker), "AddNeed", new[] { typeof(NeedDef) });
-
-        public static void Postfix(Pawn_NeedsTracker __instance)
+        /*public static void Postfix(Pawn_NeedsTracker __instance, ref bool __result, NeedDef nd)
         {
-            // Never touch during load/scribe or worldgen/init — this caused your SaveableFromNode crash
-            if (Scribe.mode != LoadSaveMode.Inactive) return;
-            if (Current.ProgramState != ProgramState.Playing) return;
+            // Resolve pawn (private field)
+            var pawnRef = AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>("pawn");
+            var pawn = pawnRef != null ? pawnRef(__instance) : null;
 
-            // Resolve pawn safely
-            var pawn = AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>("pawn")(__instance);
-            if (pawn == null || pawn.Dead) return;
-
-            
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             var debug = settings.debugging && settings.debuggingCapacities;
-            if (debug) Log.Message($"[ZI]Patch_AddOrRemoveNeedsAsAppropriate: Pawn {pawn.LabelShort} is considered for patch");
 
-            if (!pawn.Spawned) return;
+            if (nd == null || pawn == null) return;
 
-            // Already has it?
-            if (pawn.needs?.TryGetNeed<Need_Bladder>() != null) return;
+            bool IsHygieneNeed(NeedDef n) => n == DubDef.DBHThirst || n == DubDef.Bladder || n == DubDef.Hygiene;
+            if (!IsHygieneNeed(nd)) return;
 
-            // Only humanlikes; and don't touch colonists/prisoners/slaves
-            if (pawn.RaceProps?.Humanlike != true) return;
-            if (pawn.IsColonist || pawn.IsPrisonerOfColony || pawn.IsSlaveOfColony) return;
-            if (debug) Log.Message($"[ZI]Patch_AddOrRemoveNeedsAsAppropriate: Pawn {pawn.LabelShort} hurdles done, going to final");
-            // Add via vanilla path
-            var def = DefDatabase<NeedDef>.GetNamedSilentFail("Bladder");
-            if (def == null || MI_AddNeed == null) return;
+            // ===== Trace helpers (do NOT touch __result here) =====
+            string TAG() => $"[ZI/TRACE/{nd.defName}]";
+            string PawnStr() => pawn != null ? $"{pawn.ThingID}:{pawn.LabelShort} ({pawn.def?.defName})" : "(null pawn)";
+            void LogIf(string msg) { if (debug) Log.Message($"{TAG()} {msg}"); }
+
+            bool HasAnyHediffByDefName(List<string> list, out string hit)
+            {
+                hit = null;
+                var hediffs = pawn?.health?.hediffSet?.hediffs;
+                if (list == null || hediffs == null) return false;
+                foreach (var h in hediffs)
+                {
+                    var dn = h?.def?.defName;
+                    if (dn != null && list.Contains(dn))
+                    {
+                        hit = dn;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // These helpers only set a local forced result; we assign __result right before returning.
+            bool? forced = null; // null = don't override; true/false = override value
+            void Reject(string reason)
+            {
+                if (debug) Log.Message($"{TAG()} REJECT {PawnStr()} -> {reason}");
+                forced = false;
+            }
+            void Accept(string reason)
+            {
+                if (debug) Log.Message($"{TAG()} ACCEPT {PawnStr()} -> {reason}");
+                forced = true;
+            }
+
+            // Snapshot
+            try
+            {
+                LogIf($"Pawn: {PawnStr()} | Humanlike={pawn.RaceProps?.Humanlike} Animal={pawn.RaceProps?.Animal} EatsFood={pawn.RaceProps?.EatsFood} Int={pawn.RaceProps?.intelligence}");
+                LogIf($"Guest: hasGuest={(pawn.guest != null)} HostFaction={(pawn.guest?.HostFaction != null ? pawn.guest.HostFaction.Name : "null")} | IsPrisoner={pawn.IsPrisoner} IsPrisonerOfColony={pawn.IsPrisonerOfColony} IsColonist={pawn.IsColonist}");
+                LogIf($"LifeStage={pawn.ageTracker?.CurLifeStage?.defName} | Body={pawn.def?.race?.body?.defName} | Faction={(pawn.Faction?.Name ?? "null")} | training={(pawn.training != null)}");
+                LogIf($"DBH Settings: BladderNeed={DubsBadHygieneMod.Settings.BladderNeed}, HygieneNeed={DubsBadHygieneMod.Settings.HygieneNeed}, ThirstNeed={Settings.ThirstNeed}");
+                LogIf($"Overrides: OverrideNd={DubsBadHygieneMod.Settings.OverrideNd}, AllowNonHuman={DubsBadHygieneMod.Settings.AllowNonHuman}");
+                LogIf($"Guest flags: GuestsGetBladder={DubsBadHygieneMod.Settings.GuestsGetBladder}, GuestsGetHygiene={DubsBadHygieneMod.Settings.GuestsGetHygiene}");
+                LogIf($"Prisoner flags: PrisonersGetBladder={DubsBadHygieneMod.Settings.PrisonersGetBladder}, PrisonersGetHygiene={DubsBadHygieneMod.Settings.PrisonersGetHygiene}");
+                LogIf($"Animal flags: AnimalsGetBladder={DubsBadHygieneMod.Settings.AnimalsGetBladder}, PetsGetBladder={DubsBadHygieneMod.Settings.PetsGetBladder}, PetsGetThirst={Settings.PetsGetThirst}");
+            }
+            catch { /* ignore *//* }
 
             try
             {
-                if (debug) Log.Message($"[ZI]Patch_AddOrRemoveNeedsAsAppropriate: Pawn {pawn.LabelShort} invoked add!");
-                MI_AddNeed.Invoke(__instance, new object[] { def });
+                // ===== BLADDER =====
+                if (nd == DubDef.Bladder)
+                {
+                    if (!DubsBadHygieneMod.Settings.BladderNeed) { Reject("BladderNeed=false"); __result = forced.Value; return; }
+
+                    if (!DubsBadHygieneMod.Settings.OverrideNd && !DubsBadHygieneMod.Settings.AllowNonHuman
+                        && pawn.def?.race?.body != BodyDefOf.Human && (pawn.RaceProps?.Animal != true))
+                    { Reject("NonHuman disallowed and not animal"); __result = forced.Value; return; }
+
+                    if (pawn.RaceProps?.EatsFood != true) { Reject("Race does not eat food"); __result = forced.Value; return; }
+                    if (pawn.ageTracker?.CurLifeStage == LifeStageDefOf.HumanlikeBaby) { Reject("HumanlikeBaby excluded"); __result = forced.Value; return; }
+
+                    var bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderBody : DubDef.Bladder.Exemptions.BodyDefs;
+                    if (bs?.Contains(pawn.def?.race?.body?.defName) == true) { Reject($"Body exempt: {pawn.def?.race?.body?.defName}"); __result = forced.Value; return; }
+
+                    bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderRace : DubDef.Bladder.Exemptions.RaceDefs;
+                    if (bs?.Contains(pawn.def?.defName) == true) { Reject($"Race exempt: {pawn.def?.defName}"); __result = forced.Value; return; }
+
+                    bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderHediff : DubDef.Bladder.Exemptions.Hediffs;
+                    if (HasAnyHediffByDefName(bs, out var hitH)) { Reject($"Hediff exempt: {hitH}"); __result = forced.Value; return; }
+
+                    if (pawn.RaceProps?.intelligence < nd.minIntelligence) { Reject($"Intelligence {pawn.RaceProps?.intelligence} < {nd.minIntelligence}"); __result = forced.Value; return; }
+
+                    if (!DubsBadHygieneMod.Settings.GuestsGetBladder
+                        && pawn.guest != null && pawn.guest.HostFaction == Faction.OfPlayerSilentFail && !pawn.IsPrisonerOfColony)
+                    { Reject("Guest in player colony but GuestsGetBladder=false"); __result = forced.Value; return; }
+
+                    if (pawn.guest != null && pawn.guest.HostFaction == null && !pawn.IsPrisoner && !pawn.IsColonist)
+                    { Reject("Non-hosted non-prisoner non-colonist guest"); __result = forced.Value; return; }
+
+                    if (!DubsBadHygieneMod.Settings.PrisonersGetBladder && pawn.IsPrisoner)
+                    { Reject("Prisoner but PrisonersGetBladder=false"); __result = forced.Value; return; }
+
+                    if (pawn.RaceProps?.Animal == true && pawn.training == null && !DubsBadHygieneMod.Settings.AnimalsGetBladder)
+                    { Reject("Animal(no training) but AnimalsGetBladder=false"); __result = forced.Value; return; }
+
+                    if (pawn.RaceProps?.Animal == true && pawn.training != null && !DubsBadHygieneMod.Settings.PetsGetBladder)
+                    { Reject("Pet(trained) but PetsGetBladder=false"); __result = forced.Value; return; }
+
+                    Accept("All Bladder checks passed"); __result = forced.Value; return;
+                }
+
+                // ===== HYGIENE =====
+                if (nd == DubDef.Hygiene)
+                {
+                    if (!DubsBadHygieneMod.Settings.HygieneNeed) { Reject("HygieneNeed=false"); __result = forced.Value; return; }
+
+                    if (!DubsBadHygieneMod.Settings.OverrideNd && !DubsBadHygieneMod.Settings.AllowNonHuman
+                        && pawn.def?.race?.body != BodyDefOf.Human && (pawn.RaceProps?.Animal != true))
+                    { Reject("NonHuman disallowed and not animal"); __result = forced.Value; return; }
+
+                    var bs2 = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.HygieneBody : DubDef.Hygiene.Exemptions.BodyDefs;
+                    if (bs2?.Contains(pawn.def?.race?.body?.defName) == true) { Reject($"Body exempt: {pawn.def?.race?.body?.defName}"); __result = forced.Value; return; }
+
+                    bs2 = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.HygieneRace : DubDef.Hygiene.Exemptions.RaceDefs;
+                    if (bs2?.Contains(pawn.def?.defName) == true) { Reject($"Race exempt: {pawn.def?.defName}"); __result = forced.Value; return; }
+
+                    bs2 = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.HygieneHediff : DubDef.Hygiene.Exemptions.Hediffs;
+                    if (HasAnyHediffByDefName(bs2, out var hitH2)) { Reject($"Hediff exempt: {hitH2}"); __result = forced.Value; return; }
+
+                    if (pawn.RaceProps?.intelligence < nd.minIntelligence) { Reject($"Intelligence {pawn.RaceProps?.intelligence} < {nd.minIntelligence}"); __result = forced.Value; return; }
+
+                    if (!DubsBadHygieneMod.Settings.GuestsGetHygiene
+                        && pawn.guest != null && pawn.guest.HostFaction == Faction.OfPlayerSilentFail && !pawn.IsPrisonerOfColony)
+                    { Reject("Guest in player colony but GuestsGetHygiene=false"); __result = forced.Value; return; }
+
+                    if (pawn.guest != null && pawn.guest.HostFaction == null && !pawn.IsPrisoner && !pawn.IsColonist)
+                    { Reject("Non-hosted non-prisoner non-colonist guest"); __result = forced.Value; return; }
+
+                    if (!DubsBadHygieneMod.Settings.PrisonersGetHygiene && pawn.IsPrisoner)
+                    { Reject("Prisoner but PrisonersGetHygiene=false"); __result = forced.Value; return; }
+
+                    Accept("All Hygiene checks passed"); __result = forced.Value; return;
+                }
+
+                // ===== THIRST =====
+                if (nd == DubDef.DBHThirst)
+                {
+                    if (!Settings.ThirstNeed) { Reject("ThirstNeed=false"); __result = forced.Value; return; }
+
+                    if (!DubsBadHygieneMod.Settings.OverrideNd && !DubsBadHygieneMod.Settings.AllowNonHuman
+                        && pawn.def?.race?.body != BodyDefOf.Human && (pawn.RaceProps?.Animal != true))
+                    { Reject("NonHuman disallowed and not animal"); __result = forced.Value; return; }
+
+                    if (pawn.ageTracker?.CurLifeStage == LifeStageDefOf.HumanlikeBaby) { Reject("HumanlikeBaby excluded"); __result = forced.Value; return; }
+
+                    // NOTE: DBH uses *Bladder* lists for Thirst; this may be the hidden blocker.
+                    var bs3 = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderBody : DubDef.Bladder.Exemptions.BodyDefs;
+                    if (bs3?.Contains(pawn.def?.race?.body?.defName) == true) { Reject($"(Thirst) Body exempt via *Bladder* list: {pawn.def?.race?.body?.defName}"); __result = forced.Value; return; }
+
+                    bs3 = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderRace : DubDef.Bladder.Exemptions.RaceDefs;
+                    if (bs3?.Contains(pawn.def?.defName) == true) { Reject($"(Thirst) Race exempt via *Bladder* list: {pawn.def?.defName}"); __result = forced.Value; return; }
+
+                    bs3 = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderHediff : DubDef.Bladder.Exemptions.Hediffs;
+                    if (HasAnyHediffByDefName(bs3, out var hitH3)) { Reject($"(Thirst) Hediff exempt via *Bladder* list: {hitH3}"); __result = forced.Value; return; }
+
+                    if (pawn.RaceProps?.intelligence < nd.minIntelligence) { Reject($"Intelligence {pawn.RaceProps?.intelligence} < {nd.minIntelligence}"); __result = forced.Value; return; }
+                    if (pawn.RaceProps?.EatsFood != true) { Reject("Race does not eat food"); __result = forced.Value; return; }
+
+                    // Also reuses Bladder guest/prisoner flags for Thirst.
+                    if (!DubsBadHygieneMod.Settings.GuestsGetBladder
+                        && pawn.guest != null && pawn.guest.HostFaction == Faction.OfPlayerSilentFail && !pawn.IsPrisonerOfColony)
+                    { Reject("(Thirst) Guest blocked by GuestsGetBladder=false"); __result = forced.Value; return; }
+
+                    if (pawn.guest != null && pawn.guest.HostFaction == null && !pawn.IsPrisoner && !pawn.IsColonist)
+                    { Reject("(Thirst) Non-hosted non-prisoner non-colonist guest"); __result = forced.Value; return; }
+
+                    if (!DubsBadHygieneMod.Settings.PrisonersGetBladder && pawn.IsPrisoner)
+                    { Reject("(Thirst) Prisoner blocked by PrisonersGetBladder=false"); __result = forced.Value; return; }
+
+                    if (pawn.RaceProps?.Animal == true)
+                    {
+                        if (!Settings.PetsGetThirst) { Reject("(Thirst) PetsGetThirst=false"); __result = forced.Value; return; }
+                        if (pawn.training == null) { Reject("(Thirst) Animal untrained"); __result = forced.Value; return; }
+                        if (pawn.Faction != Faction.OfPlayerSilentFail) { Reject("(Thirst) Animal not in player faction"); __result = forced.Value; return; }
+                    }
+
+                    Accept("All Thirst checks passed"); __result = forced.Value; return;
+                }
             }
             catch (Exception e)
             {
-#if DEBUG
-                Log.Warning($"[ZI] AddNeed(Bladder) failed: {e}");
-#endif
+                Log.Error($"{TAG()} Exception while tracing ShouldHaveNeed: {e}");
+                // fall through: do not override __result
             }
-        }
+        }*/
     }
 }
 

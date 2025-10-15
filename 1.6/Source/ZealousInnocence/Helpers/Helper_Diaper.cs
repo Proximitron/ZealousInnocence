@@ -191,12 +191,12 @@ namespace ZealousInnocence
                 var debug = settings.debugging && (settings.debuggingCapacities || debugBedwetting);
                 if (Rand.ChanceSeeded(probability, diaperNeed.FailureSeed))
                 {
-                    if (debug)  Log.Message($"[ZI]JobGiver_UseToilet prefix: job denied, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                    if (debug)  Log.Message($"[ZI]remembersPotty (JobGiver_UseToilet prefix): job denied, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
                     return false; // depending on the level on control
                 }
                 else
                 {
-                    if (debug)  Log.Message($"[ZI]JobGiver_UseToilet prefix: job given, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
+                    if (debug)  Log.Message($"[ZI]remembersPotty (JobGiver_UseToilet prefix): job given, {pawn.Name.ToStringShort} at propability {probability} and seed {diaperNeed.FailureSeed}");
                 }
             }
             return true;

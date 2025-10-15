@@ -96,6 +96,11 @@
 	<SettingLearningNeed>Learning Need</SettingLearningNeed>
 	<SettingLearningNeedHelp>Controls if pawns will have the need to learn after being regressed to the age of a child. Many child activity are based on this need. Without it, many childish behaviours will not happen.</SettingLearningNeedHelp>
 	
+	<SettingRequiresRestart>Requires Reload/Restart</SettingRequiresRestart>
+	
+	<SettingEnableBladderForRaidVisitorCaravans>Bladder for Raid/Visitor/Caravans</SettingEnableBladderForRaidVisitorCaravans>
+	<SettingEnableBladderForRaidVisitorCaravansHelp>Activates bladder need for more and less friendly visitors. This will also made members of caravans trying to make it to a toilet in your base, similar to how they search for a table for eating.</SettingEnableBladderForRaidVisitorCaravansHelp>
+	
 	<SettingDynamicGenetics>Dynamic Genetics</SettingDynamicGenetics>
 	<SettingDynamicGeneticsHelp>Adds a random genetic bladder property to some of the NEWLY generated pawns, like small and big bladders or a tendency for bedwetting.</SettingDynamicGeneticsHelp>
 	

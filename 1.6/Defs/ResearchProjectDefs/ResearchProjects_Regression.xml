@@ -10,16 +10,21 @@
 	</ResearchTabDef>
 
 
-	<ResearchProjectDef MayRequire="Ludeon.RimWorld.Anomaly">
+	<ResearchProjectDef>
 		<defName>TemporaryRegression</defName>
 		<label>temporary regression</label>
 		<tab>Regression</tab>
 		<description>Describes the research into short term mental regression. Often causes the loss of control and makes it easier to overpower the individual affected. Probably could be used to cancle mental breaks...</description>
-		<knowledgeCost>5</knowledgeCost>
-    <knowledgeCategory>Regression</knowledgeCategory>
+		<baseCost>400</baseCost>
 		<techLevel>Medieval</techLevel>
 		<researchViewX>0</researchViewX>
 		<researchViewY>1</researchViewY>
+		<!--<researchMods>
+		MayRequire="Ludeon.RimWorld.Anomaly"
+			<li Class="ZealousInnocence.ResearchMod_RevealKnowledgeCategory">
+				<category>Regression</category>
+			</li>
+		</researchMods>-->
 	</ResearchProjectDef>
 
 </Defs>

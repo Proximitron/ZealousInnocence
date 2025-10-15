@@ -18,6 +18,7 @@ namespace ZealousInnocence
     public class ThingDefOf
     {
         public static ThingDef FountainOfYouth;
+        public static ThingDef ZI_Foy_Vial;
     }
     [DefOf]
     public class FountainOfYouthLevelDefOf
@@ -124,6 +125,10 @@ namespace ZealousInnocence
 
         public static JobDef FountainOfYouthInvestigate;
         public static JobDef FountainOfYouthActivate;
+        public static JobDef ZI_ExtractFOY;
+
+        public static JobDef InjectRegression;
+
         //public static JobDef WearSleepwear;
         // public static JobDef OptimizeApparel;
         //public static JobDef ChangeSleepwear;

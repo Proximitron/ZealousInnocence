@@ -31,5 +31,11 @@
 	<!-- Description why the pawn is not affected by its physical age at the moment -->
 	<ShortReasonPhysicalAgeNoEffect>Physical age has no affect due to insufficient awareness.</ShortReasonPhysicalAgeNoEffect>
 	
+	
+	
+	<LetterResurrectStart>{PAWN_labelShort}'s body is stirring.</LetterResurrectStart>
+	<LetterLabelResurrectStart>Rebirth?</LetterLabelResurrectStart>
 
+	<LetterResurrectMove>{PAWN_labelShort}'s body moves again.</LetterResurrectMove>
+	<LetterLabelResurrectMove>Rebirth?!</LetterLabelResurrectMove>
 </LanguageData>

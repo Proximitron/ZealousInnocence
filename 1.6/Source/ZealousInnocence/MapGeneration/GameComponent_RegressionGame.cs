@@ -28,7 +28,14 @@ namespace ZealousInnocence
                 return this.fountainSpawnParams;
             }
         }
-
+        public static bool IsAnomalyActive
+        {
+            get
+            {
+                return ModsConfig.IsActive("Ludeon.RimWorld.Anomaly")
+                    || ModLister.GetActiveModWithIdentifier("ludeon.rimworld.anomaly", ignorePostfix: true) != null;
+            }
+        }
         public int Level
         {
             get
@@ -121,7 +128,6 @@ namespace ZealousInnocence
             }
         }
 
-
         // Token: 0x0600B670 RID: 46704 RVA: 0x004155C0 File Offset: 0x004137C0
         public GameComponent_RegressionGame(Game game)
         {
@@ -143,7 +149,6 @@ namespace ZealousInnocence
         public override void StartedNewGame()
         {
             base.StartedNewGame();
-            this.Notify_LevelChanged(true);
             this.fountain = (Find.AnyPlayerHomeMap.listerThings.ThingsOfDef(ThingDefOf.FountainOfYouth).FirstOrDefault<Thing>() as Building_FountainOfYouth);
         }
 
@@ -163,7 +168,7 @@ namespace ZealousInnocence
         }
 
         // Token: 0x0600B674 RID: 46708 RVA: 0x00415C81 File Offset: 0x00413E81
-        public void Notify_MonolithStudyIncreased(ChoiceLetter letter, int nextIndex, int studyProgress)
+        public void Notify_FountainStudyIncreased(ChoiceLetter letter, int nextIndex, int studyProgress)
         {
             this.fountainLetters.Add(letter);
             this.fountainNextIndex = nextIndex;
@@ -194,26 +199,27 @@ namespace ZealousInnocence
 
 
 
-        // Token: 0x0600B678 RID: 46712 RVA: 0x00415F15 File Offset: 0x00414115
         public void IncrementLevel()
         {
+            var lastLevel = this.level;
             if (this.LevelDef == FountainOfYouthLevelDefOf.Inactive)
             {
                 this.level = 0;
             }
             if(this.level < 2) this.level++;
             else this.level = Math.Min(this.level, 2);
+            if (lastLevel != this.level)
+            {
                 this.Notify_LevelChanged(false);
+            }
         }
 
-        // Token: 0x0600B679 RID: 46713 RVA: 0x00415F40 File Offset: 0x00414140
         public void Hypnotize(Pawn pawn, Pawn instigator, int ticks)
         {
             Find.BattleLog.Add(new BattleLogEntry_Event(pawn, RulePackDefOf.Event_Hypnotized, instigator));
             this.hypnotisedPawns[pawn] = GenTicks.TicksGame + ticks;
         }
 
-        // Token: 0x0600B67A RID: 46714 RVA: 0x00415F6B File Offset: 0x0041416B
         public void EndHypnotize(Pawn pawn)
         {
             if (this.hypnotisedPawns.ContainsKey(pawn))
@@ -222,13 +228,11 @@ namespace ZealousInnocence
             }
         }
 
-        // Token: 0x0600B67B RID: 46715 RVA: 0x00415F88 File Offset: 0x00414188
         public bool IsPawnHypnotized(Pawn pawn)
         {
             return this.hypnotisedPawns.ContainsKey(pawn);
         }
 
-        // Token: 0x0600B67C RID: 46716 RVA: 0x00415F96 File Offset: 0x00414196
         public void SetLevel(FountainOfYouthLevelDef levelDef, bool silent = false)
         {
             int num = this.level;
@@ -242,6 +246,7 @@ namespace ZealousInnocence
 
         private void Notify_LevelChanged(bool silent = false)
         {
+            Log.Message($"[ZI] Notify_LevelChanged");
             this.highestLevelReached = Mathf.Max(this.highestLevelReached, this.level);
             this.lastLevelChangeTick = Find.TickManager.TicksGame;
             this.levelDef = DefDatabase<FountainOfYouthLevelDef>.AllDefs.FirstOrDefault((FountainOfYouthLevelDef x) => x.level == this.level);
@@ -257,21 +262,40 @@ namespace ZealousInnocence
             // Get the current ResearchManager instance
             ResearchManager researchManager = Find.ResearchManager;
 
+            if (this.level == 0 && !IsAnomalyActive)
+            {
+                LessonAutoActivator.TeachOpportunity(ConceptDefOf.Regression, OpportunityType.Important);
+                if (researchManager.GetType()
+                   .GetField("tabInfoVisibility", BindingFlags.NonPublic | BindingFlags.Instance)
+                   ?.GetValue(researchManager) == null)
+                {
+                    // Trigger internal lazy init
+                    researchManager.TabInfoVisible(null);
+                }
+
+            }
             // Get the value of the 'tabInfoVisibility' field (DefMap<ResearchTabDef, bool>)
             DefMap<ResearchTabDef, bool> tabInfoVisibility = (DefMap<ResearchTabDef, bool>)tabInfoVisibilityField.GetValue(researchManager);
 
             foreach (ResearchTabDef researchTabDef in DefDatabase<ResearchTabDef>.AllDefs)
             {
                 
-                if (!researchManager.TabInfoVisible(researchTabDef) && researchTabDef.tutorTag == "Research-Tab-Regression" && level >= 1)
+                if (!researchManager.TabInfoVisible(researchTabDef) && researchTabDef.tutorTag == "Research-Tab-Regression" && (level >= 2 || !IsAnomalyActive))
                 {
-                    tabInfoVisibility[researchTabDef] = true;
+                    try
+                    {
+                        tabInfoVisibility[researchTabDef] = true;
+                    }
+                    catch (Exception e)
+                    {
+                        if(tabInfoVisibility == null) Log.Warning($"[ZI] Null as expected");
+                        Log.Warning($"[ZI] Failed to mark visible: {e}");
+                    }
                 }
             }
 
             // Set the modified DefMap back to the 'tabInfoVisibility' field
             tabInfoVisibilityField.SetValue(researchManager, tabInfoVisibility);
-
             if (!silent)
             {
                 if (this.Level > 0)

@@ -66,12 +66,12 @@ namespace ZealousInnocence
 
             // The following 2 functions are patched to control the going to the toilet behaviour, based on bladder control(+)
             patchFunctionPrefix(
-                original: AccessTools.Method(typeof(JobGiver_UseToilet), "TryGiveJob"),
+                original: AccessTools.Method(typeof(DubsBadHygiene.JobGiver_UseToilet), "TryGiveJob"),
                 prefix: new HarmonyMethod(typeof(JobGiver_UseToilet_TryGiveJob_Patch), nameof(JobGiver_UseToilet_TryGiveJob_Patch.Prefix)),
                 info: "DubsBadHygiene.JobGiver_UseToilet.TryGiveJob"
             );
             patchFunctionPostfix(
-                original: AccessTools.Method(typeof(JobGiver_UseToilet), "TryGiveJob"),
+                original: AccessTools.Method(typeof(DubsBadHygiene.JobGiver_UseToilet), "TryGiveJob"),
                 postfix: new HarmonyMethod(typeof(JobGiver_UseToilet_TryGiveJob_Patch), nameof(JobGiver_UseToilet_TryGiveJob_Patch.Postfix)),
                 info: "DubsBadHygiene.JobGiver_UseToilet.TryGiveJob"
             );
@@ -81,29 +81,10 @@ namespace ZealousInnocence
                 postfix: new HarmonyMethod(typeof(HealthCardUtility_GetPawnCapacityTip_Patch), nameof(HealthCardUtility_GetPawnCapacityTip_Patch.Postfix)),
                 info: "HealthCardUtility.GetPawnCapacityTip"
             );
-
-            // Guests on spawn → add hidden flag hediff
             patchFunctionPostfix(
-                original: AccessTools.Method(typeof(Pawn), nameof(Pawn.SpawnSetup), new[] { typeof(Map), typeof(bool) }),
-                postfix: new HarmonyMethod(typeof(ZI_FlagGuestsOnSpawn), nameof(ZI_FlagGuestsOnSpawn.Postfix)),
-                info: "Pawn.SpawnSetup"
-            );
-
-            // Guests on despawn → remove flag hediff
-            patchFunctionPrefix(
-                original: AccessTools.Method(typeof(Pawn), nameof(Pawn.DeSpawn)),
-                prefix: new HarmonyMethod(typeof(ZI_UnflagGuestsOnDespawn), nameof(ZI_UnflagGuestsOnDespawn.Prefix)),
-                info: "Pawn.DeSpawn"
-            );
-            patchFunctionPrefix(
-                original: AccessTools.Method(typeof(Pawn_NeedsTracker), "ShouldHaveNeed"),
-                prefix: new HarmonyMethod(typeof(Patch_ShouldHaveNeed), nameof(Patch_ShouldHaveNeed.Prefix)),
+                original: AccessTools.Method(typeof(Pawn_NeedsTracker), "ShouldHaveNeed", new[] { typeof(NeedDef) }),
+                postfix: new HarmonyMethod(typeof(Patch_ShouldHaveNeed), nameof(Patch_ShouldHaveNeed.Postfix)),
                 info: "Pawn_NeedsTracker.ShouldHaveNeed"
-            );
-            patchFunctionPostfix(
-                original: AccessTools.Method(typeof(Pawn_NeedsTracker), nameof(Pawn_NeedsTracker.AddOrRemoveNeedsAsAppropriate)),
-                postfix: new HarmonyMethod(typeof(Patch_AddOrRemoveNeedsAsAppropriate), nameof(Patch_AddOrRemoveNeedsAsAppropriate.Postfix)),
-                info: "Pawn_NeedsTracker.AddOrRemoveNeedsAsAppropriate"
             );
 
             // The category can be different, depending on if the paw can feel the need to go potty
@@ -190,6 +171,16 @@ namespace ZealousInnocence
                 original: AccessTools.Method(typeof(Pawn_AgeTracker), nameof(Pawn_AgeTracker.AgeTickMothballed)),
                 postfix: new HarmonyMethod(typeof(Patch_AgeTickMothballed_Postfix), nameof(Patch_AgeTickMothballed_Postfix.Postfix)),
                 info: "Pawn_AgeTracker.AgeTickMothballed"
+            );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(CompStudiable), nameof(CompStudiable.StudyUnlocked)),
+                prefix: new HarmonyMethod(typeof(CompStudiable_StudyUnlocked_ManualPrefix), nameof(CompStudiable_StudyUnlocked_ManualPrefix.Prefix)),
+                info: "CompStudiable.StudyUnlocked"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(Corpse), nameof(Corpse.TickRare)),
+                postfix: new HarmonyMethod(typeof(Patch_Corpse_TickRare), nameof(Patch_Corpse_TickRare.Postfix)),
+                info: "Corpse.TickRare"
             );
 
             ModChecker.ZealousInnocenceActive();

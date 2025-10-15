@@ -165,7 +165,7 @@ namespace ZealousInnocence
         {
             get
             {
-                return ContentFinder<Texture2D>.Get("UI/Commands/ActivateMonolith", true);
+                return ContentFinder<Texture2D>.Get("Things/Building/Misc/FountainOfYouth/FountainOfYouth_A", true);
             }
         }
 
@@ -176,6 +176,8 @@ namespace ZealousInnocence
                 return Current.Game.GetComponent<GameComponent_RegressionGame>();
             }
         }
+
+        public override int? OverrideGraphicIndex => regression.LevelDef.graphicIndex;
 
         // Token: 0x06008AF3 RID: 35571 RVA: 0x002F7684 File Offset: 0x002F5884
         public override void ExposeData()
@@ -217,11 +219,18 @@ namespace ZealousInnocence
             base.Tick();
             if (GenTicks.IsTickInterval(30))
             {
-                if (regression.Level == 0 && !base.Map.reservationManager.IsReserved(this))
+                //Log.Message("Ticking");
+                if (regression.Level == 0 && !(base.Map?.reservationManager?.IsReserved(this) == true))
                 {
                     if (this.level0HintEffecter == null)
                     {
-                        this.level0HintEffecter = EffecterDefOf.MonolithL0Glow.Spawn(this.EffecterInfo, this.EffecterInfo, 1f);
+                        try
+                        {
+                            this.level0HintEffecter = EffecterDefOf.MonolithL0Glow.Spawn(this.EffecterInfo, this.EffecterInfo, 1f);
+                        }
+                        catch (Exception e)
+                        {
+                        }
                     }
                 }
                 else
@@ -233,6 +242,7 @@ namespace ZealousInnocence
                     }
                     this.level0HintEffecter = null;
                 }
+                //Log.Message("Ticking2");
             }
             Effecter effecter2 = this.level0HintEffecter;
             if (effecter2 != null)
@@ -241,6 +251,7 @@ namespace ZealousInnocence
             }
             if (regression.Level == 0 && this.disturbingVisionTick > 0 && Find.TickManager.TicksGame > this.disturbingVisionTick)
             {
+                Log.Message("Ticking3");
                 Pawn arg;
                 if (base.Map.mapPawns.FreeColonistsSpawned.TryRandomElement(out arg))
                 {
@@ -252,6 +263,7 @@ namespace ZealousInnocence
                     this.disturbingVisionTick += 15000;
                 }
             }
+            /*
             if (this.autoActivateTick > 0)
             {
                 if (Find.TickManager.TicksGame == this.autoActivateTick - 300000)
@@ -281,7 +293,7 @@ namespace ZealousInnocence
                 this.autoActivateEffecter.Cleanup();
                 this.autoActivateEffecter = null;
             }
-            /*if (Find.Anomaly.Level == MonolithLevelDefOf.Gleaming.level && Find.CurrentMap == base.MapHeld)
+            if (Find.Anomaly.Level == MonolithLevelDefOf.Gleaming.level && Find.CurrentMap == base.MapHeld)
             {
                 if (this.gleamingEffecter == null)
                 {
@@ -351,27 +363,34 @@ namespace ZealousInnocence
         {
             this.CheckAndGenerateQuest();
             regression.IncrementLevel();
-            EffecterDefOf.MonolithLevelChanged.Spawn().Trigger(this.EffecterInfo, this.EffecterInfo, -1);
+            try
+            {
+                EffecterDefOf.MonolithLevelChanged.Spawn().Trigger(this.EffecterInfo, this.EffecterInfo, -1);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
             this.activatedDialogTick = Find.TickManager.TicksGame + 360;
             
             this.activatorPawn = pawn;
+
             
             if (regression.Level == 1)
             {
                 Helper_Bedwetting.ForceBedwetting(pawn);
+                Helper_Regression.ApplyRegressionSeverity(pawn, this, 0.3f);
+            }
+            else if (regression.Level == 2)
+            {
+                Helper_Bedwetting.RandomizeBedwettingSeed(pawn);
+                Helper_Regression.SetIncreasedRegressionSeverity(pawn, this, 0.4f, 0.2f);
                 CompStudiable comp = base.GetComp<CompStudiable>();
                 if (comp != null)
                 {
                     comp.SetStudyEnabled(true);
                 }
-            }
-            else if (regression.Level == 2)
-            {
-                Helper_Bedwetting.RandomizeBedwettingSeed(pawn);
-                var removedHediffs = new List<Hediff>();
-                var pawnAgeDelta = 0f;
-                Helper_Regression.regressOrReincarnateToChild(pawn, this, false, out removedHediffs,out pawnAgeDelta);
-
             }
             this.autoActivateTick = -99999;
         }
@@ -388,7 +407,7 @@ namespace ZealousInnocence
         {
            
             DiaNode diaNode = new DiaNode(this.regression.LevelDef.activatedLetterText.Formatted(this.activatorPawn.Named("PAWN")));
-            diaNode.options.Add(new DiaOption("VoidMonolithViewQuest".Translate()) // "View quest"
+            diaNode.options.Add(new DiaOption(TranslateOrDefault("VoidMonolithViewQuest", "View quest"))
             {
                 action = delegate ()
                 {
@@ -452,10 +471,10 @@ namespace ZealousInnocence
         public void SetLevel(FountainOfYouthLevelDef levelDef)
         {
             CompGlower comp = base.GetComp<CompGlower>();
-            int monolithGlowRadiusOverride = levelDef.fountainGlowRadiusOverride;
-            if (monolithGlowRadiusOverride != -1)
+            int fountainGlowRadiusOverride = levelDef.fountainGlowRadiusOverride;
+            if (fountainGlowRadiusOverride != -1)
             {
-                comp.GlowRadius = (float)monolithGlowRadiusOverride;
+                comp.GlowRadius = (float)fountainGlowRadiusOverride;
             }
             comp.UpdateLit(base.Map);
             if (comp.Glows)
@@ -471,6 +490,7 @@ namespace ZealousInnocence
             {
                 regression.LevelDef.activatedSound.PlayOneShot(this);
             }
+            
         }
 
         // Token: 0x06008AFC RID: 35580 RVA: 0x002F8074 File Offset: 0x002F6274
@@ -556,12 +576,10 @@ namespace ZealousInnocence
                 }
             }*/
         }
-
-        // Token: 0x06008AFE RID: 35582 RVA: 0x002F83E4 File Offset: 0x002F65E4
         public void Reset()
         {
             this.quest = null;
-            base.GetComp<CompVoidStructure>().Reset();
+            //base.GetComp<CompVoidStructure>().Reset();
             this.SetLevel(regression.LevelDef);
         }
 
@@ -570,7 +588,13 @@ namespace ZealousInnocence
             return this.ValidateTarget(target, false);
         }
 
-        // Token: 0x06008B00 RID: 35584 RVA: 0x002F8414 File Offset: 0x002F6614
+        private string TranslateOrDefault(string translateKey,string defaultText)
+        {
+            if (translateKey.CanTranslate())
+                return translateKey.Translate();
+            else
+                return defaultText;
+        }
         public bool ValidateTarget(LocalTargetInfo target, bool showMessages = true)
         {
             if (!target.IsValid || target.Pawn == null)
@@ -581,7 +605,7 @@ namespace ZealousInnocence
             {
                 if (showMessages)
                 {
-                    Messages.Message("VoidMonolithActivatorDowned".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false); // "Target is down"
+                    Messages.Message(TranslateOrDefault("VoidMonolithActivatorDowned","Target is down"), target.Pawn, MessageTypeDefOf.RejectInput, false);
                 }
                 return false;
             }
@@ -589,7 +613,7 @@ namespace ZealousInnocence
             {
                 if (showMessages)
                 {
-                    Messages.Message("VoidMonolithActivatorMentalState".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false); // "Target in mental state"
+                    Messages.Message(TranslateOrDefault("VoidMonolithActivatorMentalState", "Target in mental state"), target.Pawn, MessageTypeDefOf.RejectInput, false);
                 }
                 return false;
             }
@@ -597,7 +621,7 @@ namespace ZealousInnocence
             {
                 if (showMessages)
                 {
-                    Messages.Message("VoidMonolithActivatorBusy".Translate(), target.Pawn, MessageTypeDefOf.RejectInput, false); // "Target is busy"
+                    Messages.Message(TranslateOrDefault("VoidMonolithActivatorBusy", "Target is busy"), target.Pawn, MessageTypeDefOf.RejectInput, false);
                 }
                 return false;
             }
@@ -625,7 +649,7 @@ namespace ZealousInnocence
             if (this.ValidateTarget(target, false))
             {
                 Pawn pawn = target.Pawn;
-                if (Find.Anomaly.Level == 0)
+                if (regression.Level == 0)
                 {
                     Job job = JobMaker.MakeJob(JobDefOf.FountainOfYouthInvestigate, this);
                     pawn.jobs.TryTakeOrderedJob(job, new JobTag?(JobTag.Misc), false);
@@ -643,7 +667,7 @@ namespace ZealousInnocence
             pawn.jobs.TryTakeOrderedJob(job, new JobTag?(JobTag.Misc), false);
             if (sendMessage)
             {
-                Messages.Message(Find.Anomaly.LevelDef.pawnSentToActivateMessage.Formatted(pawn.Named("PAWN")), this, MessageTypeDefOf.NeutralEvent, true);
+                Messages.Message(regression.LevelDef.pawnSentToActivateMessage.Formatted(pawn.Named("PAWN")), this, MessageTypeDefOf.NeutralEvent, true);
             }
         }
 
@@ -656,7 +680,7 @@ namespace ZealousInnocence
 
         public void OnGUI(LocalTargetInfo target)
         {
-            Widgets.MouseAttachedLabel("VoidMonolithChooseActivator".Translate(), 0f, 0f); // "Choose who should do this"
+            Widgets.MouseAttachedLabel(TranslateOrDefault("VoidMonolithChooseActivator", "Choose who should do this"), 0f, 0f);
             if (this.ValidateTarget(target, false) && this.targetParams.CanTarget(target.Pawn, this))
             {
                 GenUI.DrawMouseAttachment(this.UIIcon);
@@ -688,7 +712,7 @@ namespace ZealousInnocence
             }
             else
             {
-                stringBuilder.AppendLineIfNotEmpty().Append("VoidMonolithUndiscovered".Translate()); // "Investigate to learn more."
+                stringBuilder.AppendLineIfNotEmpty().Append(TranslateOrDefault("VoidMonolithUndiscovered", "Investigate to learn more."));
             }
             if (!inspectString.NullOrEmpty())
             {
@@ -710,7 +734,7 @@ namespace ZealousInnocence
                 yield return gizmo2;
             }
             enumerator = null;
-            if (regression.LevelDef.advanceThroughActivation) //Find.Anomaly.LevelDef.advanceThroughActivation
+            if (regression.LevelDef.advanceThroughActivation)
             {
                 string text = null;
                 string text2;
@@ -728,7 +752,7 @@ namespace ZealousInnocence
                     disabledReason = text,
                     action = delegate ()
                     {
-                        RimWorld.SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
+                        SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
                         Find.Targeter.BeginTargeting(this, null, false, null, null, true);
                     }
                 };
@@ -767,7 +791,6 @@ namespace ZealousInnocence
             yield break;
         }
 
-        // Token: 0x06008B08 RID: 35592 RVA: 0x002F87B2 File Offset: 0x002F69B2
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)
         {
             foreach (FloatMenuOption floatMenuOption in base.GetFloatMenuOptions(selPawn))
@@ -812,11 +835,7 @@ namespace ZealousInnocence
 
         private static readonly FloatRange DisturbingVisionRangeDaysRange = new FloatRange(13f, 16f);
 
-        private const int DisturbingVisionRetryTicks = 15000;
-
         public const int ActivateLetterDelayTicks = 360;
-
-        private const int CollapseScatterRadius = 5;
 
         public Quest quest;
 

@@ -17,4 +17,11 @@
     <driverClass>ZealousInnocence.JobDriver_FountainOfYouthActivate</driverClass>
     <reportString>activating fountain.</reportString>
   </JobDef>
+	
+	<JobDef>
+    <defName>InjectRegression</defName>
+    <driverClass>ZealousInnocence.JobDriver_InjectRegression</driverClass>
+    <reportString>injecting TargetA.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
 </Defs>

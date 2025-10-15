@@ -16,6 +16,7 @@ namespace ZealousInnocence
         public float targetChronoAge = 10f;
         public bool formerAdultsNeedLearning = true;
         public bool formerAdultsCanHaveIdeoRoles = true;
+        public bool bladderForRaidCaravanVisitors = true;
 
         public bool dynamicGenetics = true;
         public float adultBedwetters = 0.05f;
@@ -108,7 +109,8 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref targetChronoAge, "targetChronoAge", 10f);
             Scribe_Values.Look(ref formerAdultsNeedLearning, "formerAdultsNeedLearning", true);
             Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);
-
+            Scribe_Values.Look(ref bladderForRaidCaravanVisitors, "bladderForRaidCaravanVisitors", true);
+            
 
             Scribe_Values.Look(ref dynamicGenetics, "dynamicGenetics", true);
             Scribe_Values.Look(ref adultBedwetters, "adultBedwetters", 0.05f);
@@ -233,6 +235,9 @@ namespace ZealousInnocence
                 }
                 list.CheckboxLabeled("SettingLearningNeed".Translate(), ref formerAdultsNeedLearning, "SettingLearningNeedHelp".Translate());
             }
+            list.GapLine(gabSize);
+            list.TextEntry("SettingRequiresRestart".Translate());
+            list.CheckboxLabeled("SettingEnableBladderForRaidVisitorCaravans".Translate(), ref bladderForRaidCaravanVisitors, "SettingEnableBladderForRaidVisitorCaravansHelp".Translate());
 
             this.list.NewColumn();
             this.list.ColumnWidth = (canvas.width - 40f) * 0.33f;

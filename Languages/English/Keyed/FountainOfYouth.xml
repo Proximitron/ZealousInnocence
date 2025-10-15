@@ -3,7 +3,7 @@
 	<FountainOfYouthCantActivate>Can't {0} fountain</FountainOfYouthCantActivate>
 	<FountainOfYouthInvestigate>{PAWN_labelShort} is going to investigate this strange fountain.</FountainOfYouthInvestigate>
 	<FountainOfYouthWalkAway>Perhaps it is better to stay away from the water.</FountainOfYouthWalkAway>
-	<FountainOfYouthActivateConfirmationText>The activation of this strange fountain could result in unexpected dangers.\n\nAt least {PAWN_labelShort} will be strongly affected by the effects of the fountain.\n\n Are you sure?</FountainOfYouthActivateConfirmationText>
+	<FountainOfYouthActivateConfirmationText>The activation of this strange fountain could result in unexpected dangers.\n\nAt least the people investigating will be strongly affected by the effects of the fountain.\n\n Are you sure?</FountainOfYouthActivateConfirmationText>
 	<FountainOfYouthGenerationMethod_Disabled>Fountain of youth disabled</FountainOfYouthGenerationMethod_Disabled>
 	<FountainOfYouthGenerationMethod_NearColonists>Fountain of youth generates close to colonists</FountainOfYouthGenerationMethod_NearColonists>
 	

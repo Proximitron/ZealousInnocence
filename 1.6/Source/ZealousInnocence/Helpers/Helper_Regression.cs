@@ -363,6 +363,38 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
             }
             
         }
+        // Will set the regression severity to a defined level or increase the severity by the minIncrease. Never decreases.
+        public static void SetIncreasedRegressionSeverity(
+            [NotNull] Pawn pawn,
+            [NotNull] ThingWithComps instigator,
+            float severityAmount,
+            float minIncrease = 0.0f)
+        {
+            if (pawn == null || severityAmount <= 0f)
+                return;
+
+            HediffDef def = HediffDefOf.RegressionDamage;
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);
+
+            if (hediff == null)
+            {
+                hediff = HediffMaker.MakeHediff(def, pawn);
+                pawn.health.AddHediff(hediff);
+
+                hediff.Severity = severityAmount; // start at target
+            }
+            else
+            {
+                float current = hediff.Severity;
+
+                // Desired final = at least severityAmount, but also at least minIncrease above current
+                float target = Math.Max(severityAmount, current + minIncrease);
+
+                // Never decrease
+                if (target < current) return;
+                hediff.Severity = target;
+            }
+        }
         public static void ApplyPureRegressionDamage(DamageInfo dInfo, [NotNull] Pawn pawn, DamageWorker.DamageResult result, float originalDamage)
         {
             var ext = dInfo.Def.GetModExtension<RegressionDamageExtension>();
