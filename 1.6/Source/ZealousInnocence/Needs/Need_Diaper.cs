@@ -66,6 +66,13 @@ namespace ZealousInnocence
         private float lastCacheUpdateTime;
         private const float CacheUpdateInterval = 1f; // 1 second
 
+        public float peePerTick
+        {
+            get
+            {
+                return LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().bladderRelieveAmount;
+            }
+        }
         public LocalTargetInfo getCachedBestDiaperOrUndie()
         {
             if (Time.realtimeSinceStartup - lastCacheUpdateTime > CacheUpdateInterval)
@@ -242,9 +249,9 @@ namespace ZealousInnocence
             if (debugging) Log.Message("debug: doing (crapPants) for " + pawn.Name);
 
             Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
-            var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, 0.10f);
+            var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, peePerTick);
             var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
-            int filth = 1;
+
             Need_Hygiene need_Hygiene = this.pawn.needs.TryGetNeed<Need_Hygiene>();
             if (need_Hygiene != null)
             {
@@ -276,6 +283,8 @@ namespace ZealousInnocence
                         apparel.Destroy(DestroyMode.Vanish);
                     }
                 }
+                if(!isAdditionalCrapPants)
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, IsPeeing ? "PhrasePantsWetting".Translate() : "PhrasePantsSoiling".Translate(), IsPeeing ? settings.wettingColor : settings.solingColor);
             }
 
             if (pawn.InBed())
@@ -285,6 +294,7 @@ namespace ZealousInnocence
                 bed.HitPoints -= Math.Min(bed.HitPoints - 1, chancedDamage(damage));
                 if (!isAdditionalCrapPants)
                 {
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "PhraseBedwetting".Translate(), settings.wettingColor);
                     foreach (var curr in pawn.CurrentBed().CurOccupants)
                     {
                         if (curr != pawn)
@@ -301,10 +311,14 @@ namespace ZealousInnocence
 
             }
 
-            if (peeing) FilthMaker.TryMakeFilth(this.pawn.Position, this.pawn.Map, ThingDef.Named("FilthUrine"), filth, FilthSourceFlags.Pawn);
-            else FilthMaker.TryMakeFilth(this.pawn.Position, this.pawn.Map, ThingDef.Named("FilthFaeces"), filth, FilthSourceFlags.Pawn);
-
+            makeFilth();
             isAdditionalCrapPants = true; // Additional triggers of this function will be ignored until current accident is done
+        }
+
+        public void makeFilth()
+        {
+            if (peeing) FilthMaker.TryMakeFilth(pawn.Position, pawn.Map, DubDef.FilthUrine, 1, FilthSourceFlags.Pawn, true);
+            else FilthMaker.TryMakeFilth(pawn.Position, pawn.Map, DubDef.FilthFaeces, 1, FilthSourceFlags.Pawn, true);
         }
 
         public void startAccident(bool pee = true)
@@ -319,8 +333,12 @@ namespace ZealousInnocence
             if (debugging) Log.Message("debug: starting accident '" + (peeing ? "pee" : "poop") + "' for " + pawn.Name);
 
             var liked = Helper_Diaper.getDiaperPreference(pawn);
-            if (Helper_Diaper.getDiaper(pawn) != null)
+            var diaper = Helper_Diaper.getDiaper(pawn);
+            if (diaper != null)
             {
+                // This short time stagger will only happen for diaper, because without the pawn get staggered repeatetly anyway
+                pawn.stances?.stagger?.StaggerFor(150);
+                MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, IsPeeing ? "PhraseDiaperWetting".Translate(diaper.def.label) : "PhraseDiaperSoiling".Translate(diaper.def.label), IsPeeing ? settings.wettingColor : settings.solingColor);
                 switch (liked)
                 {
                     case DiaperLikeCategory.NonAdult:
@@ -357,6 +375,11 @@ namespace ZealousInnocence
             }
             else
             {
+                var underwear = Helper_Diaper.getUnderwear(pawn);
+                if (underwear != null)
+                {
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, IsPeeing ? "PhraseUnderwearWetting".Translate(underwear.def.label) : "PhraseUnderwearSoiling".Translate(underwear.def.label), IsPeeing ? settings.wettingColor : settings.solingColor);
+                }
                 switch (liked)
                 {
 
@@ -459,7 +482,7 @@ namespace ZealousInnocence
 
             if (!isHavingAccident && bladder.CurLevel <= 0f)
             {
-                startAccident(!settings.faecesActive);
+                startAccident(DecideRandomPeePoopIncident());
             }
 
 
@@ -533,16 +556,13 @@ namespace ZealousInnocence
                     }
                     else
                     {
-                        var pee = true;
-                        if (settings.faecesActive && Rand.ChanceSeeded(0.5f, pawn.HashOffsetTicks() + 922)) pee = false;
-
-                        startAccident(pee);
+                        startAccident(DecideRandomPeePoopIncident());
                         if (debugBedwetting) Log.Message($"[ZI]doing fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
                     }
                 }
                 else
                 {
-                    if (bladder.CurLevel <= 0.28f && Rand.Chance(1f / 32f) && bladder.CurLevel <= (Helper_Diaper.getBladderControlFailPoint(pawn) + 0.1f) && Helper_Diaper.remembersPotty(pawn) && CanPolitelyInterrupt(pawn, pawn.CurJob))
+                    if (bladder.CurLevel <= 0.28f && Rand.ChanceSeeded(1f / 32f, pawn.HashOffsetTicks()+812) && bladder.CurLevel <= (Helper_Diaper.getBladderControlFailPoint(pawn) + 0.1f) && Helper_Diaper.remembersPotty(pawn) && CanPolitelyInterrupt(pawn, pawn.CurJob))
                     {
                         var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
                         Job toiletJob = jobGiver.TryGiveJob(pawn);
@@ -559,8 +579,8 @@ namespace ZealousInnocence
             {
                 if (pawn.Awake())
                 {
-                    var pee = true;
-                    if (settings.faecesActive && Rand.ChanceSeeded(0.5f, pawn.HashOffsetTicks() + 922)) pee = false;
+                    var pee = DecideRandomPeePoopIncident();
+
                     if (pawn.story.traits.HasTrait(TraitDefOf.Potty_Rebel))
                     {
                         startAccident(pee);
@@ -587,10 +607,11 @@ namespace ZealousInnocence
             }
             if (isHavingAccident)
             {
+                ManageOngoingAccident();
                 if (currProtection != null)
                 {
 
-                    var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, 0.10f);
+                    var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, peePerTick);
                     var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
                     if (debugging)  Log.Message($"[ZI]peeing in protection: {Helper_Diaper.getBladderControlLevel(pawn)} for {pawn.LabelShort} percentile {peeAmountPercentile} => {fluidAmount} amount");
                     bladder.CurLevel += peeAmountPercentile;
@@ -615,9 +636,20 @@ namespace ZealousInnocence
                     isHavingAccident = false;
                     isAdditionalCrapPants = false;
                 }
-                if (currProtection == null && isHavingAccident)
+                if (isHavingAccident)
                 {
-                    crapPants();
+                    if (currProtection == null || !Helper_Diaper.isDiaper(currProtection)) 
+                        pawn.stances?.stagger?.StaggerFor(150);
+                    
+                    if (currProtection != null)
+                    {
+                        if(Rand.ChanceSeeded(1/3f, pawn.HashOffsetTicks() + 249))
+                        {
+                            makeFilth();
+                        }
+                        
+                    }
+                    else crapPants();
                 }
 
             }
@@ -661,6 +693,45 @@ namespace ZealousInnocence
 
         }
 
+        // Pee => true, Poop => false ; If poop incidents are disabled, always returns true
+        private bool DecideRandomPeePoopIncident()
+        {
+            return LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().faecesActive ? Rand.ChanceSeeded(0.65f, pawn.HashOffsetTicks() + 854) : true;
+        }
+        private int TicksAccidentLeftCalc
+        {
+            get
+            {
+                Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
+                if (bladder == null) return 0;
+
+                return Mathf.RoundToInt((1.0f - bladder.CurLevel) / peePerTick * 150f);
+            }
+        }
+
+
+        private void ManageOngoingAccident()
+        {
+            if (isHavingAccident)
+            {
+                if(pawn.CurJob.def != JobDefOf.PeePoopEvent && pawn.Awake() && CanPolitelyInterrupt(pawn, pawn.CurJob) && !Helper_Diaper.isDiaper(currProtection))
+                {
+                    
+                    var job = JobMaker.MakeJob(JobDefOf.PeePoopEvent);
+                    job.expiryInterval = TicksAccidentLeftCalc;
+                    job.checkOverrideOnExpire = true;   // let normal AI resume/override when it ends
+                    job.playerForced = false;           // makes it easy to interrupt by the player
+
+
+                    pawn.jobs.StartJob(
+                        job,
+                        JobCondition.InterruptOptional,
+                        tag: JobTag.Misc,
+                        resumeCurJobAfterwards: true,
+                        cancelBusyStances: true);
+                }
+            }
+        }
         private static bool CanPolitelyInterrupt(Pawn pawn, Job curJob)
         {
             if (pawn == null || curJob == null) return false;

@@ -6,4 +6,11 @@
 		<driverClass>ZealousInnocence.JobDriver_ChangePatientDiaper</driverClass>
 		<reportString>changing TargetB into TargetA</reportString>
 	</JobDef>
+	
+	<JobDef>
+		<defName>PeePoopEvent</defName>
+		<driverClass>ZealousInnocence.JobDriver_PeePoopEvent</driverClass>
+		<reportString>?report error?</reportString>
+		<casualInterruptible>true</casualInterruptible>
+	</JobDef>
 </Defs>

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.UIElements;
 using Verse;
+using Verse.AI;
 
 namespace ZealousInnocence
 {
@@ -22,15 +23,28 @@ namespace ZealousInnocence
         {
             get
             {
-                if (this.HitPoints <= this.MaxHitPoints * 0.51f)
+                float hpPercentage = (float)this.HitPoints / (float)this.MaxHitPoints;
+
+                bool needOverwrite = false;
+
+                var texPath = this.def.graphicData.texPath;
+                if (this.WearerPawn != null && this.def.thingCategories.Contains(ThingCategoryDefOf.Diapers))
                 {
-                    var graphic = GraphicDatabase.Get<Graphic_Single>(this.def.graphicData.texPath + "_Dirty", ShaderDatabase.Transparent, this.DrawSize, this.DrawColor, this.DrawColorTwo);
+                    texPath += "_Worn";
+                    needOverwrite = true;
+                }
+                if (hpPercentage < 0.51f)
+                {
+                    texPath += "_Dirty";
+                    needOverwrite = true;
+                }
+
+                if (needOverwrite)
+                {
+                    var graphic = GraphicDatabase.Get<Graphic_Single>(texPath, ShaderDatabase.Transparent, this.DrawSize, this.DrawColor, this.DrawColorTwo);
                     return new Graphic_RandomRotated(graphic, this.def.graphicData.onGroundRandomRotateAngle);
                 }
-                else
-                {
-                    return base.Graphic;
-                }
+                return base.Graphic;
             }
         }
         // Suppress the "got destroyed" message of things in the underwear slot if not worn

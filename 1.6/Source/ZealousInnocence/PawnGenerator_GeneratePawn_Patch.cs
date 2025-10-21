@@ -150,7 +150,7 @@ namespace ZealousInnocence
             if (__result.health.hediffSet.HasHediff(HediffDefOf.Incontinent)) return;
 
 
-            if (Helper_Bedwetting.BedwettingAtAge(__result, Helper_Regression.getAgeStageInt(__result)))
+            if (Helper_Bedwetting.BedwettingAtAge(__result, Helper_Regression.getAgeStageMentalInt(__result)))
             {
                 Helper_Bedwetting.AddHediff(__result);
             }

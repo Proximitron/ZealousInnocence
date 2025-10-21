@@ -188,4 +188,22 @@ namespace ZealousInnocence
 
         }
     }
+
+    [HarmonyPatch(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Wear))]
+    public static class Patch_Wear_SplitStack
+    {
+        // Note: 'newApparel' is a ref parameter so we can replace it with a single item.
+        public static void Prefix(Pawn_ApparelTracker __instance, ref Apparel newApparel, bool dropReplacedApparel, bool locked)
+        {
+            if (newApparel != null && newApparel.stackCount > 1)
+            {
+                Thing one = newApparel.SplitOff(1);
+                var single = one as Apparel;
+                if (single != null)
+                {
+                    newApparel = single; // Pawn will wear just this one
+                }
+            }
+        }
+    }
 }

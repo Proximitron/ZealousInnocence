@@ -8,6 +8,13 @@ using Verse;
 
 namespace ZealousInnocence
 {
+    public class CompProperties_StudiableRegression : CompProperties_Studiable
+    {
+        public CompProperties_StudiableRegression()
+        {
+            this.compClass = typeof(CompStudiableRegression);
+        }
+    }
     public class CompStudiableRegression : CompStudiable
     {
         public override float AnomalyKnowledge

@@ -182,7 +182,11 @@ namespace ZealousInnocence
                 postfix: new HarmonyMethod(typeof(Patch_Corpse_TickRare), nameof(Patch_Corpse_TickRare.Postfix)),
                 info: "Corpse.TickRare"
             );
-
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.Wear)),
+                prefix: new HarmonyMethod(typeof(Patch_Wear_SplitStack), nameof(Patch_Wear_SplitStack.Prefix)),
+                info: "Pawn_ApparelTracker.Wear"
+            );
             ModChecker.ZealousInnocenceActive();
 
             if (!ModChecker.ForeverYoungActive())
@@ -393,11 +397,18 @@ namespace ZealousInnocence
 
                     // Determine the texture path based on HP percentage
                     string texPath = apparel.def.graphicData.texPath;
-                    if (hpPercentage < 0.51f)
+                    if (apparel.stackCount == 1)
                     {
-                        texPath += "_Dirty";
-                    }
+                        if (apparel.Wearer != null && apparel.def.thingCategories.Contains(ThingCategoryDefOf.Diapers))
+                        {
+                            texPath += "_Worn";
+                        }
+                        if (hpPercentage < 0.51f)
+                        {
+                            texPath += "_Dirty";
+                        }
 
+                    }
                     // Load the appropriate texture
                     Texture2D texture = ContentFinder<Texture2D>.Get(texPath, true);
 

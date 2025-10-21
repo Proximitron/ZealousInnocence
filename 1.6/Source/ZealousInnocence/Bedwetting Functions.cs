@@ -24,7 +24,7 @@ namespace ZealousInnocence
         {
             get
             {
-                return Helper_Bedwetting.BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn));
+                return Helper_Bedwetting.BedwettingAtAge(pawn, Helper_Regression.getAgeStageMental(pawn));
             }
         }
 
@@ -72,7 +72,7 @@ namespace ZealousInnocence
             if (pawn == null || !pawn.IsColonist || pawn.Dead || !pawn.Spawned || !pawn.RaceProps.Humanlike) return;
             var def = HediffDefOf.BedWetting;
 
-            bool shouldWet = Helper_Bedwetting.BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn));
+            bool shouldWet = Helper_Bedwetting.BedwettingAtAge(pawn, Helper_Regression.getAgeStageMental(pawn));
             if (shouldWet)
             {
                 if (!pawn.health.hediffSet.HasHediff(def))
@@ -106,7 +106,7 @@ namespace ZealousInnocence
         }
         public static float BedwettingSeverity(Pawn pawn)
         {
-            var age = Helper_Regression.getAgeStageInt(pawn);
+            var age = Helper_Regression.getAgeStageMentalInt(pawn);
             if (age <= 12)
             {
                 return 0.1f; // Child stage
@@ -123,7 +123,7 @@ namespace ZealousInnocence
         public static float PawnBedwettingChance(Pawn pawn, int age)
         {
             float chance;
-            var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+            var diaperNeed = pawn.needs?.TryGetNeed<Need_Diaper>();
             if (diaperNeed == null)
             {
                 Log.WarningOnce($"ZealousInnocence Warning: Pawn {pawn.LabelShort} has no Need_Diaper for BedwettingAtAge check, skipping all bedwetting related features.", pawn.thingIDNumber - 9242);
@@ -178,7 +178,7 @@ namespace ZealousInnocence
         public static bool BedwettingAtAge(Pawn pawn, int age)
         {
             float chance = PawnBedwettingChance(pawn, age);
-            var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+            var diaperNeed = pawn.needs?.TryGetNeed<Need_Diaper>();
             if (diaperNeed == null)
             {
                 Log.WarningOnce($"ZealousInnocence Warning: Pawn {pawn.LabelShort} has no Need_Diaper for BedwettingAtAge check, skipping all bedwetting related features.", pawn.thingIDNumber - 9242);
@@ -220,7 +220,7 @@ namespace ZealousInnocence
 
                     while (true)
                     {
-                        if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, Helper_Regression.getAgeStageInt(pawn)))
+                        if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, Helper_Regression.getAgeStageMentalInt(pawn)))
                         {
                             if (debugging)  Log.Message($"[ZI]ZealousInnocence MIGRATION DEBUG: Bedwetting seed {diaperNeed.bedwettingSeed} assigned with matching requirement {pawn.health.hediffSet.HasHediff(def)} for {pawn.LabelShort} after {tries} tries!");
                             break;
@@ -255,7 +255,7 @@ namespace ZealousInnocence
         }
         public static bool ForceBedwetting(Pawn pawn, int age = -1)
         {
-            if (age == -1) age = Helper_Regression.getAgeStageInt(pawn);
+            if (age == -1) age = Helper_Regression.getAgeStageMentalInt(pawn);
             var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
             if (diaperNeed == null)
             {

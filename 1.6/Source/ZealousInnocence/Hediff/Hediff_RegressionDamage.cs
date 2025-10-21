@@ -3,23 +3,16 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Burst.Intrinsics;
 using UnityEngine;
 using Verse;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
-using static UnityEngine.Networking.UnityWebRequest;
-using static ZealousInnocence.CompRegressionMemory;
 using static ZealousInnocence.DebugActions;
 
 namespace ZealousInnocence
 {
     public class Hediff_RegressionDamage : HediffWithComps
     {
-        const int HealingTickInterval = 250;
-        const int MaxDelta = HealingTickInterval * 3;
+        const int HealingTickInterval = 150;
+        const int MaxDelta = HealingTickInterval * 4;
 
         // Pull settings once; if your mod updates settings live, replace with a property that re-fetches.
         private static ZealousInnocenceSettings Settings
@@ -104,7 +97,22 @@ namespace ZealousInnocence
         {
             return pawn.TryGetComp<CompRegressionMemory>();
         }
-
+        public override float Severity {
+            get => base.Severity;
+            set  {
+                float old = base.Severity;
+                base.Severity = value;
+                if (value > old)  
+                {
+                    // regression increased
+                    MaybeApplyRegressionShock(old, value);
+                }
+                else
+                {
+                    // regression decrease
+                }
+            }
+        }
 
         //public override bool Visible => !dormant && base.Visible;
         public override void ExposeData()
@@ -148,9 +156,6 @@ namespace ZealousInnocence
             if (baselineBioTicks < 0)
                 baselineBioTicks = pawn.ageTracker.AgeBiologicalTicks;
 
-            (int core, int edge) band = ChildBandTicks(pawn);
-            int childCore = band.core;
-            int childEdge = band.edge;
             lastWholeYears = pawn.ageTracker.AgeBiologicalYears;
             lastBeardType = pawn.style?.beardDef;
 
@@ -163,7 +168,7 @@ namespace ZealousInnocence
         const float maxSplit = 0.75f; // young pawns: child band starts at ~75%
         const float youngRef = 0.3f;
         const float oldRef = 0.9f;
-        const float babyExtraMax = 0.50f;  // 50% overdrive beyond 1.0 at birth
+        const float babyExtraMax = 0.30f;  // 30% overdrive beyond 1.0 at birth
         const double babyExp = 0.75;       // curve shape (higher = gentler)
 
         // Convert a target age (years) to the severity s that would produce it.
@@ -266,7 +271,15 @@ namespace ZealousInnocence
                 return Math.Max(0L, Math.Min(desired, (long)childCore));
             }
         }
+        void MaybeApplyRegressionShock(float oldSeverity, float newSeverity)
+        {
+            if (pawn == null || !pawn.RaceProps.Animal) return;
 
+            if (newSeverity > 1.0f && oldSeverity <= 1.0f)
+            {
+                pawn.mindState?.mentalStateHandler?.TryStartMentalState(MentalStateDefOf.WanderConfused);
+            }
+        }
         private void ApplyAgeMapping(bool force)
         {
             // Force backup methode call in case of already applied Damage
@@ -319,7 +332,11 @@ namespace ZealousInnocence
                             case AgeStage3.Child: OnEnterChild(pawn); break;
                             case AgeStage3.Adult: OnEnterAdult(pawn); break;
                         }
-                        
+                        if (pawn.stances?.stunner != null)
+                        {
+                            int stunTicks = Rand.Range(150, 300);
+                            pawn.stances.stunner.StunFor(stunTicks, null, true);
+                        }
                     }
 
                     
@@ -504,52 +521,84 @@ namespace ZealousInnocence
                 return (Mathf.RoundToInt(3f * GenDate.TicksPerYear),
                         Mathf.RoundToInt(13f * GenDate.TicksPerYear));
 
-            // Animals: core = end of Baby, edge = start of Adult
-            // If stages missing, fall back to 10%..40% of life expectancy.
             var stages = p?.RaceProps?.lifeStageAges;
             float life = p?.RaceProps?.lifeExpectancy ?? 10f;
 
-            float coreYears = life * 0.10f;     // fallback
-            float edgeYears = life * 0.40f;     // fallback
+            // Defaults if defs are bizarre/missing
+            float coreYears = Mathf.Clamp(life * 0.10f, 0f, life);
+            float edgeYears = Mathf.Clamp(life * 0.40f, coreYears + 0.01f, life);
 
             if (stages != null && stages.Count > 0)
             {
-                float? babyEnd = null;
-                float? adultStart = null;
+                // Order by minAge (already true in vanilla, but be safe)
+                var ordered = stages.OrderBy(s => s.minAge).ToList();
 
-                foreach (var lsa in stages)
+                // 1) Find earliest minAge (usually 0)
+                float firstMin = ordered[0].minAge;
+
+                // 2) childCore = first DISTINCT minAge > firstMin
+                float? nextDistinct = null;
+                for (int i = 1; i < ordered.Count; i++)
                 {
-                    var ds = lsa.def?.developmentalStage;
-                    // lsa.minAge = start of this stage
-                    if (ds == DevelopmentalStage.Baby) babyEnd = Mathf.Max(babyEnd ?? 0f, lsa.minAge);
-                    if (ds == DevelopmentalStage.Adult) adultStart = adultStart ?? lsa.minAge;
-                    if (ds == DevelopmentalStage.Child && !IsHumanlike(p)) // some animals use Child/Juvenile
-                        adultStart ??= lsa.minAge; // next stage after juvenile will be adult
+                    if (ordered[i].minAge > firstMin + 1e-6f)
+                    {
+                        nextDistinct = ordered[i].minAge;
+                        break;
+                    }
                 }
 
-                if (babyEnd.HasValue) coreYears = Mathf.Clamp(babyEnd.Value, 0f, life);
-                if (adultStart.HasValue) edgeYears = Mathf.Clamp(adultStart.Value, coreYears + 0.1f, life);
+                // If there was no second distinct breakpoint, synthesize a tiny baby window
+                if (!nextDistinct.HasValue)
+                {
+                    // 6–10 days is a nice universal “calf” window for fast growers
+                    float synthDays = 8f;
+                    nextDistinct = firstMin + Mathf.Max(synthDays / 60f, life * 0.01f);
+                }
+
+                coreYears = Mathf.Clamp(nextDistinct.Value, 0f, life);
+
+                // 3) Prefer the explicit Adult start if it is AFTER childCore
+                float? adultStart = ordered
+                    .Where(s => s.def?.developmentalStage == DevelopmentalStage.Adult)
+                    .Select(s => s.minAge)
+                    .Where(a => a > coreYears + 1e-6f)
+                    .Cast<float?>()
+                    .FirstOrDefault();
+
+                if (adultStart.HasValue)
+                {
+                    edgeYears = Mathf.Clamp(adultStart.Value, coreYears + 0.01f, life);
+                }
+                else
+                {
+                    // Otherwise take the next DISTINCT minAge after childCore
+                    float? nextAfterCore = ordered
+                        .Select(s => s.minAge)
+                        .FirstOrDefault(a => a > coreYears + 1e-6f);
+
+                    if (nextAfterCore.HasValue)
+                        edgeYears = Mathf.Clamp(nextAfterCore.Value, coreYears + 0.01f, life);
+                    else
+                        edgeYears = Mathf.Clamp(coreYears + Mathf.Max(0.05f, life * 0.10f), coreYears + 0.01f, life);
+                }
             }
 
-            return (Mathf.RoundToInt(coreYears * GenDate.TicksPerYear),
-                    Mathf.RoundToInt(edgeYears * GenDate.TicksPerYear));
-        }
-        private static bool BirthdayRollDeterministic(Pawn p, HediffGiver_Birthday agb, int year)
-        {
-            // Stable seed: pawn + hediff + absolute year index
-            int seed = Gen.HashCombineInt(p.thingIDNumber, agb.hediff.shortHash);
-            seed = Gen.HashCombineInt(seed, year);
+            int coreTicks = Mathf.RoundToInt(coreYears * GenDate.TicksPerYear);
+            int edgeTicks = Mathf.RoundToInt(edgeYears * GenDate.TicksPerYear);
 
-            Rand.PushState(seed);
-            try
-            {
-                float life = p.RaceProps.lifeExpectancy;
-                float ageFrac = (year / life);            // vanilla uses fraction of life expectancy
-                float chance = agb.ageFractionChanceCurve?.Evaluate(ageFrac) ?? 1f;
-                return Rand.Value < chance;
-            }
-            finally { Rand.PopState(); }
+#if DEBUG
+            if (Settings.debugging && Settings.debuggingRegression)
+                Log.Message($"[ZI] {p?.LabelShortCap ?? "<null>"} bands -> " +
+           $"core(end Baby)={coreYears:F6}y ({coreTicks / (float)GenDate.TicksPerDay:F1} d)  " +
+           $"edge(start Adult)={edgeYears:F6}y  life={life:F2}y");
+#endif
+            return (coreTicks, edgeTicks);
         }
+
+        // If you change any *internal* tuning fields that affect CapMods without changing Severity,
+        // call this to force a recalc:
+        void MarkCapsDirty() => pawn?.health?.capacities?.Notify_CapacityLevelsDirty();
+
         private int LikelyOnsetYear(Pawn p, HediffGiver_Birthday agb, bool clampToBaseline = true, int? capYearOverride = null)
         {
             float life = p.RaceProps.lifeExpectancy;
@@ -774,7 +823,7 @@ namespace ZealousInnocence
         }
         private void refreshAgeStageCache(Pawn pawn)
         {
-            Helper_Regression.getAgeStage(pawn, true);
+            Helper_Regression.getAgeStageMental(pawn, true);
             pawn.Drawer?.renderer?.SetAllGraphicsDirty();
             pawn.Notify_DisabledWorkTypesChanged();
             pawn.workSettings?.EnableAndInitialize();
@@ -784,7 +833,17 @@ namespace ZealousInnocence
         bool debugging => (Settings.debugging && Settings.debuggingRegression);
         public void TickRare()
         {
-
+            if(!resurrectTimer.Finished && Severity != def.maxSeverity && Severity > (def.maxSeverity-0.009f) && Settings.Regression_RessurectChance > 0)
+            {
+                if(Settings.Regression_RessurectChance == 1.0f || Rand.ChanceSeeded(Settings.Regression_RessurectChance, pawn.HashOffsetTicks() + 462))
+                {
+                    Severity = def.maxSeverity;
+                }
+                else
+                {
+                    Severity = def.maxSeverity - 0.01f;
+                }
+            }
             if (Severity == def.maxSeverity)
             {
 #if DEBUG
@@ -861,8 +920,8 @@ namespace ZealousInnocence
                 mult *= Settings.Regression_ChildMultiplier;
 
             // If you want tending to help; Hediff has IsTended() in recent RimWorld versions.
-            if (Settings.Regression_TendedMultiplier > 0f && this.IsTended())
-                mult *= Settings.Regression_TendedMultiplier;
+            if (Settings.Regression_AnimalMultiplier > 0f && pawn.IsAnimal)
+                mult *= Settings.Regression_AnimalMultiplier;
 
             float delta = perDay * mult * (intervalTicks / (float)GenDate.TicksPerDay);
 
@@ -909,7 +968,7 @@ namespace ZealousInnocence
                 if (Severity > 0f)
                 {
                     tip += $"\nBase Age: {BaseAgeYearFloat:F1} years";
-                    tip += $"\nAge Stage: {Helper_Regression.getAgeStage(pawn)} years";
+                    tip += $"\nAge Stage: {Helper_Regression.getAgeStageMental(pawn)} years";
                     if(Memory != null && Memory.desiredAgeYears != -1)
                     {
                         tip += $"\nDesired Age: {Memory.desiredAgeYears}";
@@ -998,8 +1057,8 @@ namespace ZealousInnocence
             absorbInputAroundWindow = true;
             forcePause = false;
 
-            // Allow up to ~2× life expectancy (or tweak as you like)
-            int life2 = Mathf.Max(10, Mathf.RoundToInt(pawn.RaceProps.lifeExpectancy) * 2);
+            // Allow up to ~1.25× life expectancy
+            int life2 = Mathf.Max(10, Mathf.RoundToInt(pawn.RaceProps.lifeExpectancy * 1.25f));
             maxAllowed = life2;
 
             // seed from memory or sensible default (current age)

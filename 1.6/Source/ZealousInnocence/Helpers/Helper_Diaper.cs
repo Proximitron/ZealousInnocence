@@ -442,21 +442,21 @@ namespace ZealousInnocence
         }
         public static bool isDiaper(Apparel cloth)
         {
-            List<ThingCategoryDef> cat = cloth.def.thingCategories;
+            List<ThingCategoryDef> cat = cloth?.def?.thingCategories;
             if (cat == null) return false;
 
             return cat.Contains(ThingCategoryDefOf.Diapers);
         }
         public static bool isUnderwear(Apparel cloth)
         {
-            List<ThingCategoryDef> cat = cloth.def.thingCategories;
+            List<ThingCategoryDef> cat = cloth?.def?.thingCategories;
             if (cat == null) return false;
 
             return cat.Contains(ThingCategoryDefOf.Underwear);
         }
         public static bool isNightDiaper(Apparel cloth)
         {
-            List<ThingCategoryDef> cat = cloth.def.thingCategories;
+            List<ThingCategoryDef> cat = cloth?.def?.thingCategories;
             if (cat == null)
             {
                 return false;

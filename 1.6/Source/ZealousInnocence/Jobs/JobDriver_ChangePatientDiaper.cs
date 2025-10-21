@@ -3,13 +3,14 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
-using Verse.AI;
-using Verse;
 using UnityEngine;
-using System.Net.NetworkInformation;
+using Verse;
+using Verse.AI;
 using Verse.Sound;
+using static UnityEngine.GridBrushBase;
 
 namespace ZealousInnocence
 {
@@ -173,14 +174,10 @@ namespace ZealousInnocence
 
             if (OldCloth != null)
             {
-                Toil changeDiaper = new Toil();
+                Toil changeDiaper = Toils_General.Wait(150, TargetIndex.B); // 2.5 seconds at 60 ticks per second 
                 changeDiaper.initAction = () =>
                 {
-                    if (this.pawn.IsHashIntervalTick(150))
-                    {
                         SoundStarter.PlayOneShotOnCamera(DiaperChangie.Diapertape, pawn.Map);
-                    }
-                    this.pawn.jobs.curDriver.ticksLeftThisToil = 150; // 2.5 seconds at 60 ticks per second 
                 };
                 changeDiaper.defaultCompleteMode = ToilCompleteMode.Delay;
                 changeDiaper.WithProgressBarToilDelay(TargetIndex.B);
@@ -199,12 +196,7 @@ namespace ZealousInnocence
             }
             
 
-            Toil changingProgress = new Toil();
-            changingProgress.initAction = () =>
-            {
-                this.pawn.jobs.curDriver.ticksLeftThisToil = 300; // 5 seconds at 60 ticks per second
-                
-            };
+            Toil changingProgress = Toils_General.Wait(300, TargetIndex.B);
             changingProgress.tickAction = () =>
             {
                 if (this.pawn.IsHashIntervalTick(150))

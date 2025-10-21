@@ -19,32 +19,29 @@ namespace ZealousInnocence
 {
     public static class Helper_Regression
     {
-        private static Dictionary<Pawn, AgeStageInfo> cachedAgeStages = new Dictionary<Pawn, AgeStageInfo>();
-        public static int getAgeStage(Pawn pawn, bool force = false)
+        private static Dictionary<Pawn, AgeStageInfo> cachedMentalAgeStages = new Dictionary<Pawn, AgeStageInfo>();
+        public static int getAgeStageMental(Pawn pawn, bool force = false)
         {
-            if (!cachedAgeStages.TryGetValue(pawn, out var value) || force)
+            if (!cachedMentalAgeStages.TryGetValue(pawn, out var value) || force)
             {
-                refreshAgeStageCache(pawn);
-                cachedAgeStages.TryGetValue(pawn, out value);
+                refreshAgeStageMentalCache(pawn);
+                cachedMentalAgeStages.TryGetValue(pawn, out value);
             }
 
             return value.cachedAgeStage;
         }
-        private static void refreshAgeStageCache(Pawn pawn)
+        private static void refreshAgeStageMentalCache(Pawn pawn)
         {
-            Dictionary<Pawn, AgeStageInfo> dictionary = cachedAgeStages;
+            Dictionary<Pawn, AgeStageInfo> dictionary = cachedMentalAgeStages;
             AgeStageInfo obj = new AgeStageInfo
             {
-                cachedAgeStage = getAgeStageInt(pawn),
+                cachedAgeStage = getAgeStageMentalInt(pawn),
                 lastCheckTick = Find.TickManager.TicksGame
             };
             dictionary[pawn] = obj;
         }
-        public static bool isAdult(Pawn pawn)
-        {
-            return getAgeStageInt(pawn) > 12;
-        }
-        public static int getAgeStageInt(Pawn pawn)
+
+        public static int getAgeStageMentalInt(Pawn pawn)
         {
             if (pawn == null)
             {
@@ -66,6 +63,44 @@ namespace ZealousInnocence
             }
             return pawn.ageTracker.AgeBiologicalYears;
         }
+
+        private static Dictionary<Pawn, AgeStageInfo> cachedPhysicalAgeStages = new Dictionary<Pawn, AgeStageInfo>();
+        public static int getAgeStagePhysical(Pawn pawn, bool force = false)
+        {
+            if (!cachedPhysicalAgeStages.TryGetValue(pawn, out var value) || force)
+            {
+                refreshAgeStagePhysicalCache(pawn);
+                cachedPhysicalAgeStages.TryGetValue(pawn, out value);
+            }
+
+            return value.cachedAgeStage;
+        }
+
+        private static void refreshAgeStagePhysicalCache(Pawn pawn)
+        {
+            Dictionary<Pawn, AgeStageInfo> dictionary = cachedPhysicalAgeStages;
+            AgeStageInfo obj = new AgeStageInfo
+            {
+                cachedAgeStage = getAgeStagePhysicalInt(pawn),
+                lastCheckTick = Find.TickManager.TicksGame
+            };
+            dictionary[pawn] = obj;
+        }
+
+        private static int getAgeStagePhysicalInt(Pawn pawn)
+        {
+            if (pawn == null)
+            {
+                return 14;
+            }
+
+            return pawn.ageTracker.AgeBiologicalYears;
+        }
+
+        public static bool isAdult(Pawn pawn)
+        {
+            return getAgeStageMentalInt(pawn) > 12;
+        }
         public static bool canChangeDiaperOrUnderwear(Pawn p)
         {
             if (p == null || p.Dead || !p.Spawned) return false;
@@ -83,7 +118,7 @@ namespace ZealousInnocence
 
             if (p.InMentalState && p.MentalStateDef.blockNormalThoughts) return false;
 
-            return getAgeStageInt(p) >= 6;
+            return getAgeStageMentalInt(p) >= 6;
         }   
 
         public static AcceptanceReport canUsePottyReport(Pawn pawn)
@@ -102,7 +137,7 @@ namespace ZealousInnocence
 
             // Mental states can make them unable to remember that
             MentalState mentalState = pawn.MentalState;
-            if (mentalState != null && mentalState.def != null && (mentalState.def == MentalStateDefOf.PanicFlee || mentalState.def == MentalStateDefOf.Wander_Psychotic))
+            if (mentalState != null && mentalState.def != null && (mentalState.def == RimWorld.MentalStateDefOf.PanicFlee || mentalState.def == RimWorld.MentalStateDefOf.Wander_Psychotic))
             {
                 return "ShortReasonWrongMentalState".Translate(); // wrong mental state
             }
@@ -124,7 +159,7 @@ namespace ZealousInnocence
         public static bool isChild(Pawn pawn, bool forceRecheck = false)
         {
             if (!pawn.IsColonist) return false;
-            return getAgeStage(pawn, forceRecheck) < 13;
+            return getAgeStageMental(pawn, forceRecheck) < 13;
         }
         public static void healPawnBrain(Pawn pawn)
         {
@@ -186,7 +221,7 @@ namespace ZealousInnocence
             pawn.health.AddHediff(hediff);
 
             healPawnMissingBodyparts(pawn, true);
-            refreshAgeStageCache(pawn);
+            refreshAgeStageMentalCache(pawn);
             Messages.Message("MessagePawnRegressed".Translate(pawn), pawn, MessageTypeDefOf.CautionInput);
         }
 
@@ -293,7 +328,7 @@ namespace ZealousInnocence
 
             HediffGiver_BedWetting bedWettingGiver = new HediffGiver_BedWetting();
             bedWettingGiver.OnIntervalPassed(pawn, null);
-            refreshAgeStageCache(pawn);
+            refreshAgeStageMentalCache(pawn);
 
             return false;
         }
@@ -320,7 +355,7 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
 
         public static bool CanBeRegressed(Pawn pawn)
         {
-            if (!pawn.Dead && pawn.IsColonist) return true;
+            if (pawn?.RaceProps?.IsFlesh == true) return true;
             return false;
         }
         public static DamageInfo ReduceDamage(DamageInfo dInfo) //we want to reduce the damage so weapons look more damage then they actually are 
@@ -331,7 +366,7 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
             {
                 reduceAmount = extensionInfo.reduceValue;
             }
-            float reducedDamage = dInfo.Amount * reduceAmount;
+            float reducedDamage = dInfo.Amount - (dInfo.Amount * reduceAmount);
 
             dInfo = new DamageInfo(dInfo.Def, reducedDamage, dInfo.ArmorPenetrationInt, dInfo.Angle, dInfo.Instigator,
                                    dInfo.HitPart, dInfo.Weapon, dInfo.Category, dInfo.intendedTargetInt);

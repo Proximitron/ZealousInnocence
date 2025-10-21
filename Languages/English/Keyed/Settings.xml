@@ -16,9 +16,12 @@
   <SettingChildMultiplier>Child multiplier</SettingChildMultiplier>
   <SettingChildMultiplierHelp>Multiplier to recovery speed for non-adult pawns.</SettingChildMultiplierHelp>
 
-  <SettingTendedMultiplier>Tended multiplier</SettingTendedMultiplier>
-  <SettingTendedMultiplierHelp>Multiplier to recovery speed when the hediff has been tended.</SettingTendedMultiplierHelp>
+  <SettingAnimalMultiplier>Animal multiplier</SettingAnimalMultiplier>
+  <SettingAnimalMultiplierHelp>Animals have usually a shorter lifespawn and their lifecycle should be accelerated relative to humans.</SettingAnimalMultiplierHelp>
 
+  <SettingRessurectChance>Ressurect chance</SettingRessurectChance>
+  <SettingRessurectChanceHelp>The chance a pawn will be resurrected at a severity at between 149-150% regression. This will have a major impact on the amount of random ressurections if regression weapons are used to defend against raids.</SettingRessurectChanceHelp>
+	
   <!-- Skill Masking -->
   <SettingSkillMasking>Skill Masking Settings</SettingSkillMasking>
   <SettingSkillMaskingHelp>Controls how strongly regression lowers visible skill levels.</SettingSkillMaskingHelp>
@@ -124,6 +127,9 @@
 	
 	<SettingActivateFaeces>Activate poop</SettingActivateFaeces>
 	<SettingActivateFaecesHelp>Will activate the mention, sounds and creation of poop in the world. There are no gameplay changes beyound that.</SettingActivateFaecesHelp>
+	
+	<SettingBladderRelieveAmount>Bladder relieve amount</SettingBladderRelieveAmount>
+	<SettingBladderRelieveAmountHelp>The amount that is reduced from the bladder by peeing (or pooing) every need interval (2.5 seconds) if done in a pawns pants. Toilets have seperate rules.</SettingBladderRelieveAmountHelp>
 	
 	<SettingUseBedPanIfDiaperEquipped>Use bedpans on equipped diaper</SettingUseBedPanIfDiaperEquipped>
 	<SettingUseBedPanIfDiaperEquippedHelp>Will also enable the option of bedpans for pawns that are wearing diapers. NOTE: This only works if bedpans are enabled.</SettingUseBedPanIfDiaperEquippedHelp>

@@ -110,7 +110,7 @@ namespace ZealousInnocence
         private float GetAgeFactor(Pawn pawn)
         {
             if (!pawn.RaceProps.Humanlike) return 1.0f;
-            int age = Helper_Regression.getAgeStageInt(pawn);
+            int age = Helper_Regression.getAgeStageMentalInt(pawn);
             float factor;
 
             // Young age factor calculation
@@ -157,7 +157,7 @@ namespace ZealousInnocence
             float total = 1.0f;
             if (!isAwake)
             {
-                if (Helper_Regression.getAgeStageInt(pawn) < 6 || pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
+                if (Helper_Regression.getAgeStageMentalInt(pawn) < 6 || pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
                 {
                     total -= 0.6f;
                 }

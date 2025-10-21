@@ -27,10 +27,15 @@ namespace ZealousInnocence
         public bool useBedPanIfDiaperEquipped = true;
 
         public bool faecesActive = false;
-        
+
+        public float bladderRelieveAmount = 0.15f;
+
         public float needDiapers = 0.45f;
         public float needPullUp = 0.6f;
-        
+
+        public Color solingColor = new Color(0.6f, 0.3f, 0.0f);
+        public Color wettingColor = Color.yellow;
+
         public bool debugging = false;
         public bool debuggingCloth = false;
         public bool debuggingJobs = false;
@@ -72,19 +77,20 @@ namespace ZealousInnocence
         /// <summary>
         /// Multiplier applied when pawn is in bed (resting bonus).
         /// </summary>
-        public float Regression_RestingMultiplier = 1.5f;
+        public float Regression_RestingMultiplier = 1.0f;
 
         /// <summary>
         /// Multiplier applied when pawn is not yet adult (child bonus).
         /// </summary>
-        public float Regression_ChildMultiplier = 1.3f;
+        public float Regression_ChildMultiplier = 1.0f;
 
         /// <summary>
-        /// Multiplier applied when the hediff has been tended.
+        /// Multiplier applied to animals (shorter lifecycle).
         /// </summary>
-        public float Regression_TendedMultiplier = 1.15f;
+        public float Regression_AnimalMultiplier = 3.0f;
 
 
+        public float Regression_RessurectChance = 0.5f;
 
         // ========== Skill Masking ==========
 
@@ -124,6 +130,8 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref useBedPanIfDiaperEquipped, "useBedPanIfDiaperEquipped", false);
 
             Scribe_Values.Look(ref faecesActive, "faecesActive", false);
+            
+            Scribe_Values.Look(ref bladderRelieveAmount, "bladderRelieveAmount", 0.15f);
 
             Scribe_Values.Look(ref debugging, "debugging", false);
             Scribe_Values.Look(ref debuggingCloth, "debuggingCloth", false);
@@ -157,7 +165,7 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref Regression_BaseRecoveryPerDay, "Regression_BaseRecoveryPerDay", 0.03f);
             Scribe_Values.Look(ref Regression_RestingMultiplier, "Regression_RestingMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_ChildMultiplier, "Regression_ChildMultiplier", 1.0f);
-            Scribe_Values.Look(ref Regression_TendedMultiplier, "Regression_TendedMultiplier", 1.15f);
+            Scribe_Values.Look(ref Regression_AnimalMultiplier, "Regression_AnimalMultiplier", 2.0f);
             Scribe_Values.Look(ref Regression_LevelMaskBySeverity, "Regression_LevelMaskBySeverity", 0.8f);
         }
 
@@ -272,7 +280,9 @@ namespace ZealousInnocence
             }
             list.GapLine(gabSize);
             list.CheckboxLabeled("SettingActivateFaeces".Translate(), ref faecesActive, "SettingActivateFaecesHelp".Translate());
-
+            list.GapLine(gabSize);
+            list.Label("SettingBladderRelieveAmount".Translate() + $": {Math.Round(bladderRelieveAmount * 100)}%", tooltip: "SettingBladderRelieveAmountHelp".Translate(NamedArgumentUtility.Named("15", "CHANCE")));
+            bladderRelieveAmount = list.Slider(bladderRelieveAmount, 0.10f, 1f);
             list.End();
 
             /*
@@ -309,9 +319,13 @@ namespace ZealousInnocence
                 0.25f, 3f, 1.0f,
                 "SettingChildMultiplierHelp".Translate());
 
-            SliderPct(list, "SettingTendedMultiplier".Translate(), ref Regression_TendedMultiplier,
-                0.25f, 3f, 1.15f,
-                "SettingTendedMultiplierHelp".Translate());
+            SliderPct(list, "SettingAnimalMultiplier".Translate(), ref Regression_AnimalMultiplier,
+                0.5f, 6f, 3.0f,
+                "SettingAnimalMultiplierHelp".Translate());
+
+            SliderPct(list, "SettingRessurectChance".Translate(), ref Regression_RessurectChance,
+                0f, 1f, 0.5f,
+                "SettingRessurectChanceHelp".Translate());
 
             list.GapLine();
 
@@ -321,6 +335,7 @@ namespace ZealousInnocence
             SliderPct(list, "SettingLevelMaskBySeverity".Translate(), ref Regression_LevelMaskBySeverity,
                 0f, 1f, 0.8f,
                 "SettingLevelMaskBySeverityHelp".Translate());
+
 
             if (list.ButtonText("SettingResetDefaults".Translate()))
                 ResetRegressionToDefaults();
@@ -497,8 +512,10 @@ this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.
             Regression_BaseRecoveryPerDay = 0.3f;
             Regression_RestingMultiplier = 1.0f;
             Regression_ChildMultiplier = 1.0f;
-            Regression_TendedMultiplier = 1.15f;
+            Regression_AnimalMultiplier = 3.0f;
+            Regression_RessurectChance = 0.5f;
             Regression_LevelMaskBySeverity = 0.8f;
+            
         }
 
     }

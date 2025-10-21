@@ -2,7 +2,7 @@
 <Defs>
 	<ThingDef ParentName="MechSerumBase">
     <defName>ZI_Foy_Injector_Overdose</defName>
-    <label>FOY Injector (150%)</label>
+    <label>FOY Injector (130%)</label>
     <description>A one-use over-dose of regression nanites, from the fountain of youth. Enough to heal major injuries and even resurrect the dead. Administered to a corpse, the overdose will regress the body to the age of a baby, heal any and all injuries and trigger its rebirth. While having no other known sideeffects, there is currently no known way to lower the amount of regression, beside waiting for its natural progression. Can only be administered to a fresh body, but if a body is preserved, it can even be resurrected long after death.</description>
 		<descriptionHyperlinks>
       <HediffDef>RegressionDamage</HediffDef>
@@ -38,13 +38,13 @@
 				<minDose>1</minDose>
 				<maxDose>1</maxDose>
 				<defaultDose>1</defaultDose>
-				<severityPerDose>1.50</severityPerDose>
+				<severityPerDose>1.30</severityPerDose>
 				<moteDef>Mote_ResurrectFlash</moteDef>
 			</li>
     </comps>
   </ThingDef>
 	
-	<ThingDef ParentName="MechSerumBase">
+	<!--<ThingDef ParentName="MechSerumBase">
     <defName>ZI_Foy_Flask_Full</defName>
     <label>FOY Dose (Full)</label>
     <description>A full vial of concentrated water from the fountain of youth. Administered to or taken by a living body it might regress them to a child and heal any brain injuries. While having no other known sideeffects, there is currently no known way to lower the amount of regression, beside waiting for its natural progression.</description>
@@ -66,15 +66,44 @@
         <useLabel>Use {0_label}</useLabel>
         <showUseGizmo>true</showUseGizmo>
       </li>
-			<!--<li Class="ZealousInnocence.CompProperties_UseEffectInjectNanites">
+			<li Class="ZealousInnocence.CompProperties_UseEffectInjectNanites">
 				<hediffDef>RegressionDamage</hediffDef>
 				<severity>1.0</severity>
 				<minIncrease>0.2</minIncrease>
-			</li>-->
+			</li>
       <li Class="CompProperties_UseEffectDestroySelf" />
     </comps>
-  </ThingDef>
-	
+  </ThingDef>-->
+		<RecipeDef>
+    <defName>AdministerFoyOverDose</defName>
+    <label>administer FOY overdose</label>
+    <description>Administer FOY (130%).</description>
+		<descriptionHyperlinks>
+      <HediffDef>RegressionDamage</HediffDef>
+    </descriptionHyperlinks>
+    <workerClass>Recipe_AdministerUsableItem</workerClass>
+    <jobString>Administering regression.</jobString>
+    <targetsBodyPart>false</targetsBodyPart>
+    <anesthetize>false</anesthetize>
+    <workAmount>600</workAmount>
+    <dontShowIfAnyIngredientMissing>true</dontShowIfAnyIngredientMissing>
+    <surgeryOutcomeEffect IsNull="True"/>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>ZI_Foy_Vial</li>
+          </thingDefs>
+        </filter>
+        <count>13</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>ZI_Foy_Vial</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+  </RecipeDef>
 	
 	<RecipeDef>
     <defName>AdministerFoyFullDose</defName>
@@ -107,7 +136,36 @@
     </fixedIngredientFilter>
   </RecipeDef>
 	
-
+	<RecipeDef>
+    <defName>AdministerFoyHalfDose</defName>
+    <label>administer half FOY dose</label>
+    <description>Administer FOY (50%).</description>
+		<descriptionHyperlinks>
+      <HediffDef>RegressionDamage</HediffDef>
+    </descriptionHyperlinks>
+    <workerClass>Recipe_AdministerUsableItem</workerClass>
+    <jobString>Administering regression.</jobString>
+    <targetsBodyPart>false</targetsBodyPart>
+    <anesthetize>false</anesthetize>
+    <workAmount>600</workAmount>
+    <dontShowIfAnyIngredientMissing>true</dontShowIfAnyIngredientMissing>
+    <surgeryOutcomeEffect IsNull="True"/>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>ZI_Foy_Vial</li>
+          </thingDefs>
+        </filter>
+        <count>5</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>ZI_Foy_Vial</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+  </RecipeDef>
 	<!--<ThingDef ParentName="ZI_Foy">
     <defName>ZI_Foy_Flask</defName>
     <label>FOY Flask (50%)</label>
@@ -135,20 +193,23 @@
     <defName>ZI_Foy_Vial</defName>
     <label>FOY Water (10%)</label>
     <description>Water from the fountain of youth. Can be directly ingested or used as an ingredient for many regression related technologies.</description>
-    <graphicData>
-      <texPath>Things/Item/Vial</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
-      <drawSize>0.88</drawSize>
-    </graphicData>
+		<graphicData>
+			<texPath>Things/Item/Vials</texPath>
+			<graphicClass>DubsBadHygiene.Graphic_StackCountTech</graphicClass>
+			<drawSize>0.88</drawSize>
+		</graphicData>
 		<statBases>
-      <MarketValue>20</MarketValue>
-      <Mass>0.01</Mass>
-    </statBases>
+			<MarketValue>20</MarketValue>
+			<MaxHitPoints>60</MaxHitPoints>
+			<Flammability>0.2</Flammability>
+			<Mass>0.25</Mass>
+			<DeteriorationRate>12</DeteriorationRate>
+		</statBases>
 		<ingestible>
 		  <outcomeDoers>
         <li Class="IngestionOutcomeDoer_GiveHediff">
           <hediffDef>RegressionDamage</hediffDef>
-          <severity>0.05</severity>
+          <severity>0.10</severity>
           <doToGeneratedPawnIfAddicted>true</doToGeneratedPawnIfAddicted>
         </li>
       </outcomeDoers>
@@ -163,18 +224,30 @@
 			</li>
 
 			<li Class="CompProperties_Targetable">
-				<compClass>CompTargetable_SinglePawn</compClass>
+				<compClass>ZealousInnocence.CompTargetable_SinglePawnOrCorpseOrAnimal</compClass>
 			</li>
 
 			<li Class="ZealousInnocence.CompProperties_TargetEffectFoyDose">
 				<minDose>1</minDose>
-				<maxDose>30</maxDose>
+				<maxDose>13</maxDose>
 				<defaultDose>1</defaultDose>
-				<severityPerDose>0.05</severityPerDose>
+				<severityPerDose>0.10</severityPerDose>
 				<moteDef>Mote_ResurrectFlash</moteDef>
 			</li>
 		</comps>
+		<modExtensions>
+			<li Class="DubsBadHygiene.WaterExt">
+				<water>1</water>
+				<UseForWashing>false</UseForWashing>
+				<SeekForThirst>false</SeekForThirst>
+			</li>
+		</modExtensions>
+		<pathCost>15</pathCost>
+		<generateAllowChance>0</generateAllowChance>
+		<generateCommonality>0</generateCommonality>
+		<stackLimit>20</stackLimit>
 	</ThingDef>
+	
 	<ThingDef Name="ZI_Foy" ParentName="DrugPillBase" Abstract="True">
     <descriptionHyperlinks>
       <HediffDef>RegressionDamage</HediffDef>
@@ -185,16 +258,22 @@
     <techLevel>Ultra</techLevel>
     <minRewardCount>20</minRewardCount>
     <ingestible>
+			<baseIngestTicks>90</baseIngestTicks>
+			<preferability>NeverForNutrition</preferability>
       <foodType>Processed, Fluid</foodType>
       <drugCategory>Medical</drugCategory>
 			<ingestCommandString>Drink {0}</ingestCommandString>
       <ingestReportString>Drinking {0}.</ingestReportString>
-      <chairSearchRadius>25</chairSearchRadius>
+      <chairSearchRadius>5</chairSearchRadius>
       <canAutoSelectAsFoodForCaravan>false</canAutoSelectAsFoodForCaravan>
       <tableDesired>false</tableDesired>
 			<canAutoSelectAsFoodForCaravan>false</canAutoSelectAsFoodForCaravan>
       <tableDesired>false</tableDesired>
+			<ingestSound>Ingest_Beer</ingestSound>
     </ingestible>
+		<thingCategories>
+			<li>Foods</li>
+		</thingCategories>
     <comps>
       <li Class="CompProperties_Drug">
         <listOrder>1000</listOrder>
@@ -204,6 +283,43 @@
     <tradeTags>
       <li>ExoticMisc</li>
     </tradeTags>
+
     <allowedArchonexusCount>200</allowedArchonexusCount>
   </ThingDef>
+	
+	<!--<ThingDef ParentName="MechSerumBase">
+    <defName>MechSerumHealer</defName>
+    <label>healer mech serum</label>
+    <description>A one-use super-dose of mechanites tuned to heal health conditions. The mechanites will target and heal the single worst health condition affecting someone at any given time. Works even on health conditions that would otherwise be incurable. The mechanites can even transmute themselves into organic matter, forming new limbs or organs as needed.</description>
+    <graphicData>
+      <texPath>Things/Item/Special/MechSerumHealer</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <stackLimit>10</stackLimit>
+    <statBases>
+      <MarketValue>1300</MarketValue>
+    </statBases>
+    <thingCategories>
+      <li>Drugs</li>
+    </thingCategories>
+    <tradeability>Sellable</tradeability>
+    <comps>
+      <li Class="CompProperties_Usable">
+        <useJob>UseItem</useJob>
+        <useLabel>Use {0_label}</useLabel>
+        <useDuration>600</useDuration>
+        <showUseGizmo>true</showUseGizmo>
+      </li>
+      <li Class="CompProperties_UseEffect">
+        <compClass>CompUseEffect_FixWorstHealthCondition</compClass>
+      </li>
+      <li Class="CompProperties_UseEffectPlaySound">
+        <soundOnUsed>MechSerumUsed</soundOnUsed>
+      </li>
+      <li Class="CompProperties_UseEffectDestroySelf" />
+    </comps>
+    <thingSetMakerTags>
+      <li>RewardStandardCore</li>
+    </thingSetMakerTags>
+  </ThingDef>-->
 </Defs>

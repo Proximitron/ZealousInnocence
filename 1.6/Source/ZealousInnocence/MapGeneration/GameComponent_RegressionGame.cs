@@ -246,7 +246,6 @@ namespace ZealousInnocence
 
         private void Notify_LevelChanged(bool silent = false)
         {
-            Log.Message($"[ZI] Notify_LevelChanged");
             this.highestLevelReached = Mathf.Max(this.highestLevelReached, this.level);
             this.lastLevelChangeTick = Find.TickManager.TicksGame;
             this.levelDef = DefDatabase<FountainOfYouthLevelDef>.AllDefs.FirstOrDefault((FountainOfYouthLevelDef x) => x.level == this.level);

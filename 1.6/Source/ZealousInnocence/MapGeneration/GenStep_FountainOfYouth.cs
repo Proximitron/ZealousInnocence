@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using System.Net.NetworkInformation;
+using DubsBadHygiene;
 
 namespace ZealousInnocence
 {
@@ -54,7 +55,8 @@ namespace ZealousInnocence
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             int randomInRange = PeePoopFilth.RandomInRange;
             Predicate<IntVec3> validator = null;
-            for (int i = 0; i < randomInRange; i++)
+            int overdrive = 0;
+            for (int i = 0; i < (randomInRange + overdrive) ; i++)
             {
                 if (validator == null)
                 {
@@ -64,14 +66,16 @@ namespace ZealousInnocence
                 IntVec3 c2;
                 if (CellFinder.TryFindRandomCellNear(loc, map, DebrisRadius, validator, out c2))
                 {
+                    bool worked = false;
                     if(settings.faecesActive && i % 2 == 0)
                     {
-                        FilthMaker.TryMakeFilth(c2, map, ThingDef.Named("FilthFaeces"), 1, FilthSourceFlags.Pawn, true);
+                        worked = FilthMaker.TryMakeFilth(c2, map, DubDef.FilthFaeces, 1, FilthSourceFlags.Pawn, true);
                     }
                     else
                     {
-                        FilthMaker.TryMakeFilth(c2, map, ThingDef.Named("FilthUrine"), 1, FilthSourceFlags.Pawn, true);
-                    }                    
+                        worked = FilthMaker.TryMakeFilth(c2, map, DubDef.FilthUrine, 1, FilthSourceFlags.Pawn, true);
+                    }
+                    if (!worked && overdrive < 10) overdrive++;
                 }
             }
 
@@ -106,6 +110,6 @@ namespace ZealousInnocence
         private const int AsphaltSize = 30;
         private const int ClearRadius = 5;
 
-        private static readonly IntRange PeePoopFilth = new IntRange(2, 6);
+        private static readonly IntRange PeePoopFilth = new IntRange(3, 6);
     }
 }

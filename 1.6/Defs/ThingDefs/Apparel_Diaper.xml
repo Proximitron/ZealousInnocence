@@ -69,7 +69,7 @@
 		<statBases>
 			<Absorbency>1.5</Absorbency>
 			<MaxHitPoints>60</MaxHitPoints>
-			<WorkToMake>250</WorkToMake>
+			<WorkToMake>300</WorkToMake>
 			<Mass>0.2</Mass>
 			<Flammability>1.0</Flammability>
 			<StuffEffectMultiplierArmor>0.05</StuffEffectMultiplierArmor>
@@ -111,6 +111,7 @@
       </defaultOutfitTags>
     </apparel>
 	</ThingDef>
+	
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Diaper_Night</defName>
 		<label>nighttime pull-ups</label>
@@ -127,7 +128,7 @@
 		<costStuffCount>5</costStuffCount>
 		<statBases>
 			<DiaperSupport>0.50</DiaperSupport>
-			<Absorbency>0.75</Absorbency>
+			<Absorbency>1.00</Absorbency>
 			<MaxHitPoints>60</MaxHitPoints>
 			<WorkToMake>400</WorkToMake>
 			<Mass>0.2</Mass>
@@ -164,6 +165,7 @@
 			<li>DiapersNight</li>
 		</thingCategories>
 	</ThingDef>
+	
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Diaper</defName>
 		<label>diaper</label>
@@ -225,7 +227,7 @@
 	<ThingDef ParentName="ApparelDiaperBase">
 		<defName>Apparel_Premium_Diaper</defName>
 		<label>premium diaper</label>
-		<description>A very poofy and cute diaper, made with materials to be highly absorbant. Able to withstand multiple and many uses.</description>
+		<description>A very poofy and cute diaper, made with materials to be highly absorbant. Able to withstand multiple uses.</description>
 		<graphicData>
 			<texPath>Apparel/Diaper/PlainCloth/PlainCloth_Premium</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
@@ -236,9 +238,9 @@
 		</stuffCategories>
 		<costStuffCount>20</costStuffCount>
 		<statBases>
-			<Absorbency>4</Absorbency>
+			<Absorbency>3.5</Absorbency>
 			<MaxHitPoints>80</MaxHitPoints>
-			<WorkToMake>1000</WorkToMake>
+			<WorkToMake>1400</WorkToMake>
 			<Mass>0.2</Mass>
 			<Flammability>1.0</Flammability>
 			<StuffEffectMultiplierArmor>0.15</StuffEffectMultiplierArmor>
@@ -284,4 +286,209 @@
             </li>
         </comps>-->
 	</ThingDef>
+	
+	<ThingDef Name="ApparelDisposableDiaperBase" ParentName="ApparelNoQualityBase" Abstract="True">
+		<thingClass>ZealousInnocence.Apparel_Diaper_Base</thingClass>
+		<tradeability>All</tradeability>
+		<thingCategories>
+			<li>Diapers</li>
+		</thingCategories>
+		<apparel>
+			<bodyPartGroups>
+				<li>Legs</li>
+			</bodyPartGroups>
+			<wornGraphicPath>Apparel/Diaper/Disposable/Disposable</wornGraphicPath>
+			<layers>
+				<li>Underwear</li>
+			</layers>
+			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
+			<canBeGeneratedToSatisfyWarmth>true</canBeGeneratedToSatisfyWarmth>
+      <canBeGeneratedToSatisfyToxicEnvironmentResistance>false</canBeGeneratedToSatisfyToxicEnvironmentResistance>
+			<legsNakedUnlessCoveredBySomethingElse>true</legsNakedUnlessCoveredBySomethingElse>
+			<defaultOutfitTags>
+        <li>Worker</li>
+        <li>Soldier</li>
+        <li>Spacefarer</li>
+      </defaultOutfitTags>
+			<tags>
+				<li>Diaper</li>
+      </tags>
+		</apparel>
+		<tickerType>Normal</tickerType>
+		<comps Inherit="false">
+      <li Class="CompProperties_Forbiddable"/>
+		</comps>
+		<!--<comps>
+				<li Class="ZealousInnocence.DiaperFullnesProperties">
+						<diaperFullnes>1</diaperFullnes>		
+				</li>
+		</comps>-->
+	</ThingDef>
+	<ThingDef ParentName="ApparelDisposableDiaperBase">
+		<defName>Apparel_Diaper_Disposable</defName>
+		<label>disposable diaper</label>
+		<description>A disposable diaper. Easy to produce in bulk.</description>
+		<graphicData>
+			<texPath>Things/Item/Disposables</texPath>
+			<graphicClass>ZealousInnocence.Graphic_StackCount4</graphicClass>
+			<drawSize>0.88</drawSize>
+		</graphicData>
+		<stackLimit>10</stackLimit>
+		<techLevel>Industrial</techLevel>
+		<smeltable>false</smeltable>
+		<!--<stuffCategories>
+			<li>Fabric</li>
+			<li>Leathery</li>
+		</stuffCategories>
+		<costStuffCount>5</costStuffCount>-->
+		<statBases>
+			<Absorbency>1.5</Absorbency>
+			<DiaperSupport>0.50</DiaperSupport>
+			<MaxHitPoints>60</MaxHitPoints>
+			<WorkToMake>400</WorkToMake>
+			<Mass>0.2</Mass>
+			<Flammability>1.0</Flammability>
+			<StuffEffectMultiplierArmor>0.10</StuffEffectMultiplierArmor>
+			<StuffEffectMultiplierInsulation_Cold>0.50</StuffEffectMultiplierInsulation_Cold>
+			<StuffEffectMultiplierInsulation_Heat>0.30</StuffEffectMultiplierInsulation_Heat>
+			<EquipDelay>5</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<PsychicSensitivity>0.15</PsychicSensitivity>
+			<MoveSpeed>-0.04</MoveSpeed>
+			<MentalBreakThreshold>-0.10</MentalBreakThreshold>
+			<SocialImpact>-0.05</SocialImpact>
+			<NegotiationAbility>-0.03</NegotiationAbility>
+			<TradePriceImprovement>-0.02</TradePriceImprovement>
+			<Beauty>-2</Beauty>
+			<Comfort>0.20</Comfort>
+			<MeleeDodgeChance>-0.05</MeleeDodgeChance>
+			<PawnTrapSpringChance>0.01</PawnTrapSpringChance>
+			<HuntingStealth>-0.01</HuntingStealth>
+			<ArrestSuccessChance>-0.01</ArrestSuccessChance>
+			<WorkSpeedGlobal>-0.01</WorkSpeedGlobal>
+			<SlaveSuppressionOffset MayRequire="Ludeon.RimWorld.Ideology">0.1</SlaveSuppressionOffset>
+		</equippedStatOffsets>
+		<tradeTags>
+      <li>BasicClothing</li>
+    </tradeTags>
+		<apparel>
+      <canBeDesiredForIdeo>false</canBeDesiredForIdeo>
+			<tags>
+				<li>IndustrialBasic</li>
+      </tags>
+    </apparel>
+	</ThingDef>
+	
+	<RecipeDef>
+    <defName>Make_Apparel_Diaper_Disposable</defName>
+    <label>make disposable diapers (10)</label>
+    <description>Create a full package of simple, disposable, diapers.</description>
+    <jobString>Making disposable diapers.</jobString>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <effectWorking>Tailor</effectWorking>
+    <soundWorking>Recipe_Tailor</soundWorking>
+    <workAmount>1200</workAmount>
+    <allowMixingIngredients>true</allowMixingIngredients>
+    <targetCountAdjustment>10</targetCountAdjustment>
+    <recipeUsers>
+      <li>ElectricTailoringBench</li>
+      <li>HandTailoringBench</li>
+    </recipeUsers>
+    <ingredients>
+      <li>
+        <filter>
+          <categories>
+            <li>Leathers</li>
+						<li>Textiles</li>
+          </categories>
+          <disallowedThingDefs>
+
+          </disallowedThingDefs>
+        </filter>
+        <count>50</count>
+      </li>
+    </ingredients>
+		<fixedIngredientFilter>
+      <categories>
+        <li>Leathers</li>
+				<li>Textiles</li>
+      </categories>
+      <disallowedThingDefs>
+
+      </disallowedThingDefs>
+    </fixedIngredientFilter>
+		<defaultIngredientFilter>
+			<categories>
+				<li>Textiles</li>
+				<li>Leathers</li>
+			</categories>
+			<disallowedThingDefs>
+				<li>DevilstrandCloth</li>
+				<li>Hyperweave</li>
+				<li>Synthread</li>
+				<li>Leather_Thrumbo</li>
+				<li>Leather_Elephant</li>
+				<li>Leather_Rhinoceros</li>
+				<li>Leather_Bear</li>
+				<li>Leather_Human</li>
+				<li MayRequire="Ludeon.RimWorld.Odyssey">Leather_AlphaThrumbo</li>
+			</disallowedThingDefs>
+		</defaultIngredientFilter>
+    <products>
+      <Apparel_Diaper_Disposable>10</Apparel_Diaper_Disposable>
+    </products>
+    <workSkill>Crafting</workSkill>
+    <displayPriority>0</displayPriority>
+  </RecipeDef>
+	<!--
+	<RecipeDef>
+		<defName>Make_Apparel_Diaper_Disposable</defName>
+		<label>make disposable diapers (10)</label>
+		<description>Create a full package of simple, disposable diapers.</description>
+		<jobString>Making disposable diapers.</jobString>
+
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<effectWorking>Tailor</effectWorking>
+		<soundWorking>Recipe_Tailor</soundWorking>
+		<workAmount>300</workAmount>
+		<targetCountAdjustment>10</targetCountAdjustment>
+		<allowMixingIngredients>true</allowMixingIngredients>
+
+		<stuffCategories>
+			<li>Fabric</li>
+			<li>Leathery</li>
+		</stuffCategories>
+	
+		<recipeUsers>
+			<li>ElectricTailoringBench</li>
+			<li>HandTailoringBench</li>
+		</recipeUsers>
+
+		<defaultIngredientFilter>
+			<categories>
+				<li>Textiles</li>
+				<li>Leathers</li>
+			</categories>
+			<disallowedThingDefs>
+				<li>DevilstrandCloth</li>
+				<li>Hyperweave</li>
+				<li>Synthread</li>
+				<li>Leather_Thrumbo</li>
+				<li>Leather_Elephant</li>
+				<li>Leather_Rhinoceros</li>
+				<li>Leather_Bear</li>
+				<li>Leather_Human</li>
+				<li MayRequire="Ludeon.RimWorld.Odyssey">Leather_AlphaThrumbo</li>
+			</disallowedThingDefs>
+		</defaultIngredientFilter>
+
+		<products>
+			<Apparel_Diaper_Disposable>10</Apparel_Diaper_Disposable>
+		</products>
+
+		<workSkill>Crafting</workSkill>
+		<displayPriority>0</displayPriority>
+	</RecipeDef>
+	-->
 </Defs>

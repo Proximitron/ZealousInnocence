@@ -18,6 +18,7 @@ namespace ZealousInnocence
         public int extractTicks = 1200;     // job duration (~20s)
         public ThingDef productDef;         // ZI_Foy_Vial
         public int productCount = 1;
+        public int minLevel = 0;
 
         public CompProperties_FOYReservoir()
         {
@@ -29,6 +30,11 @@ namespace ZealousInnocence
     {
         public CompProperties_FOYReservoir Props => (CompProperties_FOYReservoir)props;
 
+        public int RegressionLevel => Current.Game?.GetComponent<GameComponent_RegressionGame>()?.Level ?? 0;
+        public float foyProductionMultiplier => Current.Game?.GetComponent<GameComponent_RegressionGame>()?.LevelDef?.foyProductionMultiplier ?? 0.0f;
+
+        public int ticksPerUnit => Mathf.RoundToInt(Props.ticksPerUnit / foyProductionMultiplier);
+
         public bool allowExtract = true;
         public int stored;          // current units
         private int progressTicks;  // regen progress
@@ -38,11 +44,12 @@ namespace ZealousInnocence
         {
             base.CompTickRare();
 
+            if (foyProductionMultiplier <= 0) return;
             if (stored >= Props.capacity) return;
             progressTicks += 250; // rare tick
-            if (progressTicks >= Props.ticksPerUnit)
+            if (progressTicks >= ticksPerUnit)
             {
-                progressTicks -= Props.ticksPerUnit;
+                progressTicks -= ticksPerUnit;
                 stored = Math.Min(stored + 1, Props.capacity);
                 parent.Map?.mapDrawer.MapMeshDirty(parent.Position, MapMeshFlagDefOf.Things);
             }
@@ -53,17 +60,16 @@ namespace ZealousInnocence
             if (!parent.Spawned) return;
             if (!parent.IsHashIntervalTick(250)) return; // simulate “rare” cadence
 
-            // moved from CompTickRare:
-
+            if (foyProductionMultiplier <= 0) return;
             if (stored >= Props.capacity) return;
             progressTicks += 250;
-            if (progressTicks >= Props.ticksPerUnit)
+            if (progressTicks >= ticksPerUnit)
             {
 #if DEBUG
                 if (Settings.debugging && Settings.debuggingJobs)
                     Log.Message($"[ZI] Generating FOY (norm) {stored}/{Props.capacity} prog={progressTicks}");
 #endif
-                progressTicks -= Props.ticksPerUnit;
+                progressTicks -= ticksPerUnit;
                 stored = Math.Min(stored + 1, Props.capacity);
                 parent.Map?.mapDrawer.MapMeshDirty(parent.Position, MapMeshFlagDefOf.Things);
             }
@@ -72,6 +78,7 @@ namespace ZealousInnocence
         public bool CanExtractNow(Pawn p)
         {
             if (!allowExtract || stored <= 0) return false;
+            if (foyProductionMultiplier <= 0) return false;
             if (parent.IsForbidden(p) || !p.CanReserveAndReach(parent, PathEndMode.InteractionCell, Danger.Some)) return false;
             return true;
         }
@@ -88,23 +95,29 @@ namespace ZealousInnocence
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            yield return new Command_Toggle
+            if (foyProductionMultiplier > 0)
             {
-                defaultLabel = "Allow extracting",
-                defaultDesc = "If enabled, colonists will bottle water from the fountain.",
-                isActive = () => allowExtract,
-                toggleAction = () => allowExtract = !allowExtract,
-                icon = ContentFinder<Texture2D>.Get("Things/Item/Flask", true)
-            };
+                yield return new Command_Toggle
+                {
+                    defaultLabel = "Allow extracting",
+                    defaultDesc = "If enabled, colonists will bottle water from the fountain.",
+                    isActive = () => allowExtract,
+                    toggleAction = () => allowExtract = !allowExtract,
+                    icon = ContentFinder<Texture2D>.Get("Things/Item/Flask", true)
+                };
 
-            // tiny stat readout
-            yield return new Command_Action
-            {
-                defaultLabel = $"Stored: {stored}/{Props.capacity}",
-                defaultDesc = $"Regenerates every {Props.ticksPerUnit / 60000f:0.##} days.",
-                icon = ContentFinder<Texture2D>.Get("Things/Item/Vial", true),
-                action = () => { }
-            };
+                // tiny stat readout
+                yield return new Command_Action
+                {
+                    defaultLabel = $"Stored: {stored}/{Props.capacity}",
+                    defaultDesc = ticksPerUnit / 60000f < 1f
+                        ? $"Regenerates every {ticksPerUnit / 2500f:0.#} hours."   // 1 hour = 2500 ticks
+                        : $"Regenerates every {ticksPerUnit / 60000f:0.##} days.",
+                    icon = ContentFinder<Texture2D>.Get("Things/Item/Vial", true),
+                    action = () => { }
+                };
+            }
+
         }
 
         public override void PostExposeData()

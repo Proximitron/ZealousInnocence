@@ -42,14 +42,14 @@
       <li>
         <verbClass>Verb_Shoot</verbClass>
         <hasStandardCommand>true</hasStandardCommand>
-        <defaultProjectile>Bullet_RegressionSpit</defaultProjectile>
+        <defaultProjectile>Bullet_WaterSpray</defaultProjectile>
         <warmupTime>0.5</warmupTime>
         <range>19.9</range>
-        <burstShotCount>3</burstShotCount>
+        <burstShotCount>20</burstShotCount>
         <ticksBetweenBurstShots>7</ticksBetweenBurstShots>
         <soundCast>Shot_MachinePistol</soundCast>
         <soundCastTail>GunTail_Light</soundCastTail>
-        <muzzleFlashScale>9</muzzleFlashScale>
+        <muzzleFlashScale>1</muzzleFlashScale>
       </li>
     </verbs>
     <tools>
@@ -89,25 +89,50 @@
 	</ThingDef>
 	
 	<ThingDef ParentName="BaseBullet">
-    <defName>Bullet_RegressionSpit</defName>
+    <defName>Bullet_WaterSpray</defName>
     <label>foy concentrate</label>
     <graphicData>
       <texPath>Things/Projectile/Bullet_Small</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <projectile>
-      <damageDef>RegressionEffectDamage</damageDef>
-      <damageAmountBase>10</damageAmountBase>
+      <damageDef>FoyWater</damageDef>
+      <damageAmountBase>5</damageAmountBase>
       <stoppingPower>1</stoppingPower>
-      <speed>55</speed>
+      <speed>40</speed>
+			<flyOverhead>false</flyOverhead>
     </projectile>
   </ThingDef>
 	
-	<DamageDef>
+	<DamageDef Name="FoyWaterBase" Abstract="True">
+    <harmsHealth>false</harmsHealth>
+    <makesBlood>false</makesBlood>
+		<workerClass>ZealousInnocence.Worker_RegressionDamage</workerClass>
+
+		<!-- Gameplay feel -->
+		<harmsHealth>true</harmsHealth>
+		<makesBlood>false</makesBlood>
+		<externalViolence>true</externalViolence>
+		<execution>true</execution>
+		<isRanged>true</isRanged>
+
+		<!-- Visuals / sounds -->
+		<impactSoundType>Blunt</impactSoundType>       <!-- still uses bullet impact sounds -->
+		<armorCategory>Sharp</armorCategory>
+		<makesAnimalsFlee>false</makesAnimalsFlee>
+		<harmAllLayersUntilOutside>false</harmAllLayersUntilOutside>
+
+		<!-- Overkill and body logic -->
+		<overkillPctToDestroyPart>0</overkillPctToDestroyPart>
+		<hediff>Bruise</hediff>                         <!-- harmless mark if any -->
+
+		<!-- Optional flavor for logs -->
+		<deathMessage>{0} got regressed.</deathMessage>
+  </DamageDef>
+	
+	<DamageDef ParentName="FoyWaterBase">
 		<defName>RegressionEffectDamage_Dart</defName>
 		<label>regression dart</label>
-		<workerClass>ZealousInnocence.Worker_RegressionDamage</workerClass>
-		<externalViolence>true</externalViolence>
 		<deathMessage>{0} has been shot to death by a dart.</deathMessage>
 		<hediff>Gunshot</hediff>
 		<harmAllLayersUntilOutside>true</harmAllLayersUntilOutside>
@@ -121,6 +146,23 @@
 				<regressionBuildup>RegressionDamage</regressionBuildup>
 				<severityPerDamage>0.012</severityPerDamage>
 				<reduceValue>0.5</reduceValue>
+			</li>
+		</modExtensions>
+	</DamageDef>
+	
+	<DamageDef>
+		<defName>FoyWater</defName>
+		<label>FOY splash</label>
+		
+		<!-- Optional flavor for logs -->
+		<deathMessage>{0} got soaked.</deathMessage>
+
+		<!-- Your custom regression extension -->
+		<modExtensions>
+			<li Class="ZealousInnocence.RegressionDamageExtension">
+				<regressionBuildup>RegressionDamage</regressionBuildup>
+				<severityPerDamage>0.012</severityPerDamage>
+				<reduceValue>0.7</reduceValue>
 			</li>
 		</modExtensions>
 	</DamageDef>

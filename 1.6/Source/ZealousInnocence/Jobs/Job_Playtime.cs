@@ -44,8 +44,8 @@ namespace ZealousInnocence
                 num+= 2f;
             }
            
-            var age1 = Helper_Regression.getAgeStage(recipient);
-            var age2 = Helper_Regression.getAgeStage(initiator);
+            var age1 = Helper_Regression.getAgeStageMental(recipient);
+            var age2 = Helper_Regression.getAgeStageMental(initiator);
             if(age1 > age2)
             {
                 num += (1.0f - ((age1 - age2) * 0.2f));

@@ -236,7 +236,7 @@
 	
 	<HediffDef>
 		<defName>RegressionDamage</defName>
-		<description>This person has received a dose of regressive nanites found only in the fountain of youth. Depending on severity this pawn will be affected in multiple ways, usually temporary.</description>
+		<description>This person has received a dose of regressive nanites found only in the fountain of youth. Depending on severity this pawn will be affected in multiple ways, usually temporary. While a full dose will heal the brain, an overdose is even able to revert death</description>
 		<hediffClass>ZealousInnocence.Hediff_RegressionDamage</hediffClass>
 		<label>regression</label>
 		<defaultLabelColor>(0.9, 1.0, 0.35)</defaultLabelColor>
@@ -250,7 +250,7 @@
 		</comps>
 		<initialSeverity>0.01</initialSeverity>
 		<minSeverity>0</minSeverity>
-		<maxSeverity>1.5</maxSeverity>
+		<maxSeverity>1.3</maxSeverity>
 		<tendable>false</tendable>
 	</HediffDef>
 </Defs>

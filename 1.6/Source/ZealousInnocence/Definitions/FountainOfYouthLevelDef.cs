@@ -54,6 +54,8 @@ namespace ZealousInnocence
         // Token: 0x040034A4 RID: 13476
         public bool monolithGlows;
 
+        public float foyProductionMultiplier;
+
         // Token: 0x040034A5 RID: 13477
         public int regressionThreatTier;
 

@@ -10,6 +10,11 @@ using Verse;
 namespace ZealousInnocence
 {
     [DefOf]
+    public class MentalStateDefOf
+    {
+        public static MentalStateDef WanderConfused;
+    }
+    [DefOf]
     public class ConceptDefOf
     {
         public static ConceptDef Regression;
@@ -122,6 +127,7 @@ namespace ZealousInnocence
         public static JobDef RegressedPlayAround;
         public static JobDef LayDown;
         public static JobDef ChangePatientDiaper;
+        public static JobDef PeePoopEvent;
 
         public static JobDef FountainOfYouthInvestigate;
         public static JobDef FountainOfYouthActivate;

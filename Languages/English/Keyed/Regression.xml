@@ -13,6 +13,12 @@
 	<PhraseAge>Age</PhraseAge>
 	<PhraseDaytimeAccidents>Daytime Accidents</PhraseDaytimeAccidents>
 	<PhraseBedwetting>Bedwetting</PhraseBedwetting>
+	<PhrasePantsWetting>peeing pants</PhrasePantsWetting>
+	<PhrasePantsSoiling>soiling pants</PhrasePantsSoiling>
+	<PhraseDiaperWetting>peeing {0}</PhraseDiaperWetting>
+	<PhraseDiaperSoiling>pooping {0}</PhraseDiaperSoiling>
+	<PhraseUnderwearWetting>peeing {0}</PhraseUnderwearWetting>
+	<PhraseUnderwearSoiling>soiling {0}</PhraseUnderwearSoiling>
 	<StateSleeping>Sleeping</StateSleeping>
 	<StateNeedsDiapers>Needs Diapers</StateNeedsDiapers>
 	<StateNeedsPullups>Needs Pull-Ups</StateNeedsPullups>

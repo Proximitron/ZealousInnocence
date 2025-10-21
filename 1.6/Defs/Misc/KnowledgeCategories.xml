@@ -11,7 +11,7 @@
     <defName>AdvRegression</defName>
     <label>advanced regression</label>
     <color>(1, 1, 1, 1)</color>
-    <texPath>Apparel/Diaper/Nappy/Nappy</texPath>
+    <texPath>Apparel/Diaper/PlainCloth/PlainCloth</texPath>
     <overflowCategory>Regression</overflowCategory>
   </KnowledgeCategoryDef>
 

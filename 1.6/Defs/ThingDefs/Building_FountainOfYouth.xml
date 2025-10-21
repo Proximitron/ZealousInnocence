@@ -89,10 +89,10 @@
       </li>
 			<li Class="ZealousInnocence.CompProperties_FOYReservoir">
 				<capacity>20</capacity>
-				<ticksPerUnit>6000</ticksPerUnit> <!-- 10 per 1 day -->
+				<ticksPerUnit>12000</ticksPerUnit> <!-- 5 per 1 day -->
 				<extractTicks>1200</extractTicks>
 				<productDef>ZI_Foy_Vial</productDef>
-				<productCount>2</productCount>
+				<productCount>1</productCount>
 			</li>
       <li Class="CompProperties_Glower">
         <glowRadius>12</glowRadius>

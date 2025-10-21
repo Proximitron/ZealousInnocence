@@ -5,6 +5,7 @@
     <level>0</level>
     <fountainLabel>strange fountain</fountainLabel>
     <graphicIndex>0</graphicIndex>
+		<foyProductionMultiplier>0.0</foyProductionMultiplier>
     <advanceThroughActivation>true</advanceThroughActivation>
     <regressionThreatTier>0</regressionThreatTier>
     <useInactiveAnomalyThreatFraction>true</useInactiveAnomalyThreatFraction>
@@ -25,6 +26,7 @@
     <level>1</level>
     <fountainLabel>fountain of youth?</fountainLabel>
     <graphicIndex>1</graphicIndex>
+		<foyProductionMultiplier>0.5</foyProductionMultiplier>
     <advanceThroughActivation>true</advanceThroughActivation>
     <regressionThreatTier>1</regressionThreatTier>
     <useActiveAnomalyThreatFraction>true</useActiveAnomalyThreatFraction>
@@ -68,6 +70,7 @@
     <level>2</level>
     <fountainLabel>fountain of youth</fountainLabel>
     <graphicIndex>2</graphicIndex>
+		<foyProductionMultiplier>1.0</foyProductionMultiplier>
     <advanceThroughActivation>true</advanceThroughActivation>
 		<unreachableDuringConditions>
       <li MayRequire="Ludeon.RimWorld.Anomaly">UnnaturalDarkness</li> <!-- Just a placeholder, custom conditions? -->
@@ -124,6 +127,7 @@
     <level>3</level>
     <fountainLabel>fountain of youth</fountainLabel>
     <graphicIndex>1</graphicIndex>
+		<foyProductionMultiplier>1.0</foyProductionMultiplier>
     <advanceThroughActivation>false</advanceThroughActivation>
 		<unreachableDuringConditions>
       <li MayRequire="Ludeon.RimWorld.Anomaly">UnnaturalDarkness</li> <!-- Just a placeholder, custom conditions? -->
@@ -171,6 +175,7 @@
     <fountainLabel>collapsed fountain</fountainLabel>
     <fountainDescription>The remnants of the fountain of youth, broken. The once glowing runes across its surface are withered, any water dried up. You can study the broken stones to gain further knowledge of regression.</fountainDescription>
     <graphicIndex>1</graphicIndex>
+		<foyProductionMultiplier>1.0</foyProductionMultiplier>
     <advanceThroughActivation>false</advanceThroughActivation>
     <postEndgame>true</postEndgame>
     <regressionThreatTier>0</regressionThreatTier>
