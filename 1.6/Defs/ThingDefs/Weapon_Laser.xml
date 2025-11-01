@@ -47,7 +47,7 @@
     <soundInteract>Interact_ChargeRifle</soundInteract>
     <repairEffect>Repair</repairEffect>
 
-    <supportsColors>true</supportsColors>
+    <supportsColors>false</supportsColors>
   </ThingDef>
 
   <ThingDef Name="BaseRayGun" ParentName="ZI_BaseNonMakeableRayGun" Abstract="True">
