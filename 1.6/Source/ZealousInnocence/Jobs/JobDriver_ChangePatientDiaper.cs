@@ -65,7 +65,7 @@ namespace ZealousInnocence
 
             if (!pawn.Reserve(target, job, 1, -1, null, errorOnFailed, false))
             {
-                 Log.Message($"[ZI]JobDriver_ChangePatientDiaper Fails Toil reservations stage 2");
+                Log.Message($"[ZI]JobDriver_ChangePatientDiaper Fails Toil reservations stage 2");
                 return false;
             }
             

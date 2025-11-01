@@ -70,7 +70,7 @@
 			<Absorbency>1.5</Absorbency>
 			<MaxHitPoints>60</MaxHitPoints>
 			<WorkToMake>300</WorkToMake>
-			<Mass>0.2</Mass>
+			<Mass>0.4</Mass>
 			<Flammability>1.0</Flammability>
 			<StuffEffectMultiplierArmor>0.05</StuffEffectMultiplierArmor>
 			<StuffEffectMultiplierInsulation_Cold>0.25</StuffEffectMultiplierInsulation_Cold>
@@ -184,7 +184,7 @@
 			<Absorbency>2.5</Absorbency>
 			<MaxHitPoints>80</MaxHitPoints>
 			<WorkToMake>400</WorkToMake>
-			<Mass>0.2</Mass>
+			<Mass>0.35</Mass>
 			<Flammability>1.0</Flammability>
 			<StuffEffectMultiplierArmor>0.10</StuffEffectMultiplierArmor>
 			<StuffEffectMultiplierInsulation_Cold>0.50</StuffEffectMultiplierInsulation_Cold>
@@ -241,7 +241,7 @@
 			<Absorbency>3.5</Absorbency>
 			<MaxHitPoints>80</MaxHitPoints>
 			<WorkToMake>1400</WorkToMake>
-			<Mass>0.2</Mass>
+			<Mass>0.3</Mass>
 			<Flammability>1.0</Flammability>
 			<StuffEffectMultiplierArmor>0.15</StuffEffectMultiplierArmor>
 			<StuffEffectMultiplierInsulation_Cold>0.55</StuffEffectMultiplierInsulation_Cold>
@@ -288,7 +288,7 @@
 	</ThingDef>
 	
 	<ThingDef Name="ApparelDisposableDiaperBase" ParentName="ApparelNoQualityBase" Abstract="True">
-		<thingClass>ZealousInnocence.Apparel_Diaper_Base</thingClass>
+		<thingClass>ZealousInnocence.Apparel_Disposable_Diaper</thingClass>
 		<tradeability>All</tradeability>
 		<thingCategories>
 			<li>Diapers</li>
@@ -317,6 +317,10 @@
 		<tickerType>Normal</tickerType>
 		<comps Inherit="false">
       <li Class="CompProperties_Forbiddable"/>
+			<li Class="ZealousInnocence.CompProperties_DisposableRapidDecay">
+				<startDelayTicks>1</startDelayTicks>
+				<hpPerTick>5</hpPerTick>
+			</li>
 		</comps>
 		<!--<comps>
 				<li Class="ZealousInnocence.DiaperFullnesProperties">
@@ -346,7 +350,7 @@
 			<DiaperSupport>0.50</DiaperSupport>
 			<MaxHitPoints>60</MaxHitPoints>
 			<WorkToMake>400</WorkToMake>
-			<Mass>0.2</Mass>
+			<Mass>0.08</Mass>
 			<Flammability>1.0</Flammability>
 			<StuffEffectMultiplierArmor>0.10</StuffEffectMultiplierArmor>
 			<StuffEffectMultiplierInsulation_Cold>0.50</StuffEffectMultiplierInsulation_Cold>

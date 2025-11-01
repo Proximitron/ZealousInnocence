@@ -5,4 +5,6 @@
 	
 	<!-- Destruction of cloth by accidents (pee/poop) -->
 	<MessageClothDestroyedByAccident>{PAWN_labelShort}'s {CLOTH_labelShort} was destroyed by an accident.</MessageClothDestroyedByAccident>
+	
+	<RimlaserChangeBeamColor>Change color: {0}</RimlaserChangeBeamColor>
 </LanguageData>

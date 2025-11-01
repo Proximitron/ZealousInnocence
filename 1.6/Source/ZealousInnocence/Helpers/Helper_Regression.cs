@@ -4,23 +4,17 @@ using JetBrains.Annotations;
 using RimWorld;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.Networking.UnityWebRequest;
 
 namespace ZealousInnocence
 {
     public static class Helper_Regression
     {
         private static Dictionary<Pawn, AgeStageInfo> cachedMentalAgeStages = new Dictionary<Pawn, AgeStageInfo>();
-        public static int getAgeStageMental(Pawn pawn, bool force = false)
+        public static int getAgeStageMental(this Pawn pawn, bool force = false)
         {
             if (!cachedMentalAgeStages.TryGetValue(pawn, out var value) || force)
             {
@@ -35,13 +29,13 @@ namespace ZealousInnocence
             Dictionary<Pawn, AgeStageInfo> dictionary = cachedMentalAgeStages;
             AgeStageInfo obj = new AgeStageInfo
             {
-                cachedAgeStage = getAgeStageMentalInt(pawn),
+                cachedAgeStage = getAgeStageMental(pawn),
                 lastCheckTick = Find.TickManager.TicksGame
             };
             dictionary[pawn] = obj;
         }
 
-        public static int getAgeStageMentalInt(Pawn pawn)
+        public static int getAgeStageMental(Pawn pawn)
         {
             if (pawn == null)
             {
@@ -52,7 +46,7 @@ namespace ZealousInnocence
             {
                 if (curr.def == HediffDefOf.RegressionState)
                 {
-                    // Regression isn't a thing on children
+                    // RegressionState isn't a thing on children
                     if (pawn.ageTracker.AgeBiologicalYears < 13)
                     {
                         pawn.health.RemoveHediff(curr);
@@ -61,11 +55,27 @@ namespace ZealousInnocence
                     return curr.CurStageIndex * 3;
                 }
             }
+            var hediff = Hediff_RegressionDamageMental.HediffByPawn(pawn);
+            if (hediff != null) return hediff.LastMentalYears;
+
+            var hediff2 = Hediff_RegressionDamage.HediffByPawn(pawn);
+            if (hediff2 != null) return hediff2.BaseAgeYearInt;
+
             return pawn.ageTracker.AgeBiologicalYears;
         }
 
+        public static void refreshAllAgeStageCaches(this Pawn pawn)
+        {
+            getAgeStagePhysical(pawn, true);
+            getAgeStageMental(pawn, true);
+        }
+        public static int getAgeStagePhysicalMentalMin(this Pawn pawn, bool force = false)
+        {
+            return Math.Min(getAgeStagePhysical(pawn, force), getAgeStageMental(pawn, force));
+        }
+
         private static Dictionary<Pawn, AgeStageInfo> cachedPhysicalAgeStages = new Dictionary<Pawn, AgeStageInfo>();
-        public static int getAgeStagePhysical(Pawn pawn, bool force = false)
+        public static int getAgeStagePhysical(this Pawn pawn, bool force = false)
         {
             if (!cachedPhysicalAgeStages.TryGetValue(pawn, out var value) || force)
             {
@@ -96,10 +106,20 @@ namespace ZealousInnocence
 
             return pawn.ageTracker.AgeBiologicalYears;
         }
-
-        public static bool isAdult(Pawn pawn)
+        public static bool ShouldHaveLearning(this Pawn p)
         {
-            return getAgeStageMentalInt(pawn) > 12;
+            if (p?.health == null) return false;
+            if (!p.RaceProps.Humanlike) return false;
+            if (ShouldHavePlaying(p)) return false;
+            var age = getAgeStageMental(p);
+            return age >= 3 && age < 13;
+        }
+        public static bool ShouldHavePlaying(this Pawn p)
+        {
+            if (p?.health == null) return false;
+            if (!p.RaceProps.Humanlike) return false;
+            var age = getAgeStagePhysicalMentalMin(p);
+            return age < 3;
         }
         public static bool canChangeDiaperOrUnderwear(Pawn p)
         {
@@ -118,7 +138,7 @@ namespace ZealousInnocence
 
             if (p.InMentalState && p.MentalStateDef.blockNormalThoughts) return false;
 
-            return getAgeStageMentalInt(p) >= 6;
+            return !isToddlerMentalOrPhysical(p);
         }   
 
         public static AcceptanceReport canUsePottyReport(Pawn pawn)
@@ -156,10 +176,27 @@ namespace ZealousInnocence
             }
             return true;
         }
-        public static bool isChild(Pawn pawn, bool forceRecheck = false)
+        public static bool isAdultMental(this Pawn pawn, bool forceRecheck = false)
+        {
+            if (!pawn.IsColonist) return true;
+            return getAgeStageMental(pawn, forceRecheck) >= 13;
+        }
+        public static bool isChildMental(this Pawn pawn, bool forceRecheck = false)
         {
             if (!pawn.IsColonist) return false;
             return getAgeStageMental(pawn, forceRecheck) < 13;
+        }
+        public static bool isToddlerMental(this Pawn pawn, bool forceRecheck = false)
+        {
+            return getAgeStageMental(pawn, forceRecheck) < 6;
+        }
+        public static bool isToddlerPhysical(this Pawn pawn, bool forceRecheck = false)
+        {
+            return getAgeStagePhysical(pawn, forceRecheck) < 6;
+        }
+        public static bool isToddlerMentalOrPhysical(this Pawn pawn, bool forceRecheck = false)
+        {
+            return isToddlerMental(pawn, forceRecheck) || isToddlerPhysical(pawn, forceRecheck);
         }
         public static void healPawnBrain(Pawn pawn)
         {
@@ -200,7 +237,7 @@ namespace ZealousInnocence
             pawn.health.hediffSet.DirtyCache();
         }
 
-        public static bool regressOrReincarnateToChild(Pawn pawn,ThingWithComps cause,  bool targetMentalRegression, out List<Hediff> removedHediffs, out float pawnAgeDelta)
+        public static bool regressOrReincarnateToChild(Pawn pawn,ThingDef cause,  bool targetMentalRegression, out List<Hediff> removedHediffs, out float pawnAgeDelta)
         {
             removedHediffs = new List<Hediff>();
             pawnAgeDelta = 0f;
@@ -210,19 +247,20 @@ namespace ZealousInnocence
             }
             else
             {
-                regressPawn(pawn);
-                return true;
+                return mentalRegressPawn(pawn);
             }
         }
-        public static void regressPawn(Pawn pawn)
+        public static bool mentalRegressPawn(Pawn pawn)
         {
             healPawnBrain(pawn);
-            Hediff hediff = HediffMaker.MakeHediff(HediffDefOf.RegressionState, pawn);
+            Hediff hediff = HediffMaker.MakeHediff(HediffDefOf.RegressionDamageMental, pawn);
+            hediff.Severity = hediff.def.maxSeverity;
             pawn.health.AddHediff(hediff);
 
             healPawnMissingBodyparts(pawn, true);
             refreshAgeStageMentalCache(pawn);
             Messages.Message("MessagePawnRegressed".Translate(pawn), pawn, MessageTypeDefOf.CautionInput);
+            return true;
         }
 
         public static void dropAllUnwearable(Pawn pawn)
@@ -243,19 +281,20 @@ namespace ZealousInnocence
             }
         }
 
-        public static bool reincarnateToChildPawn(Pawn pawn, ThingWithComps cause, out List<Hediff> removedHediffs, out float pawnAgeDelta)
+        public static bool reincarnateToChildPawn(Pawn pawn, ThingDef cause, out List<Hediff> removedHediffs, out float pawnAgeDelta)
         {
-            ApplyRegressionSeverity(pawn, cause, 1.0f);
+            SetRegressionSeverityMental(pawn, cause, 1.0f);
+            SetRegressionSeverityPhysical(pawn, cause, 1.0f);
             removedHediffs = new List<Hediff>();
             pawnAgeDelta = 0;
-            return false;
+            return true;
 
             int oldAge = pawn.ageTracker.AgeBiologicalYears;
             float num = pawn.ageTracker.AgeBiologicalYears;
             
             if (pawn.ageTracker.Adult)
             {
-                num = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge;
+                //num = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().targetChronoAge;
                 pawnAgeDelta = pawn.ageTracker.AgeBiologicalYearsFloat - num;
                 pawn.ageTracker.AgeBiologicalTicks = Mathf.RoundToInt(num * 3600000f);
             }
@@ -324,7 +363,7 @@ namespace ZealousInnocence
                 }
 
             }
-            ApplyRegressionSeverity(pawn, cause, 0.7f);
+            SetRegressionSeverityPhysical(pawn, cause, 0.7f);
 
             HediffGiver_BedWetting bedWettingGiver = new HediffGiver_BedWetting();
             bedWettingGiver.OnIntervalPassed(pawn, null);
@@ -372,16 +411,31 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
                                    dInfo.HitPart, dInfo.Weapon, dInfo.Category, dInfo.intendedTargetInt);
             return dInfo;
         }
-       public static float GetSeverityPerDamage(this DamageInfo dInfo)
+
+        public static void SetRegressionSeverityMental([NotNull] Pawn pawn, [NotNull] ThingDef cause, float severityAmount)
         {
-            var extensionInfo = dInfo.Def.GetModExtension<RegressionDamageExtension>();
-            if (extensionInfo != null)
+            if (pawn == null || severityAmount <= 0f) return;
+
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamageMental);
+            if (hediff == null)
             {
-                return extensionInfo.severityPerDamage;
+                hediff = HediffMaker.MakeHediff(HediffDefOf.RegressionDamageMental, pawn);
+                pawn.health.AddHediff(hediff);
+                hediff.Severity = severityAmount;
             }
-            return 0.01f;
+            else
+            {
+                hediff.Severity = severityAmount;
+            }
+            hediff.sourceDef = cause;
         }
-        public static void ApplyRegressionSeverity([NotNull] Pawn pawn, [NotNull] ThingWithComps instigator, float severityAmount)
+        public static void IncreaseRegressionSeverityMental([NotNull] Pawn pawn, [NotNull] ThingDef cause, float severityAmount)
+        {
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamageMental);
+            if (hediff == null) SetRegressionSeverityMental(pawn, cause, severityAmount);
+            else SetRegressionSeverityMental(pawn, cause, hediff.Severity + severityAmount);
+        }
+        public static void SetRegressionSeverityPhysical([NotNull] Pawn pawn, [NotNull] ThingDef cause, float severityAmount)
         {
             if (pawn == null || severityAmount <= 0f) return;
 
@@ -394,41 +448,45 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
             }
             else
             {
-                hediff.Severity += severityAmount;
+                hediff.Severity = severityAmount;
             }
-            
+            hediff.sourceDef = cause;
+        }
+        public static void IncreaseRegressionSeverityPhysical([NotNull] Pawn pawn, [NotNull] ThingDef cause, float severityAmount)
+        {
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamage);
+            if (hediff == null) SetRegressionSeverityPhysical(pawn, cause, severityAmount);
+            else SetRegressionSeverityPhysical(pawn, cause, hediff.Severity + severityAmount);
         }
         // Will set the regression severity to a defined level or increase the severity by the minIncrease. Never decreases.
         public static void SetIncreasedRegressionSeverity(
             [NotNull] Pawn pawn,
-            [NotNull] ThingWithComps instigator,
+            [NotNull] ThingDef source,
             float severityAmount,
             float minIncrease = 0.0f)
         {
-            if (pawn == null || severityAmount <= 0f)
-                return;
+            SetIncreasedRegressionSeverityPhysical(pawn,source, severityAmount, minIncrease);
+            SetIncreasedRegressionSeverityMental(pawn,source, severityAmount, minIncrease);
+        }
+        public static void SetIncreasedRegressionSeverityPhysical(
+            [NotNull] Pawn pawn,
+            [NotNull] ThingDef source,
+            float severityAmount,
+            float minIncrease = 0.0f)
+        {
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamage);
 
-            HediffDef def = HediffDefOf.RegressionDamage;
-            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def);
+            SetRegressionSeverityPhysical(pawn, source, hediff == null ? severityAmount : Math.Max(severityAmount, hediff.Severity + minIncrease));
+        }
+        public static void SetIncreasedRegressionSeverityMental(
+            [NotNull] Pawn pawn,
+            [NotNull] ThingDef source,
+            float severityAmount,
+            float minIncrease = 0.0f)
+        {
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamageMental);
 
-            if (hediff == null)
-            {
-                hediff = HediffMaker.MakeHediff(def, pawn);
-                pawn.health.AddHediff(hediff);
-
-                hediff.Severity = severityAmount; // start at target
-            }
-            else
-            {
-                float current = hediff.Severity;
-
-                // Desired final = at least severityAmount, but also at least minIncrease above current
-                float target = Math.Max(severityAmount, current + minIncrease);
-
-                // Never decrease
-                if (target < current) return;
-                hediff.Severity = target;
-            }
+            SetRegressionSeverityMental(pawn, source, hediff == null ? severityAmount : Math.Max(severityAmount, hediff.Severity + minIncrease));
         }
         public static void ApplyPureRegressionDamage(DamageInfo dInfo, [NotNull] Pawn pawn, DamageWorker.DamageResult result, float originalDamage)
         {
@@ -438,23 +496,12 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
                 Log.Warning("Damage caused by regression weapon does not contain damage extension!");
                 return;
             }
-            float severityPerDamage = GetSeverityPerDamage(dInfo);
-            float severityToAdd = Mathf.Clamp(originalDamage * severityPerDamage, 0, Mathf.Min(ext.regressionBuildup.maxSeverity,ext.maxSeverity) );
 
-            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(ext.regressionBuildup);
-            if (hediff == null)
-            {
-                hediff = HediffMaker.MakeHediff(ext.regressionBuildup, pawn);
-                pawn.health.AddHediff(hediff, null, dInfo, result);
-                hediff.Severity = severityToAdd;
-                hediff.sourceDef = dInfo.Weapon;
-            }
-            else
-            {
-                hediff.Severity = severityToAdd + hediff.Severity;
-                hediff.sourceDef = dInfo.Weapon;
-            }
+            float severityToAddMental = Mathf.Clamp(originalDamage * ext.mentalSeverityPerDamage, 0, Mathf.Min(HediffDefOf.RegressionDamageMental.maxSeverity,ext.mentalMaxSeverity) );
+            IncreaseRegressionSeverityMental(pawn, dInfo.Weapon, severityToAddMental);
 
+            float severityToAddPhysical = Mathf.Clamp(originalDamage * ext.physicalSeverityPerDamage, 0, Mathf.Min(HediffDefOf.RegressionDamage.maxSeverity, ext.physicalMaxSeverity));
+            IncreaseRegressionSeverityPhysical(pawn, dInfo.Weapon, severityToAddPhysical);
 
             /*if (hediff is ICaused caused)
             {
@@ -467,7 +514,7 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
                 if (dInfo.Def != null)
                     caused.Causes.Add(string.Empty, dInfo.Def);
             }*/
-             Log.Message($"[ZI]original damage:{originalDamage}, reducedDamage{dInfo.Amount}, severity:{severityToAdd}");
+            Log.Message($"[ZI]original damage:{originalDamage}, reducedDamage{dInfo.Amount}, mentalAdd:{severityToAddMental}, physicalAdd:{severityToAddPhysical}");
         }
     }
 
@@ -499,7 +546,7 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
             }
             var hediffsRemoved = new List<Hediff>();
             float ageDifference = 0f;
-            Helper_Regression.regressOrReincarnateToChild(pawn,billDoer, targetMentalRegression,  out hediffsRemoved, out ageDifference);
+            Helper_Regression.regressOrReincarnateToChild(pawn,billDoer.def, targetMentalRegression,  out hediffsRemoved, out ageDifference);
 
         }
     }

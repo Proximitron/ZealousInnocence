@@ -18,11 +18,11 @@ namespace ZealousInnocence
     {
         public override float RandomSelectionWeight(Pawn initiator, Pawn recipient)
         {
-            if (!Helper_Regression.isChild(initiator))
+            if (!Helper_Regression.isChildMental(initiator))
             {
                 return 0f;
             }
-            if (!Helper_Regression.isChild(recipient))
+            if (!Helper_Regression.isChildMental(recipient))
             {
                 return 0f;
             }

@@ -78,20 +78,21 @@ namespace ZealousInnocence
             int dose = Math.Max(1, this.job.count);
             var effectComp = Item.TryGetComp<CompTargetEffectFoyDose>();
 
-            float severity = 0.05f;
+            float severityBase = 0.05f;
             ThingDef moteDef = null;
             if (effectComp == null) return;
 
             var props = effectComp?.Props;
 
-            severity = (props?.severityPerDose ?? severity) * dose;
+            float severityPhysical = (props?.severityPerDosePhysical ?? severityBase) * dose;
+            float severityMental = (props?.severityPerDoseMental ?? severityBase) * dose;
 
             SoundDefOf.MechSerumUsed.PlayOneShot(SoundInfo.InMap(pawn));
             if (moteDef != null)
                 MoteMaker.MakeAttachedOverlay(pawn, moteDef, Vector3.zero, 1f, -1f);
 
-            Helper_Regression.SetIncreasedRegressionSeverity(pawn, this.pawn, severity, severity);
-
+            Helper_Regression.SetIncreasedRegressionSeverityPhysical(pawn,Item.def, severityPhysical, severityPhysical / 2);
+            Helper_Regression.SetIncreasedRegressionSeverityMental(pawn, Item.def, severityMental, severityMental / 2);
             // consume exactly 'dose' from the stack (even if carried)
             Item.SplitOff(dose).Destroy(DestroyMode.Vanish);
         }

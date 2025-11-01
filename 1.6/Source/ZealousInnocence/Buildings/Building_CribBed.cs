@@ -17,7 +17,7 @@ namespace ZealousInnocence
             // Check if the pawn has a last bed definition and if it has the "Crib" tag
             if (p.mindState.lastBedDefSleptIn != null && p.mindState.lastBedDefSleptIn.building != null && p.mindState.lastBedDefSleptIn.building.buildingTags.Contains("Crib"))
             {
-                if (Helper_Regression.isAdult(p))
+                if (Helper_Regression.isAdultMental(p))
                 {
                     // Check if the pawn's ideoligion includes the CribBed_Preferred precept
                     if (p.Ideo != null && p.Ideo.HasPrecept(PreceptDefOf.CribBed_Preferred))

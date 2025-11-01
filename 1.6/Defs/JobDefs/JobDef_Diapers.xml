@@ -13,4 +13,18 @@
 		<reportString>?report error?</reportString>
 		<casualInterruptible>true</casualInterruptible>
 	</JobDef>
+	
+	<JobDef>
+		<defName>ChangeDisposableFromInventory</defName>
+		<driverClass>ZealousInnocence.JobDriver_ChangeDisposableFromInventory</driverClass>
+		<reportString>changing disposable.</reportString>
+		<playerInterruptible>true</playerInterruptible>
+	</JobDef>
+	
+	<JobDef>
+		<defName>RestockDisposableToInventory</defName>
+		<driverClass>ZealousInnocence.JobDriver_RestockDisposableToInventory</driverClass>
+		<reportString>fetching disposables.</reportString>
+		<playerInterruptible>true</playerInterruptible>
+	</JobDef>
 </Defs>

@@ -86,6 +86,7 @@ namespace ZealousInnocence
         {
             Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
             Apparel oldDiaper = Helper_Diaper.getUnderwearOrDiaper(patient);
+            
             bool oldIsAllowed = oldDiaper == null ? false : Helper_Diaper.allowedByPolicy(patient, oldDiaper);
             if(need_diaper == null)
             {
@@ -94,8 +95,18 @@ namespace ZealousInnocence
             }
             if (oldDiaper != null && oldIsAllowed && need_diaper.CurLevel >= 0.5f)
             {
-                if(caretaker != null) JobFailReason.Is("No change needed.");
-                return LocalTargetInfo.Invalid;
+                var needDiaper = Helper_Diaper.needsDiaper(patient);
+                if (needDiaper == Helper_Diaper.isDiaper(oldDiaper))
+                {
+                    var needDiaperButIsNight = needDiaper && Helper_Diaper.isNightDiaper(oldDiaper);
+
+                    if (!needDiaperButIsNight)
+                    {
+                        JobFailReason.Is("No change needed.");
+                        return LocalTargetInfo.Invalid;
+                    }
+
+                }
             }
 
             float minRating = -0.1f;
@@ -303,7 +314,7 @@ namespace ZealousInnocence
                             curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
                         }
                     }
-                    if (!Helper_Regression.isAdult(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
+                    if (!Helper_Regression.isAdultMental(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
                     else if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
                     else Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
                     pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);

@@ -94,7 +94,7 @@ namespace ZealousInnocence
             if (overdose != null && overdose.Severity >= 0.4f) { reason = "overdose"; return false; }
 
 
-            var reg = (Hediff_RegressionDamage)p.health.hediffSet?.hediffs?.FirstOrDefault(x => x is Hediff_RegressionDamage);
+            var reg = Hediff_RegressionDamage.HediffByPawn(p);
             if (reg == null)
             {
                 reason = "no-regression";

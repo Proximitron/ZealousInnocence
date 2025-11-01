@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThingDef Name="ZI_BaseGun" Abstract="True" ParentName="BaseWeapon">
+    <techLevel>Industrial</techLevel>
+    <smeltable>true</smeltable>
+    <thingCategories>
+      <li>WeaponsRanged</li>
+    </thingCategories>
+    <inspectorTabs>
+      <li>ITab_Art</li>
+    </inspectorTabs>
+    <statBases>
+      <Flammability>0.5</Flammability>
+    </statBases>
+    <comps>
+      <li Class="CompProperties_Art">
+        <nameMaker>NamerArtWeaponGun</nameMaker>
+        <descriptionMaker>ArtDescription_WeaponGun</descriptionMaker>
+        <minQualityForArtistic>Excellent</minQualityForArtistic>
+      </li>
+    </comps>
+    
+    <weaponTags>
+      <li>Gun</li>
+      <li>SpacerGun</li>
+      <li>LaserGun</li>
+			<li>RayGun</li>
+    </weaponTags>
+  </ThingDef>
+
+  <ThingDef Name="ZI_BaseGunWithQuality" Abstract="True" ParentName="ZI_BaseGun">
+    <comps>
+      <li>
+        <compClass>CompQuality</compClass>
+      </li>
+    </comps>
+
+  </ThingDef>
+
+  <ThingDef Name="ZI_BaseNonMakeableRayGun" ParentName="ZI_BaseGunWithQuality" Abstract="True">
+    <techLevel>Spacer</techLevel>
+    <thingClass>ZealousInnocence.LaserGun</thingClass>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <soundInteract>Interact_ChargeRifle</soundInteract>
+    <repairEffect>Repair</repairEffect>
+
+    <supportsColors>true</supportsColors>
+  </ThingDef>
+
+  <ThingDef Name="BaseRayGun" ParentName="ZI_BaseNonMakeableRayGun" Abstract="True">
+    <recipeMaker>
+      <skillRequirements>
+        <Crafting>10</Crafting>
+      </skillRequirements>
+      <recipeUsers>
+        <li>TableMachining</li>
+        <li>FabricationBench</li>
+      </recipeUsers>
+      <workSkill>Crafting</workSkill>
+      <effectWorking>Smith</effectWorking>
+      <soundWorking>Recipe_Machining</soundWorking>
+      <unfinishedThingDef>UnfinishedGun</unfinishedThingDef>
+      <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    </recipeMaker>
+  </ThingDef>
+
+  <ThingDef>
+    <defName>ZI_BeamGraphic</defName>
+    <thingClass>ZealousInnocence.LaserBeamGraphic</thingClass>
+    <drawOffscreen>true</drawOffscreen>
+    <label>laser beam</label>
+    
+    <category>Projectile</category>
+    <tickerType>Normal</tickerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <useHitPoints>False</useHitPoints>
+    <neverMultiSelect>True</neverMultiSelect>
+  </ThingDef>
+
+  <ThingDef Abstract="True" Name="Bullet_LaserGeneric" ParentName="BaseBullet">
+    <thingClass>ZealousInnocence.LaserBeam</thingClass>
+    <drawOffscreen>true</drawOffscreen>
+    <beamGraphic>ZI_BeamGraphic</beamGraphic>
+   
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Effects/LaserRed</texPath>
+      <shaderType>TransparentPostLight</shaderType>
+      <drawSize>1.5</drawSize>
+    </graphicData>
+	
+    <explosionEffect>ZI_LaserImpact</explosionEffect>
+    <hitLivingEffect>ZI_LaserLivingImpact</hitLivingEffect>
+    
+    <projectile>
+      <damageDef>Bomb</damageDef>
+      <speed>10000</speed>
+    </projectile>
+    
+    <seam>0.25</seam>
+  </ThingDef>
+
+  <ThingDef Abstract="True" Name="ZI_Bullet_LaserColored" ParentName="Bullet_LaserGeneric">
+    <seam>0.25</seam>
+    <textures>
+      <li>Effects/LaserAwful</li>
+      <li>Effects/LaserPoor</li>
+      <li>Effects/LaserNormal</li>
+      <li>Effects/LaserGood</li>
+      <li>Effects/LaserExcellent</li>
+      <li>Effects/LaserMasterwork</li>
+      <li>Effects/LaserLegendary</li>
+    </textures>
+  </ThingDef>  
+  
+  <ThingDef Abstract="True" Name="ZI_Bullet_LaserInc" ParentName="Bullet_LaserGeneric">
+    <textures>
+      <li>Effects/LaserIncAwful</li>
+      <li>Effects/LaserIncPoor</li>
+      <li>Effects/LaserIncNormal</li>
+      <li>Effects/LaserIncGood</li>
+      <li>Effects/LaserIncExcellent</li>
+      <li>Effects/LaserIncMasterwork</li>
+      <li>Effects/LaserIncLegendary</li>
+    </textures>
+    <seam>0.02083333333</seam>
+  </ThingDef>  
+
+  <ThingDef Abstract="True" Name="ZI_Bullet_LaserDeathRay" ParentName="Bullet_LaserGeneric">
+    <textures>
+      <li>Effects/LaserDeathRay</li>
+    </textures>
+
+		<decorations>
+			<li>
+					<mote>ZI_Mote_LaserDecorationYellow</mote>
+					<spacing>0.8</spacing>
+					<initialOffset>-0.1</initialOffset>
+					<speed>1.0</speed>
+					<speedJitter>0.55</speedJitter>
+					<speedJitterOffset>90</speedJitterOffset>
+			</li>
+			<li>
+					<mote>ZI_Mote_LaserDecorationPurple</mote>
+					<spacing>0.8</spacing>
+					<initialOffset>0.3</initialOffset>
+					<speed>1.0</speed>
+					<speedJitter>0.45</speedJitter>
+					<speedJitterOffset>90</speedJitterOffset>
+			</li>
+	 </decorations>
+  </ThingDef>
+	<ThingDef Abstract="True" Name="Bullet_Ray" ParentName="Bullet_LaserGeneric">
+    <textures>
+      <li>Effects/Lightning</li>
+    </textures>
+		<seam>0.02083333333</seam>
+  </ThingDef>
+
+  <!-- LASER PISTOL -->
+  
+  <ThingDef ParentName="Bullet_Ray" Class="ZealousInnocence.LaserBeamDef">
+    <defName>Bullet_RayGun</defName>
+    <label>ray-gression beam</label>
+    
+    <projectile>
+			<damageDef>RayGression</damageDef>
+      <damageAmountBase>4</damageAmountBase>
+    </projectile>
+	
+		<beamWidth>0.6</beamWidth>
+  </ThingDef>
+  
+	<DamageDef ParentName="FoyWaterBase">
+		<defName>RayGression</defName>
+		<label>Ray-Gression damage</label>
+		
+		<deathMessage>{0}'s brain got fried.</deathMessage>
+
+		<modExtensions>
+			<li Class="ZealousInnocence.RegressionDamageExtension">
+				<mentalSeverityPerDamage>0.020</mentalSeverityPerDamage>
+				<physicalSeverityPerDamage>0.005</physicalSeverityPerDamage>
+				<reduceValue>0.85</reduceValue>
+				<mentalMaxSeverity>1.2</mentalMaxSeverity>
+				<physicalMaxSeverity>0.4</physicalMaxSeverity>
+			</li>
+		</modExtensions>
+	</DamageDef>
+	
+  <ThingDef ParentName="BaseRayGun" Class="ZealousInnocence.LaserGunDef">
+    <defName>ZI_RayGun</defName>
+    <label>ray-gression gun</label>
+    <description>Fires a concentrated beam that will scramble adult minds and make them behave like toddlers quickly.</description>
+    <graphicData>
+      <texPath>Things/Weapons/Ray_gun</texPath>
+    </graphicData>
+    <statBases>
+      <WorkToMake>4000</WorkToMake>
+      <Mass>2.4</Mass>
+      <AccuracyTouch>0.88</AccuracyTouch>
+      <AccuracyShort>0.8</AccuracyShort>
+      <AccuracyMedium>0.5</AccuracyMedium>
+      <AccuracyLong>0.4</AccuracyLong>
+      <RangedWeapon_Cooldown>0.325</RangedWeapon_Cooldown>
+    </statBases>
+	
+    <costList>
+			<Steel>75</Steel>
+      <Plasteel>10</Plasteel>
+      <ComponentIndustrial>2</ComponentIndustrial>
+    </costList>
+    <butcherProducts>
+			<Plasteel>10</Plasteel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </butcherProducts>
+
+    <verbs>
+      <li>
+        <verbClass>Verb_Shoot</verbClass>
+        <hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>Bullet_RayGun</defaultProjectile>
+        <warmupTime>0.3</warmupTime>
+        <range>25.9</range>
+        <soundCast>LaserPistol_fire</soundCast>
+        <soundCastTail>GunTail_Heavy</soundCastTail>
+        <muzzleFlashScale>9</muzzleFlashScale>
+      </li>
+    </verbs>
+	
+    <tools>
+      <li>
+        <label>grip</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+      <li>
+        <label>barrel</label>
+        <capacities>
+          <li>Blunt</li>
+          <li>Poke</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+    </tools>
+		<barrelLength>0.825</barrelLength>
+  </ThingDef>
+	
+  <!-- LASER RIFLE -->
+
+  <ThingDef ParentName="Bullet_Ray" Class="ZealousInnocence.LaserBeamDef">
+    <defName>Bullet_RayRifle</defName>
+    <label>ray-gression rifle beam</label>
+    
+    <projectile>
+			<damageDef>RayGression</damageDef>
+      <damageAmountBase>7</damageAmountBase>
+    </projectile>
+		
+		<beamWidth>0.8</beamWidth>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseRayGun" Name="ZI_LaserRifle" Class="ZealousInnocence.LaserGunDef">
+    <defName Inherit="False">ZI_RayRifle</defName>
+    <label>ray-gression rifle</label>
+    <description>Fires a concentrated beam that will scramble adult minds and make them behave like toddlers quickly. Does double damage to the gun but fires half as fast. In addition much more reliable at a distance.</description>
+    <graphicData>
+      <texPath>Things/Weapons/Ray_Rifle2</texPath>
+    </graphicData>
+	
+    <statBases>
+      <WorkToMake>9000</WorkToMake>
+      <Mass>5.5</Mass>
+      <AccuracyTouch>0.60</AccuracyTouch>
+      <AccuracyShort>0.70</AccuracyShort>
+      <AccuracyMedium>0.65</AccuracyMedium>
+      <AccuracyLong>0.55</AccuracyLong>
+      <RangedWeapon_Cooldown>0.65</RangedWeapon_Cooldown>
+    </statBases>
+	
+    <costList>
+			<Steel>75</Steel>
+      <Plasteel>20</Plasteel>
+      <ComponentIndustrial>3</ComponentIndustrial>
+    </costList>
+    <butcherProducts>
+			<Plasteel>10</Plasteel>
+      <ComponentIndustrial>2</ComponentIndustrial>
+    </butcherProducts>
+		
+    <verbs>
+      <li>
+        <verbClass>Verb_Shoot</verbClass>
+        <hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>Bullet_RayRifle</defaultProjectile>
+        <warmupTime>1.0</warmupTime>
+        <range>38.9</range>
+        <soundCast>LaserRifle_Fire</soundCast>
+        <soundCastTail>GunTail_Heavy</soundCastTail>
+        <muzzleFlashScale>12</muzzleFlashScale>
+      </li>
+    </verbs>
+	
+    <tools>
+      <li>
+        <label>stock</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+      <li>
+        <label>barrel</label>
+        <capacities>
+          <li>Blunt</li>
+          <li>Poke</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+    </tools>
+		<barrelLength>0.825</barrelLength>
+  </ThingDef>
+		
+	<ThingDef Name="ZI_ItemBase" Abstract="True">
+    <thingClass>ThingWithComps</thingClass>
+    <category>Item</category>
+    <resourceReadoutPriority>Middle</resourceReadoutPriority>
+    <useHitPoints>false</useHitPoints>
+    <selectable>true</selectable>
+    <altitudeLayer>Item</altitudeLayer>
+    <stackLimit>75</stackLimit>
+    <comps>
+      <li Class="CompProperties_Forbiddable"/>
+    </comps>
+    <alwaysHaulable>true</alwaysHaulable>
+    <drawGUIOverlay>true</drawGUIOverlay>
+    <rotatable>false</rotatable>
+    <pathCost>15</pathCost>
+  </ThingDef>
+	
+	<ThingDef Name="ZI_UnfinishedItemBase" ParentName="ZI_ItemBase" Abstract="True">
+    <thingClass>UnfinishedThing</thingClass>
+    <label>unfinished thing</label>
+    <altitudeLayer>Item</altitudeLayer>
+    <isUnfinishedThing>true</isUnfinishedThing>
+    <scatterableOnMapGen>false</scatterableOnMapGen>
+    <tradeability>None</tradeability>
+    <statBases>
+      <MaxHitPoints>50</MaxHitPoints>
+      <Beauty>-8</Beauty>
+      <Mass>1</Mass>
+    </statBases>
+    <thingCategories>
+      <li>Unfinished</li>
+    </thingCategories>
+  </ThingDef>
+	
+	<ThingDef ParentName="ZI_UnfinishedItemBase">
+    <defName>UnfinishedRayGun</defName>
+    <label>unfinished ray gun</label>
+    <graphicData>
+      <texPath>Things/Weapons/UnfinishedLaserGun</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+  </ThingDef>
+	
+	<!--<ThingDef ParentName="Bullet_Lightning" Class="ZealousInnocence.LaserBeamDef">
+    <defName>Bullet_RayGun</defName>
+    <label>ray-gression beam</label>
+    
+    <projectile>
+			<damageDef>RayGression</damageDef>
+      <damageAmountBase>16</damageAmountBase>
+    </projectile>
+	
+		<beamWidth>0.6</beamWidth>
+  </ThingDef>-->
+  
+	<DamageDef ParentName="FoyWaterBase">
+		<defName>SquirtSpray</defName>
+		<label>Squirt damage</label>
+		
+		<deathMessage>{0} got drowned in FOY water.</deathMessage>
+
+		<modExtensions>
+			<li Class="ZealousInnocence.RegressionDamageExtension">
+				<mentalSeverityPerDamage>0.015</mentalSeverityPerDamage>
+				<physicalSeverityPerDamage>0.020</physicalSeverityPerDamage>
+				<reduceValue>0.9</reduceValue>
+				<mentalMaxSeverity>1.0</mentalMaxSeverity>
+				<physicalMaxSeverity>1.2</physicalMaxSeverity>
+			</li>
+		</modExtensions>
+	</DamageDef>
+	
+	<ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>ZI_FoyBlaster</defName>
+    <label>FOY squirt blaster</label>
+    <description>A heavy weapon that can spray a stream of processed FOY water into an area and cause area wide regression. It can shoot in an arc over allies without harming them.\n\nWhile the main weapon can be used without limit, the weapon also comes equipped with a FOY-Vial-thrower to generate a massive blast of the water. Must be refueled after each use.</description>
+    <relicChance>0</relicChance>
+    <graphicData>
+      <texPath>Things/Weapons/Water_Blaster</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <soundInteract>Interact_Rifle</soundInteract>
+    <generateCommonality>0.3</generateCommonality>
+    <weaponClasses>
+      <li>RangedHeavy</li>
+    </weaponClasses>
+    <statBases>
+      <WorkToMake>30000</WorkToMake>
+      <Mass>3.4</Mass>
+      <RangedWeapon_Cooldown>3</RangedWeapon_Cooldown>
+      <Flammability>0.7</Flammability>
+    </statBases>
+    <costList>
+      <Steel>75</Steel>
+      <ComponentIndustrial>6</ComponentIndustrial>
+    </costList>
+    <recipeMaker>
+      <skillRequirements>
+        <Crafting>6</Crafting>
+      </skillRequirements>
+      <displayPriority>70</displayPriority>
+    </recipeMaker>
+    <thingSetMakerTags>
+      <li>RewardStandardQualitySuper</li>
+    </thingSetMakerTags>
+    <verbs>
+			<li>
+				<verbClass>ZealousInnocence.Verb_ArcSprayWater</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<warmupTime>0.5</warmupTime>
+				<range>15.9</range>
+				<minRange>3.9</minRange>
+				<beamFullWidthRange>11</beamFullWidthRange>
+				<burstShotCount>20</burstShotCount>
+				<showBurstShotStats>false</showBurstShotStats>
+				<requireLineOfSight>true</requireLineOfSight>
+				<beamWidth>6</beamWidth>
+				<ticksBetweenBurstShots>2</ticksBetweenBurstShots>
+
+				<beamDamageDef>SquirtSpray</beamDamageDef>
+
+				<soundCastTail>GunTail_Medium</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+
+				<soundCastBeam>Flamethrower_Firing</soundCastBeam>
+
+				<!-- visuals -->
+				<beamGroundFleckDef>BlastExtinguisher</beamGroundFleckDef>
+				<beamFleckChancePerTick>0.32</beamFleckChancePerTick>
+				<beamMaxDeviation>0.5</beamMaxDeviation>
+				<beamCurvature>0</beamCurvature>
+				<beamEndEffecterDef>WaterBeam_End</beamEndEffecterDef>
+
+				<!-- turn OFF any fire/ignition behavior -->
+				<beamChanceToStartFire>0</beamChanceToStartFire>
+				<beamFireSizeRange>0~0</beamFireSizeRange>
+				<beamSetsGroundOnFire>false</beamSetsGroundOnFire>
+				<ai_BeamIsIncendiary>true</ai_BeamIsIncendiary>
+
+				<beamStartOffset>.5</beamStartOffset>
+				<beamHitsNeighborCells>true</beamHitsNeighborCells>
+				<beamCantHitWithinMinRange>true</beamCantHitWithinMinRange>
+				<beamHitsNeighborCellsRequiresLOS>true</beamHitsNeighborCellsRequiresLOS>
+
+				<beamLineFleckDef>Fleck_WaterBeamSmoke</beamLineFleckDef>
+
+				<!-- cooler blue highlights -->
+				<highlightColor>(40, 120, 220)</highlightColor>
+				<secondaryHighlightColor>(180, 220, 255)</secondaryHighlightColor>
+
+				<beamLineFleckChanceCurve>
+					<points>
+						<li>(0, 0)</li>
+						<li>(0.65, 0.02)</li>
+						<li>(1, .5)</li>
+					</points>
+				</beamLineFleckChanceCurve>
+
+				<targetParams>
+					<canTargetLocations>true</canTargetLocations>
+				</targetParams>
+
+				<!-- flammability curve no longer matters, but keep it harmless -->
+				<flammabilityAttachFireChanceCurve>
+					<points>
+						<li>(0.6, 0)</li>
+						<li>(0.7, 0)</li>
+						<li>(1.2, 0)</li>
+					</points>
+				</flammabilityAttachFireChanceCurve>
+			</li>
+    </verbs>
+    <!--<comps Inherit="False">
+      <li Class="CompProperties_EquippableAbilityReloadable">
+        <abilityDef>IncineratorBurner</abilityDef>
+        <maxCharges>1</maxCharges>
+        <soundReload>Standard_Reload</soundReload>
+        <chargeNoun>burner charge</chargeNoun>
+        <ammoDef>Bioferrite</ammoDef>
+        <ammoCountPerCharge>10</ammoCountPerCharge>
+        <baseReloadTicks>60</baseReloadTicks>
+      </li>
+      <li Class="CompProperties_Forbiddable"/>
+      <li Class="CompProperties_Styleable"/>
+      <li Class="CompProperties_Biocodable"/>
+    </comps>-->
+    <weaponTags>
+      <li>Flamethrower</li>
+    </weaponTags>
+    <tools>
+      <li>
+        <label>stock</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+      <li>
+        <label>barrel</label>
+        <capacities>
+          <li>Blunt</li>
+          <li>Poke</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+    </tools>
+  </ThingDef>
+	
+	<ThingDef ParentName="MoteBase">
+    <defName>Mote_FoyBurst</defName>
+    <thingClass>MoteDualAttached</thingClass>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <isSaveable>false</isSaveable>
+    <mote>
+      <fadeInTime>0</fadeInTime>
+      <fadeOutTime>1</fadeOutTime>
+      <solidTime>999999</solidTime>
+      <needsMaintenance>True</needsMaintenance>
+      <rotateTowardsTarget>True</rotateTowardsTarget>
+      <scaleToConnectTargets>False</scaleToConnectTargets>
+      <fadeOutUnmaintained>True</fadeOutUnmaintained>
+    </mote>
+    <drawOffscreen>true</drawOffscreen>
+    <graphicData>
+      <texPath>Things/Motes/WaterTestSheet</texPath>
+      <graphicClass>Graphic_MoteWithAgeSecs</graphicClass>
+      <shaderType>MoteIncineratorBeam</shaderType>
+      <shaderParameters>
+        <_GradientTex>/Things/Motes/WaterBeamGradient2</_GradientTex>
+        <_AgeScalarNoise>/Things/Mote/IncineratorBeamAgeNoise</_AgeScalarNoise>
+        <_ScrollSpeedA>-4 </_ScrollSpeedA>
+        <_ScrollSpeedB>3</_ScrollSpeedB>
+        <_Intensity>0</_Intensity>
+        <_NumFrames>12</_NumFrames>
+        <_FramesPerSec>12</_FramesPerSec>
+      </shaderParameters>
+      <drawSize>10</drawSize>
+    </graphicData>
+  </ThingDef>
+	
+	<FleckDef ParentName="FleckBase_Thrown">
+		<defName>Fleck_WaterBeamSmoke</defName>
+		<fadeInTime>.1</fadeInTime>
+		<solidTime>.1</solidTime>
+		<fadeOutTime>2</fadeOutTime>
+		<altitudeLayer>MoteOverhead</altitudeLayer>
+		<growthRate>4</growthRate>
+		<graphicData>
+			<texPath>Things/Mote/Smoke</texPath>
+			<shaderType>Transparent</shaderType>
+			<drawSize>1</drawSize>
+
+			<!-- was (.1, .1, .1, 1) — nearly black -->
+			<color>(0.9, 0.9, 1.0, 0.6)</color>
+
+			<renderQueue>3200</renderQueue>
+		</graphicData>
+		<acceleration>(0, 10, 0.0)</acceleration>
+		<speedPerTime>-6~10</speedPerTime>
+	</FleckDef>
+	
+	<EffecterDef>
+		<defName>WaterBeam_End</defName>
+		<children>
+			<li>
+				<subEffecterClass>SubEffecter_SprayerChance</subEffecterClass>
+				<fleckDef>Fleck_WaterBeamSmoke</fleckDef>
+				<chancePerTick>0.4</chancePerTick>
+				<scale>0.6~1.1</scale>
+				<spawnLocType>OnSource</spawnLocType>
+				<absoluteAngle>true</absoluteAngle>
+				<angle>30~70</angle>
+				<speed>0.2~0.35</speed>
+			</li>
+			<li>
+				<subEffecterClass>SubEffecter_SprayerChance</subEffecterClass>
+				<positionRadius>0.1</positionRadius>
+				<spawnLocType>OnSource</spawnLocType>
+				<fleckDef>WaterBeamEnd_Glow</fleckDef>
+				<chancePerTick>0.5</chancePerTick>
+				<scale>0.8</scale>
+			</li>
+		</children>
+	</EffecterDef>
+	
+	<FleckDef ParentName="FleckBase_Thrown">
+		<defName>WaterBeamEnd_Glow</defName>
+		<altitudeLayer>LightingOverlay</altitudeLayer>
+		<fadeInTime>0.01</fadeInTime>
+		<solidTime>0.105</solidTime>
+		<fadeOutTime>0.04</fadeOutTime>
+		<graphicData>
+			<graphicClass>Graphic_Fleck</graphicClass>
+			<texPath>Things/Mote/IncineratorBeamGlow</texPath>
+			<shaderType>MoteGlow</shaderType>
+			<drawSize>12</drawSize>
+			<!-- was (1, .7, 0.09, 0.75) -->
+			<color>(0.45, 0.75, 1.0, 0.65)</color>
+		</graphicData>
+	</FleckDef>
+	
+  <!--
+  <AbilityDef>
+    <defName>ZI_FoySprayer_Thrower</defName>
+    <label>vial thrower</label>
+    <description>Throws FOY vials.</description>
+    <iconPath>UI/Abilities/Burner</iconPath>
+    <aiCanUse>true</aiCanUse>
+    <ai_IsIncendiary>true</ai_IsIncendiary>
+    <warmupStartSound>FireSpew_Warmup</warmupStartSound>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <range>11.9</range>
+      <warmupTime>0.5</warmupTime>
+      <soundCast>FireSpew_Resolve</soundCast>
+      <targetParams>
+        <canTargetLocations>true</canTargetLocations>
+      </targetParams>
+      <flammabilityAttachFireChanceCurve>
+        <points>
+          <li>(0.2, 0)</li>
+          <li>(1, 1)</li>
+        </points>
+      </flammabilityAttachFireChanceCurve>
+    </verbProperties>
+    <comps>
+      <li Class="CompProperties_AbilityFireSpew">
+        <range>11.9</range>
+        <lineWidthEnd>5</lineWidthEnd>
+        <filthDef>Filth_Ash</filthDef>
+        <damAmount>16</damAmount>
+        <canHitFilledCells>true</canHitFilledCells>
+      </li>
+      <li Class="CompProperties_AbilityBurner">
+        <numStreams>15</numStreams>
+        <range>13</range>
+        <coneSizeDegrees>12</coneSizeDegrees>
+        <moteDef>Mote_IncineratorBurst</moteDef>
+        <barrelOffsetDistance>6</barrelOffsetDistance>
+        <sizeReductionDistanceThreshold>8</sizeReductionDistanceThreshold>
+        <lifespanNoise>40</lifespanNoise>
+        <rangeNoise>.4</rangeNoise>
+        <effecterDef>BurnerUsed</effecterDef>
+      </li>
+    </comps>
+  </AbilityDef>-->
+	
+</Defs>

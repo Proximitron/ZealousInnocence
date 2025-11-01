@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>Defs/NeedDef[defName="Learning"]</xpath>
+    <value>
+      <li Class="ZealousInnocence.DevStageExtension">
+        <allowChild>true</allowChild>
+        <priority>30</priority>
+				<mentalStat>true</mentalStat>
+				<physicalStat>false</physicalStat>
+      </li>
+    </value>
+  </Operation>
+
+  <!-- Play: children only -->
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>Defs/NeedDef[defName="Play"]</xpath>
+    <value>
+      <li Class="ZealousInnocence.DevStageExtension">
+        <allowBaby>true</allowBaby>
+        <priority>20</priority>
+				<mentalStat>true</mentalStat>
+				<physicalStat>false</physicalStat>
+      </li>
+    </value>
+  </Operation>
+
+  <!-- Joy: adults only -->
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>Defs/NeedDef[defName="Joy"]</xpath>
+    <value>
+      <li Class="ZealousInnocence.DevStageExtension">
+        <allowAdult>true</allowAdult>
+        <priority>10</priority>
+				<mentalStat>true</mentalStat>
+				<physicalStat>false</physicalStat>
+      </li>
+    </value>
+  </Operation>
+
+  <!-- Optional: remove vanilla stage filters so your code fully governs -->
+  <Operation Class="PatchOperationRemove">
+    <xpath>Defs/NeedDef[defName="Learning"]/developmentalStageFilter</xpath>
+  </Operation>
+  <Operation Class="PatchOperationRemove">
+    <xpath>Defs/NeedDef[defName="Play"]/developmentalStageFilter</xpath>
+  </Operation>
+  <Operation Class="PatchOperationRemove">
+    <xpath>Defs/NeedDef[defName="Joy"]/developmentalStageFilter</xpath>
+  </Operation>
+</Patch>

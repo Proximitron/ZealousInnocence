@@ -24,6 +24,19 @@ namespace ZealousInnocence
     {
         public static ThingDef FountainOfYouth;
         public static ThingDef ZI_Foy_Vial;
+
+        public static ThingDef Apparel_Underwear_Loincloth;
+        public static ThingDef Apparel_Underwear_Kids;
+        public static ThingDef Apparel_Underwear_Panties;
+        public static ThingDef Apparel_Underwear_Boxers;
+
+        public static ThingDef Apparel_Diaper_Flimsy;
+        public static ThingDef Apparel_Diaper;
+        public static ThingDef Apparel_Diaper_Night;
+        public static ThingDef Apparel_Premium_Diaper;
+        public static ThingDef Apparel_Diaper_Disposable;
+
+        public static ThingDef Mote_FoyBurst;
     }
     [DefOf]
     public class FountainOfYouthLevelDefOf
@@ -87,6 +100,7 @@ namespace ZealousInnocence
     {
         public static HediffDef RegressionState;
         public static HediffDef RegressionDamage;
+        public static HediffDef RegressionDamageMental;
         public static HediffDef DiaperRash;
 
         public static HediffDef BigBladder;
@@ -135,6 +149,8 @@ namespace ZealousInnocence
 
         public static JobDef InjectRegression;
 
+        public static JobDef RestockDisposableToInventory;
+        public static JobDef ChangeDisposableFromInventory;
         //public static JobDef WearSleepwear;
         // public static JobDef OptimizeApparel;
         //public static JobDef ChangeSleepwear;

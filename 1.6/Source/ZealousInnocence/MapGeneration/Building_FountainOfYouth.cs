@@ -380,12 +380,13 @@ namespace ZealousInnocence
             if (regression.Level == 1)
             {
                 Helper_Bedwetting.ForceBedwetting(pawn);
-                Helper_Regression.ApplyRegressionSeverity(pawn, this, 0.3f);
+                Helper_Regression.IncreaseRegressionSeverityPhysical(pawn, def, 0.3f);
+                Helper_Regression.IncreaseRegressionSeverityMental(pawn, def, 0.1f);
             }
             else if (regression.Level == 2)
             {
                 Helper_Bedwetting.RandomizeBedwettingSeed(pawn);
-                Helper_Regression.SetIncreasedRegressionSeverity(pawn, this, 0.4f, 0.2f);
+                Helper_Regression.SetIncreasedRegressionSeverity(pawn, def, 0.4f, 0.2f);
                 CompStudiable comp = base.GetComp<CompStudiable>();
                 if (comp != null)
                 {

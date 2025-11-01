@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	<ThingDef ParentName="BaseHumanMakeableGun">
+	<!--<ThingDef ParentName="BaseHumanMakeableGun">
     <defName>Gun_RegressionPistol</defName>
     <label>foy water pistol</label>
     <description>A fast firing water pistol, based on regression research. Makes your enemy smaller than you fast!</description>
@@ -71,22 +71,8 @@
         <cooldownTime>2</cooldownTime>
       </li>
     </tools>
-  </ThingDef>
+  </ThingDef>-->
 	
-	<ThingDef ParentName="BaseBullet">
-		<defName>Bullet_RegressionDart</defName>
-		<label>tranquilizer dart</label>
-		<graphicData>
-			<texPath>Things/Projectile/DartSmall</texPath>
-			<graphicClass>Graphic_Single</graphicClass>
-		</graphicData>
-		<projectile>
-      <damageDef>RegressionEffectDamage</damageDef>
-      <damageAmountBase>10</damageAmountBase>
-      <stoppingPower>2</stoppingPower>
-      <speed>55</speed>
-		</projectile>
-	</ThingDef>
 	
 	<ThingDef ParentName="BaseBullet">
     <defName>Bullet_WaterSpray</defName>
@@ -129,40 +115,20 @@
 		<!-- Optional flavor for logs -->
 		<deathMessage>{0} got regressed.</deathMessage>
   </DamageDef>
-	
+		
 	<DamageDef ParentName="FoyWaterBase">
-		<defName>RegressionEffectDamage_Dart</defName>
-		<label>regression dart</label>
-		<deathMessage>{0} has been shot to death by a dart.</deathMessage>
-		<hediff>Gunshot</hediff>
-		<harmAllLayersUntilOutside>true</harmAllLayersUntilOutside>
-		<impactSoundType>Bullet</impactSoundType>
-		<armorCategory>Sharp</armorCategory>
-		<overkillPctToDestroyPart>0~0.7</overkillPctToDestroyPart>
-		<isRanged>true</isRanged>
-		<makesAnimalsFlee>true</makesAnimalsFlee>
-		<modExtensions>
-			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<regressionBuildup>RegressionDamage</regressionBuildup>
-				<severityPerDamage>0.012</severityPerDamage>
-				<reduceValue>0.5</reduceValue>
-			</li>
-		</modExtensions>
-	</DamageDef>
-	
-	<DamageDef>
 		<defName>FoyWater</defName>
 		<label>FOY splash</label>
 		
-		<!-- Optional flavor for logs -->
 		<deathMessage>{0} got soaked.</deathMessage>
 
-		<!-- Your custom regression extension -->
 		<modExtensions>
 			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<regressionBuildup>RegressionDamage</regressionBuildup>
-				<severityPerDamage>0.012</severityPerDamage>
+				<mentalSeverityPerDamage>0.012</mentalSeverityPerDamage>
+				<physicalSeverityPerDamage>0.012</physicalSeverityPerDamage>
 				<reduceValue>0.7</reduceValue>
+				<mentalMaxSeverity>1.2</mentalMaxSeverity>
+				<physicalMaxSeverity>1.2</physicalMaxSeverity>
 			</li>
 		</modExtensions>
 	</DamageDef>
@@ -182,9 +148,11 @@
 		<makesAnimalsFlee>true</makesAnimalsFlee>
 		<modExtensions>
 			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<regressionBuildup>RegressionDamage</regressionBuildup>
-				<severityPerDamage>0.012</severityPerDamage>
+				<mentalSeverityPerDamage>0.012</mentalSeverityPerDamage>
+				<physicalSeverityPerDamage>0.012</physicalSeverityPerDamage>
 				<reduceValue>0.5</reduceValue>
+				<mentalMaxSeverity>1.2</mentalMaxSeverity>
+				<physicalMaxSeverity>1.2</physicalMaxSeverity>
 			</li>
 		</modExtensions>
 	</DamageDef>

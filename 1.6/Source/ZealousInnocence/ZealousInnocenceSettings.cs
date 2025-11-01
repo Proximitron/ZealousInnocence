@@ -13,9 +13,9 @@ namespace ZealousInnocence
     {
         
         public bool reduceAge = false;
-        public float targetChronoAge = 10f;
-        public bool formerAdultsNeedLearning = true;
-        public bool formerAdultsCanHaveIdeoRoles = true;
+        //public float targetChronoAge = 10f;
+        //public bool formerAdultsNeedLearning = true;
+        //public bool formerAdultsCanHaveIdeoRoles = true;
         public bool bladderForRaidCaravanVisitors = true;
 
         public bool dynamicGenetics = true;
@@ -45,6 +45,7 @@ namespace ZealousInnocence
         public bool debuggingRegression = false;
         public bool debuggingApparelGenerator = false;
         public bool debuggingRects = false; // draw layout boxes
+        public bool debuggingHarmonyPatching = false;
 
         // --- behavior toggles ---
         public bool enableTwoUp = true;  // pair rows side-by-side when wide enough
@@ -72,7 +73,7 @@ namespace ZealousInnocence
         /// <summary>
         /// Base amount of regression severity healed per in-game day under neutral conditions.
         /// </summary>
-        public float Regression_BaseRecoveryPerDay = 0.03f;
+        public float Regression_BaseRecoveryPerDay = 0.04f;
 
         /// <summary>
         /// Multiplier applied when pawn is in bed (resting bonus).
@@ -112,9 +113,9 @@ namespace ZealousInnocence
             base.ExposeData();
             
             Scribe_Values.Look(ref reduceAge, "reduceAge", false);
-            Scribe_Values.Look(ref targetChronoAge, "targetChronoAge", 10f);
+            /*Scribe_Values.Look(ref targetChronoAge, "targetChronoAge", 10f);
             Scribe_Values.Look(ref formerAdultsNeedLearning, "formerAdultsNeedLearning", true);
-            Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);
+            Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);*/
             Scribe_Values.Look(ref bladderForRaidCaravanVisitors, "bladderForRaidCaravanVisitors", true);
             
 
@@ -141,8 +142,9 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref debuggingBedwetting, "debuggingBedwetting", false);
             Scribe_Values.Look(ref debuggingRegression, "debuggingRegression", false);
             Scribe_Values.Look(ref debuggingApparelGenerator, "debuggingApparelGenerator", false);
-
             Scribe_Values.Look(ref debuggingRects, "debuggingRects", false);
+            Scribe_Values.Look(ref debuggingHarmonyPatching, "debuggingHarmonyPatching", false);
+
             Scribe_Values.Look(ref enableTwoUp, "enableTwoUp", true);
             Scribe_Values.Look(ref snapToUIScale, "snapToUIScale", true);
             Scribe_Values.Look(ref tinyFontFallback, "tinyFontFallback", true);
@@ -162,7 +164,7 @@ namespace ZealousInnocence
 
             Scribe_Values.Look(ref maxLeftFrac, "maxLeftFrac", 0.58f);
 
-            Scribe_Values.Look(ref Regression_BaseRecoveryPerDay, "Regression_BaseRecoveryPerDay", 0.03f);
+            Scribe_Values.Look(ref Regression_BaseRecoveryPerDay, "Regression_BaseRecoveryPerDay", 0.04f);
             Scribe_Values.Look(ref Regression_RestingMultiplier, "Regression_RestingMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_ChildMultiplier, "Regression_ChildMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_AnimalMultiplier, "Regression_AnimalMultiplier", 2.0f);
@@ -228,7 +230,7 @@ namespace ZealousInnocence
 
             list.CheckboxLabeled("SettingReduceAge".Translate(), ref reduceAge, "SettingReduceAgeHelp".Translate());
 
-            list.GapLine(gabSize);
+            /*list.GapLine(gabSize);
             list.Label("SettingRitualAgeResult".Translate() + ": " + targetChronoAge, tooltip: "SettingRitualAgeResultHelp".Translate());
             targetChronoAge = (float)System.Math.Round(list.Slider(targetChronoAge, 3, 13));
 
@@ -242,7 +244,7 @@ namespace ZealousInnocence
                     list.CheckboxLabeled("SettingIdeologyRoles".Translate(), ref formerAdultsCanHaveIdeoRoles, "SettingIdeologyRolesHelp".Translate());
                 }
                 list.CheckboxLabeled("SettingLearningNeed".Translate(), ref formerAdultsNeedLearning, "SettingLearningNeedHelp".Translate());
-            }
+            }*/
             list.GapLine(gabSize);
             list.TextEntry("SettingRequiresRestart".Translate());
             list.CheckboxLabeled("SettingEnableBladderForRaidVisitorCaravans".Translate(), ref bladderForRaidCaravanVisitors, "SettingEnableBladderForRaidVisitorCaravansHelp".Translate());
@@ -308,7 +310,7 @@ namespace ZealousInnocence
             list.Label("SettingRegressionHealing".Translate(), -1f, tooltip: "SettingRegressionHealingHelp".Translate());
 
             SliderPct(list, "SettingBaseRecovery".Translate(), ref Regression_BaseRecoveryPerDay,
-                0f, Prefs.DevMode ? 3.6f : 0.3f, 0.03f,
+                0f, Prefs.DevMode ? 3.6f : 0.25f, 0.04f,
                 "SettingBaseRecoveryHelp".Translate());
 
             SliderPct(list, "SettingRestingMultiplier".Translate(), ref Regression_RestingMultiplier,
@@ -443,6 +445,20 @@ this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.
                 list.CheckboxLabeled("SettingDebugBedwetting".Translate(), ref debuggingBedwetting, "SettingDebugBedwettingHelp".Translate());
                 list.CheckboxLabeled("SettingDebugRegression".Translate(), ref debuggingRegression, "SettingDebugRegressionHelp".Translate());
                 list.CheckboxLabeled("SettingDebugApparel".Translate(), ref debuggingApparelGenerator, "SettingDebugApparelHelp".Translate());
+                list.CheckboxLabeled("SettingDebugRects".Translate(), ref debuggingRects, "SettingDebugRectsHelp".Translate());
+                list.CheckboxLabeled("SettingDebugHarmony".Translate(), ref debuggingHarmonyPatching, "SettingDebugHarmonyHelp".Translate());
+            }
+            else
+            {
+                debuggingCloth = false;
+                debuggingJobs = false;
+                debuggingCapacities = false;
+                debuggingGenes = false;
+                debuggingBedwetting = false;
+                debuggingRegression = false;
+                debuggingApparelGenerator = false;
+                debuggingRects = false;
+                debuggingHarmonyPatching = false;
             }
 
             list.NewColumn();

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationInsert">
+    <xpath>*/ThinkTreeDef[defName = "MainColonistBehaviorCore"]/thinkRoot//li[@Class="ThinkNode_PrioritySorter"]/subNodes/*[1]</xpath>
+    <value>
+      <li Class="ZealousInnocence.JobGiver_ChangeDisposableIfWornUsed"/>
+      <li Class="ZealousInnocence.JobGiver_RestockDisposables"/>
+    </value>
+  </Operation>
+	
+	<Operation Class="PatchOperationInsert">
+    <xpath>
+      /Defs/ThinkTreeDef[defName="Humanlike"]
+      //li[@Class="ThinkNode_ConditionalPrisoner"]
+      //li[@Class="ThinkNode_Tagger"][tagToGive="SatisfyingNeeds"]
+      //li[@Class="ThinkNode_PrioritySorter"]/subNodes
+      /li[@Class="JobGiver_GetFood"]/following-sibling::*[1]
+    </xpath>
+    <value>
+      <li Class="ZealousInnocence.JobGiver_ChangeDisposableIfWornUsed"/>
+      <li Class="ZealousInnocence.JobGiver_RestockDisposables"/>
+    </value>
+  </Operation>
+	
+  <Operation Class="PatchOperationInsert">
+    <xpath>
+      /Defs/ThinkTreeDef[defName="MentalStateNonCritical"]
+      //li[@Class="ThinkNode_ConditionalMentalStates"][states/li="Wander_OwnRoom" or states/li="HumanityBreak"]
+      /subNodes/li[@Class="ThinkNode_PrioritySorter"]/subNodes/*[1]
+    </xpath>
+    <value>
+      <li Class="ZealousInnocence.JobGiver_ChangeDisposableIfWornUsed"/>
+    </value>
+  </Operation>
+</Patch>

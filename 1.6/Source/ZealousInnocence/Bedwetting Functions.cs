@@ -24,7 +24,7 @@ namespace ZealousInnocence
         {
             get
             {
-                return Helper_Bedwetting.BedwettingAtAge(pawn, Helper_Regression.getAgeStageMental(pawn));
+                return Helper_Bedwetting.BedwettingAtAge(pawn);
             }
         }
 
@@ -72,13 +72,13 @@ namespace ZealousInnocence
             if (pawn == null || !pawn.IsColonist || pawn.Dead || !pawn.Spawned || !pawn.RaceProps.Humanlike) return;
             var def = HediffDefOf.BedWetting;
 
-            bool shouldWet = Helper_Bedwetting.BedwettingAtAge(pawn, Helper_Regression.getAgeStageMental(pawn));
+            bool shouldWet = Helper_Bedwetting.BedwettingAtAge(pawn);
             if (shouldWet)
             {
                 if (!pawn.health.hediffSet.HasHediff(def))
                 {
                     var hediff = Helper_Bedwetting.AddHediff(pawn);
-                    Messages.Message($"{pawn.Name.ToStringShort} has developed a bedwetting condition.", MessageTypeDefOf.NegativeEvent, true);
+                    if (!Helper_Diaper.needsDiaper(pawn)) Messages.Message($"{pawn.Name.ToStringShort} has developed a bedwetting condition.", MessageTypeDefOf.NegativeEvent, true);
                 }
             }
             else
@@ -86,7 +86,7 @@ namespace ZealousInnocence
                 if (pawn.health.hediffSet.HasHediff(def))
                 {
                     pawn.health.RemoveHediff(pawn.health.hediffSet.GetFirstHediffOfDef(def));
-                    Messages.Message($"{pawn.Name.ToStringShort} has outgrown their bedwetting condition.", MessageTypeDefOf.PositiveEvent, true);
+                    if(!Helper_Diaper.needsDiaper(pawn)) Messages.Message($"{pawn.Name.ToStringShort} has outgrown their bedwetting condition.", MessageTypeDefOf.PositiveEvent, true);
                 }
             }
         }
@@ -106,14 +106,22 @@ namespace ZealousInnocence
         }
         public static float BedwettingSeverity(Pawn pawn)
         {
-            var age = Helper_Regression.getAgeStageMentalInt(pawn);
-            if (age <= 12)
+            var age = Helper_Regression.getAgeStagePhysicalMentalMin(pawn);
+            if(age < 3)
             {
-                return 0.1f; // Child stage
+                return 0.1f; // Not potty trained
+            }
+            else if (age <= 12)
+            {
+                return 0.2f; // Child stage
             }
             else if (age <= 16)
             {
                 return 0.4f; // Teen stage
+            }
+            else if(age > 65)
+            {
+                return 1.0f; // Old stage
             }
             else
             {
@@ -175,8 +183,9 @@ namespace ZealousInnocence
 
             return Math.Max(0f, Math.Min(1f, chance));
         }
-        public static bool BedwettingAtAge(Pawn pawn, int age)
+        public static bool BedwettingAtAge(Pawn pawn, int age = -1)
         {
+            if (age == -1) age = Helper_Regression.getAgeStagePhysicalMentalMin(pawn);
             float chance = PawnBedwettingChance(pawn, age);
             var diaperNeed = pawn.needs?.TryGetNeed<Need_Diaper>();
             if (diaperNeed == null)
@@ -220,7 +229,7 @@ namespace ZealousInnocence
 
                     while (true)
                     {
-                        if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, Helper_Regression.getAgeStageMentalInt(pawn)))
+                        if (pawn.health.hediffSet.HasHediff(def) == BedwettingAtAge(pawn, Helper_Regression.getAgeStageMental(pawn)))
                         {
                             if (debugging)  Log.Message($"[ZI]ZealousInnocence MIGRATION DEBUG: Bedwetting seed {diaperNeed.bedwettingSeed} assigned with matching requirement {pawn.health.hediffSet.HasHediff(def)} for {pawn.LabelShort} after {tries} tries!");
                             break;
@@ -255,7 +264,7 @@ namespace ZealousInnocence
         }
         public static bool ForceBedwetting(Pawn pawn, int age = -1)
         {
-            if (age == -1) age = Helper_Regression.getAgeStageMentalInt(pawn);
+            if (age == -1) age = Helper_Regression.getAgeStagePhysicalMentalMin(pawn);
             var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
             if (diaperNeed == null)
             {

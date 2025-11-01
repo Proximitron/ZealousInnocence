@@ -72,13 +72,22 @@ namespace ZealousInnocence
                 return false;
             }
 
-            var diaper = Helper_Diaper.getUnderwearOrDiaper(patient);
+            var oldDiaper = Helper_Diaper.getUnderwearOrDiaper(patient);
             Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
 
-            if (diaper != null && Helper_Diaper.allowedByPolicy(patient, diaper) && need_diaper.CurLevel >= 0.5f)
+            if (oldDiaper != null && Helper_Diaper.allowedByPolicy(patient, oldDiaper) && need_diaper.CurLevel >= 0.5f)
             {
-                JobFailReason.Is("No change needed.");
-                return false;
+                var needDiaper = Helper_Diaper.needsDiaper(patient);
+                if (needDiaper == Helper_Diaper.isDiaper(oldDiaper))
+                {
+                    var needDiaperButIsNight = needDiaper && Helper_Diaper.isNightDiaper(oldDiaper);
+                    
+                    if (!needDiaperButIsNight)
+                    {
+                        JobFailReason.Is("No change needed.");
+                        return false;
+                    }
+                }
             }
 
             if (patient.GetPosture() == PawnPosture.Standing)

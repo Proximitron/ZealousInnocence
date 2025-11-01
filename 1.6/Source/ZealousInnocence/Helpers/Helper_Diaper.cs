@@ -374,7 +374,7 @@ namespace ZealousInnocence
         }
         public static bool needsDiaper(Pawn pawn)
         {
-            if (Helper_Diaper.shouldStayPut(pawn)) return true;
+            if (shouldStayPut(pawn)) return true;
             if (pawn.Awake()) return getBladderControlLevel(pawn) <= NeedsDiaperBreakpoint;
 
             var bladderControlWorker = new PawnCapacityWorker_BladderControl();
@@ -384,6 +384,11 @@ namespace ZealousInnocence
         {
             var pref = getDiaperPreference(pawn);
             return pref == DiaperLikeCategory.NonAdult || pref == DiaperLikeCategory.Liked || (pref != DiaperLikeCategory.Disliked && needsDiaper(pawn));
+        }
+        public static bool prefersDiaper(Pawn pawn)
+        {
+            var pref = getDiaperPreference(pawn);
+            return pref == DiaperLikeCategory.Liked || (needsDiaper(pawn) && pref != DiaperLikeCategory.Disliked);
         }
         public static bool needsDiaperNight(Pawn pawn)
         {
@@ -624,7 +629,7 @@ namespace ZealousInnocence
                 {
                     if (isNightDp) rating += 1f; // Usually better than diapers and better than no underwear
                 }
-                if (needsDiaper(pawn))
+                if (prefersDiaper(pawn))
                 {
                     rating += 5f;
                     if (isNightDp) rating -= 2f; // too thin
@@ -727,7 +732,7 @@ namespace ZealousInnocence
 
         public static DiaperLikeCategory getDiaperPreference(Pawn pawn)
         {
-            if (!Helper_Regression.isAdult(pawn))
+            if (!Helper_Regression.isAdultMental(pawn))
             {
                 return DiaperLikeCategory.NonAdult;
             }

@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using System.Collections.Generic;
+using UnityEngine;
 using Verse;
 
 namespace ZealousInnocence
@@ -11,6 +12,22 @@ namespace ZealousInnocence
         /// </summary>
         protected const float EPSILON = 0.001f;
 
+        private static readonly SimpleCurve BodySizeToSeverityMult = new SimpleCurve
+        {
+            new CurvePoint(0.25f, 1.35f), // tiny: +35%
+            new CurvePoint(1.00f, 1.00f), // human baseline
+            new CurvePoint(2.00f, 0.75f), // big: -25%
+            new CurvePoint(4.00f, 0.55f), // very big: -45%
+        };
+
+        private static float SeveritySizeScale(Pawn p)
+        {
+            if (p == null) return 1f;
+            // Safety clamp; evaluate curve and clamp result to reasonable bounds.
+            float size = Mathf.Max(p.BodySize, 0.1f);
+            float mult = BodySizeToSeverityMult.Evaluate(size);
+            return Mathf.Clamp(mult, 0.25f, 2f);
+        }
 
         /// <summary>
         ///     Applies the specified dinfo.
@@ -81,7 +98,7 @@ namespace ZealousInnocence
             var dinfo = new DamageInfo(damageDef, amount, armorPenetrationAt, angle, instigator, null, weapon,
                                        DamageInfo.SourceCategory.ThingOrUnknown, explosion.intendedTarget);
 
-            Helper_Regression.ApplyPureRegressionDamage(dinfo, pawn,null, amount);
+            Helper_Regression.ApplyPureRegressionDamage(dinfo, pawn,null, SeveritySizeScale(pawn) * amount);
 
             Find.BattleLog.Add(new BattleLogEntry_ExplosionImpact(explosion.instigator, t, explosion.weapon, explosion.projectile, def));
 
@@ -108,9 +125,7 @@ namespace ZealousInnocence
             dinfo = ReduceDamage(dinfo, pawn);
 
             DamageResult res = base.Apply(dinfo, pawn);
-            //float severityPerDamage = dinfo.GetSeverityPerDamage();
-
-            Helper_Regression.ApplyPureRegressionDamage(dinfo, pawn, res, originalDamage);
+            Helper_Regression.ApplyPureRegressionDamage(dinfo, pawn, res, SeveritySizeScale(pawn) * originalDamage);
 
             return res;
         }

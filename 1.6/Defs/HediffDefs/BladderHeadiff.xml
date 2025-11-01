@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 	
-<HediffDef ParentName="ChronicDiseaseBase">
-  <defName>BedWetting</defName>
-  <label>Bedwetting</label>
-  <description>A condition that affects bedwetting from childhood through adulthood. Adults with the condition can no longer grow out of it.\n\nProtection is needed during the night.</description>
-  <hediffClass>HediffWithComps</hediffClass>
-  <makesSickThought>false</makesSickThought>
-  <tendable>false</tendable>
-  <stages>
-    <li>
-      <label>childhood</label>
-      <minSeverity>0</minSeverity>
-    </li>
-    <li>
-      <label>teenage</label>
-      <minSeverity>0.4</minSeverity>
-    </li>
-    <li>
-      <label>adulthood</label>
-      <minSeverity>0.7</minSeverity>
-    </li>
-  </stages>
-	<everCurableByItem>false</everCurableByItem>
-</HediffDef>
+	<HediffDef ParentName="ChronicDiseaseBase">
+		<defName>BedWetting</defName>
+		<label>Bedwetting</label>
+		<description>A condition that affects bedwetting from childhood through adulthood. Adults with the condition can no longer grow out of it.\n\nProtection is needed during the night.</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<makesSickThought>false</makesSickThought>
+		<tendable>false</tendable>
+		<stages>
+			<li>
+				<label>baby</label>
+				<minSeverity>0</minSeverity>
+			</li>
+			<li>
+				<label>childhood</label>
+				<minSeverity>0.2</minSeverity>
+			</li>
+			<li>
+				<label>teenage</label>
+				<minSeverity>0.4</minSeverity>
+			</li>
+			<li>
+				<label>adulthood</label>
+				<minSeverity>0.7</minSeverity>
+			</li>
+			<li>
+				<label>old age</label>
+				<minSeverity>1.0</minSeverity>
+			</li>
+		</stages>
+		<everCurableByItem>false</everCurableByItem>
+	</HediffDef>
 	
   <HediffDef ParentName="InfectionBase">
     <defName>BladderInfection</defName>

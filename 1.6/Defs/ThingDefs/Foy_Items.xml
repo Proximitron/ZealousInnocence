@@ -3,9 +3,10 @@
 	<ThingDef ParentName="MechSerumBase">
     <defName>ZI_Foy_Injector_Overdose</defName>
     <label>FOY Injector (130%)</label>
-    <description>A one-use over-dose of regression nanites, from the fountain of youth. Enough to heal major injuries and even resurrect the dead. Administered to a corpse, the overdose will regress the body to the age of a baby, heal any and all injuries and trigger its rebirth. While having no other known sideeffects, there is currently no known way to lower the amount of regression, beside waiting for its natural progression. Can only be administered to a fresh body, but if a body is preserved, it can even be resurrected long after death.</description>
+    <description>A one-use over-dose of regression nanites, from the fountain of youth. Enough to heal major injuries and even resurrect the dead. Administered to a corpse, the overdose will regress the body to the age of a baby, heal any and all injuries and trigger its rebirth. While having no other known sideeffects, there is currently no known way to lower the amount of regression, beside waiting for its natural progression. Can only be administered to a fresh body, but if a body is preserved, it can even be resurrected long after death. (Causes 120% mental and physical regression)</description>
 		<descriptionHyperlinks>
       <HediffDef>RegressionDamage</HediffDef>
+			<HediffDef>RegressionDamageMental</HediffDef>
     </descriptionHyperlinks>
     <graphicData>
       <texPath>Things/Item/Injector</texPath>
@@ -13,7 +14,7 @@
     </graphicData>
     <stackLimit>10</stackLimit>
     <statBases>
-      <MarketValue>70</MarketValue>
+			<MarketValue>750</MarketValue>
     </statBases>
     <thingCategories>
       <li>Drugs</li>
@@ -38,7 +39,8 @@
 				<minDose>1</minDose>
 				<maxDose>1</maxDose>
 				<defaultDose>1</defaultDose>
-				<severityPerDose>1.30</severityPerDose>
+				<severityPerDosePhysical>1.30</severityPerDosePhysical>
+				<severityPerDoseMental>1.30</severityPerDoseMental>
 				<moteDef>Mote_ResurrectFlash</moteDef>
 			</li>
     </comps>
@@ -74,12 +76,49 @@
       <li Class="CompProperties_UseEffectDestroySelf" />
     </comps>
   </ThingDef>-->
-		<RecipeDef>
+	
+	<RecipeDef>
+		<defName>Make_ZI_Foy_Injector_Overdose</defName>
+		<label>craft FOY injector (130%)</label>
+		<description>Synthesize an overdose FOY injector from concentrated FOY vials.</description>
+		<jobString>Synthesizing a FOY injector…</jobString>
+
+		<workSpeedStat>DrugSynthesisSpeed</workSpeedStat>
+		<workAmount>2400</workAmount>
+		<effectWorking>Cook</effectWorking>
+		<soundWorking>Recipe_Drug</soundWorking>
+
+		<recipeUsers>
+			<li>DrugLab</li>
+		</recipeUsers>
+
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>ZI_Foy_Vial</li>
+					</thingDefs>
+				</filter>
+				<count>13</count>
+			</li>
+		</ingredients>
+
+		<products>
+			<ZI_Foy_Injector_Overdose>1</ZI_Foy_Injector_Overdose>
+		</products>
+
+		<workSkill>Crafting</workSkill>
+
+		<displayPriority>5</displayPriority>
+	</RecipeDef>
+		
+	<RecipeDef>
     <defName>AdministerFoyOverDose</defName>
     <label>administer FOY overdose</label>
     <description>Administer FOY (130%).</description>
 		<descriptionHyperlinks>
       <HediffDef>RegressionDamage</HediffDef>
+			<HediffDef>RegressionDamageMental</HediffDef>
     </descriptionHyperlinks>
     <workerClass>Recipe_AdministerUsableItem</workerClass>
     <jobString>Administering regression.</jobString>
@@ -111,6 +150,7 @@
     <description>Administer FOY (100%).</description>
 		<descriptionHyperlinks>
       <HediffDef>RegressionDamage</HediffDef>
+			<HediffDef>RegressionDamageMental</HediffDef>
     </descriptionHyperlinks>
     <workerClass>Recipe_AdministerUsableItem</workerClass>
     <jobString>Administering regression.</jobString>
@@ -142,6 +182,7 @@
     <description>Administer FOY (50%).</description>
 		<descriptionHyperlinks>
       <HediffDef>RegressionDamage</HediffDef>
+			<HediffDef>RegressionDamageMental</HediffDef>
     </descriptionHyperlinks>
     <workerClass>Recipe_AdministerUsableItem</workerClass>
     <jobString>Administering regression.</jobString>
@@ -192,14 +233,14 @@
 	<ThingDef ParentName="ZI_Foy">
     <defName>ZI_Foy_Vial</defName>
     <label>FOY Water (10%)</label>
-    <description>Water from the fountain of youth. Can be directly ingested or used as an ingredient for many regression related technologies.</description>
+    <description>Water from the fountain of youth. Can be directly ingested or used as an ingredient for many regression related technologies. (Causes 10% physical and 5% mental regression per dose)</description>
 		<graphicData>
 			<texPath>Things/Item/Vials</texPath>
 			<graphicClass>DubsBadHygiene.Graphic_StackCountTech</graphicClass>
 			<drawSize>0.88</drawSize>
 		</graphicData>
 		<statBases>
-			<MarketValue>20</MarketValue>
+			<MarketValue>50</MarketValue>
 			<MaxHitPoints>60</MaxHitPoints>
 			<Flammability>0.2</Flammability>
 			<Mass>0.25</Mass>
@@ -210,6 +251,11 @@
         <li Class="IngestionOutcomeDoer_GiveHediff">
           <hediffDef>RegressionDamage</hediffDef>
           <severity>0.10</severity>
+          <doToGeneratedPawnIfAddicted>true</doToGeneratedPawnIfAddicted>
+        </li>
+				<li Class="IngestionOutcomeDoer_GiveHediff">
+          <hediffDef>RegressionDamageMental</hediffDef>
+          <severity>0.05</severity>
           <doToGeneratedPawnIfAddicted>true</doToGeneratedPawnIfAddicted>
         </li>
       </outcomeDoers>
@@ -231,7 +277,8 @@
 				<minDose>1</minDose>
 				<maxDose>13</maxDose>
 				<defaultDose>1</defaultDose>
-				<severityPerDose>0.10</severityPerDose>
+				<severityPerDosePhysical>0.10</severityPerDosePhysical>
+				<severityPerDoseMental>0.05</severityPerDoseMental>
 				<moteDef>Mote_ResurrectFlash</moteDef>
 			</li>
 		</comps>

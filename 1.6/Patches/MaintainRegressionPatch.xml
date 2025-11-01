@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
-
-  <Operation Class="PatchOperationInsert">
-    <xpath>*/ThinkTreeDef[defName = "SatisfyBasicNeeds"]/thinkRoot[@Class="ThinkNode_Tagger"]/subNodes/li[@Class="ThinkNode_PrioritySorter"]/subNodes/*[1]</xpath>
-    <value>
-      <li Class="ZealousInnocence.JobGiver_FOY_MaintainRegression"/>
-    </value>
-  </Operation>
-
   <Operation Class="PatchOperationInsert">
     <xpath>*/ThinkTreeDef[defName = "MainColonistBehaviorCore"]/thinkRoot//li[@Class="ThinkNode_PrioritySorter"]/subNodes/*[1]</xpath>
     <value>

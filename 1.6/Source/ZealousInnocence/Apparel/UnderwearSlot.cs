@@ -2,12 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.UIElements;
+using UnityEngine;
 using Verse;
-using Verse.AI;
 
 namespace ZealousInnocence
 {
@@ -91,6 +87,112 @@ namespace ZealousInnocence
     {
 
     }
+    [StaticConstructorOnStartup]
+    public class Apparel_Disposable_Diaper : Apparel_Diaper_Base
+    {
+        private CompDisposableRapidDecay DecayComp => this.TryGetComp<CompDisposableRapidDecay>();
+        public override bool CanStackWith(Thing other)
+        {
+            if (!base.CanStackWith(other)) return false;
+
+            if (DecayComp?.preventMerging == true) return false;
+
+            if (other.HitPoints != HitPoints) return false;
+
+            return true;
+        }
+
+        public override bool TryAbsorbStack(Thing other, bool respectStackLimit)
+        {
+            if (!CanStackWith(other)) return false;
+            return base.TryAbsorbStack(other, respectStackLimit);
+        }
+
+        public override Graphic Graphic
+        {
+            get
+            {
+                var comp = this.TryGetComp<CompDisposableRapidDecay>();
+                if (DecayComp?.preventMerging == true && Wearer == null)
+                {
+                    
+                    return GraphicDatabase.Get<Graphic_Single>(
+                        def.apparel.wornGraphicPath,  // can be any valid path; not drawn due to Color.clear
+                        ShaderDatabase.Transparent,
+                        this.DrawSize,
+                        Color.clear,
+                        Color.clear
+                    );
+                }
+                return base.Graphic;
+            }
+        }
+        public CompRegressionMemory Memory
+        {
+            get
+            {
+                return GetMemory(Wearer);
+            }
+        }
+        public static CompRegressionMemory GetMemory(Pawn pawn)
+        {
+            return pawn?.TryGetComp<CompRegressionMemory>();
+        }
+        public int DesiredSpareCount
+        {
+            get => Mathf.Clamp(GetDesiredSpareCountFor(Wearer), 0, 10);
+            set => SetDesiredSpareCountFor(Wearer, Mathf.Clamp(value, 0, 10));
+        }
+        public static int GetDesiredSpareCountFor(Pawn pawn, int fallback = 2)
+        {
+            CompRegressionMemory Memory = GetMemory(pawn);
+            if (Memory == null) return fallback;
+            return Memory.targetDisposablesCount;
+        }
+        public static void SetDesiredSpareCountFor(Pawn pawn, int target)
+        {
+            CompRegressionMemory Memory = GetMemory(pawn);
+            if (Memory == null) return;
+            Memory.targetDisposablesCount = target;
+        }
+
+        public override IEnumerable<Gizmo> GetWornGizmos()
+        {
+            foreach (var g in base.GetWornGizmos())
+                yield return g;
+
+            // Only show to player when worn by a player pawn
+            if (Wearer is not Pawn pawn || Wearer.Faction != Faction.OfPlayer) yield break;
+
+            // There is no point in this until the pawn can change their own diapers
+            if(!Helper_Regression.canChangeDiaperOrUnderwear(pawn)) yield break;
+
+            int count = pawn?.inventory?.innerContainer?.Count(t => t is Apparel_Disposable_Diaper) ?? 0;
+
+            // Display (click to open quick set menu)
+            yield return new Command_Action
+            {
+                defaultLabel = $"Spare diapers: {count}/{DesiredSpareCount}",
+                defaultDesc = "Set how many fresh disposables this pawn should carry in inventory.",
+                action = () => ShowDesiredMenu(),
+                icon = ContentFinder<Texture2D>.Get("Things/Item/Disposables/Disposable_a", false)
+            };
+        }
+
+        private void ShowDesiredMenu()
+        {
+            var opts = new List<FloatMenuOption>();
+            // Offer a handful of sensible choices
+            for (int i = 0; i <= 10; i++)
+            {
+                int val = i;
+                string label = (val == DesiredSpareCount) ? $"• {val}" : val.ToString();
+                opts.Add(new FloatMenuOption(label, () => DesiredSpareCount = val));
+            }
+            Find.WindowStack.Add(new FloatMenu(opts));
+        }
+    }
+
     [StaticConstructorOnStartup]
     public class Apparel_Underwear_Base : Apparel_UnderwearSlot
     {

@@ -150,7 +150,7 @@ namespace ZealousInnocence
             if (__result.health.hediffSet.HasHediff(HediffDefOf.Incontinent)) return;
 
 
-            if (Helper_Bedwetting.BedwettingAtAge(__result, Helper_Regression.getAgeStageMentalInt(__result)))
+            if (Helper_Bedwetting.BedwettingAtAge(__result))
             {
                 Helper_Bedwetting.AddHediff(__result);
             }
@@ -158,11 +158,11 @@ namespace ZealousInnocence
             var underwear = __result.apparel.WornApparel.FirstOrDefault(a => a.def.apparel.layers.Contains(ApparelLayerDefOf.Underwear));
             if (underwear != null)
             {
-                if(Helper_Diaper.needsDiaper(__result))
+                if(Helper_Diaper.needsDiaper(__result) || Helper_Diaper.prefersDiaper(__result))
                 {
                     if (!Helper_Diaper.isDiaper(underwear) && Helper_Diaper.acceptsDiaper(__result))
                     {
-                        if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
+                        if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Removing wrong underwear (needs/prefers diapers, is not, accepts) for {__result.LabelShort} of {underwear.LabelShort}");
                         __result.apparel.Remove(underwear);
                         underwear = null;
                     }
@@ -172,7 +172,7 @@ namespace ZealousInnocence
                 {
                     if (!Helper_Diaper.isNightDiaper(underwear) && Helper_Diaper.acceptsDiaperNight(__result))
                     {
-                        if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Removing wrong underwear for {__result.LabelShort} of {underwear.LabelShort}");
+                        if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Removing wrong underwear (needs pull-ups, is not, accepts) for {__result.LabelShort} of {underwear.LabelShort}");
                         __result.apparel.Remove(underwear);
                         underwear = null;
                     }
@@ -210,33 +210,33 @@ namespace ZealousInnocence
             if (pawn.ageTracker.AgeBiologicalYears < 3) return null;
             if (Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn))
             {
-                return DefDatabase<ThingDef>.GetNamed("Apparel_Diaper");
+                return ThingDefOf.Apparel_Diaper;
             }
             else if (Helper_Diaper.needsDiaperNight(pawn) && Helper_Diaper.acceptsDiaperNight(pawn))
             {
-                return DefDatabase<ThingDef>.GetNamed("Apparel_Diaper_Night");
+                return ThingDefOf.Apparel_Diaper_Night;
             }
             else
             {
                 if (pawn.Faction == null || pawn.Faction.def.techLevel == TechLevel.Medieval || pawn.Faction.def.techLevel == TechLevel.Neolithic)
                 {
-                    return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Loincloth");
+                    return ThingDefOf.Apparel_Underwear_Loincloth;
                 }
                 else
                 {
                     if(!pawn.ageTracker.Adult)
                     {
-                        return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Kids");
+                        return ThingDefOf.Apparel_Underwear_Kids;
                     }
                     if (pawn.ageTracker.Adult)
                     {
                         if (pawn.gender == Gender.Female)
                         {
-                            return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Panties");
+                            return ThingDefOf.Apparel_Underwear_Panties;
                         }
                         else
                         {
-                            return DefDatabase<ThingDef>.GetNamed("Apparel_Underwear_Boxers");
+                            return ThingDefOf.Apparel_Underwear_Boxers;
                         }
                     }
                 }

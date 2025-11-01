@@ -175,6 +175,14 @@ namespace ZealousInnocence
 
             if (ap.HasThingCategory(ThingCategoryDefOf.Diapers) || ap.HasThingCategory(ThingCategoryDefOf.Underwear))
             {
+                if (Helper_Diaper.getDiaper(pawn) is Apparel_Disposable_Diaper worn)
+                {
+                    int have = (pawn?.inventory?.innerContainer ?? Enumerable.Empty<Thing>())
+                        .OfType<Apparel_Disposable_Diaper>()
+                        .Where(t => t.def == worn.def)
+                        .Sum(t => t.stackCount);
+                    if (have > 0) return -100f;
+                }
                 __result += Helper_Diaper.getDiaperOrUndiesRating(pawn, ap);
             }
             else if (ap.HasThingCategory(ThingCategoryDefOf.Onesies))
@@ -182,10 +190,7 @@ namespace ZealousInnocence
                 __result += Helper_Diaper.getOnesieRating(pawn, ap);
             }
 
-            //JobGiver_OptimizeApparel.ApparelScoreRaw
-            //JobGiver_OptimizeApparel.ApparelScoreGain
             return __result;
-
         }
     }
 

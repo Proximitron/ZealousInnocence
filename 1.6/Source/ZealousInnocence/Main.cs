@@ -15,6 +15,8 @@ using Verse;
 using Verse.AI;
 using Verse.Noise;
 using Verse.Sound;
+using ZealousInnocence.Jobs;
+using static UnityEngine.GraphicsBuffer;
 
 namespace ZealousInnocence
 {
@@ -40,6 +42,8 @@ namespace ZealousInnocence
     [StaticConstructorOnStartup]
     public class ZealousInnocence : Mod
     {
+        int PrefixCount = 0;
+        int PostfixCount = 0;
         ZealousInnocenceSettings settings;
         private static readonly Harmony harmony = new Harmony("proximo.zealousinnocence");
         public ZealousInnocence(ModContentPack content) : base(content)
@@ -81,10 +85,27 @@ namespace ZealousInnocence
                 postfix: new HarmonyMethod(typeof(HealthCardUtility_GetPawnCapacityTip_Patch), nameof(HealthCardUtility_GetPawnCapacityTip_Patch.Postfix)),
                 info: "HealthCardUtility.GetPawnCapacityTip"
             );
-            patchFunctionPostfix(
+            /*patchFunctionPostfix(
                 original: AccessTools.Method(typeof(Pawn_NeedsTracker), "ShouldHaveNeed", new[] { typeof(NeedDef) }),
                 postfix: new HarmonyMethod(typeof(Patch_ShouldHaveNeed), nameof(Patch_ShouldHaveNeed.Postfix)),
                 info: "Pawn_NeedsTracker.ShouldHaveNeed"
+            );*/
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(Pawn_NeedsTracker), "ShouldHaveNeed", new[] { typeof(NeedDef) }),
+                postfix: new HarmonyMethod(typeof(Patch_ShouldHaveNeed_Debug), nameof(Patch_ShouldHaveNeed_Debug.Postfix)),
+                info: "Pawn_NeedsTracker.ShouldHaveNeed (DubsBadHygiene conflict solved)"
+            );
+
+            var AddAndRemoveMethod = AccessTools.Method(typeof(PawnComponentsUtility), nameof(PawnComponentsUtility.AddAndRemoveDynamicComponents), new[] { typeof(Pawn), typeof(bool) });
+            patchFunctionPrefix(
+                original: AddAndRemoveMethod,
+                prefix: new HarmonyMethod(typeof(Patch_PawnComponents_AddRemove), nameof(Patch_PawnComponents_AddRemove.Prefix)),
+                info: "PawnComponentsUtility.AddAndRemoveDynamicComponents"
+            );
+            patchFunctionPostfix(
+                original: AddAndRemoveMethod,
+                postfix: new HarmonyMethod(typeof(Patch_PawnComponents_AddRemove), nameof(Patch_PawnComponents_AddRemove.Postfix)),
+                info: "PawnComponentsUtility.AddAndRemoveDynamicComponents"
             );
 
             // The category can be different, depending on if the paw can feel the need to go potty
@@ -187,67 +208,177 @@ namespace ZealousInnocence
                 prefix: new HarmonyMethod(typeof(Patch_Wear_SplitStack), nameof(Patch_Wear_SplitStack.Prefix)),
                 info: "Pawn_ApparelTracker.Wear"
             );
-            ModChecker.ZealousInnocenceActive();
 
+
+            // Functions after this are all related to "LearningForAdults.cs"
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(LearningGiver), nameof(LearningGiver.CanDo)),
+                prefix: new HarmonyMethod(typeof(Patch_LearningGiver_CanDo), nameof(Patch_LearningGiver_CanDo.Prefix)),
+                info: "LearningGiver.CanDo"
+            );
+
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(LearningUtility), nameof(LearningUtility.LearningSatisfied)),
+                prefix: new HarmonyMethod(typeof(Patch_LearningUtility_LearningSatisfied), nameof(Patch_LearningUtility_LearningSatisfied.Prefix)),
+                info: "LearningUtility.LearningSatisfied"
+            );
+
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)),
+                postfix: new HarmonyMethod(typeof(Patch_Pawn_GetGizmos), nameof(Patch_Pawn_GetGizmos.Postfix)),
+                info: "Pawn.GetGizmos"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.PropertyGetter(typeof(Need), "ShowOnNeedList"),
+                postfix: new HarmonyMethod(typeof(Patch_Learning_ShowOnNeedList), nameof(Patch_Learning_ShowOnNeedList.Postfix)),
+                info: "Need(Learning).get_ShowOnNeedList"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(ThinkNode_Priority_Learn), nameof(ThinkNode_Priority_Learn.GetPriority)),
+                postfix: new HarmonyMethod(typeof(Patch_ThinkNode_Priority_Learn), nameof(Patch_ThinkNode_Priority_Learn.Postfix)),
+                info: "ThinkNode_Priority_Learn.GetPriority"
+            );
+
+            // Protective functions to prevent unwanted behaviours
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(LovePartnerRelationUtility), nameof(LovePartnerRelationUtility.ExistingLovePartner)),
+                prefix: new HarmonyMethod(typeof(Patch_LovePartnerRelationUtility_ExistingLovePartner), nameof(Patch_LovePartnerRelationUtility_ExistingLovePartner.Prefix)),
+                info: "LovePartnerRelationUtility.ExistingLovePartner"
+            );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(JobGiver_MarryAdjacentPawn), "CanMarry"),
+                prefix: new HarmonyMethod(typeof(Patch_JobGiver_MarryAdjacentPawn_CanMarry), nameof(Patch_JobGiver_MarryAdjacentPawn_CanMarry.Prefix)),
+                info: "JobGiver_MarryAdjacentPawn.CanMarry"
+            );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(InteractionWorker_RomanceAttempt), nameof(InteractionWorker_RomanceAttempt.SuccessChance)),
+                prefix: new HarmonyMethod(typeof(Patch_InteractionWorker_RomanceAttempt_SuccessChance), nameof(Patch_InteractionWorker_RomanceAttempt_SuccessChance.Prefix)),
+                info: "InteractionWorker_RomanceAttempt.SuccessChance"
+            );
+
+            
+            var openGen = typeof(ToilFailConditions)
+    .GetMethods(BindingFlags.Public | BindingFlags.Static)
+    .First(m => m.Name == "FailOnChildLearningConditions"
+             && m.IsGenericMethodDefinition
+             && m.GetGenericArguments().Length == 1
+             && m.GetParameters().Length == 1);
+
+            Type[] targets = { typeof(JobDriver_Floordrawing), typeof(JobDriver_Workwatching), typeof(JobDriver_Lessontaking), typeof(JobDriver_Skydreaming), typeof(JobDriver_Radiotalking), typeof(JobDriver_NatureRunning), typeof(JobDriver_Reading) };
+
+            foreach (var t in targets)
+            {
+                var constructed = openGen.MakeGenericMethod(t);
+
+                patchFunctionPrefix(
+                    original: constructed,
+                    prefix: new HarmonyMethod(typeof(Patch_FailOnChildLearningConditions).GetMethod(nameof(Patch_FailOnChildLearningConditions.Prefix),
+                    BindingFlags.Static | BindingFlags.Public)),
+                    info: "ToilFailConditions.FailOnChildLearningConditions"
+                );
+            }
+
+            var LearningDrawOnGui = AccessTools.Method(
+                typeof(Need_Learning),
+                nameof(Need_Learning.DrawOnGUI),
+                new[]
+                {
+                    typeof(Rect),
+                    typeof(int),
+                    typeof(float),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(Rect?).MakeByRefType().GetElementType() ?? typeof(Rect?), // safer for some compilers
+                    typeof(bool)
+                }
+            );
+            patchFunctionPrefix(
+                original: LearningDrawOnGui,
+                prefix: new HarmonyMethod(typeof(Patch_NeedLearning_DrawOnGUI), nameof(Patch_NeedLearning_DrawOnGUI.Prefix)),
+                info: "Need_Learning.DrawOnGUI"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.PropertyGetter(typeof(Need_Learning), "IsFrozen"),
+                postfix: new HarmonyMethod(typeof(Need_Learning_IsFrozen), nameof(Need_Learning_IsFrozen.Postfix)),
+                info: "Property Need_Learning.IsFrozen"
+            );
+            // Functions until this are all related to "LearningForAdults.cs"
+
+            // Functions after this are all related to "BabyInteractions.cs"
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(ChildcareUtility), nameof(ChildcareUtility.CanSuckle)),
+                postfix: new HarmonyMethod(typeof(Patch_ChildcareUtility_CanSuckle), nameof(Patch_ChildcareUtility_CanSuckle.Postfix)),
+                info: "ChildcareUtility.CanSuckle"
+            );
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(WorkGiver_PlayWithBaby), nameof(WorkGiver_PlayWithBaby.HasJobOnThing)),
+                postfix: new HarmonyMethod(typeof(Patch_WorkGiver_PlayWithBaby_HasJobOnThing), nameof(Patch_WorkGiver_PlayWithBaby_HasJobOnThing.Postfix)),
+                info: "WorkGiver_PlayWithBaby.HasJobOnThing"
+            );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(JobDriver_BottleFeedBaby), "MakeNewToils"),
+                prefix: new HarmonyMethod(typeof(Patch_BottleFeedBaby_HandleDispenser), nameof(Patch_BottleFeedBaby_HandleDispenser.Prefix)),
+                info: "JobDriver_BottleFeedBaby.MakeNewToils"
+            );
+            // Functions until this are all related to "BabyInteractions.cs"
+
+            ModChecker.ZealousInnocenceActive();
             if (!ModChecker.ForeverYoungActive())
             {
-                // Can suspend learning need on pawns that got again young
-                patchFunctionPostfix(
-                    original: AccessTools.PropertyGetter(typeof(Need_Learning), nameof(Need_Learning.Suspended)),
-                    postfix: new HarmonyMethod(typeof(Need_Learning_IsFrozen), nameof(Need_Learning_IsFrozen.Postfix)),
-                    info: "Property Need_Learning.Suspended"
-                );
                 // Can allow or disallow Rols for children (again)
                 patchFunctionPrefix(
                     original: AccessTools.Method(typeof(Precept_Role), nameof(Precept_Role.RequirementsMet)),
                     prefix: new HarmonyMethod(typeof(PreceptRole_RequirementsMet), nameof(PreceptRole_RequirementsMet.Prefix)),
                     info: "Precept_Role.RequirementsMet"
-                );                
+                );
             }
-
+            Log.Message($"[ZI]ZealousInnocence executed {PostfixCount+PrefixCount} harmony patches. {PrefixCount} Prefix, {PostfixCount} Postfix. Startup completed.");
         }
         private void patchFunctionPostfix(MethodInfo original, HarmonyMethod postfix, string info)
         {
-            if (!settings.debugging) DoCheckOnHarmonyMethode(original, false, true);
+            PostfixCount++;
+            bool checkResult = DoCheckOnHarmonyMethode(original, info, false, true);
             harmony.Patch(
                 original: original,
                 postfix: postfix
             );
-             Log.Message($"[ZI]harmony patching: Postfix {info}");
-            if (settings.debugging) DoCheckOnHarmonyMethode(original, false, true);
+            if (settings.debuggingHarmonyPatching || checkResult) Log.Message($"[ZI]Harmony patching: Postfix {info}");
         }
         private void patchFunctionPrefix(MethodInfo original, HarmonyMethod prefix, string info)
         {
-            if(!settings.debugging) DoCheckOnHarmonyMethode(original, true, false);
+            PrefixCount++;
+            bool checkResult = DoCheckOnHarmonyMethode(original, info, true, false);
             harmony.Patch(
                 original: original,
                 prefix: prefix
             );
-             Log.Message($"[ZI]harmony patching: Prefix {info}");
-            if (settings.debugging) DoCheckOnHarmonyMethode(original,true,false);
+            if (settings.debuggingHarmonyPatching || checkResult) Log.Message($"[ZI]Harmony patching: Prefix {info}");
         }
 
-        public void DoCheckOnHarmonyMethode(MethodInfo originalMethod, bool checkPrefix = true, bool checkPostfix = true)
+        public bool DoCheckOnHarmonyMethode(MethodInfo originalMethod, string info, bool checkPrefix = true, bool checkPostfix = true)
         {
             var patches = Harmony.GetPatchInfo(originalMethod);
+            bool patchOfSearched = false;
             if (patches != null)
             {
                 if (checkPrefix)
                 {
                     foreach (var prefix in patches.Prefixes)
                     {
-                         Log.Message($"[ZI]Prefix patch from {prefix.owner}");
+                        Log.Warning($"[ZI]Already existing Prefix found on {info} from {prefix.owner}! Possible conflict detected!");
+                        patchOfSearched = true;
                     }
                 }
                 if (checkPostfix)
                 {
                     foreach (var postfix in patches.Postfixes)
                     {
-                         Log.Message($"[ZI]Postfix patch from {postfix.owner}");
+                        Log.Warning($"[ZI]Already existing Postfix found on {info} from {postfix.owner}! Possible conflict detected!");
+                        patchOfSearched = true;
                     }
                 }
-
             }
+            return patchOfSearched;
         }
         public override void DoSettingsWindowContents(Rect inRect)
         {
@@ -288,24 +419,7 @@ namespace ZealousInnocence
         }
     }
 
-    [HarmonyPatch(typeof(Need_Learning), nameof(Need_Learning.Suspended), MethodType.Getter)]
-    static class Need_Learning_IsFrozen
-    {
-        public static void Postfix(ref bool __result, ref Pawn ___pawn, ref Need_Learning __instance)
-        {
-            if (___pawn.ageTracker.AgeBiologicalYears < 13)
-            {
-                if (___pawn.records.GetValue(RecordDefOf.ResearchPointsResearched) > 0)
-                {
-                    if (!LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().formerAdultsNeedLearning)
-                    {
-                        __instance.CurLevel = 0.5f;
-                        __result = true;
-                    }
-                }
-            }
-        }
-    }
+
 
     [HarmonyPatch(typeof(Precept_Role), nameof(Precept_Role.RequirementsMet))]
     static class PreceptRole_RequirementsMet
@@ -314,10 +428,12 @@ namespace ZealousInnocence
         {
             if (ModsConfig.IdeologyActive)
             {
-                if (!LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().formerAdultsCanHaveIdeoRoles || p.records.GetValue(RecordDefOf.ResearchPointsResearched) == 0)
+                /*if (!LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().formerAdultsCanHaveIdeoRoles || p.records.GetValue(RecordDefOf.ResearchPointsResearched) == 0)
                 {
                     return true;
-                }
+                }*/
+
+                if (!Hediff_RegressionDamageMental.CanHaveRole(p)) return true;
 
                 foreach (RoleRequirement roleRequirement in __instance.def.roleRequirements)
                 {

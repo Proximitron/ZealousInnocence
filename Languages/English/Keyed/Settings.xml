@@ -129,7 +129,7 @@
 	<SettingActivateFaecesHelp>Will activate the mention, sounds and creation of poop in the world. There are no gameplay changes beyound that.</SettingActivateFaecesHelp>
 	
 	<SettingBladderRelieveAmount>Bladder relieve amount</SettingBladderRelieveAmount>
-	<SettingBladderRelieveAmountHelp>The amount that is reduced from the bladder by peeing (or pooing) every need interval (2.5 seconds) if done in a pawns pants. Toilets have seperate rules.</SettingBladderRelieveAmountHelp>
+	<SettingBladderRelieveAmountHelp>The amount that is reduced from the bladder by peeing (or pooing) every need interval (2.5 seconds) if done in a pawns pants. Toilets have seperate rules. Base value is {CHANCE}%.</SettingBladderRelieveAmountHelp>
 	
 	<SettingUseBedPanIfDiaperEquipped>Use bedpans on equipped diaper</SettingUseBedPanIfDiaperEquipped>
 	<SettingUseBedPanIfDiaperEquippedHelp>Will also enable the option of bedpans for pawns that are wearing diapers. NOTE: This only works if bedpans are enabled.</SettingUseBedPanIfDiaperEquippedHelp>
@@ -159,6 +159,11 @@
   <SettingDebugApparel>DEBUG Apparel</SettingDebugApparel>
   <SettingDebugApparelHelp>Generates debugging related to the apparel generator used when generating new pawns.</SettingDebugApparelHelp>
 
+  <SettingDebugRects>DEBUG Health Card</SettingDebugRects>
+  <SettingDebugRectsHelp>Debugs the tool used to make more space on the health card (showing all capacities).</SettingDebugRectsHelp>
+	
+	<SettingDebugHarmony>DEBUG Harmony</SettingDebugHarmony>
+  <SettingDebugHarmonyHelp>RESTART REQUIRED: Harmony patches are used to overwrite already existing behaviours. Activating this will print out a full list of harmony patches on starting RimWorld. You WILL HAVE to restart RimWorld for this to do anything.</SettingDebugHarmonyHelp>
   <!-- Buttons -->
   <SettingCheckForeverYoung>Check 'ForeverYoung' active</SettingCheckForeverYoung>
   <SettingForeverYoungActive>'ForeverYoung' IS active!</SettingForeverYoungActive>

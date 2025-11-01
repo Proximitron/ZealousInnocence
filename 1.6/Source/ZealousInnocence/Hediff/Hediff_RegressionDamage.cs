@@ -9,8 +9,274 @@ using static ZealousInnocence.DebugActions;
 
 namespace ZealousInnocence
 {
+    public class Hediff_RegressionDamageMental : HediffWithComps
+    {
+        public static Hediff_RegressionDamageMental HediffByPawn(Pawn pawn)
+        {
+            return (Hediff_RegressionDamageMental)pawn.health.hediffSet?.hediffs?.FirstOrDefault(x => x is Hediff_RegressionDamageMental);
+        }
+
+        const int HealingTickInterval = 150;
+
+        public bool forceTick = false;
+        private int lastStateYears = -1;
+        private int _lastHealTick;
+        private static ZealousInnocenceSettings Settings
+    => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+
+        static bool IsHumanlike(Pawn p) => p?.RaceProps?.Humanlike == true;
+        static bool IsAnimal(Pawn p) => p?.RaceProps?.Animal == true;
+        public bool PlayerControlled
+        {
+            get
+            {
+                return this.pawn.IsColonist && (this.pawn.HostFaction == null || this.pawn.IsSlave);
+            }
+        }
+        public long BaseAgeBioTicks
+        {
+            get
+            {
+                long baselineBioTicks = PhysicalRegressionHediff == null ? pawn.ageTracker.AgeBiologicalTicks : PhysicalRegressionHediff.BaseAgeBioTicks;
+                if (baselineBioTicks <= 0) return pawn.ageTracker.AgeBiologicalTicks;
+                return baselineBioTicks;
+            }
+        }
+        public float BaseAgeYearFloat
+        {
+            get
+            {
+                return BaseAgeBioTicks / GenDate.TicksPerYear;
+            }
+        }
+        public int BaseAgeYearInt
+        {
+            get
+            {
+                return Mathf.FloorToInt(BaseAgeYearFloat);
+            }
+        }
+        public float AgeYearFloat
+        {
+            get
+            {
+                return (float)pawn.ageTracker.AgeBiologicalTicks / GenDate.TicksPerYear;
+            }
+        }
+        public Hediff_RegressionDamage PhysicalRegressionHediff
+        {
+            get
+            {
+                return Hediff_RegressionDamage.HediffByPawn(pawn);
+            }
+        }
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref lastStateYears, "ZI_reg_lastStateYears", -1);
+            Scribe_Values.Look(ref _lastHealTick, "ZI_reg_lastHealTick", 0);
+        }
+
+        public override void PostAdd(DamageInfo? dinfo)
+        {
+#if DEBUG
+            if (Settings.debugging && Settings.debuggingRegression && dinfo.HasValue) Log.Message($"[ZI] RegressionDamageMental PostAdd {pawn.LabelShort} from {dinfo.Value.Def?.defName} sev={Severity:0.###}");
+#endif
+            base.PostAdd(dinfo);
+
+            if (pawn == null) return;
+
+            lastStateYears = -1;
+
+            forceTick = true;
+            
+        }
+
+        public override void Tick()
+        {
+            base.Tick();
+            if (pawn == null || !pawn.Spawned) return;
+
+            if (!forceTick && !this.pawn.IsHashIntervalTick(HealingTickInterval)) return;
+            
+            HealStep(HealingTickInterval);
+            if(lastStateYears != MentalTicksYearInt)
+            {
+                lastStateYears = MentalTicksYearInt;
+                refreshAgeStageCache(pawn: pawn);
+            }
+
+            forceTick = false;
+        }
+        private void HealStep(int intervalTicks)
+        {
+            if (Severity <= 0f) return;
+
+            float perDay = Mathf.Max(0f, Settings.Regression_BaseRecoveryPerDay);
+            if (perDay <= 0f) return;
+
+            float mult = 1f;
+
+            if (Settings.Regression_RestingMultiplier > 0f && pawn.InBed())
+                mult *= Settings.Regression_RestingMultiplier;
+
+            if (Settings.Regression_ChildMultiplier > 0f && !pawn.ageTracker.Adult)
+                mult *= Settings.Regression_ChildMultiplier;
+
+            if (Settings.Regression_AnimalMultiplier > 0f && pawn.IsAnimal)
+                mult *= Settings.Regression_AnimalMultiplier;
+
+            float delta = perDay * mult * (intervalTicks / (float)GenDate.TicksPerDay);
+
+            float before = Severity;
+            Severity = Mathf.Max(0f, Severity - delta);
+            _lastHealTick = Find.TickManager.TicksGame;
+
+#if DEBUG
+            if (Settings.debugging && Settings.debuggingRegression && !Mathf.Approximately(before, Severity))
+                Log.Message($"[ZI] Regression Mental heal {pawn.LabelShort} {before:0.###} -> {Severity:0.###} (Δ={delta:0.###})");
+#endif
+        }
+        public CompRegressionMemory Memory
+        {
+            get
+            {
+                return GetMemory(pawn);
+            }
+        }
+        public static CompRegressionMemory GetMemory(Pawn pawn)
+        {
+            return pawn.TryGetComp<CompRegressionMemory>();
+        }
+        public override string TipStringExtra
+        {
+            get
+            {
+                string tip = base.TipStringExtra;
+                //float sevPct = Severity * 100f;
+                //tip += (tip.NullOrEmpty() ? "" : "\n") + $"Mental Regression: {sevPct:F1}%";
+
+                tip += $"\nBase Age: {BaseAgeYearFloat:F1} years";
+                tip += $"\nMental Age: {Helper_Regression.getAgeStageMental(pawn)} years";
+
+                var reducePercent = Mathf.CeilToInt(LevelsModifierToMask(pawn) * 100f);
+                tip += $"\nSkilles reduced: {reducePercent}%";
+                if (Severity > 0f)
+                {
+                    tip += $"\nEstimated recovery: ~{EstimatedRecoveryDays():0.#} day(s)";
+                }
+                return tip;
+            }
+        }
+        public override string LabelBase
+        {
+            get
+            {
+                // "Regression (0.62, 2.3 days)"
+                string baseLabel = "Mental Regression";
+                string pct = Severity.ToStringPercent();
+                string remaining = $"{EstimatedRecoveryDays():0.#} d";
+                return $"{baseLabel} ({pct}, {remaining})";
+            }
+        }
+        private float EstimatedRecoveryDays()
+        {
+            float perDay = Settings.Regression_BaseRecoveryPerDay;
+            if (perDay <= 0f) return 0f;
+            return Severity / perDay;
+        }
+
+        public long MentalTicksForSeverity(float Severity)
+        {
+            return Math.Max(0, Hediff_RegressionDamage.BioTicksForSeverity(Severity,pawn, BaseAgeBioTicks));
+        }
+        public float MentalTicks
+        {
+            get
+            {
+                return MentalTicksForSeverity(Severity);
+            }
+        }
+        public float MentalTicksYearFloat
+        {
+            get
+            {
+                return MentalTicks / GenDate.TicksPerYear;
+            }
+        }
+        public int MentalTicksYearInt
+        {
+            get
+            {
+                return Mathf.FloorToInt(MentalTicks / GenDate.TicksPerYear);
+            }
+        }
+
+        public int LastMentalYears
+        {
+            get
+            {
+                return lastStateYears;
+            }
+        }
+
+        public static void refreshAgeStageCache(Pawn pawn)
+        {
+            Hediff_RegressionDamage.refreshAgeStageCache(pawn);
+        }
+
+        public static float NormalizedSeverityOn(Pawn p)
+        {
+            if (p?.health == null) return 0f;
+            var h = HediffByPawn(p);
+            if (h == null) return 0f;
+
+            float max = h.def.maxSeverity > 0f ? h.def.maxSeverity : 1f;
+            return Mathf.Clamp01(h.Severity / max);
+        }
+
+        public static float LevelsModifierToMask(Pawn p)
+        {
+            if (p == null) return 0;
+            float sev = NormalizedSeverityOn(p);
+            return (float)Settings.Regression_LevelMaskBySeverity * sev;
+        }
+        public static bool WasEverAdult(Pawn p)
+        {
+            if (p.ageTracker.AgeBiologicalYears >= 13) return true;
+            var mentalHediff = HediffByPawn(p);
+            if (mentalHediff == null)
+            {
+                var physicalHediff = Hediff_RegressionDamage.HediffByPawn(p);
+                if(physicalHediff == null) return false;
+                return physicalHediff.BaseAgeYearInt >= 13;
+            }
+            return mentalHediff.BaseAgeYearInt >= 13;
+        }
+
+        public static bool CanHaveRole(Pawn p)
+        {
+            if (!ModsConfig.IdeologyActive) return false;
+            var age = Helper_Regression.getAgeStageMental(p);
+            return age >= 3;
+        }
+        public override void PreRemoved()
+        {
+            base.PreRemoved();
+            forceTick = true;
+            Severity = 0f;
+            Tick();
+        }
+
+    }
     public class Hediff_RegressionDamage : HediffWithComps
     {
+        public static Hediff_RegressionDamage HediffByPawn(Pawn pawn)
+        {
+            return (Hediff_RegressionDamage)pawn?.health?.hediffSet?.hediffs?.FirstOrDefault(x => x is Hediff_RegressionDamage) ?? null;
+        }
+        
+
         const int HealingTickInterval = 150;
         const int MaxDelta = HealingTickInterval * 4;
 
@@ -57,11 +323,26 @@ namespace ZealousInnocence
         private float ResurrectDurationSeconds = 60f;
         private float ResurrectMoveDurationSeconds = 30f;
         public Corpse Corpse { get => pawn.ParentHolder as Corpse; }
+        
+        public long BaseAgeBioTicks
+        {
+            get
+            {
+                if (baselineBioTicks <= 0) return pawn.ageTracker.AgeBiologicalTicks;
+                return baselineBioTicks;
+            }
+        }
         public float BaseAgeYearFloat {
             get
             {
-                if(baselineBioTicks <= 0) return 0f;
-                return baselineBioTicks / GenDate.TicksPerYear;
+                return BaseAgeBioTicks / GenDate.TicksPerYear;
+            }
+        }
+        public int BaseAgeYearInt
+        {
+            get
+            {
+                return Mathf.FloorToInt(BaseAgeYearFloat);
             }
         }
         public float AgeYearFloat
@@ -118,6 +399,7 @@ namespace ZealousInnocence
         public override void ExposeData()
         {
             base.ExposeData();
+            Scribe_Values.Look(ref forceTick, "ZI_reg_forceTick", false);
             Scribe_Values.Look(ref _lastHealTick, "ZI_reg_lastHealTick", 0);
 
             Scribe_Values.Look(ref baselineBioTicks, "ZI_reg_baselineBioTicks", -1);
@@ -146,7 +428,7 @@ namespace ZealousInnocence
         public override void PostAdd(DamageInfo? dinfo)
         {
 #if DEBUG
-            if (Settings.debugging && Settings.debuggingRegression && dinfo.HasValue) Log.Message($"[ZI] Regression PostAdd {pawn.LabelShort} from {dinfo.Value.Def?.defName} sev={Severity:0.###}");
+            if (Settings.debugging && Settings.debuggingRegression && dinfo.HasValue) Log.Message($"[ZI] RegressionDamage PostAdd {pawn.LabelShort} from {dinfo.Value.Def?.defName} sev={Severity:0.###}");
 #endif
             base.PostAdd(dinfo);
 
@@ -162,6 +444,13 @@ namespace ZealousInnocence
             forceTick = true;
             if (IsHumanlike(pawn)) new HediffGiver_BedWetting().OnIntervalPassed(pawn, null);
         }
+        public override void PreRemoved()
+        {
+            base.PreRemoved();
+            forceTick = true;
+            Severity = 0f;
+            Tick();
+        }
 
         
         const float minSplit = 0.40f; // old pawns: child band starts at ~40%
@@ -174,10 +463,14 @@ namespace ZealousInnocence
         // Convert a target age (years) to the severity s that would produce it.
         public float SeverityForTargetYears(float targetYears)
         {
-            long targetTicks = Mathf.RoundToInt(targetYears * GenDate.TicksPerYear);
-            return SeverityForTargetTicks(targetTicks);
+            return SeverityForTargetYears(targetYears, pawn, baselineBioTicks);
         }
-        public float SeverityForTargetTicks(long targetTicks)
+        public static float SeverityForTargetYears(float targetYears, Pawn pawn, long baselineBioTicks)
+        {
+            long targetTicks = Mathf.RoundToInt(targetYears * GenDate.TicksPerYear);
+            return SeverityForTargetTicks(targetTicks,pawn, baselineBioTicks);
+        }
+        public static float SeverityForTargetTicks(long targetTicks, Pawn pawn, long baselineBioTicks)
         {
             float life = pawn.RaceProps.lifeExpectancy;
             float baseYears = baselineBioTicks / (float)GenDate.TicksPerYear;
@@ -224,6 +517,10 @@ namespace ZealousInnocence
             }
         }
         public long BioTicksForSeverity(float s)
+        {
+            return BioTicksForSeverity(s, pawn, baselineBioTicks);
+        }
+        public static long BioTicksForSeverity(float s, Pawn pawn, long baselineBioTicks)
         {
             var (childCore, childEdge) = ChildBandTicks(pawn);
 
@@ -821,14 +1118,16 @@ namespace ZealousInnocence
                 Find.LetterStack.ReceiveLetter("LetterLabelBirthday".Translate(), taggedString, letterDef, pawn);
             }
         }
-        private void refreshAgeStageCache(Pawn pawn)
+        public static void refreshAgeStageCache(Pawn pawn)
         {
-            Helper_Regression.getAgeStageMental(pawn, true);
-            pawn.Drawer?.renderer?.SetAllGraphicsDirty();
+            Helper_Regression.refreshAllAgeStageCaches(pawn);
             pawn.Notify_DisabledWorkTypesChanged();
+            pawn.needs?.AddOrRemoveNeedsAsAppropriate();
+            pawn.Drawer?.renderer?.SetAllGraphicsDirty();
             pawn.workSettings?.EnableAndInitialize();
             pawn.skills?.Notify_SkillDisablesChanged();
             Find.ColonistBar?.MarkColonistsDirty();
+            if (IsHumanlike(pawn)) new HediffGiver_BedWetting().OnIntervalPassed(pawn, null);
         }
         bool debugging => (Settings.debugging && Settings.debuggingRegression);
         public void TickRare()
@@ -935,26 +1234,6 @@ namespace ZealousInnocence
 #endif
         }
 
-        public static float NormalizedSeverityOn(Pawn p)
-        {
-            if (p?.health == null) return 0f;
-            var h = p.health.hediffSet?.hediffs?.FirstOrDefault(x => x is Hediff_RegressionDamage);
-            if (h == null) return 0f;
-
-            float max = h.def.maxSeverity > 0f ? h.def.maxSeverity : 1f;
-            return Mathf.Clamp01(h.Severity / max);
-        }
-
-        public static float LevelsModifierToMask(Pawn p)
-        {
-            if (p == null) return 0;
-            float sev = NormalizedSeverityOn(p);
-            return (float)Settings.Regression_LevelMaskBySeverity * sev;
-
-            // Tuned entirely by your settings:
-            //float levels = sev * Mathf.Max(0f, (float)Settings.Regression_LevelsPerSeverity);
-            //return levels > 0 ? levels : 0;
-        }
 
         public override string TipStringExtra
         {
@@ -962,20 +1241,18 @@ namespace ZealousInnocence
             {
                 string tip = base.TipStringExtra;
                 float sevPct = Severity * 100f;
-                tip += (tip.NullOrEmpty() ? "" : "\n") + $"Regression: {sevPct:F1}%";
+                tip += (tip.NullOrEmpty() ? "" : "\n") + $"Physical Regression: {sevPct:F1}%";
 
        
                 if (Severity > 0f)
                 {
                     tip += $"\nBase Age: {BaseAgeYearFloat:F1} years";
-                    tip += $"\nAge Stage: {Helper_Regression.getAgeStageMental(pawn)} years";
+                    tip += $"\nPhysical Age: {Helper_Regression.getAgeStagePhysical(pawn)} years";
                     if(Memory != null && Memory.desiredAgeYears != -1)
                     {
                         tip += $"\nDesired Age: {Memory.desiredAgeYears}";
                     }
                     
-                    var reducePercent = Mathf.CeilToInt(Hediff_RegressionDamage.LevelsModifierToMask(pawn) * 100f);
-                    tip += $"\nSkilles reduced: {reducePercent}%";
                     // Neutral-condition ETA: assumes multiplier ~1
                     tip += $"\nEstimated recovery: ~{EstimatedRecoveryDays():0.#} day(s)";
                 }
@@ -987,7 +1264,7 @@ namespace ZealousInnocence
             get
             {
                 // "Regression (0.62, 2.3 days)"
-                string baseLabel = "Regression";
+                string baseLabel = "Physical Regression";
                 string pct = Severity.ToStringPercent();
                 string remaining = $"{EstimatedRecoveryDays():0.#} days";
                 return $"{baseLabel} ({pct}, {remaining})";
@@ -1004,17 +1281,23 @@ namespace ZealousInnocence
         {
             foreach (var g in base.GetGizmos()) yield return g;
 
-            var mem = Memory;
-            string label = (mem != null && mem.desiredAgeYears >= 0)
-    ? $"Desired age: {mem.desiredAgeYears}"
-    : "Set desired age...";
-            yield return new Command_Action
+            if (pawn.Drafted) yield break;
+            if (Find.Selector?.SelectedPawns?.Count >= 2) yield break;
+
+            if (pawn.RaceProps != null && pawn.RaceProps.Humanlike)
             {
-                defaultLabel = label,
-                defaultDesc = "Choose a target biological age range to maintain.",
-                icon = ContentFinder<Texture2D>.Get("Things/Building/Misc/FountainOfYouth/FountainOfYouth_A"),
-                action = () => Find.WindowStack.Add(new Dialog_DesiredAge(pawn, mem))
-            };
+                var mem = Memory;
+                string label = (mem != null && mem.desiredAgeYears >= 0)
+        ? $"Desired age: {mem.desiredAgeYears}"
+        : "Set desired age...";
+                yield return new Command_Action
+                {
+                    defaultLabel = label,
+                    defaultDesc = "Choose a target biological age range to maintain.",
+                    icon = ContentFinder<Texture2D>.Get("Things/Building/Misc/FountainOfYouth/FountainOfYouth_A"),
+                    action = () => Find.WindowStack.Add(new Dialog_DesiredAge(pawn, mem))
+                };
+            }
             if (!Prefs.DevMode) yield break;
 
             yield return new Command_Action
@@ -1026,9 +1309,15 @@ namespace ZealousInnocence
 
             yield return new Command_Action
             {
-                defaultLabel = "DBG: Set regression (severity)…",
+                defaultLabel = "DBG: Set physical regression (severity)…",
                 defaultDesc = "Directly sets the regression hediff severity.",
-                action = () => Find.WindowStack.Add(new Dialog_Slider("Severity (0–100%)", 0, 100, v => ZI_DebugRegression.ApplyBySeverity(pawn, v / 100f)))
+                action = () => Find.WindowStack.Add(new Dialog_Slider("Severity (0–100%)", 0, 100, v => ZI_DebugRegression.ApplyBySeverityPhysical(pawn, v / 100f)))
+            };
+            yield return new Command_Action
+            {
+                defaultLabel = "DBG: Set mental regression (severity)…",
+                defaultDesc = "Directly sets the regression hediff severity.",
+                action = () => Find.WindowStack.Add(new Dialog_Slider("Severity (0–100%)", 0, 100, v => ZI_DebugRegression.ApplyBySeverityMental(pawn, v / 100f)))
             };
         }
 
@@ -1073,7 +1362,8 @@ namespace ZealousInnocence
             var list = new Listing_Standard();
             list.Begin(inRect);
 
-            list.Label($"Pawn: {pawn.LabelShortCap}   Current age: {pawn.ageTracker.AgeBiologicalYears}  (range {minAllowed}–{maxAllowed})");
+            float realAge = Hediff_RegressionDamage.HediffByPawn(pawn)?.BaseAgeYearFloat ?? (pawn.ageTracker.AgeBiologicalTicks / GenDate.TicksPerYear);
+            list.Label($"Pawn: {pawn.LabelShortCap} Real age: {realAge:F1} Physical age: {Helper_Regression.getAgeStagePhysical(pawn)}  (range {minAllowed}–{maxAllowed})");
             list.GapLine();
             list.Gap(6f);
 
@@ -1092,7 +1382,8 @@ namespace ZealousInnocence
 
             if (Widgets.ButtonText(new Rect(row.x, row.y, bw, row.height), "Use current"))
             {
-                int cur = pawn.ageTracker.AgeBiologicalYears;
+                
+                int cur = Mathf.FloorToInt(realAge);
                 desiredY = Mathf.Clamp(cur, minAllowed, maxAllowed);
             }
 
@@ -1123,7 +1414,7 @@ namespace ZealousInnocence
             var pawn = __instance?.Pawn;
             if (pawn == null) return;
 
-            float mask = Hediff_RegressionDamage.LevelsModifierToMask(pawn);
+            float mask = Hediff_RegressionDamageMental.LevelsModifierToMask(pawn);
             if (mask <= 0f) return;
 
             __result = Mathf.Clamp(__result - Mathf.CeilToInt(((float)__result) * mask), 0, 20);
@@ -1140,7 +1431,7 @@ namespace ZealousInnocence
             var pawn = __instance?.Pawn;
             if (pawn == null) return;
 
-            float mask = Hediff_RegressionDamage.LevelsModifierToMask(pawn);
+            float mask = Hediff_RegressionDamageMental.LevelsModifierToMask(pawn);
             if (mask <= 0f) return;
 
             __result = Mathf.Clamp(__result - Mathf.CeilToInt(((float)__result) * mask), 0, 20);
@@ -1154,7 +1445,7 @@ namespace ZealousInnocence
         public static bool Prefix(Pawn_AgeTracker __instance)
         {
             var pawn = AccessTools.FieldRefAccess<Pawn_AgeTracker, Pawn>("pawn")(__instance);
-            var reg = pawn?.health?.hediffSet?.hediffs?.OfType<Hediff_RegressionDamage>()?.FirstOrDefault();
+            var reg = Hediff_RegressionDamage.HediffByPawn(pawn);
             return reg == null || !reg.suppressVanillaBirthdays || Hediff_RegressionDamage.AllowBirthdayThrough;
         }
     }
@@ -1165,7 +1456,7 @@ namespace ZealousInnocence
         public static bool Prefix(Pawn_AgeTracker __instance)
         {
             var pawn = AccessTools.FieldRefAccess<Pawn_AgeTracker, Pawn>("pawn")(__instance);
-            var reg = pawn?.health?.hediffSet?.hediffs?.OfType<Hediff_RegressionDamage>()?.FirstOrDefault();
+            var reg = Hediff_RegressionDamage.HediffByPawn(pawn);
             return reg == null || !reg.suppressVanillaBirthdays || Hediff_RegressionDamage.AllowBirthdayThrough;
         }
     }
@@ -1177,7 +1468,7 @@ namespace ZealousInnocence
         public static void Postfix(Pawn_AgeTracker __instance, int interval)
         {
             var pawn = AccessTools.FieldRefAccess<Pawn_AgeTracker, Pawn>("pawn")(__instance);
-            var reg = pawn?.health?.hediffSet?.hediffs?.OfType<Hediff_RegressionDamage>()?.FirstOrDefault();
+            var reg = Hediff_RegressionDamage.HediffByPawn(pawn);
             if (reg == null) return;
 
             reg.HandleMothballedAgeAdvance(interval);
@@ -1191,7 +1482,7 @@ namespace ZealousInnocence
             public List<int> partPath;
             public float severity;
             public int restoreAtYear; // absolute biological year to re-apply at
-
+            
             public BodyPartRecord ResolvePart(Pawn p)
             {
                 var r = p.RaceProps.body.corePart;
@@ -1213,6 +1504,8 @@ namespace ZealousInnocence
         public int desiredAgeYears = -1;
         public int desiredAgeDoseTick = -1;
         public int pendingPassionSwaps = 0;
+
+        public int targetDisposablesCount = 2; // Amount of disposables this pawn should have in the inventory
         public override void PostExposeData()
         {
             base.PostExposeData();
@@ -1222,6 +1515,7 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref desiredAgeDoseTick, "desiredAgeDoseTick", -1);
             Scribe_Values.Look(ref pendingPassionSwaps, "ZI_pendingPassionSwaps", 0);
 
+            Scribe_Values.Look(ref targetDisposablesCount, "targetDisposablesCount", 2);
         }
     }
     public class CompProperties_RegressionMemory : CompProperties
@@ -1260,7 +1554,7 @@ namespace ZealousInnocence
 
             if (__instance.GetRotStage() == RotStage.Dessicated) return;
 
-            Hediff_RegressionDamage firstHediff = pawn.health.hediffSet.GetFirstHediff<Hediff_RegressionDamage>();
+            Hediff_RegressionDamage firstHediff = Hediff_RegressionDamage.HediffByPawn(pawn);
             if (firstHediff != null)
             {
                 firstHediff.TickRare();

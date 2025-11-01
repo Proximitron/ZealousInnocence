@@ -41,7 +41,7 @@ namespace ZealousInnocence
         }
         public static OnesieLikeCategory getOnesiePreference(Pawn pawn)
         {
-            if (!Helper_Regression.isAdult(pawn)) return OnesieLikeCategory.NonAdult;
+            if (!Helper_Regression.isAdultMental(pawn)) return OnesieLikeCategory.NonAdult;
             TraitSet traits = pawn?.story?.traits;
             if (traits == null)
             {
