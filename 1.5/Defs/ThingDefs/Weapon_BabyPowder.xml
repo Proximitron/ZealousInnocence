@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <ThingDef ParentName="BaseHumanMakeableGun">
+  <!--<ThingDef ParentName="BaseHumanMakeableGun">
     <defName>Gun_BabyPowderLauncher</defName>
     <label>baby powder launcher</label>
     <description>A wide-barreled baby powder launcher. The shell will upon impact release a cloud of powder, obscuring incoming shots and making everyone cough.</description>
@@ -68,7 +68,7 @@
       </li>
     </tools>
   </ThingDef>
-
+	-->
   
 	<!-- Damage -->
 	<DamageDef>

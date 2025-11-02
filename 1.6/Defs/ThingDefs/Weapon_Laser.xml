@@ -404,7 +404,7 @@
 	
 	<ThingDef ParentName="BaseHumanMakeableGun">
     <defName>ZI_FoyBlaster</defName>
-    <label>FOY squirt blaster</label>
+    <label>squirt blaster</label>
     <description>A heavy weapon that can spray a stream of processed FOY water into an area and cause area wide regression. It can shoot in an arc over allies without harming them.\n\nWhile the main weapon can be used without limit, the weapon also comes equipped with a FOY-Vial-thrower to generate a massive blast of the water. Must be refueled after each use.</description>
     <relicChance>0</relicChance>
     <graphicData>
@@ -423,7 +423,8 @@
       <Flammability>0.7</Flammability>
     </statBases>
     <costList>
-      <Steel>75</Steel>
+      <Steel>100</Steel>
+			<ZI_Foy_Vial>10</ZI_Foy_Vial>
       <ComponentIndustrial>6</ComponentIndustrial>
     </costList>
     <recipeMaker>
