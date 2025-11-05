@@ -105,7 +105,7 @@ namespace ZealousInnocence
                         impactors.Add(new CapacityImpactorCustom { customLabel = $"Age list", customString = $"{pawn.toddlerMinAge()},{pawn.childMinAge()},{pawn.adultMinAge()}" } );
                         impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental Age", customString = pawn.getAgeStageMental().ToString("F2") });
                         impactors.Add(new CapacityImpactorCustom { customLabel = $"Physical Age", customString = pawn.getAgeStagePhysical().ToString("F2") });
-                        impactors.Add(new CapacityImpactorCustom { customLabel = $"Bedwetting Chance", customString = $"{ Helper_Bedwetting.PawnBedwettingChance(pawn, Helper_Regression.getAgeStagePhysicalMentalMin(pawn)) }:F2" });
+                        impactors.Add(new CapacityImpactorCustom { customLabel = $"Bedwetting Chance", customString = (Helper_Bedwetting.PawnBedwettingChance(pawn, Helper_Regression.getAgeStagePhysicalMentalMin(pawn)) * 100).ToString("F2") + "%" });
 
                     }
                 }

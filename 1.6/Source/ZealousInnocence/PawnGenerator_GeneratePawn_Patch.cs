@@ -176,14 +176,7 @@ namespace ZealousInnocence
                 ThingDef underwearDef = ChooseUnderwearFor(__result);
                 if (underwearDef != null)
                 {
-                    if (Helper_Diaper.isDisposable(underwear))
-                    {
-                        underwear = (Apparel)ThingMaker.MakeThing(underwearDef, null);
-                    }
-                    else
-                    {
-                        underwear = (Apparel)ThingMaker.MakeThing(underwearDef, ChooseMaterialFor(__result, underwearDef));
-                    }
+                    underwear = (Apparel)ThingMaker.MakeThing(underwearDef, underwearDef.MadeFromStuff ? ChooseMaterialFor(__result, underwearDef) : null);
                     underwear.SetStyleDef(__result.StyleDef);
                     __result.apparel.Wear(underwear, true);
                     if(settings.debugging)  Log.Message($"[ZI]PawnGenerator: Fixed underwear issue for {__result.LabelShort} with {underwear.LabelShort}");
@@ -201,16 +194,17 @@ namespace ZealousInnocence
                     Log.Message($"[ZI]PawnGenerator: No inventory for {__result.LabelShort} with {underwear.LabelShort}");
                     return;
                 }
-                int have = inv.Count(t => t is Apparel_Disposable_Diaper && t.def == underwear.def);
-                if(have < 2)
+                int have = Apparel_Disposable_Diaper.SparesOfDiaper(__result, (Apparel_Disposable_Diaper)underwear);
+                int desireCount = Apparel_Disposable_Diaper.GetDesiredSpareCountFor(__result);
+                if (have < desireCount)
                 {
                     var toAdd = (Apparel)ThingMaker.MakeThing(underwear.def,null);
                     
                     if (toAdd != null)
                     {
-                        toAdd.stackCount = 2 - have;
+                        toAdd.stackCount = desireCount - have;
                         if (settings.debugging) Log.Message($"[ZI]PawnGenerator: Adding spare disposables for {__result.LabelShort} with {underwear.LabelShort}");
-                        inv.TryAdd(toAdd,2,true);
+                        inv.TryAdd(toAdd,desireCount,true);
                     }
                     
                 }

@@ -18,7 +18,7 @@ namespace ZealousInnocence
 
         public override float GetPriority(Pawn pawn)
         {
-            Apparel worn = pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
+            Apparel_Disposable_Diaper worn = (Apparel_Disposable_Diaper)pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
             if (worn == null) return 0f;
 
             if (pawn.CurJobDef == JobDefOf.ChangeDisposableFromInventory) return 0f;
@@ -29,7 +29,7 @@ namespace ZealousInnocence
             if (!Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return 0f;
             if (Helper_Diaper.shouldStayPut(pawn)) return 0f;
 
-            int have = pawn?.inventory?.innerContainer?.Count(t => t is Apparel_Disposable_Diaper && t.def == worn.def) ?? 0;
+            int have = Apparel_Disposable_Diaper.SparesOfDiaper(pawn, worn);
             if (have <= 0) return 0f; // Can't
 
             // High priority
@@ -48,14 +48,14 @@ namespace ZealousInnocence
             if (diaperNeed.IsHavingAccident) return null; // Not while having an accident...
 
             // Find worn diaper
-            Apparel worn = pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
+            Apparel_Disposable_Diaper worn = (Apparel_Disposable_Diaper)pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
             if (worn == null) return null;
 
             // Is it below swap threshold?
             if (worn.HitPoints > worn.MaxHitPoints * SwapAtPct) return null;
 
             // Do we have a fresh spare in INVENTORY (≥90%)?
-            bool HasFreshSpare() => pawn.inventory.innerContainer.Any(t => t is Apparel_Disposable_Diaper && t.def == worn.def);
+            bool HasFreshSpare() => Apparel_Disposable_Diaper.SparesOfDiaper(pawn,worn) > 0;
 
             if (!HasFreshSpare()) return null;
 
@@ -69,7 +69,7 @@ namespace ZealousInnocence
         private Apparel Spare => job.targetA.Thing as Apparel;
         protected override IEnumerable<Toil> MakeNewToils()
         {
-            Apparel worn = pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
+            Apparel_Disposable_Diaper worn = (Apparel_Disposable_Diaper)pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
 
             var toil = ToilMaker.MakeToil("ChangeDisposableFromInventory");
             toil.initAction = () =>
@@ -215,14 +215,12 @@ namespace ZealousInnocence
             if (!Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return 0f;
             if (Helper_Diaper.shouldStayPut(pawn)) return 0f;
 
-            Apparel worn = pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
+            Apparel_Disposable_Diaper worn = (Apparel_Disposable_Diaper)pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
             if (worn == null) return 0f;
 
             int DesiredCount = GetDesiredSpareCountFor(pawn, 0);
-            
-            int have = (pawn?.inventory?.innerContainer ?? Enumerable.Empty<Thing>())
-                        .OfType<Apparel_Disposable_Diaper>()
-                        .Sum(t => t.stackCount);
+
+            int have = Apparel_Disposable_Diaper.SparesOfDiaper(pawn, worn);
 
             if (have >= DesiredCount) return 0f;
 
@@ -253,13 +251,9 @@ namespace ZealousInnocence
         {
             if (pawn?.inventory == null) return null;
             if (!pawn.Spawned || pawn.Dead || pawn.Downed) return null;
-            Apparel worn = pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
-            if (worn == null) return null;
 
-            int have = (pawn?.inventory?.innerContainer ?? Enumerable.Empty<Thing>())
-                .OfType<Apparel_Disposable_Diaper>()
-                .Sum(t => t.stackCount);
 
+            int have = Apparel_Disposable_Diaper.SparesOfCurrentDiaper(pawn);
             int DesiredCount = GetDesiredSpareCountFor(pawn,0);
 
             if (have >= DesiredCount) return null;

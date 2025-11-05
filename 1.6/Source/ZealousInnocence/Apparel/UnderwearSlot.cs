@@ -155,6 +155,19 @@ namespace ZealousInnocence
             if (Memory == null) return;
             Memory.targetDisposablesCount = target;
         }
+        public static int SparesOfDiaper(Pawn pawn, Apparel_Disposable_Diaper diaper)
+        {
+            return (pawn?.inventory?.innerContainer ?? Enumerable.Empty<Thing>())
+                        .OfType<Apparel_Disposable_Diaper>()
+                        .Where(t => t.def == diaper.def)
+                        .Sum(t => t.stackCount);
+        }
+        public static int SparesOfCurrentDiaper(Pawn pawn)
+        {
+            Apparel_Disposable_Diaper worn = (Apparel_Disposable_Diaper)pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
+            if(worn == null) return 0;
+            return SparesOfDiaper(pawn, worn);
+        }
 
         public override IEnumerable<Gizmo> GetWornGizmos()
         {
@@ -167,7 +180,7 @@ namespace ZealousInnocence
             // There is no point in this until the pawn can change their own diapers
             if(!Helper_Regression.canChangeDiaperOrUnderwear(pawn)) yield break;
 
-            int count = pawn?.inventory?.innerContainer?.Count(t => t is Apparel_Disposable_Diaper) ?? 0;
+            int count = SparesOfCurrentDiaper(pawn);
 
             // Display (click to open quick set menu)
             yield return new Command_Action

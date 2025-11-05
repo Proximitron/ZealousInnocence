@@ -16,15 +16,11 @@ namespace ZealousInnocence
 
         public static bool IsToddler(Pawn p, ref bool __result)
         {
-            if(p == null) return true;
+            if (p == null) return true;
             if (Current.Game == null || Current.Game.Maps == null || !Current.Game.Maps.Any()) return true;
 
-            if (p.isToddlerMental())
-            {
-                __result = true;
-                return false;
-            }
-            return true;
+            __result = p.isToddlerMental();
+            return false;
         }
 
         public static bool PercentGrowth(Pawn p, ref float __result)

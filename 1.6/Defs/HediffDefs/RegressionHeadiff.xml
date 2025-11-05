@@ -255,8 +255,8 @@
 				<minSeverity>0.01</minSeverity>
       </li>
       <li>
-				<minSeverity>1.01</minSeverity>
-        <!--<capMods>
+				<minSeverity>1.21</minSeverity>
+        <capMods>
 					<li>
 						<capacity>Moving</capacity>
 						<setMax>0</setMax>
@@ -273,7 +273,7 @@
 						<capacity>BladderControl</capacity>
 						<setMax>0</setMax>
 					</li>
-        </capMods>-->
+        </capMods>
       </li>
     </stages>
 		<initialSeverity>0.01</initialSeverity>

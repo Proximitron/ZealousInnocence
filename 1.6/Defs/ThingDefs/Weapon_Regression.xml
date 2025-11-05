@@ -151,8 +151,8 @@
 				<mentalSeverityPerDamage>0.012</mentalSeverityPerDamage>
 				<physicalSeverityPerDamage>0.012</physicalSeverityPerDamage>
 				<reduceValue>0.5</reduceValue>
-				<mentalMaxSeverity>1.2</mentalMaxSeverity>
-				<physicalMaxSeverity>1.2</physicalMaxSeverity>
+				<mentalMaxSeverity>1.3</mentalMaxSeverity>
+				<physicalMaxSeverity>1.3</physicalMaxSeverity>
 			</li>
 		</modExtensions>
 	</DamageDef>

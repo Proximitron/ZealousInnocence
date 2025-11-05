@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Toddlers;
 using UnityEngine;
 using Verse;
 using static ZealousInnocence.DebugActions;
@@ -127,16 +126,22 @@ namespace ZealousInnocence
             if (pawn == null || !pawn.Spawned) return;
 
             if (!forceTick && !this.pawn.IsHashIntervalTick(HealingTickInterval)) return;
-            
+
+            var currMentalTicksYearFloat = MentalTicksYearFloat;
+            var hasGrown = lastStateYearsFloat < currMentalTicksYearFloat || forceTick;
+
             HealStep(HealingTickInterval);
-            lastStateYearsFloat = MentalTicksYearFloat;
+            lastStateYearsFloat = currMentalTicksYearFloat;
             if (lastStateYears != MentalTicksYearInt)
             {
                 lastStateYears = MentalTicksYearInt;
+                
                 refreshAgeStageCache(pawn: pawn);
             }
-
-            ToddlersCompat.TryResetHediffsForAge(pawn, !pawn.isToddlerAtAge(MentalTicksYearInt));
+            if (hasGrown && pawn.isToddlerMental())
+            {
+                ToddlersCompat.TryResetHediffsForAge(pawn, true);
+            }
 
             forceTick = false;
         }
@@ -545,9 +550,9 @@ namespace ZealousInnocence
             var (childCore, childEdge) = (band.core, band.edge);
             const long babyFloor = 0;
 
-            // Allow full range: [babyFloor .. baseline]
+            // Allow full range: [babyFloor .. max(baseline, childCore)]
             long lo = Math.Min(baselineBioTicks, (long)babyFloor);
-            long hi = Math.Max(baselineBioTicks, (long)babyFloor);
+            long hi = Math.Max(Math.Max((long)baselineBioTicks, (long)babyFloor), (long)childCore);
             targetTicks = Math.Max(lo, Math.Min(targetTicks, hi));
 
             const double eps = 1e-9;

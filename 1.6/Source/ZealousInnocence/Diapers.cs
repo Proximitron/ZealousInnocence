@@ -177,10 +177,7 @@ namespace ZealousInnocence
             {
                 if (Helper_Diaper.getDiaper(pawn) is Apparel_Disposable_Diaper worn)
                 {
-                    int have = (pawn?.inventory?.innerContainer ?? Enumerable.Empty<Thing>())
-                        .OfType<Apparel_Disposable_Diaper>()
-                        .Where(t => t.def == worn.def)
-                        .Sum(t => t.stackCount);
+                    int have = Apparel_Disposable_Diaper.SparesOfDiaper(pawn,worn);
                     if (have > 0) return -100f;
                 }
                 __result += Helper_Diaper.getDiaperOrUndiesRating(pawn, ap);
