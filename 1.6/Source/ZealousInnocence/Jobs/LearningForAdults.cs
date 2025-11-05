@@ -4,6 +4,7 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace ZealousInnocence
     {
         public static bool Prefix(Pawn pawn, bool allowDead, ref Pawn __result)
         {
-            if (pawn != null && !pawn.DevelopmentalStage.Adult())
+            if (pawn != null && !pawn.isAdultInEveryWay())
             {
                 __result = null;
                 return false;
@@ -35,7 +36,7 @@ namespace ZealousInnocence
     {
         public static bool Prefix(Pawn pawn, Pawn toMarry, ref bool __result)
         {
-            if (pawn?.DevelopmentalStage.Adult() == false || toMarry?.DevelopmentalStage.Adult() == false)
+            if (!pawn.isAdultInEveryWay() || !toMarry.isAdultInEveryWay())
             {
                 __result = false;
                 return false;
@@ -47,7 +48,7 @@ namespace ZealousInnocence
     {
         public static bool Prefix(Pawn initiator, Pawn recipient, float baseChance, ref float __result)
         {
-            if (initiator?.DevelopmentalStage.Adult() == false || initiator?.DevelopmentalStage.Adult() == false)
+            if (!initiator.isAdultInEveryWay() || !recipient.isAdultInEveryWay())
             {
                 __result = 0f;
                 return false;
@@ -66,9 +67,7 @@ namespace ZealousInnocence
                     var actor = endable.GetActor();
                     if (actor == null) return JobCondition.Incompletable;
 
-                    bool juvenileGate = actor.DevelopmentalStage.Juvenile() || actor.ShouldHaveLearning();
-
-                    if (!juvenileGate || PawnUtility.WillSoonHaveBasicNeed(actor, -0.05f))
+                    if (actor.isAdultInEveryWay() || PawnUtility.WillSoonHaveBasicNeed(actor, -0.05f))
                         return JobCondition.Incompletable;
 
                     return JobCondition.Ongoing;
@@ -96,17 +95,6 @@ namespace ZealousInnocence
                 __instance.CurLevel = 0.5f;
                 __result = true;
             }
-            /*if (___pawn.ageTracker.AgeBiologicalYears < 13)
-            {
-                if (___pawn.records.GetValue(RecordDefOf.ResearchPointsResearched) > 0)
-                {
-
-                    if (!LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().formerAdultsNeedLearning)
-                    {
-
-                    }
-                }
-            }*/
         }
     }
     public static class Patch_FailOnChildLearningConditions
@@ -120,10 +108,7 @@ namespace ZealousInnocence
                     var actor = endable.GetActor();
                     if (actor == null) return JobCondition.Incompletable;
 
-                    bool mentallyChildlike = actor.ShouldHaveLearning();
-                    bool juvenileGate = actor.DevelopmentalStage.Juvenile() || mentallyChildlike;
-
-                    if (!juvenileGate || PawnUtility.WillSoonHaveBasicNeed(actor, -0.05f))
+                    if (!actor.ShouldHaveLearning() || PawnUtility.WillSoonHaveBasicNeed(actor, -0.05f))
                         return JobCondition.Incompletable;
 
                     return JobCondition.Ongoing;
@@ -149,9 +134,7 @@ namespace ZealousInnocence
             if (!assignment.allowJoy) return false;
 
             if (pawn.learning == null) return false;
-
             if (Find.TickManager.TicksGame < 5000) return false;
-
             if (LearningUtility.LearningSatisfied(pawn)) return false;
 
             return true;
@@ -179,25 +162,13 @@ namespace ZealousInnocence
                 return false;
             }
 
-            // Vanilla child rule (copied from your snippet)
-            bool childOk =
-                pawn.DevelopmentalStage.Child() &&
+            bool inLearnableState =
                 !pawn.Downed &&
                 !PawnUtility.WillSoonHaveBasicNeed(pawn, 0.1f) &&
                 pawn.needs?.learning != null &&
                 pawn.needs.learning.CurLevel < 0.9f;
 
-            // Adult-with-regression extension
-            bool adultRegressionOk =
-                pawn.ShouldHaveLearning() &&
-                !pawn.Downed &&
-                !PawnUtility.WillSoonHaveBasicNeed(pawn, 0.1f);
-
-            
-            if (adultRegressionOk && pawn.needs?.learning != null)
-                adultRegressionOk &= pawn.needs.learning.CurLevel < 0.9f;
-
-            __result = childOk || adultRegressionOk;
+            __result = inLearnableState && pawn.ShouldHaveLearning();
             return false; // skip original
         }
     }

@@ -900,22 +900,22 @@ namespace ZealousInnocence
                     var harUtil = AccessTools.TypeByName("Toddlers.HARUtil");
                     var alienRace = AccessTools.TypeByName("Toddlers.AlienRace");
 
-                    if (harUtil != null)
-                        getAlienRaceWrapper = AccessTools.MethodDelegate<Func<Pawn, object>>(
+                    if (harUtil == null) throw new Exception("HARUtil binding error");
+
+                    getAlienRaceWrapper = AccessTools.MethodDelegate<Func<Pawn, object>>(
                             AccessTools.Method(harUtil, "GetAlienRaceWrapper", new[] { typeof(Pawn) }));
 
-                    if (alienRace != null)
-                    {
-                        var prop = AccessTools.Property(alienRace, "toddlerEndAge");
-                        if (prop?.GetMethod != null)
-                            getToddlerEndAge = (Func<object, float>)
-                                Delegate.CreateDelegate(typeof(Func<object, float>), null, prop.GetGetMethod());
+                    if (alienRace == null) throw new Exception("AlienRace binding error");
 
-                        var prop2 = AccessTools.Property(alienRace, "toddlerMinAge");
-                        if (prop2?.GetMethod != null)
-                            getToddlerMinAge = (Func<object, float>)
-                                Delegate.CreateDelegate(typeof(Func<object, float>), null, prop.GetGetMethod());
-                    }
+
+                    var fEnd = AccessTools.Field(alienRace, "toddlerEndAge");
+                    if (fEnd == null) throw new Exception("toddlerEndAge field binding error");
+
+                    var fMin = AccessTools.Field(alienRace, "toddlerMinAge");
+                    if (fMin == null) throw new Exception("toddlerMinAge field binding error");
+
+                    getToddlerEndAge = obj => obj != null ? Convert.ToSingle(fEnd.GetValue(obj)) : -1f;
+                    getToddlerMinAge = obj => obj != null ? Convert.ToSingle(fMin.GetValue(obj)) : -1f;
                 }
                 catch (Exception e)
                 {
@@ -932,7 +932,8 @@ namespace ZealousInnocence
                     var wrapper = getAlienRaceWrapper?.Invoke(pawn);
                     if (wrapper == null) return false;
 
-                    age = getToddlerEndAge?.Invoke(wrapper) ?? 0f;
+                    age = getToddlerEndAge?.Invoke(wrapper) ?? -1f;
+                    if (age < 0f) throw new Exception("Negativ result");
                     return true;
                 }
                 catch (Exception e)
@@ -951,7 +952,8 @@ namespace ZealousInnocence
                     var wrapper = getAlienRaceWrapper?.Invoke(pawn);
                     if (wrapper == null) return false;
 
-                    age = getToddlerMinAge?.Invoke(wrapper) ?? 0f;
+                    age = getToddlerMinAge?.Invoke(wrapper) ?? -1f;
+                    if (age < 0f) throw new Exception("Negativ result");
                     return true;
                 }
                 catch (Exception e)

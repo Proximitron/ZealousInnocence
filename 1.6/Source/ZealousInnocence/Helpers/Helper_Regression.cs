@@ -4,7 +4,9 @@ using JetBrains.Annotations;
 using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
@@ -71,8 +73,17 @@ namespace ZealousInnocence
 
         public static void refreshAllAgeStageCaches(this Pawn pawn)
         {
-            getAgeStagePhysical(pawn, true);
-            getAgeStageMental(pawn, true);
+            /*
+            float oldValuePhysical = -1;
+            if(cachedMentalAgeStages.TryGetValue(pawn, out var value)) oldValuePhysical = value.cachedAgeStage;
+            
+            float oldValueMental = -1;
+            if (cachedMentalAgeStages.TryGetValue(pawn, out var value2)) oldValueMental = value2.cachedAgeStage;
+            */
+            refreshAgeStagePhysicalCache(pawn);
+            refreshAgeStageMentalCache(pawn);
+
+            //Log.Message($"[ZI]Resetting ageStageCaches Mental {oldValueMental:F2} => {getAgeStageMental(pawn, false):F2} Physical {oldValuePhysical:F2} => {getAgeStagePhysical(pawn, false):F2} for {pawn.Name}");
         }
         public static float getAgeStagePhysicalMentalMin(this Pawn pawn, bool force = false)
         {
@@ -122,8 +133,7 @@ namespace ZealousInnocence
         {
             if (p?.health == null) return false;
             if (!p.RaceProps.Humanlike) return false;
-            var age = getAgeStagePhysicalMentalMin(p);
-            return age < 3;
+            return isToddlerMentalOrPhysical(p) || isBabyMentalOrPhysical(p);
         }
         public static bool canChangeDiaperOrUnderwear(Pawn p)
         {
@@ -179,6 +189,11 @@ namespace ZealousInnocence
                 }
             }
             return true;
+        }
+        public static bool isAdultInEveryWay(this Pawn pawn, bool forceRecheck = false)
+        {
+            if (!pawn.IsColonist) return false;
+            return !pawn.DevelopmentalStage.Juvenile() && pawn.isAdultMental() && pawn.isAdultPhysical();
         }
         public static bool isAdultMental(this Pawn pawn, bool forceRecheck = false)
         {
@@ -711,7 +726,7 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
                 Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_JobTracker), "pawn").GetValue(__instance);
                 if (Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return true;
                 JobFailReason.Is("Can't change their own diaper or underwear.");
-                // Optionally, send a message to the player or log the action
+
                 Messages.Message("This pawn can't change their own diaper or underwear.", pawn, MessageTypeDefOf.RejectInput, historical: false);
                 return false; // Prevent the job from being started
             }

@@ -140,17 +140,18 @@ namespace ZealousInnocence
 
             if(pawn == null || pawn.ageTracker == null) return false;
             float age = pawn.ageTracker.AgeBiologicalYearsFloat;
+            pawn.refreshAllAgeStageCaches();
             if (mentalStat && physicalStat)
             {
-                age = Helper_Regression.getAgeStagePhysicalMentalMin(pawn);
+                age = pawn.getAgeStagePhysicalMentalMin();
             }
             else if (mentalStat)
             {
-                age = Helper_Regression.getAgeStageMentalInt(pawn);
+                age = pawn.getAgeStageMentalInt();
             }
             else if(physicalStat)
             {
-                age = Helper_Regression.getAgeStagePhysical(pawn);
+                age = pawn.getAgeStageMentalInt();
             }
 
             // Babies and toddlers share the baby age stage. Toddler often handled seperatly by mod "Toddlers"
