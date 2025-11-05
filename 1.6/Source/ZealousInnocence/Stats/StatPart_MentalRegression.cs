@@ -8,7 +8,7 @@ using Verse;
 
 namespace ZealousInnocence
 {
-    public class StatPart_MentalRegression : StatPart
+    /*public class StatPart_MentalRegression : StatPart
     {
         public override void TransformValue(StatRequest req, ref float val)
         {
@@ -46,5 +46,6 @@ namespace ZealousInnocence
             }
             return null;
         }
-    }
+    }*/
+
 }

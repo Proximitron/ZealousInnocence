@@ -5,7 +5,7 @@
       <defName>Underwear</defName>
       <label>underwear</label>
       <parent>Apparel</parent>
-      <iconPath>Apparel/Underwear/Loincloth</iconPath>
+      <iconPath>Apparel/Underwear/loincloth/Loincloth</iconPath>
       <resourceReadoutRoot>true</resourceReadoutRoot>
     </ThingCategoryDef>
 		
@@ -13,14 +13,14 @@
       <defName>FemaleCloth</defName>
       <label>female cloth</label>
       <parent>Underwear</parent>
-      <iconPath>Apparel/Underwear/Panties</iconPath>
+      <iconPath>Apparel/Underwear/panties/Panties</iconPath>
       <resourceReadoutRoot>true</resourceReadoutRoot>
     </ThingCategoryDef>
 		<ThingCategoryDef>
       <defName>MaleCloth</defName>
       <label>male cloth</label>
       <parent>Underwear</parent>
-      <iconPath>Apparel/Underwear/Boxers</iconPath>
+      <iconPath>Apparel/Underwear/boxers/Boxers</iconPath>
       <resourceReadoutRoot>true</resourceReadoutRoot>
     </ThingCategoryDef>
 </Defs>

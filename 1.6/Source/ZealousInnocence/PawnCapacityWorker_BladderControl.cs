@@ -13,6 +13,7 @@ namespace ZealousInnocence
 {
     public class PawnCapacityWorker_BladderControl : PawnCapacityWorker
     {
+        static ZealousInnocenceSettings settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
         public bool simulateSleep = false;
         public bool simulateAwake = false;
         public override float CalculateCapacityLevel(HediffSet diffSet,
@@ -77,7 +78,7 @@ namespace ZealousInnocence
                             bedwetting = "StateWordMedium";
                         }
                     }
-                    if (needsDiaper)
+                    if (needsDiaper || !canChange)
                     {
                         impactors.Add(new CapacityImpactorCustom { customString = "StateNeedsDiapers".Translate() });
                     }
@@ -92,6 +93,21 @@ namespace ZealousInnocence
                     impactors.Add(new CapacityImpactorCustom { customLabel = "PhraseDaytimeAccidents".Translate(), customValue = canChange ? Helper_Diaper.CalculateProbability(whileAwakeTotal) : 1f });
                     string wordBedwetting = "PhraseBedwetting".Translate();
                     impactors.Add(new CapacityImpactorCustom { customLabel = $"{wordBedwetting} ({bedwetting.Translate()})", customValue = bedwettingChance });
+
+                    /*impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental", customString = Helper_Regression.getAgeStageMental(pawn) });
+                    impactors.Add(new CapacityImpactorCustom { customLabel = $"Physical", customString = Helper_Regression.getAgeStagePhysical(pawn) });*/
+                    if (settings.debugging)
+                    {
+                        if (pawn.isAdultMental()) impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental State", customString = "Adult" });
+                        if (pawn.isChildMental()) impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental State", customString = "Child" });
+                        if (pawn.isToddlerMental()) impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental State", customString = "Toddler" });
+                        if (pawn.isBabyMental()) impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental State", customString = "Baby" });
+                        impactors.Add(new CapacityImpactorCustom { customLabel = $"Age list", customString = $"{pawn.toddlerMinAge()},{pawn.childMinAge()},{pawn.adultMinAge()}" } );
+                        impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental Age", customString = pawn.getAgeStageMental().ToString("F2") });
+                        impactors.Add(new CapacityImpactorCustom { customLabel = $"Physical Age", customString = pawn.getAgeStagePhysical().ToString("F2") });
+                        impactors.Add(new CapacityImpactorCustom { customLabel = $"Bedwetting Chance", customString = $"{ Helper_Bedwetting.PawnBedwettingChance(pawn, Helper_Regression.getAgeStagePhysicalMentalMin(pawn)) }:F2" });
+
+                    }
                 }
             }
             else
@@ -110,7 +126,7 @@ namespace ZealousInnocence
         private float GetAgeFactor(Pawn pawn)
         {
             if (!pawn.RaceProps.Humanlike) return 1.0f;
-            int age = Helper_Regression.getAgeStageMental(pawn);
+            int age = Helper_Regression.getAgeStageMentalInt(pawn);
             float factor;
 
             // Young age factor calculation
@@ -157,14 +173,23 @@ namespace ZealousInnocence
             float total = 1.0f;
             if (!isAwake)
             {
-                if (Helper_Regression.getAgeStagePhysicalMentalMin(pawn) < 6 || pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
+                if (pawn.health.hediffSet.HasHediff(HediffDefOf.BedWetting))
                 {
                     total -= 0.6f;
                 }
                 else
                 {
                     total -= 0.17f;
+
+                    if (pawn.isChildPhysical())
+                    {
+                        float inChildStagePosition = pawn.getAgeStagePhysical() - pawn.childMinAge();
+                        float childEndPosition = pawn.adultMinAge();
+                        float pct = Mathf.InverseLerp(pawn.childMinAge(), childEndPosition, pawn.getAgeStagePhysical());
+                        total -= (0.15f * pct);
+                    }
                 }
+                
             }
             return Math.Min(1f, total * LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().generalNighttimeControlFactor);
         }

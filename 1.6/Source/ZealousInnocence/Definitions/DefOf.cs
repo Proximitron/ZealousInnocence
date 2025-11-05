@@ -90,9 +90,9 @@ namespace ZealousInnocence
         public static StatDef BladderStrengh; // Influences bladder control of the pawn
         public static StatDef BedwettingChance; // Influences bedwetting chance (-1.0 to 1.0). At any end it guaranties it one way or the other.
 
-        public static StatDef MentalAge;
-        public static StatDef MentalRegression;
-        public static StatDef MentalAgeLimit;
+        //public static StatDef MentalAge;
+        //public static StatDef MentalRegression;
+        //public static StatDef MentalAgeLimit;
     }
 
     [DefOf]

@@ -26,11 +26,18 @@
 				<baseMoodEffect>-6</baseMoodEffect>
 			</li>
 			
-			<!-- Non-Adults only. They go by what it feels like. -->
+			<!-- Child only. They go by what it feels like. -->
 			<li>
 				<label>Comfy onesie</label>
 				<description>I'm not that small... It is pretty comfy though!</description>
 				<baseMoodEffect>1</baseMoodEffect>
+			</li>
+			
+			<!-- Toddlers only. They go by what it feels like. -->
+			<li>
+				<label>Comfy onesie</label>
+				<description>Fuss...iih!</description>
+				<baseMoodEffect>3</baseMoodEffect>
 			</li>
 		</stages>
 	</ThoughtDef>

@@ -8,7 +8,7 @@ using Verse;
 
 namespace ZealousInnocence
 {
-    public class StatPart_PhysicalAge : StatPart
+    /*public class StatPart_PhysicalAge : StatPart
     {
         public float minConciousness;
         public override void TransformValue(StatRequest req, ref float val)
@@ -47,5 +47,5 @@ namespace ZealousInnocence
             return pawn.health.capacities.GetLevel(RimWorld.PawnCapacityDefOf.Consciousness) > minConciousness;
             // Alternatively, you could check for specific traits, hediffs, or other conditions
         }
-    }
+    }*/
 }

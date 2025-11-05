@@ -13,7 +13,8 @@ namespace ZealousInnocence
         Neutral,
         Liked,
         Disliked,
-        NonAdult // Feeling based opinion on non-adults
+        Child,
+        Toddler
     }
     public static class OnesieHelper
     {
@@ -41,7 +42,16 @@ namespace ZealousInnocence
         }
         public static OnesieLikeCategory getOnesiePreference(Pawn pawn)
         {
-            if (!Helper_Regression.isAdultMental(pawn)) return OnesieLikeCategory.NonAdult;
+            if (!Helper_Regression.isAdultMental(pawn))
+            {
+                if(pawn.isBabyMental() || pawn.isToddlerMental())
+                {
+                    return OnesieLikeCategory.Toddler;
+                }
+                return OnesieLikeCategory.Child;
+            }
+                
+        
             TraitSet traits = pawn?.story?.traits;
             if (traits == null)
             {
@@ -84,7 +94,8 @@ namespace ZealousInnocence
             Neutral_Worn,
             Loved_Worn,
             Hated_Worn,
-            Feels_Nice_Worn // Feeling based opinion on non-adults
+            Feels_Nice_Child,
+            Feels_Nice_Toddler
         }
 
         [DefOf]
@@ -110,8 +121,10 @@ namespace ZealousInnocence
                         return ThoughtState.ActiveAtStage((int)OnesieSituationCategoryThought.Loved_Worn);
                     case OnesieLikeCategory.Disliked:
                         return ThoughtState.ActiveAtStage((int)OnesieSituationCategoryThought.Hated_Worn);
-                    case OnesieLikeCategory.NonAdult:
-                        return ThoughtState.ActiveAtStage((int)OnesieSituationCategoryThought.Feels_Nice_Worn);
+                    case OnesieLikeCategory.Child:
+                        return ThoughtState.ActiveAtStage((int)OnesieSituationCategoryThought.Feels_Nice_Child);
+                    case OnesieLikeCategory.Toddler:
+                        return ThoughtState.ActiveAtStage((int)OnesieSituationCategoryThought.Feels_Nice_Toddler);
                     default:
                         throw new NotImplementedException();
                 }

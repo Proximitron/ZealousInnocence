@@ -39,6 +39,8 @@ namespace ZealousInnocence
         {
             if (!__result.IsColonist) return;
 
+            __result.refreshAllAgeStageCaches();
+
             Need bladder = __result.needs.TryGetNeed<Need_Bladder>();
             if (bladder != null)
             {
@@ -46,7 +48,6 @@ namespace ZealousInnocence
             }
 
             var diaperNeed = __result.needs.TryGetNeed<Need_Diaper>();
-            var bedwettingDef = HediffDefOf.BedWetting;
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             if (diaperNeed != null)
             {
@@ -63,26 +64,10 @@ namespace ZealousInnocence
                         {
                             if (rand < 0.10f)
                             {
-                                /*if (rand < 0.02f)
-                                {
-                                    AddGene(__result, GeneDefOf.BladderSizeTiny);
-                                }
-                                else
-                                {
-                                    AddGene(__result, GeneDefOf.BladderSizeSmall);
-                                }*/
                                 AddGene(__result, GeneDefOf.BladderSizeSmall);
                             }
                             else
                             {
-                                /*if (rand < 0.12f)
-                                {
-                                    AddGene(__result, GeneDefOf.BladderSizeHuge);
-                                }
-                                else
-                                {
-                                    
-                                }*/
                                 AddGene(__result, GeneDefOf.BladderSizeBig);
 
                             }
@@ -158,9 +143,9 @@ namespace ZealousInnocence
             var underwear = __result.apparel.WornApparel.FirstOrDefault(a => a.def.apparel.layers.Contains(ApparelLayerDefOf.Underwear));
             if (underwear != null)
             {
-                if(Helper_Diaper.needsDiaper(__result) || Helper_Diaper.prefersDiaper(__result))
+                if((Helper_Diaper.needsDiaper(__result) && Helper_Diaper.acceptsDiaper(__result)) || Helper_Diaper.prefersDiaper(__result))
                 {
-                    if (!Helper_Diaper.isDiaper(underwear) && Helper_Diaper.acceptsDiaper(__result))
+                    if ((!Helper_Diaper.isDiaper(underwear) || Helper_Diaper.isNightDiaper(underwear)) && Helper_Diaper.acceptsDiaper(__result))
                     {
                         if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Removing wrong underwear (needs/prefers diapers, is not, accepts) for {__result.LabelShort} of {underwear.LabelShort}");
                         __result.apparel.Remove(underwear);
@@ -168,11 +153,19 @@ namespace ZealousInnocence
                     }
 
                 }
-                else if(Helper_Diaper.needsDiaperNight(__result))
+                else if(Helper_Diaper.needsDiaperNight(__result) && Helper_Diaper.acceptsDiaperNight(__result))
                 {
-                    if (!Helper_Diaper.isNightDiaper(underwear) && Helper_Diaper.acceptsDiaperNight(__result))
+                    if (!Helper_Diaper.isNightDiaper(underwear))
                     {
                         if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Removing wrong underwear (needs pull-ups, is not, accepts) for {__result.LabelShort} of {underwear.LabelShort}");
+                        __result.apparel.Remove(underwear);
+                        underwear = null;
+                    }
+                }
+                else
+                {
+                    if(Helper_Diaper.isNightDiaper(underwear) || Helper_Diaper.isDiaper(underwear)){
+                        if (settings.debugging) Log.Message($"[ZI]PawnGenerator: Removing wrong underwear (needs no diapers, is not preferd) for {__result.LabelShort} of {underwear.LabelShort}");
                         __result.apparel.Remove(underwear);
                         underwear = null;
                     }
@@ -183,7 +176,14 @@ namespace ZealousInnocence
                 ThingDef underwearDef = ChooseUnderwearFor(__result);
                 if (underwearDef != null)
                 {
-                    underwear = (Apparel)ThingMaker.MakeThing(underwearDef, ChooseMaterialFor(__result, underwearDef));
+                    if (Helper_Diaper.isDisposable(underwear))
+                    {
+                        underwear = (Apparel)ThingMaker.MakeThing(underwearDef, null);
+                    }
+                    else
+                    {
+                        underwear = (Apparel)ThingMaker.MakeThing(underwearDef, ChooseMaterialFor(__result, underwearDef));
+                    }
                     underwear.SetStyleDef(__result.StyleDef);
                     __result.apparel.Wear(underwear, true);
                     if(settings.debugging)  Log.Message($"[ZI]PawnGenerator: Fixed underwear issue for {__result.LabelShort} with {underwear.LabelShort}");
@@ -191,6 +191,28 @@ namespace ZealousInnocence
                 else
                 {
                     if (settings.debugging)  Log.Message($"[ZI]PawnGenerator: Could not fix underwear issue for {__result.LabelShort}");
+                }
+            }
+            if(underwear != null && Helper_Diaper.isDisposable(underwear))
+            {
+                var inv = __result?.inventory?.innerContainer;
+                if (inv == null)
+                {
+                    Log.Message($"[ZI]PawnGenerator: No inventory for {__result.LabelShort} with {underwear.LabelShort}");
+                    return;
+                }
+                int have = inv.Count(t => t is Apparel_Disposable_Diaper && t.def == underwear.def);
+                if(have < 2)
+                {
+                    var toAdd = (Apparel)ThingMaker.MakeThing(underwear.def,null);
+                    
+                    if (toAdd != null)
+                    {
+                        toAdd.stackCount = 2 - have;
+                        if (settings.debugging) Log.Message($"[ZI]PawnGenerator: Adding spare disposables for {__result.LabelShort} with {underwear.LabelShort}");
+                        inv.TryAdd(toAdd,2,true);
+                    }
+                    
                 }
             }
 
@@ -208,17 +230,26 @@ namespace ZealousInnocence
         private static ThingDef ChooseUnderwearFor(Pawn pawn)
         {
             if (pawn.ageTracker.AgeBiologicalYears < 3) return null;
-            if (Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn))
+
+            var lowTech = pawn.Faction == null || pawn.Faction.def.techLevel == TechLevel.Medieval || pawn.Faction.def.techLevel == TechLevel.Neolithic;
+
+            if ((Helper_Diaper.needsDiaper(pawn) || Helper_Diaper.prefersDiaper(pawn)) && Helper_Diaper.acceptsDiaper(pawn))
             {
+                if(lowTech) return ThingDefOf.Apparel_Diaper;
+                if(Rand.RangeSeeded(0.0f, 1.0f, pawn.HashOffsetTicks() + 479) > 0.25f)
+                {
+                    return ThingDefOf.Apparel_Diaper_Disposable;
+                }
                 return ThingDefOf.Apparel_Diaper;
             }
             else if (Helper_Diaper.needsDiaperNight(pawn) && Helper_Diaper.acceptsDiaperNight(pawn))
             {
+                if (lowTech) return ThingDefOf.Apparel_Diaper;
                 return ThingDefOf.Apparel_Diaper_Night;
             }
             else
             {
-                if (pawn.Faction == null || pawn.Faction.def.techLevel == TechLevel.Medieval || pawn.Faction.def.techLevel == TechLevel.Neolithic)
+                if (lowTech)
                 {
                     return ThingDefOf.Apparel_Underwear_Loincloth;
                 }

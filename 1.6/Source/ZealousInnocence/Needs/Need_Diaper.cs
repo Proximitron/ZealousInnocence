@@ -262,6 +262,7 @@ namespace ZealousInnocence
             Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
             var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, peePerTick);
             var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
+            var isBabyOrToddler = pawn.isToddlerMental() && pawn.isBabyMental();
 
             Need_Hygiene need_Hygiene = this.pawn.needs.TryGetNeed<Need_Hygiene>();
             if (need_Hygiene != null)
@@ -310,13 +311,19 @@ namespace ZealousInnocence
                     {
                         if (curr != pawn)
                         {
-                            curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PeedOnMe"), pawn, null);
+                            if (!curr.isBabyMental() && !curr.isToddlerMental())
+                            {
+                                curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PeedOnMe"), pawn, null);
+                            }
                             curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
                         }
                     }
-                    if (!Helper_Regression.isAdultMental(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
-                    else if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
-                    else Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
+                    if (!isBabyOrToddler)
+                    {
+                        if (!Helper_Regression.isAdultMental(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
+                        else if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
+                        else Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
+                    }
                     pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
                 }
 
@@ -352,7 +359,9 @@ namespace ZealousInnocence
                 MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, IsPeeing ? "PhraseDiaperWetting".Translate(diaper.def.label) : "PhraseDiaperSoiling".Translate(diaper.def.label), IsPeeing ? settings.wettingColor : settings.solingColor);
                 switch (liked)
                 {
-                    case DiaperLikeCategory.NonAdult:
+                    case DiaperLikeCategory.Toddler:
+                        break; // No memories created, we didn't notice
+                    case DiaperLikeCategory.Child:
                         if (pawn.Awake()) Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Non_Adult);
                         else Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Non_Adult);
                         break;
@@ -393,8 +402,9 @@ namespace ZealousInnocence
                 }
                 switch (liked)
                 {
-
-                    case DiaperLikeCategory.NonAdult:
+                    case DiaperLikeCategory.Toddler:
+                        break; // Didn't notice
+                    case DiaperLikeCategory.Child:
                         Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Non_Adult);
                         break;
                     case DiaperLikeCategory.Neutral:
@@ -443,14 +453,9 @@ namespace ZealousInnocence
             pawn.health.capacities.Notify_CapacityLevelsDirty(); // Yes, nessesary. The caching doesn't keep track of changes like sleeping and things that not cause hediffs
             currProtectionCache = null;
 
-            var bedwettingDef = HediffDefOf.BedWetting;
             Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
             if (bladder == null)
             {
-                if (pawn.health.hediffSet.HasHediff(bedwettingDef))
-                {
-                    pawn.health.RemoveHediff(pawn.health.hediffSet.GetFirstHediffOfDef(bedwettingDef));
-                }
                 return;
             }
             
@@ -600,9 +605,9 @@ namespace ZealousInnocence
                     else
                     {
                         var liked = Helper_Diaper.getDiaperPreference(pawn);
-                        if (liked == DiaperLikeCategory.Liked)
+                        if (liked == DiaperLikeCategory.Liked || liked == DiaperLikeCategory.Toddler)
                         {
-                            if (currProtection == null || !Helper_Diaper.isDiaper(currProtection))
+                            if (liked != DiaperLikeCategory.Toddler && (currProtection == null || !Helper_Diaper.isDiaper(currProtection)))
                             {
                                 pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("HadToHoldIt"), null, null);
                             }

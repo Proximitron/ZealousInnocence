@@ -1,8 +1,12 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using Toddlers;
 using UnityEngine;
 using Verse;
 using static ZealousInnocence.DebugActions;
@@ -20,9 +24,9 @@ namespace ZealousInnocence
 
         public bool forceTick = false;
         private int lastStateYears = -1;
+        private float lastStateYearsFloat = -1f;
         private int _lastHealTick;
-        private static ZealousInnocenceSettings Settings
-    => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+        private static ZealousInnocenceSettings Settings => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
 
         static bool IsHumanlike(Pawn p) => p?.RaceProps?.Humanlike == true;
         static bool IsAnimal(Pawn p) => p?.RaceProps?.Animal == true;
@@ -74,6 +78,7 @@ namespace ZealousInnocence
         {
             base.ExposeData();
             Scribe_Values.Look(ref lastStateYears, "ZI_reg_lastStateYears", -1);
+            Scribe_Values.Look(ref lastStateYearsFloat, "ZI_reg_lastStateYearsFloat", -1f);
             Scribe_Values.Look(ref _lastHealTick, "ZI_reg_lastHealTick", 0);
         }
 
@@ -87,9 +92,33 @@ namespace ZealousInnocence
             if (pawn == null) return;
 
             lastStateYears = -1;
-
+            lastStateYearsFloat = -1f;
             forceTick = true;
-            
+        }
+
+        public static class ToddlersCompat
+        {
+            private static Action<Pawn, bool> _reset;
+            private static bool _lookedUp;
+
+            public static void TryResetHediffsForAge(Pawn p, bool v)
+            {
+                if (!_lookedUp)
+                {
+                    _lookedUp = true;
+                    if (ModChecker.ToddlersActive())
+                    {
+                        var mi = AccessTools.Method(
+                            "Toddlers.ToddlerLearningUtility:ResetHediffsForAge",
+                            new[] { typeof(Pawn), typeof(bool) });
+
+                        if (mi != null)
+                            _reset = (Action<Pawn, bool>)Delegate.CreateDelegate(typeof(Action<Pawn, bool>), mi);
+                    }
+                }
+
+                _reset?.Invoke(p, v); // safe no-op if mod/method missing
+            }
         }
 
         public override void Tick()
@@ -100,11 +129,14 @@ namespace ZealousInnocence
             if (!forceTick && !this.pawn.IsHashIntervalTick(HealingTickInterval)) return;
             
             HealStep(HealingTickInterval);
-            if(lastStateYears != MentalTicksYearInt)
+            lastStateYearsFloat = MentalTicksYearFloat;
+            if (lastStateYears != MentalTicksYearInt)
             {
                 lastStateYears = MentalTicksYearInt;
                 refreshAgeStageCache(pawn: pawn);
             }
+
+            ToddlersCompat.TryResetHediffsForAge(pawn, !pawn.isToddlerAtAge(MentalTicksYearInt));
 
             forceTick = false;
         }
@@ -157,7 +189,7 @@ namespace ZealousInnocence
                 //tip += (tip.NullOrEmpty() ? "" : "\n") + $"Mental Regression: {sevPct:F1}%";
 
                 tip += $"\nBase Age: {BaseAgeYearFloat:F1} years";
-                tip += $"\nMental Age: {Helper_Regression.getAgeStageMental(pawn)} years";
+                tip += $"\nMental Age: {Helper_Regression.getAgeStageMentalInt(pawn)} years";
 
                 var reducePercent = Mathf.CeilToInt(LevelsModifierToMask(pawn) * 100f);
                 tip += $"\nSkilles reduced: {reducePercent}%";
@@ -212,11 +244,18 @@ namespace ZealousInnocence
             }
         }
 
-        public int LastMentalYears
+        public int LastMentalYearsInt
         {
             get
             {
                 return lastStateYears;
+            }
+        }
+        public float LastMentalYears
+        {
+            get
+            {
+                return lastStateYearsFloat;
             }
         }
 
@@ -257,7 +296,7 @@ namespace ZealousInnocence
         public static bool CanHaveRole(Pawn p)
         {
             if (!ModsConfig.IdeologyActive) return false;
-            var age = Helper_Regression.getAgeStageMental(p);
+            var age = Helper_Regression.getAgeStageMentalInt(p);
             return age >= 3;
         }
         public override void PreRemoved()
@@ -275,7 +314,32 @@ namespace ZealousInnocence
         {
             return (Hediff_RegressionDamage)pawn?.health?.hediffSet?.hediffs?.FirstOrDefault(x => x is Hediff_RegressionDamage) ?? null;
         }
-        
+
+        private static bool? _harLoaded;
+        public static bool HARLoaded
+        {
+            get
+            {
+                if (_harLoaded == null)
+                {
+                    _harLoaded = LoadedModManager.RunningModsListForReading.Any(x => x.Name == "Humanoid Alien Races");
+                }
+                return _harLoaded.Value;
+            }
+        }
+
+        private static bool? _toddlersLoaded;
+        public static bool ToddlersLoaded
+        {
+            get
+            {
+                if (_toddlersLoaded == null)
+                {
+                    _toddlersLoaded = ModChecker.ToddlersActive();
+                }
+                return _toddlersLoaded.Value;
+            }
+        }
 
         const int HealingTickInterval = 150;
         const int MaxDelta = HealingTickInterval * 4;
@@ -315,9 +379,9 @@ namespace ZealousInnocence
         private enum AgeStage3 { Baby, Child, Adult }
         private AgeStage3 StageFor(long bioTicks)
         {
-            var (childCore, childEdge) = ChildBandTicks(pawn); // core=end of baby, edge=start of adult
-            if (bioTicks < childCore) return AgeStage3.Baby;
-            if (bioTicks < childEdge) return AgeStage3.Child;
+            var band = ChildBands.Get(pawn);
+            if (bioTicks < band.core) return AgeStage3.Baby;
+            if (bioTicks < band.edge) return AgeStage3.Child;
             return AgeStage3.Adult;
         }
         private float ResurrectDurationSeconds = 60f;
@@ -477,7 +541,8 @@ namespace ZealousInnocence
             float f = Mathf.InverseLerp(youngRef * life, oldRef * life, baseYears);  // young→0, old→1
             float split = Mathf.Lerp(minSplit, maxSplit, f);                          // e.g., 0.40..0.75
 
-            var (childCore, childEdge) = ChildBandTicks(pawn);
+            var band = ChildBands.Get(pawn);
+            var (childCore, childEdge) = (band.core, band.edge);
             const long babyFloor = 0;
 
             // Allow full range: [babyFloor .. baseline]
@@ -522,7 +587,8 @@ namespace ZealousInnocence
         }
         public static long BioTicksForSeverity(float s, Pawn pawn, long baselineBioTicks)
         {
-            var (childCore, childEdge) = ChildBandTicks(pawn);
+            var band = ChildBands.Get(pawn);
+            var (childCore, childEdge) = (band.core, band.edge);
 
             float life = pawn.RaceProps.lifeExpectancy;
             float baseYears = baselineBioTicks / (float)GenDate.TicksPerYear;
@@ -639,8 +705,8 @@ namespace ZealousInnocence
                     
                     SyncBirthdayHediffs(pawn, desiredBio);
                     ProcessDeferredBirthdaysOnAgeUp();
-                    refreshAgeStageCache(pawn: pawn);
                     lastWholeYears = curYears;
+                    refreshAgeStageCache(pawn: pawn);
                 }
             }
         }
@@ -812,85 +878,229 @@ namespace ZealousInnocence
             }
             Helper_Regression.dropAllUnwearable(p);
         }
-        public static (int core, int edge) ChildBandTicks(Pawn p)
+
+
+        public static class ChildBands
         {
-            if (IsHumanlike(p))
-                return (Mathf.RoundToInt(3f * GenDate.TicksPerYear),
-                        Mathf.RoundToInt(13f * GenDate.TicksPerYear));
+            private static Func<Pawn, object> getAlienRaceWrapper = null;
+            private static Func<object, float> getToddlerEndAge = null;
+            private static Func<object, float> getToddlerMinAge = null;
 
-            var stages = p?.RaceProps?.lifeStageAges;
-            float life = p?.RaceProps?.lifeExpectancy ?? 10f;
-
-            // Defaults if defs are bizarre/missing
-            float coreYears = Mathf.Clamp(life * 0.10f, 0f, life);
-            float edgeYears = Mathf.Clamp(life * 0.40f, coreYears + 0.01f, life);
-
-            if (stages != null && stages.Count > 0)
+            private static bool ToddlerAlienCompatInit = false;
+            private static void ToddlerAlienCompat()
             {
-                // Order by minAge (already true in vanilla, but be safe)
-                var ordered = stages.OrderBy(s => s.minAge).ToList();
-
-                // 1) Find earliest minAge (usually 0)
-                float firstMin = ordered[0].minAge;
-
-                // 2) childCore = first DISTINCT minAge > firstMin
-                float? nextDistinct = null;
-                for (int i = 1; i < ordered.Count; i++)
+                ToddlerAlienCompatInit = true;
+                try
                 {
-                    if (ordered[i].minAge > firstMin + 1e-6f)
+                    var harUtil = AccessTools.TypeByName("Toddlers.HARUtil");
+                    var alienRace = AccessTools.TypeByName("Toddlers.AlienRace");
+
+                    if (harUtil != null)
+                        getAlienRaceWrapper = AccessTools.MethodDelegate<Func<Pawn, object>>(
+                            AccessTools.Method(harUtil, "GetAlienRaceWrapper", new[] { typeof(Pawn) }));
+
+                    if (alienRace != null)
                     {
-                        nextDistinct = ordered[i].minAge;
-                        break;
+                        var prop = AccessTools.Property(alienRace, "toddlerEndAge");
+                        if (prop?.GetMethod != null)
+                            getToddlerEndAge = (Func<object, float>)
+                                Delegate.CreateDelegate(typeof(Func<object, float>), null, prop.GetGetMethod());
+
+                        var prop2 = AccessTools.Property(alienRace, "toddlerMinAge");
+                        if (prop2?.GetMethod != null)
+                            getToddlerMinAge = (Func<object, float>)
+                                Delegate.CreateDelegate(typeof(Func<object, float>), null, prop.GetGetMethod());
                     }
                 }
-
-                // If there was no second distinct breakpoint, synthesize a tiny baby window
-                if (!nextDistinct.HasValue)
+                catch (Exception e)
                 {
-                    // 6–10 days is a nice universal “calf” window for fast growers
-                    float synthDays = 8f;
-                    nextDistinct = firstMin + Mathf.Max(synthDays / 60f, life * 0.01f);
+                    Log.Warning($"[ZI] Failed to bind Toddlers HARUtil/AlienRace: {e}");
                 }
+            }
+            public static bool TryGetToddlerEndAge(Pawn pawn, out float age)
+            {
+                if (!ToddlerAlienCompatInit) ToddlerAlienCompat();
 
-                coreYears = Mathf.Clamp(nextDistinct.Value, 0f, life);
-
-                // 3) Prefer the explicit Adult start if it is AFTER childCore
-                float? adultStart = ordered
-                    .Where(s => s.def?.developmentalStage == DevelopmentalStage.Adult)
-                    .Select(s => s.minAge)
-                    .Where(a => a > coreYears + 1e-6f)
-                    .Cast<float?>()
-                    .FirstOrDefault();
-
-                if (adultStart.HasValue)
+                age = 0f;
+                try
                 {
-                    edgeYears = Mathf.Clamp(adultStart.Value, coreYears + 0.01f, life);
+                    var wrapper = getAlienRaceWrapper?.Invoke(pawn);
+                    if (wrapper == null) return false;
+
+                    age = getToddlerEndAge?.Invoke(wrapper) ?? 0f;
+                    return true;
                 }
-                else
+                catch (Exception e)
                 {
-                    // Otherwise take the next DISTINCT minAge after childCore
-                    float? nextAfterCore = ordered
-                        .Select(s => s.minAge)
-                        .FirstOrDefault(a => a > coreYears + 1e-6f);
+                    Log.Warning($"[ZI] Error accessing toddlerEndAge: {e}");
+                    return false;
+                }
+            }
+            public static bool TryGetToddlerMinAge(Pawn pawn, out float age)
+            {
+                if (!ToddlerAlienCompatInit) ToddlerAlienCompat();
 
-                    if (nextAfterCore.HasValue)
-                        edgeYears = Mathf.Clamp(nextAfterCore.Value, coreYears + 0.01f, life);
-                    else
-                        edgeYears = Mathf.Clamp(coreYears + Mathf.Max(0.05f, life * 0.10f), coreYears + 0.01f, life);
+                age = 0f;
+                try
+                {
+                    var wrapper = getAlienRaceWrapper?.Invoke(pawn);
+                    if (wrapper == null) return false;
+
+                    age = getToddlerMinAge?.Invoke(wrapper) ?? 0f;
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Log.Warning($"[ZI] Error accessing toddlerEndAge: {e}");
+                    return false;
                 }
             }
 
-            int coreTicks = Mathf.RoundToInt(coreYears * GenDate.TicksPerYear);
-            int edgeTicks = Mathf.RoundToInt(edgeYears * GenDate.TicksPerYear);
+            // Small, auto-cleaning cache keyed by Pawn (no leaks).
+            private static readonly ConditionalWeakTable<Pawn, DevelopmentStages> _cache = new();
+            private const int TTL = 300; // recompute after 300 ticks (~5 seconds)
+
+            public sealed class DevelopmentStages
+            {
+                public float toddler, core, edge;
+                public int stampTick;
+                public long ageBioTicks; // dependency
+                public bool valid;
+            }
+
+            public static DevelopmentStages Get(Pawn pawn)
+            {
+                if (pawn == null) return null;
+
+                int now = Find.TickManager.TicksGame;
+
+                if (!_cache.TryGetValue(pawn, out var entry))
+                {
+                    entry = new DevelopmentStages();
+                    _cache.Add(pawn, entry);
+                }
+
+                // If entry expired, recompute it
+                if (!entry.valid || now - entry.stampTick >= TTL)
+                {
+                    Recompute(entry, pawn);
+                    entry.stampTick = now;
+                    entry.valid = true;
+                }
+
+                return entry;
+            }
+
+            public static void Clear() => _cache.Clear();
+
+            private static void Recompute(DevelopmentStages e, Pawn p)
+            {
+
+                if (IsHumanlike(p))
+                {
+                    if (HARLoaded && ToddlersLoaded)
+                    {
+                        if (TryGetToddlerEndAge(p, out var toddlerEndAge) && TryGetToddlerMinAge(p, out var toddlerMinAge))
+                        {
+                            float? adultStart = p.def.race.lifeStageAges.Where(s => s.def?.developmentalStage == DevelopmentalStage.Adult).Select(s => s.minAge).FirstOrDefault();
+
+                            if (adultStart.HasValue)
+                            {
+                                e.toddler = toddlerMinAge * GenDate.TicksPerYear;
+                                e.core = toddlerEndAge * GenDate.TicksPerYear;
+                                e.edge = adultStart.Value * GenDate.TicksPerYear;
+                                return;
+                            }
+                        }
+
+                    }
+                    e.toddler = 1f * GenDate.TicksPerYear;
+                    e.core = 3f * GenDate.TicksPerYear;
+                    e.edge = 13f * GenDate.TicksPerYear;
+                    return;
+                }
+
+
+                var stages = p?.RaceProps?.lifeStageAges;
+                float life = p?.RaceProps?.lifeExpectancy ?? 10f;
+
+                // Defaults if defs are bizarre/missing
+                float coreYears = Mathf.Clamp(life * 0.10f, 0f, life);
+                float edgeYears = Mathf.Clamp(life * 0.40f, coreYears + 0.01f, life);
+
+                if (stages != null && stages.Count > 0)
+                {
+                    // Order by minAge (already true in vanilla, but be safe)
+                    var ordered = stages.OrderBy(s => s.minAge).ToList();
+
+                    // 1) Find earliest minAge (usually 0)
+                    float firstMin = ordered[0].minAge;
+
+                    // 2) childCore = first DISTINCT minAge > firstMin
+                    float? nextDistinct = null;
+                    for (int i = 1; i < ordered.Count; i++)
+                    {
+                        if (ordered[i].minAge > firstMin + 1e-6f)
+                        {
+                            nextDistinct = ordered[i].minAge;
+                            break;
+                        }
+                    }
+
+                    // If there was no second distinct breakpoint, synthesize a tiny baby window
+                    if (!nextDistinct.HasValue)
+                    {
+                        // 6–10 days is a nice universal “calf” window for fast growers
+                        float synthDays = 8f;
+                        nextDistinct = firstMin + Mathf.Max(synthDays / 60f, life * 0.01f);
+                    }
+
+                    coreYears = Mathf.Clamp(nextDistinct.Value, 0f, life);
+
+                    // 3) Prefer the explicit Adult start if it is AFTER childCore
+                    float? adultStart = ordered
+                        .Where(s => s.def?.developmentalStage == DevelopmentalStage.Adult)
+                        .Select(s => s.minAge)
+                        .Where(a => a > coreYears + 1e-6f)
+                        .Cast<float?>()
+                        .FirstOrDefault();
+
+                    if (adultStart.HasValue)
+                    {
+                        edgeYears = Mathf.Clamp(adultStart.Value, coreYears + 0.01f, life);
+                    }
+                    else
+                    {
+                        // Otherwise take the next DISTINCT minAge after childCore
+                        float? nextAfterCore = ordered
+                            .Select(s => s.minAge)
+                            .FirstOrDefault(a => a > coreYears + 1e-6f);
+
+                        if (nextAfterCore.HasValue)
+                            edgeYears = Mathf.Clamp(nextAfterCore.Value, coreYears + 0.01f, life);
+                        else
+                            edgeYears = Mathf.Clamp(coreYears + Mathf.Max(0.05f, life * 0.10f), coreYears + 0.01f, life);
+                    }
+                }
+
+                float coreTicks = coreYears * GenDate.TicksPerYear;
+                float edgeTicks = edgeYears * GenDate.TicksPerYear;
 
 #if DEBUG
-            if (Settings.debugging && Settings.debuggingRegression)
-                Log.Message($"[ZI] {p?.LabelShortCap ?? "<null>"} bands -> " +
-           $"core(end Baby)={coreYears:F6}y ({coreTicks / (float)GenDate.TicksPerDay:F1} d)  " +
-           $"edge(start Adult)={edgeYears:F6}y  life={life:F2}y");
+                if (Settings.debugging && Settings.debuggingRegression)
+                    Log.Message($"[ZI] {p?.LabelShortCap ?? "<null>"} bands -> " +
+               $"core(end Baby)={coreYears:F6}y ({coreTicks / (float)GenDate.TicksPerDay:F2} d)  " +
+               $"edge(start Adult)={edgeYears:F6}y  life={life:F2}y");
 #endif
-            return (coreTicks, edgeTicks);
+                e.toddler = 1f * GenDate.TicksPerYear;
+                e.core = coreTicks;
+                e.edge = edgeTicks;
+                return;
+            }
         }
+
+
+        
 
         // If you change any *internal* tuning fields that affect CapMods without changing Severity,
         // call this to force a recalc:
@@ -1247,7 +1457,7 @@ namespace ZealousInnocence
                 if (Severity > 0f)
                 {
                     tip += $"\nBase Age: {BaseAgeYearFloat:F1} years";
-                    tip += $"\nPhysical Age: {Helper_Regression.getAgeStagePhysical(pawn)} years";
+                    tip += $"\nPhysical Age: {Helper_Regression.getAgeStagePhysical(pawn):F1} years";
                     if(Memory != null && Memory.desiredAgeYears != -1)
                     {
                         tip += $"\nDesired Age: {Memory.desiredAgeYears}";
@@ -1363,7 +1573,7 @@ namespace ZealousInnocence
             list.Begin(inRect);
 
             float realAge = Hediff_RegressionDamage.HediffByPawn(pawn)?.BaseAgeYearFloat ?? (pawn.ageTracker.AgeBiologicalTicks / GenDate.TicksPerYear);
-            list.Label($"Pawn: {pawn.LabelShortCap} Real age: {realAge:F1} Physical age: {Helper_Regression.getAgeStagePhysical(pawn)}  (range {minAllowed}–{maxAllowed})");
+            list.Label($"Pawn: {pawn.LabelShortCap} Real age: {realAge:F1} Physical age: {Helper_Regression.getAgeStagePhysical(pawn):F1}  (range {minAllowed}–{maxAllowed})");
             list.GapLine();
             list.Gap(6f);
 

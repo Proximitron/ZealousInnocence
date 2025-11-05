@@ -54,7 +54,7 @@
 		<label>loincloth</label>
 		<description>Simple loincloth, low tech and easy to get into.</description>
 		<graphicData>
-			<texPath>Apparel/Underwear/Loincloth</texPath>
+			<texPath>Apparel/Underwear/loincloth/Loincloth</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<techLevel>Medieval</techLevel>
@@ -103,7 +103,7 @@
 		<label>kid underwear</label>
 		<description>Simple, slightly thicker underwear for children.</description>
 		<graphicData>
-			<texPath>Apparel/Underwear/UnderwearPlain</texPath>
+			<texPath>Apparel/Underwear/UnderwearPlain/UnderwearPlain</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<techLevel>Medieval</techLevel>
@@ -151,7 +151,7 @@
 		<label>boxers</label>
 		<description>Modern, easy to get in, boxer shorts.</description>
 		<graphicData>
-			<texPath>Apparel/Underwear/Boxers</texPath>
+			<texPath>Apparel/Underwear/boxers/Boxers</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<techLevel>Industrial</techLevel>
@@ -186,7 +186,7 @@
 		</recipeMaker>
 		<apparel>
 			<developmentalStageFilter>Adult</developmentalStageFilter>
-			<wornGraphicPath>Apparel/Underwear/boxers/boxers</wornGraphicPath>
+			<wornGraphicPath>Apparel/Underwear/boxers/Boxers</wornGraphicPath>
       <canBeDesiredForIdeo>true</canBeDesiredForIdeo>
 			<tags>
         <li>IndustrialBasic</li>
@@ -199,7 +199,7 @@
 		<label>panties</label>
 		<description>Simple panties, from finest fabric.</description>
 		<graphicData>
-			<texPath>Apparel/Underwear/Panties</texPath>
+			<texPath>Apparel/Underwear/panties/Panties</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<techLevel>Industrial</techLevel>

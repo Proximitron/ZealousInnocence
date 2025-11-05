@@ -252,6 +252,14 @@ namespace ZealousInnocence
             Non_Adult_Used,
             Non_Adult_Other,
 
+            // Thoughts of toddler or baby
+            Toddler_None,
+            Toddler_Clean,
+            Toddler_Used,
+            Toddler_Spent,
+            Toddler_Trashed,
+
+
             // Thoughts if night diaper is nessesary, but normal diaper is worn!
             Night_Protection_Diaper_Clean,
             Night_Protection_Diaper_Used,
@@ -303,7 +311,9 @@ namespace ZealousInnocence
                     case DiaperSituationCategory.Clean:
                         switch (preference)
                         {
-                            case DiaperLikeCategory.NonAdult:
+                            case DiaperLikeCategory.Toddler:
+                                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Toddler_Clean);
+                            case DiaperLikeCategory.Child:
                                 if (Helper_Diaper.isNightDiaper(currDiapie)) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_Clean);
                                 else return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Clean);
                             case DiaperLikeCategory.Liked:
@@ -332,7 +342,9 @@ namespace ZealousInnocence
                     case DiaperSituationCategory.Used:
                         switch (preference)
                         {
-                            case DiaperLikeCategory.NonAdult:
+                            case DiaperLikeCategory.Toddler:
+                                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Toddler_Used);
+                            case DiaperLikeCategory.Child:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Used);
                             case DiaperLikeCategory.Liked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Used);
@@ -360,7 +372,9 @@ namespace ZealousInnocence
                     case DiaperSituationCategory.Spent:
                         switch (preference)
                         {
-                            case DiaperLikeCategory.NonAdult:
+                            case DiaperLikeCategory.Toddler:
+                                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Toddler_Spent);
+                            case DiaperLikeCategory.Child:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Other);
                             case DiaperLikeCategory.Liked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Spent);
@@ -388,7 +402,9 @@ namespace ZealousInnocence
                     case DiaperSituationCategory.Trashed:
                         switch (preference)
                         {
-                            case DiaperLikeCategory.NonAdult:
+                            case DiaperLikeCategory.Toddler:
+                                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Toddler_Trashed);
+                            case DiaperLikeCategory.Child:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Other);
                             case DiaperLikeCategory.Liked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Trashed);
@@ -419,9 +435,11 @@ namespace ZealousInnocence
             }
 
             // After this point it should be clear that no diaper is worn
+            if(preference == DiaperLikeCategory.Toddler) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Toddler_None);
+
             var currUnderpants = Helper_Diaper.getUnderwear(p);
 
-            if (preference == DiaperLikeCategory.NonAdult)
+            if (preference == DiaperLikeCategory.Child)
             {
                 if (diaperRequired) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_None);
                 if (diaperRequiredNight) return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Non_Adult_Required_Night_Protection_None);

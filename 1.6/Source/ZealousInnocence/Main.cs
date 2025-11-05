@@ -13,10 +13,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Verse;
 using Verse.AI;
-using Verse.Noise;
-using Verse.Sound;
-using ZealousInnocence.Jobs;
-using static UnityEngine.GraphicsBuffer;
 
 namespace ZealousInnocence
 {
@@ -323,6 +319,35 @@ namespace ZealousInnocence
             // Functions until this are all related to "BabyInteractions.cs"
 
             ModChecker.ZealousInnocenceActive();
+
+            if (ModChecker.ToddlersActive())
+            {
+                var isToddler = AccessTools.Method(AccessTools.TypeByName("Toddlers.ToddlerUtility")
+                               ?? AccessTools.TypeByName("ToddlerUtility"),
+                               "IsToddler");
+                if (isToddler != null)
+                {
+                    patchFunctionPrefix(
+                        original: isToddler,
+                        prefix: new HarmonyMethod(typeof(Patch_ToddlerUtility), nameof(Patch_ToddlerUtility.IsToddler)),
+                        info: "ToddlerUtility.IsToddler"
+                    );
+                }
+                else Log.Warning($"[ZI] Bind failed for ToddlerUtility.IsToddler");
+                var percentGrowth = AccessTools.Method(AccessTools.TypeByName("Toddlers.ToddlerUtility")
+                               ?? AccessTools.TypeByName("ToddlerUtility"),
+                               "PercentGrowth");
+                if (percentGrowth != null)
+                {
+                    patchFunctionPrefix(
+                        original: percentGrowth,
+                        prefix: new HarmonyMethod(typeof(Patch_ToddlerUtility), nameof(Patch_ToddlerUtility.PercentGrowth)),
+                        info: "ToddlerUtility.PercentGrowth"
+                    );
+                }
+                else Log.Warning($"[ZI] Bind failed for ToddlerUtility.PercentGrowth");
+            }
+
             if (!ModChecker.ForeverYoungActive())
             {
                 // Can allow or disallow Rols for children (again)
@@ -413,6 +438,10 @@ namespace ZealousInnocence
         {
             return ModLister.GetActiveModWithIdentifier("me.nanz.foreveryoung") != null;
         }
+        public static bool ToddlersActive()
+        {
+            return ModLister.GetActiveModWithIdentifier("cyanobot.toddlers") != null;
+        }
         public static bool ZealousInnocenceActive()
         {
             return ModLister.GetActiveModWithIdentifier("proximo.zealousinnocence") != null;
@@ -466,7 +495,11 @@ namespace ZealousInnocence
             }
             else
             {
-                return $"{customString}";
+                if(customLabel == "")
+                {
+                    return $"{customString}";
+                }
+                return $"{customLabel}: {customString}";
             }
         }
     }

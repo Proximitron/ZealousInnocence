@@ -44,8 +44,8 @@ namespace ZealousInnocence
                 num+= 2f;
             }
            
-            var age1 = Helper_Regression.getAgeStageMental(recipient);
-            var age2 = Helper_Regression.getAgeStageMental(initiator);
+            var age1 = Helper_Regression.getAgeStageMentalInt(recipient);
+            var age2 = Helper_Regression.getAgeStageMentalInt(initiator);
             if(age1 > age2)
             {
                 num += (1.0f - ((age1 - age2) * 0.2f));
@@ -55,7 +55,7 @@ namespace ZealousInnocence
                 num += (1.0f - ((age2 - age1) * 0.2f));
             }
             
-            return 0.33f * num;
+            return Math.Max(0, 0.33f * num);
         }
 
         public override void Interacted(Pawn initiator, Pawn recipient, List<RulePackDef> extraSentencePacks, out string letterText, out string letterLabel, out LetterDef letterDef, out LookTargets lookTargets)

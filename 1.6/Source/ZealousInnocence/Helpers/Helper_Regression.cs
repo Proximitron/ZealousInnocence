@@ -8,15 +8,16 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
+using static ZealousInnocence.Hediff_RegressionDamage;
 
 namespace ZealousInnocence
 {
     public static class Helper_Regression
     {
         private static Dictionary<Pawn, AgeStageInfo> cachedMentalAgeStages = new Dictionary<Pawn, AgeStageInfo>();
-        public static int getAgeStageMental(this Pawn pawn, bool force = false)
+        public static float getAgeStageMental(this Pawn pawn, bool force = false)
         {
-            if (!cachedMentalAgeStages.TryGetValue(pawn, out var value) || force)
+            if (!cachedMentalAgeStages.TryGetValue(pawn, out var value) || (value.lastCheckTick + 60) < Find.TickManager.TicksGame || force)
             {
                 refreshAgeStageMentalCache(pawn);
                 cachedMentalAgeStages.TryGetValue(pawn, out value);
@@ -24,22 +25,26 @@ namespace ZealousInnocence
 
             return value.cachedAgeStage;
         }
+        public static int getAgeStageMentalInt(this Pawn pawn, bool force = false)
+        {
+            return Mathf.FloorToInt(getAgeStageMental(pawn,force));
+        }
         private static void refreshAgeStageMentalCache(Pawn pawn)
         {
             Dictionary<Pawn, AgeStageInfo> dictionary = cachedMentalAgeStages;
             AgeStageInfo obj = new AgeStageInfo
             {
-                cachedAgeStage = getAgeStageMental(pawn),
+                cachedAgeStage = fetchAgeStageMental(pawn),
                 lastCheckTick = Find.TickManager.TicksGame
             };
             dictionary[pawn] = obj;
         }
 
-        public static int getAgeStageMental(Pawn pawn)
+        private static float fetchAgeStageMental(Pawn pawn)
         {
             if (pawn == null)
             {
-                return 14;
+                return 14f;
             }
 
             foreach (var curr in pawn.health.hediffSet.hediffs)
@@ -56,12 +61,12 @@ namespace ZealousInnocence
                 }
             }
             var hediff = Hediff_RegressionDamageMental.HediffByPawn(pawn);
-            if (hediff != null) return hediff.LastMentalYears;
+            if (hediff != null && hediff.LastMentalYears > 0f) return hediff.LastMentalYears;
 
             var hediff2 = Hediff_RegressionDamage.HediffByPawn(pawn);
-            if (hediff2 != null) return hediff2.BaseAgeYearInt;
+            if (hediff2 != null) return hediff2.BaseAgeYearFloat;
 
-            return pawn.ageTracker.AgeBiologicalYears;
+            return pawn.ageTracker.AgeBiologicalYearsFloat;
         }
 
         public static void refreshAllAgeStageCaches(this Pawn pawn)
@@ -69,15 +74,15 @@ namespace ZealousInnocence
             getAgeStagePhysical(pawn, true);
             getAgeStageMental(pawn, true);
         }
-        public static int getAgeStagePhysicalMentalMin(this Pawn pawn, bool force = false)
+        public static float getAgeStagePhysicalMentalMin(this Pawn pawn, bool force = false)
         {
-            return Math.Min(getAgeStagePhysical(pawn, force), getAgeStageMental(pawn, force));
+            return Mathf.Min(getAgeStagePhysical(pawn, force), getAgeStageMental(pawn, force));
         }
 
         private static Dictionary<Pawn, AgeStageInfo> cachedPhysicalAgeStages = new Dictionary<Pawn, AgeStageInfo>();
-        public static int getAgeStagePhysical(this Pawn pawn, bool force = false)
+        public static float getAgeStagePhysical(this Pawn pawn, bool force = false)
         {
-            if (!cachedPhysicalAgeStages.TryGetValue(pawn, out var value) || force)
+            if (!cachedPhysicalAgeStages.TryGetValue(pawn, out var value) || (value.lastCheckTick + 60) < Find.TickManager.TicksGame || force)
             {
                 refreshAgeStagePhysicalCache(pawn);
                 cachedPhysicalAgeStages.TryGetValue(pawn, out value);
@@ -91,28 +96,27 @@ namespace ZealousInnocence
             Dictionary<Pawn, AgeStageInfo> dictionary = cachedPhysicalAgeStages;
             AgeStageInfo obj = new AgeStageInfo
             {
-                cachedAgeStage = getAgeStagePhysicalInt(pawn),
+                cachedAgeStage = fetchAgeStagePhysical(pawn),
                 lastCheckTick = Find.TickManager.TicksGame
             };
             dictionary[pawn] = obj;
         }
 
-        private static int getAgeStagePhysicalInt(Pawn pawn)
+        private static float fetchAgeStagePhysical(Pawn pawn)
         {
             if (pawn == null)
             {
-                return 14;
+                return 14f;
             }
 
-            return pawn.ageTracker.AgeBiologicalYears;
+            return pawn.ageTracker.AgeBiologicalYearsFloat;
         }
         public static bool ShouldHaveLearning(this Pawn p)
         {
             if (p?.health == null) return false;
             if (!p.RaceProps.Humanlike) return false;
             if (ShouldHavePlaying(p)) return false;
-            var age = getAgeStageMental(p);
-            return age >= 3 && age < 13;
+            return isChildMental(p);
         }
         public static bool ShouldHavePlaying(this Pawn p)
         {
@@ -123,7 +127,7 @@ namespace ZealousInnocence
         }
         public static bool canChangeDiaperOrUnderwear(Pawn p)
         {
-            if (p == null || p.Dead || !p.Spawned) return false;
+            if (p == null || p.Dead) return false;
             if (!p.RaceProps.Humanlike) return false;
 
             if (p.Downed) return false;
@@ -179,25 +183,126 @@ namespace ZealousInnocence
         public static bool isAdultMental(this Pawn pawn, bool forceRecheck = false)
         {
             if (!pawn.IsColonist) return true;
-            return getAgeStageMental(pawn, forceRecheck) >= 13;
+            return isAdultAtAge(pawn, getAgeStageMental(pawn, forceRecheck));
         }
         public static bool isChildMental(this Pawn pawn, bool forceRecheck = false)
         {
             if (!pawn.IsColonist) return false;
-            return getAgeStageMental(pawn, forceRecheck) < 13;
+            return isChildAtAge(pawn, getAgeStageMental(pawn, forceRecheck));
         }
         public static bool isToddlerMental(this Pawn pawn, bool forceRecheck = false)
         {
-            return getAgeStageMental(pawn, forceRecheck) < 6;
+            if (!pawn.IsColonist) return false;
+            return isToddlerAtAge(pawn, getAgeStageMental(pawn, forceRecheck));
+        }
+        public static bool isBabyMental(this Pawn pawn, bool forceRecheck = false)
+        {
+            if (!pawn.IsColonist) return false;
+            return isBabyAtAge(pawn, getAgeStageMental(pawn, forceRecheck));
+        }
+
+        public static bool isAdultPhysical(this Pawn pawn, bool forceRecheck = false)
+        {
+            if (!pawn.IsColonist) return false;
+            return isAdultAtAge(pawn, getAgeStagePhysical(pawn, forceRecheck));
+        }
+        public static bool isChildPhysical(this Pawn pawn, bool forceRecheck = false)
+        {
+            if (!pawn.IsColonist) return false;
+            return isChildAtAge(pawn, getAgeStagePhysical(pawn, forceRecheck));
         }
         public static bool isToddlerPhysical(this Pawn pawn, bool forceRecheck = false)
         {
-            return getAgeStagePhysical(pawn, forceRecheck) < 6;
+            return isToddlerAtAge(pawn, getAgeStagePhysical(pawn, forceRecheck));
+        }
+        public static bool isBabyPhysical(this Pawn pawn, bool forceRecheck = false)
+        {
+            if (!pawn.IsColonist) return false;
+            return isBabyAtAge(pawn, getAgeStagePhysical(pawn, forceRecheck));
+        }
+        public static bool isOld(this Pawn pawn, bool forceRecheck = false)
+        {
+            if (!pawn.IsColonist) return false;
+            return isOldAtAge(pawn, getAgeStagePhysical(pawn, forceRecheck));
+        }
+        public static bool isTeen(this Pawn pawn, bool forceRecheck = false)
+        {
+            if (!pawn.IsColonist) return false;
+            return isTeenAtAge(pawn, getAgeStagePhysical(pawn, forceRecheck));
+        }
+
+        public static bool isAdultMentalOrPhysical(this Pawn pawn, bool forceRecheck = false)
+        {
+            return isAdultMental(pawn, forceRecheck) || isAdultPhysical(pawn, forceRecheck);
+        }
+        public static bool isChildMentalOrPhysical(this Pawn pawn, bool forceRecheck = false)
+        {
+            return isChildMental(pawn, forceRecheck) || isChildPhysical(pawn, forceRecheck);
         }
         public static bool isToddlerMentalOrPhysical(this Pawn pawn, bool forceRecheck = false)
         {
             return isToddlerMental(pawn, forceRecheck) || isToddlerPhysical(pawn, forceRecheck);
         }
+        public static bool isBabyMentalOrPhysical(this Pawn pawn, bool forceRecheck = false)
+        {
+            return isBabyMental(pawn, forceRecheck) || isBabyPhysical(pawn, forceRecheck);
+        }
+
+        public static float toddlerMinAge(this Pawn pawn)
+        {
+            return ChildBands.Get(pawn).toddler / GenDate.TicksPerYear;
+        }
+        public static float childMinAge(this Pawn pawn)
+        {
+            return ChildBands.Get(pawn).core / GenDate.TicksPerYear;
+        }
+        public static float adultMinAge(this Pawn pawn)
+        {
+            return ChildBands.Get(pawn).edge / GenDate.TicksPerYear;
+        }
+        public static float teenMaxAge(this Pawn pawn)
+        {
+            float adultStart = pawn.adultMinAge();
+            float lifeExp = pawn.RaceProps.lifeExpectancy;
+
+            // A human (~100y) has adultStart ≈14; teen window = 14–17 → 3y ≈3% of life
+            float teenSpan = lifeExp * 0.03f;      // ~3% of lifespan as “teen”
+            float teenEnd = adultStart + teenSpan;
+
+            return Mathf.FloorToInt(teenEnd);
+        }
+        public static float oldMinAge(this Pawn pawn)
+        {
+            return Mathf.FloorToInt(pawn.RaceProps.lifeExpectancy * 0.65f);
+        }
+       
+        public static bool isBabyAtAge(this Pawn pawn, float ageYears)
+        {
+            return ageYears < toddlerMinAge(pawn);
+        }
+        public static bool isToddlerAtAge(this Pawn pawn, float ageYears)
+        {
+            return ageYears >= toddlerMinAge(pawn) && ageYears < childMinAge(pawn);
+        }
+        public static bool isChildAtAge(this Pawn pawn, float ageYears)
+        {
+            return ageYears >= childMinAge(pawn) && ageYears < adultMinAge(pawn);
+        }
+        public static bool isAdultAtAge(this Pawn pawn, float ageYears)
+        {
+            return ageYears >= adultMinAge(pawn);
+        }
+        public static bool isTeenAtAge(this Pawn pawn, float ageYears)
+        {
+            return ageYears <= teenMaxAge(pawn) && isAdultAtAge(pawn, ageYears) && !isOldAtAge(pawn,ageYears);
+        }
+        public static bool isOldAtAge(this Pawn pawn, float ageYears)
+        {
+            return ageYears >= oldMinAge(pawn) && isAdultAtAge(pawn,ageYears);
+        }
+
+
+
         public static void healPawnBrain(Pawn pawn)
         {
             for (int num = pawn.health.hediffSet.hediffs.Count - 1; num >= 0; num--)
@@ -520,7 +625,7 @@ for (int num4 = pawn.health.hediffSet.hediffs.Count - 1; num4 >= 0; num4--)
 
     public class AgeStageInfo
     {
-        public int cachedAgeStage;
+        public float cachedAgeStage;
 
         public int lastCheckTick;
     }

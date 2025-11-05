@@ -12,7 +12,12 @@
 		<major>false</major>
 		<freezeWhileSleeping>false</freezeWhileSleeping>
 		<freezeInMentalState>false</freezeInMentalState>
-		<showForCaravanMembers>true</showForCaravanMembers>  
+		<showForCaravanMembers>true</showForCaravanMembers>
+		<developmentalStageFilter>
+			<li>Baby</li>
+			<li>Child</li>
+			<li>Adult</li>
+		</developmentalStageFilter>
 		<fallPerDay>0</fallPerDay>
 	</NeedDef>
 </Defs>

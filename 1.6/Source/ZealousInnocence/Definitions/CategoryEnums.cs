@@ -19,6 +19,7 @@ namespace ZealousInnocence
         Neutral,
         Liked,
         Disliked,
-        NonAdult
+        Child,
+        Toddler
     }
 }

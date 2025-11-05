@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 using static RimWorld.PsychicRitualRoleDef;
@@ -138,26 +139,26 @@ namespace ZealousInnocence
             */
 
             if(pawn == null || pawn.ageTracker == null) return false;
-            int age = pawn.ageTracker.AgeBiologicalYears;
+            float age = pawn.ageTracker.AgeBiologicalYearsFloat;
             if (mentalStat && physicalStat)
             {
                 age = Helper_Regression.getAgeStagePhysicalMentalMin(pawn);
             }
             else if (mentalStat)
             {
-                age = Helper_Regression.getAgeStageMental(pawn);
+                age = Helper_Regression.getAgeStageMentalInt(pawn);
             }
             else if(physicalStat)
             {
                 age = Helper_Regression.getAgeStagePhysical(pawn);
             }
 
-            if(age < 3)
+            // Babies and toddlers share the baby age stage. Toddler often handled seperatly by mod "Toddlers"
+            if(pawn.isBabyAtAge(age) || pawn.isToddlerAtAge(age))
             {
-                //DevelopmentalStage.Baby
                 return allowBaby;
             }
-            else if(age >= 3 && age < 13)
+            else if(pawn.isChildAtAge(age))
             {
                 return allowChild;
             }
@@ -408,16 +409,6 @@ namespace ZealousInnocence
         }
     }
 
-    [HarmonyPatch(typeof(Pawn_NeedsTracker), "ShouldHaveNeed")]
-    public class Patch_ShouldHaveNeed
-    {
-        // Access private field "pawn" from Pawn_NeedsTracker
-        private static readonly AccessTools.FieldRef<Pawn_NeedsTracker, Pawn> pawnRef =
-            AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>("pawn");
-
-
-        
-    }
 }
 
 

@@ -26,7 +26,7 @@
       <li>Onesies</li>
     </thingCategories>
 		<apparel>
-			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
+			<developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
       <bodyPartGroups>
         <li>Neck</li>
         <li>Shoulders</li>
@@ -121,7 +121,7 @@
     <costStuffCount>70</costStuffCount>
     <generateCommonality>0.3</generateCommonality>
     <statBases>
-      <DiaperSupport>0.75</DiaperSupport>
+      <DiaperSupport>1.0</DiaperSupport>
       <MaxHitPoints>100</MaxHitPoints>
       <WorkToMake>4000</WorkToMake>
       <Mass>1</Mass>

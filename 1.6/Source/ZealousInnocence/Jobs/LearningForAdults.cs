@@ -91,7 +91,7 @@ namespace ZealousInnocence
             if (___pawn == null || !___pawn.RaceProps.Humanlike) return;
             if (___pawn.Deathresting) return;
 
-            if (___pawn.ShouldHaveLearning())
+            if (!___pawn.ShouldHaveLearning())
             {
                 __instance.CurLevel = 0.5f;
                 __result = true;
@@ -162,7 +162,7 @@ namespace ZealousInnocence
             // If vanilla already gave a priority, leave it.
             if (__result > 0f) return;
 
-            // Only spoof when all other gates pass, and our hediff says "mentally childlike"
+            // In case all of the gates are passed and learning should be active
             if (PassesOtherGates(pawn) && pawn.ShouldHaveLearning())
             {
                 __result = 9.1f; // vanilla value

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-  <StatDef>
+  <!--<StatDef>
     <defName>MentalAge</defName>
     <label>mental age</label>
     <description>This value, a combination of physical age, personal preference, development and regression effects controls the behaviour of this pawn in multiple situations.\n\nA 40 year old pawn can still behave like a 3 year old toddler, while a 12 year old can be very grown up for their age and behave like a 16 year old for example.</description>
@@ -14,7 +14,6 @@
     <scenarioRandomizable>false</scenarioRandomizable>
     <displayPriorityInCategory>1900</displayPriorityInCategory>
 		<parts>
-			<!-- The maximum impact can be the absolut value of Absorbency (the limit is a doubeling) -->
 			<li Class="ZealousInnocence.StatPart_PhysicalAge">
         <minConciousness>0.25</minConciousness>
       </li>
@@ -48,5 +47,5 @@
 		<formatString>{0} years</formatString>
     <scenarioRandomizable>false</scenarioRandomizable>
     <displayPriorityInCategory>1900</displayPriorityInCategory>
-  </StatDef>
+  </StatDef>-->
 </Defs>

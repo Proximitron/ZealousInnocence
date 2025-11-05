@@ -9,7 +9,7 @@ using Verse;
 using Verse.AI;
 using static UnityEngine.GridBrushBase;
 
-namespace ZealousInnocence.Jobs
+namespace ZealousInnocence
 {
     public static class Patch_BottleFeedBaby_HandleDispenser
     {
