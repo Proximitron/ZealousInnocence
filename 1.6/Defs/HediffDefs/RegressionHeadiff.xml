@@ -255,7 +255,7 @@
 				<minSeverity>0.01</minSeverity>
       </li>
       <li>
-				<minSeverity>1.21</minSeverity>
+				<minSeverity>1.201</minSeverity>
         <capMods>
 					<li>
 						<capacity>Moving</capacity>

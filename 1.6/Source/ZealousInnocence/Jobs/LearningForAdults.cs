@@ -97,6 +97,7 @@ namespace ZealousInnocence
             }
         }
     }
+
     public static class Patch_FailOnChildLearningConditions
     {
         public static bool Prefix(object __0, ref object __result)
@@ -108,13 +109,14 @@ namespace ZealousInnocence
                     var actor = endable.GetActor();
                     if (actor == null) return JobCondition.Incompletable;
 
-                    if (!actor.ShouldHaveLearning() || PawnUtility.WillSoonHaveBasicNeed(actor, -0.05f))
+                    // !actor.ShouldHaveLearning() // We simply let it run if it came to it
+                    if (PawnUtility.WillSoonHaveBasicNeed(actor, -0.05f))
                         return JobCondition.Incompletable;
 
                     return JobCondition.Ongoing;
                 });
 
-                // return the same T instance
+
                 __result = __0;
                 return false; // skip original
             }
@@ -180,7 +182,7 @@ namespace ZealousInnocence
             // Quick guardrails
             if (__instance == null || __instance.DestroyedOrNull()) return;
 
-            // Only add if our criteria say so AND vanilla didn’t already add it
+            // Only add if criteria say so AND vanilla didn’t already add it
             if (!ShouldShow(__instance)) return;
 
             // Materialize once to avoid re-enumeration surprises

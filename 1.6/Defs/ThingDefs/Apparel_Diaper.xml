@@ -14,7 +14,7 @@
 			<layers>
 				<li>Underwear</li>
 			</layers>
-			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
+			<developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
 			<canBeGeneratedToSatisfyWarmth>true</canBeGeneratedToSatisfyWarmth>
       <canBeGeneratedToSatisfyToxicEnvironmentResistance>false</canBeGeneratedToSatisfyToxicEnvironmentResistance>
 			<legsNakedUnlessCoveredBySomethingElse>true</legsNakedUnlessCoveredBySomethingElse>
@@ -301,7 +301,8 @@
 			<layers>
 				<li>Underwear</li>
 			</layers>
-			<developmentalStageFilter>Child, Adult</developmentalStageFilter>
+
+			<developmentalStageFilter Inherit="false">Baby</developmentalStageFilter>
 			<canBeGeneratedToSatisfyWarmth>true</canBeGeneratedToSatisfyWarmth>
       <canBeGeneratedToSatisfyToxicEnvironmentResistance>false</canBeGeneratedToSatisfyToxicEnvironmentResistance>
 			<legsNakedUnlessCoveredBySomethingElse>true</legsNakedUnlessCoveredBySomethingElse>

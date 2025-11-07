@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using Toddlers;
 using UnityEngine;
 using UnityEngine.UI;
 using Verse;
@@ -38,6 +39,7 @@ namespace ZealousInnocence
     [StaticConstructorOnStartup]
     public class ZealousInnocence : Mod
     {
+        int PrefixGenericCount = 0;
         int PrefixCount = 0;
         int PostfixCount = 0;
         ZealousInnocenceSettings settings;
@@ -253,26 +255,8 @@ namespace ZealousInnocence
             );
 
             
-            var openGen = typeof(ToilFailConditions)
-    .GetMethods(BindingFlags.Public | BindingFlags.Static)
-    .First(m => m.Name == "FailOnChildLearningConditions"
-             && m.IsGenericMethodDefinition
-             && m.GetGenericArguments().Length == 1
-             && m.GetParameters().Length == 1);
+            Patch_FailOnChildLearningConditions_ForAllJobDrivers();
 
-            Type[] targets = { typeof(JobDriver_Floordrawing), typeof(JobDriver_Workwatching), typeof(JobDriver_Lessontaking), typeof(JobDriver_Skydreaming), typeof(JobDriver_Radiotalking), typeof(JobDriver_NatureRunning), typeof(JobDriver_Reading) };
-
-            foreach (var t in targets)
-            {
-                var constructed = openGen.MakeGenericMethod(t);
-
-                patchFunctionPrefix(
-                    original: constructed,
-                    prefix: new HarmonyMethod(typeof(Patch_FailOnChildLearningConditions).GetMethod(nameof(Patch_FailOnChildLearningConditions.Prefix),
-                    BindingFlags.Static | BindingFlags.Public)),
-                    info: "ToilFailConditions.FailOnChildLearningConditions"
-                );
-            }
 
             var LearningDrawOnGui = AccessTools.Method(
                 typeof(Need_Learning),
@@ -345,7 +329,7 @@ namespace ZealousInnocence
                         info: "ToddlerUtility.PercentGrowth"
                     );
                 }
-                else Log.Warning($"[ZI] Bind failed for ToddlerUtility.PercentGrowth");
+                else Log.Warning($"[ZI] Bind failed for ToddlerUtility.PercentGrowth");    
             }
 
             if (!ModChecker.ForeverYoungActive())
@@ -357,7 +341,70 @@ namespace ZealousInnocence
                     info: "Precept_Role.RequirementsMet"
                 );
             }
-            Log.Message($"[ZI]ZealousInnocence executed {PostfixCount+PrefixCount} harmony patches. {PrefixCount} Prefix, {PostfixCount} Postfix. Startup completed.");
+            Log.Message($"[ZI]ZealousInnocence executed {PostfixCount+PrefixCount+PrefixGenericCount} harmony patches. {PrefixCount} Prefix, {PostfixCount} Postfix, {PrefixGenericCount} Prefix Generics. Startup completed.");
+        }
+        private void Patch_FailOnChildLearningConditions_ForAllJobDrivers()
+        {
+            // 1) Get the OPEN generic definition: FailOnChildLearningConditions<T>(this Toil toil)
+            var openGen = typeof(ToilFailConditions)
+    .GetMethods(BindingFlags.Public | BindingFlags.Static)
+    .First(m => m.Name == "FailOnChildLearningConditions"
+             && m.IsGenericMethodDefinition
+             && m.GetGenericArguments().Length == 1
+             && m.GetParameters().Length == 1);
+
+            if (openGen == null)
+            {
+                Log.Error("[ZI] Could not locate ToilFailConditions.FailOnChildLearningConditions<T>(Toil).");
+                return;
+            }
+
+            // 2) Prepare your prefix HarmonyMethod
+            var prefixMI = typeof(Patch_FailOnChildLearningConditions).GetMethod(nameof(Patch_FailOnChildLearningConditions.Prefix), BindingFlags.Static | BindingFlags.Public);
+            if (prefixMI == null)
+            {
+                Log.Error("[ZI] Prefix method not found: Patch_FailOnChildLearningConditions.Prefix");
+                return;
+            }
+            var prefixHM = new HarmonyMethod(prefixMI);
+
+            // 3) Enumerate all concrete, non-generic JobDriver subclasses across loaded assemblies
+            IEnumerable<Type> jobDriverTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a =>
+                {
+                    try { return a.GetTypes(); }
+                    catch (ReflectionTypeLoadException e) { return e.Types.Where(t => t != null); }
+                })
+                .Where(t => typeof(JobDriver).IsAssignableFrom(t)
+                            && !t.IsAbstract
+                            && !t.ContainsGenericParameters)
+                .Distinct();
+            /*
+            // RimWorld itself has only the following drivers that cause problem, but mods can add a lot of trouble
+            Type[] jobDriverTypes = {
+                typeof(JobDriver_Floordrawing), typeof(JobDriver_Workwatching), typeof(JobDriver_Lessontaking), typeof(JobDriver_Skydreaming), typeof(JobDriver_Radiotalking), typeof(JobDriver_NatureRunning), typeof(JobDriver_Reading)
+            };*/
+
+            // 4) For each JobDriver<T>, construct the closed generic and patch it
+            foreach (var jdType in jobDriverTypes)
+            {
+                MethodInfo constructed;
+                try
+                {
+                    constructed = openGen.MakeGenericMethod(jdType);
+                }
+                catch
+                {
+                    // Skip odd types Harmony/CLR won't accept
+                    continue;
+                }
+
+                patchFunctionPrefixGeneric(
+                    original: constructed,
+                    prefix: prefixMI,
+                    info: "ToilFailConditions.FailOnChildLearningConditions<{jdType.FullName}>"
+                );
+            }
         }
         private void patchFunctionPostfix(MethodInfo original, HarmonyMethod postfix, string info)
         {
@@ -372,6 +419,16 @@ namespace ZealousInnocence
         private void patchFunctionPrefix(MethodInfo original, HarmonyMethod prefix, string info)
         {
             PrefixCount++;
+            bool checkResult = DoCheckOnHarmonyMethode(original, info, true, false);
+            harmony.Patch(
+                original: original,
+                prefix: prefix
+            );
+            if (settings.debuggingHarmonyPatching || checkResult) Log.Message($"[ZI]Harmony patching: Prefix {info}");
+        }
+        private void patchFunctionPrefixGeneric(MethodInfo original, HarmonyMethod prefix, string info)
+        {
+            PrefixGenericCount++;
             bool checkResult = DoCheckOnHarmonyMethode(original, info, true, false);
             harmony.Patch(
                 original: original,
