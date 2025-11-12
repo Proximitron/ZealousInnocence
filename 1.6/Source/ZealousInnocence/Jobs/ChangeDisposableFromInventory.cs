@@ -79,11 +79,11 @@ namespace ZealousInnocence
                 // Find a fresh spare in INVENTORY
                 if(Spare == null)
                 {
-                    Thing spare = pawn?.inventory?.innerContainer?.FirstOrDefault(t => t is Apparel_Disposable_Diaper && t.def == worn.def);
+                    Thing FoundSpare = pawn?.inventory?.innerContainer?.FirstOrDefault(t => t is Apparel_Disposable_Diaper && t.def == worn.def);
 
-                    if (spare == null) { EndJobWith(JobCondition.Incompletable); return; }
+                    if (FoundSpare == null) { EndJobWith(JobCondition.Incompletable); return; }
 
-                    job.SetTarget(TargetIndex.A, spare);
+                    job.SetTarget(TargetIndex.A, FoundSpare);
                 }
 
             };
@@ -121,7 +121,7 @@ namespace ZealousInnocence
 
                 if (Spare != null)
                 {
-                    var SpareSingle = MoveFromInventoryToHands(pawn, Spare);
+                    var SpareSingle = pawn.MoveSingleFromInventoryToHands(Spare);
                     if(SpareSingle == null)
                     {
                         EndJobWith(JobCondition.Incompletable);
@@ -169,35 +169,6 @@ namespace ZealousInnocence
             wearNewDiaper.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return wearNewDiaper;
 
-        }
-        Thing MoveFromInventoryToHands(Pawn pawn, Thing spare)
-        {
-            if (pawn?.carryTracker == null || pawn?.inventory?.innerContainer == null || spare == null)
-                return null;
-
-            Thing toCarry = spare;
-
-            if (spare.stackCount > 1)
-            {
-                // Split off the exact amount; the split has no owner container
-                toCarry = spare.SplitOff(1);
-            }
-            else
-            {
-                // Remove the single stack from its current ThingOwner (inventory)
-                spare.holdingOwner?.Remove(spare);
-            }
-
-            if (!pawn.carryTracker.TryStartCarry(toCarry))
-            {
-                // If carrying failed, try to return it to inventory (best-effort)
-                if (toCarry.holdingOwner == null)
-                {
-                    pawn.inventory.innerContainer.TryAdd(toCarry, canMergeWithExistingStacks: true);
-                }
-                return null;
-            }
-            return toCarry;
         }
     }
 

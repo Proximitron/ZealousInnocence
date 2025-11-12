@@ -9,11 +9,11 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using Toddlers;
 using UnityEngine;
 using UnityEngine.UI;
 using Verse;
 using Verse.AI;
+using Verse.Grammar;
 
 namespace ZealousInnocence
 {
@@ -24,15 +24,7 @@ namespace ZealousInnocence
         {
             if (!MP.enabled) return;
 
-            // This is where the magic happens and your attributes
-            // auto register, similar to Harmony's PatchAll.
             MP.RegisterAll();
-
-            // You can choose to not auto register and do it manually
-            // with the MP.Register* methods.
-
-            // Use MP.IsInMultiplayer to act upon it in other places
-            // user can have it enabled and not be in session
         }
     }
 
@@ -250,11 +242,16 @@ namespace ZealousInnocence
             );
             patchFunctionPrefix(
                 original: AccessTools.Method(typeof(InteractionWorker_RomanceAttempt), nameof(InteractionWorker_RomanceAttempt.SuccessChance)),
-                prefix: new HarmonyMethod(typeof(Patch_InteractionWorker_RomanceAttempt_SuccessChance), nameof(Patch_InteractionWorker_RomanceAttempt_SuccessChance.Prefix)),
+                prefix: new HarmonyMethod(typeof(Patch_InteractionWorker_RomanceAttempt), nameof(Patch_InteractionWorker_RomanceAttempt.SuccessChance_Prefix)),
                 info: "InteractionWorker_RomanceAttempt.SuccessChance"
             );
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(InteractionWorker_RomanceAttempt), nameof(InteractionWorker_RomanceAttempt.RandomSelectionWeight)),
+                prefix: new HarmonyMethod(typeof(Patch_InteractionWorker_RomanceAttempt), nameof(Patch_InteractionWorker_RomanceAttempt.RandomSelectionWeight_Prefix)),
+                info: "InteractionWorker_RomanceAttempt.RandomSelectionWeight"
+            );
 
-            
+
             Patch_FailOnChildLearningConditions_ForAllJobDrivers();
 
 
@@ -302,9 +299,16 @@ namespace ZealousInnocence
             );
             // Functions until this are all related to "BabyInteractions.cs"
 
+
+            patchFunctionPostfix(
+                original: AccessTools.Method(typeof(GrammarUtility), nameof(GrammarUtility.RulesForPawn), new System.Type[] { typeof(string), typeof(Pawn), typeof(Dictionary<string, string>), typeof(bool), typeof(bool) }),
+                postfix: new HarmonyMethod(typeof(Patch_GrammarUtility_RulesForPawn), nameof(Patch_GrammarUtility_RulesForPawn.Postfix)),
+                info: "GrammarUtility.RulesForPawn"
+            );
+
             ModChecker.ZealousInnocenceActive();
 
-            if (ModChecker.ToddlersActive())
+            if (Helper_Toddlers.ToddlersLoaded)
             {
                 var isToddler = AccessTools.Method(AccessTools.TypeByName("Toddlers.ToddlerUtility")
                                ?? AccessTools.TypeByName("ToddlerUtility"),
@@ -519,7 +523,7 @@ namespace ZealousInnocence
                     return true;
                 }*/
 
-                if (!Hediff_RegressionDamageMental.CanHaveRole(p)) return true;
+                if (!Hediff_MentalRegression.CanHaveRole(p)) return true;
 
                 foreach (RoleRequirement roleRequirement in __instance.def.roleRequirements)
                 {

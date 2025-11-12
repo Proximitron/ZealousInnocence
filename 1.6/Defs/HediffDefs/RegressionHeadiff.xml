@@ -237,9 +237,9 @@
 	<!-- END This was deprecated and is removed/replaced at game start -->
 	
 	<HediffDef>
-		<defName>RegressionDamageMental</defName>
+		<defName>RegressionMental</defName>
 		<description>This person is mentally regressed (made younger) as a result of received a dose of regressive nanites found only in the fountain of youth. This will make them act younger than they physically are.  While a full dose will heal the brain, an overdose is even able to revert death.</description>
-		<hediffClass>ZealousInnocence.Hediff_RegressionDamageMental</hediffClass>
+		<hediffClass>ZealousInnocence.Hediff_MentalRegression</hediffClass>
 		<label>mental regression</label>
 		<defaultLabelColor>(0.9, 1.0, 0.35)</defaultLabelColor>
 		<everCurableByItem>false</everCurableByItem>
@@ -283,9 +283,9 @@
 	</HediffDef>
 	
 	<HediffDef>
-		<defName>RegressionDamage</defName>
+		<defName>RegressionPhysical</defName>
 		<description>This person is physically regressed (made younger) as a result of received a dose of regressive nanites found only in the fountain of youth. Depending on severity this pawn will be affected in multiple ways, usually temporary. While a full dose will heal physical injuries, an overdose is even able to revert death</description>
-		<hediffClass>ZealousInnocence.Hediff_RegressionDamage</hediffClass>
+		<hediffClass>ZealousInnocence.Hediff_PhysicalRegression</hediffClass>
 		<label>physical regression</label>
 		<defaultLabelColor>(0.9, 1.0, 0.35)</defaultLabelColor>
 		<everCurableByItem>false</everCurableByItem>
@@ -299,6 +299,185 @@
 		<initialSeverity>0.01</initialSeverity>
 		<minSeverity>0</minSeverity>
 		<maxSeverity>1.3</maxSeverity>
-		<tendable>false</tendable>
+		<tendable>false</tendable>		
 	</HediffDef>
+	
+	
+	
+
+	<HediffDef>
+		<defName>RegressionDamage_FoyWater_Injected</defName>
+		<label>FOY water (injected)</label>
+		<description>Got injected with refined nanites from the fountain of youth. Effects will be very long term.</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>0.01</decayPerDayBase>
+
+				<powerMental>1</powerMental>
+				<powerPhysical>1</powerPhysical>
+
+				<!-- Multipliers: 1 means neutral; non-zero is required to participate -->
+				<multiplierMental>0.5</multiplierMental>
+				<multiplierPhysical>1</multiplierPhysical>
+
+				<maxContributionMental>9999</maxContributionMental>
+				<maxContributionPhysical>9999</maxContributionPhysical>
+				<totalCapMental>0</totalCapMental>
+				<totalCapPhysical>0</totalCapPhysical>
+
+				<stacking>Refresh</stacking>
+			</li>
+		</comps>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>RegressionDamage_FoyWater_Ingested</defName>
+		<label>FOY water (ingested)</label>
+		<description>Swallowed water from the fountain of youth. It will take a little while to get it out of their system.</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>0.1</decayPerDayBase>
+
+				<powerMental>1</powerMental>
+				<powerPhysical>1</powerPhysical>
+
+				<!-- Multipliers: 1 means neutral; non-zero is required to participate -->
+				<multiplierMental>0.5</multiplierMental>
+				<multiplierPhysical>1</multiplierPhysical>
+
+				<maxContributionMental>9999</maxContributionMental>
+				<maxContributionPhysical>9999</maxContributionPhysical>
+				<totalCapMental>0</totalCapMental>
+				<totalCapPhysical>0</totalCapPhysical>
+
+				<stacking>Refresh</stacking>
+			</li>
+		</comps>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>RegressionDamage_FoyWater_SkinContact</defName>
+		<label>FOY water (contact)</label>
+		<description>Touched water from the fountain of youth. Most effects will be short term.</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>1</decayPerDayBase>
+
+				<powerMental>1</powerMental>
+				<powerPhysical>1</powerPhysical>
+
+				<!-- Multipliers: 1 means neutral; non-zero is required to participate -->
+				<multiplierMental>1</multiplierMental>
+				<multiplierPhysical>1</multiplierPhysical>
+
+				<maxContributionMental>9999</maxContributionMental>
+				<maxContributionPhysical>9999</maxContributionPhysical>
+				<totalCapMental>0</totalCapMental>
+				<totalCapPhysical>0</totalCapPhysical>
+
+				<stacking>Refresh</stacking>
+			</li>
+		</comps>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>RegressionDamage_RayGression</defName>
+		<label>ray-gression damage</label>
+		<description>Got hit by a ray-gression laser and probably has trouble remembering... anything. Effects will probably be short term.</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>1</decayPerDayBase>
+
+				<powerMental>1</powerMental>
+				<powerPhysical>0.25</powerPhysical>
+
+				<!-- Multipliers: 1 means neutral; non-zero is required to participate -->
+				<multiplierMental>1</multiplierMental>
+				<multiplierPhysical>0</multiplierPhysical>
+
+				<maxContributionMental>9999</maxContributionMental>
+				<maxContributionPhysical>0</maxContributionPhysical>
+				<totalCapMental>0</totalCapMental>
+				<totalCapPhysical>0</totalCapPhysical>
+
+				<stacking>Refresh</stacking>
+			</li>
+		</comps>
+	</HediffDef>
+	
+	
+	<HediffDef>
+		<defName>MentalRegressionDamage</defName>
+		<label>? mental regression</label>
+		<description>Got affected by mental regression from an unknown source. Maybe some stray nanites, maybe some occult ritual...</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>0.02</decayPerDayBase>
+
+				<!-- Domain powers: only mental contributes -->
+				<powerMental>1</powerMental>
+				<powerPhysical>0</powerPhysical>
+
+				<!-- Multipliers: 1 means neutral; non-zero is required to participate -->
+				<multiplierMental>1</multiplierMental>
+				<multiplierPhysical>0</multiplierPhysical>
+
+				<maxContributionMental>9999</maxContributionMental>
+				<maxContributionPhysical>0</maxContributionPhysical>
+				<totalCapMental>0</totalCapMental>
+				<totalCapPhysical>0</totalCapPhysical>
+
+				<stacking>Refresh</stacking>
+			</li>
+		</comps>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>PhysicalRegressionDamage</defName>
+		<label>? physical regression</label>
+		<description>Got affected by physical regression from an unknown source. Maybe some stray nanites, maybe some occult ritual...</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>0.02</decayPerDayBase>
+
+				<!-- Domain powers: only physical contributes -->
+				<powerMental>0</powerMental>
+				<powerPhysical>1</powerPhysical>
+
+				<!-- Multipliers: 1 means neutral; non-zero is required to participate -->
+				<multiplierMental>0</multiplierMental>
+				<multiplierPhysical>1</multiplierPhysical>
+
+				<maxContributionMental>0</maxContributionMental>
+				<maxContributionPhysical>9999</maxContributionPhysical>
+				<totalCapMental>0</totalCapMental>
+				<totalCapPhysical>0</totalCapPhysical>
+
+				<stacking>Refresh</stacking>
+			</li>
+		</comps>
+	</HediffDef>
+	
+	
+	<HediffDef>
+		<defName>RegressionDamageMental</defName>
+		<label>migrating mental regression</label>
+		<description>Old mental regression. migrating.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionDamageMental</hediffClass>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>RegressionDamage</defName>
+		<label>migrating physical regression</label>
+		<description>Old physical regression. migrating.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionDamage</hediffClass>
+	</HediffDef>
+	
+	
 </Defs>

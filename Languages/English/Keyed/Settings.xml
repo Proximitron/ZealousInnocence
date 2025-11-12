@@ -164,6 +164,10 @@
 	
 	<SettingDebugHarmony>DEBUG Harmony</SettingDebugHarmony>
   <SettingDebugHarmonyHelp>RESTART REQUIRED: Harmony patches are used to overwrite already existing behaviours. Activating this will print out a full list of harmony patches on starting RimWorld. You WILL HAVE to restart RimWorld for this to do anything.</SettingDebugHarmonyHelp>
+	
+	<SettingDebugNeeds>DEBUG Needs</SettingDebugNeeds>
+  <SettingDebugNeedsHelp>Needs like bladder, play/learn/joy or diaper have overlap with capacities. But this debugging specifically targets the adding, removing and ticking of a need and not any resulting capacity.</SettingDebugNeedsHelp>
+	
   <!-- Buttons -->
   <SettingCheckForeverYoung>Check 'ForeverYoung' active</SettingCheckForeverYoung>
   <SettingForeverYoungActive>'ForeverYoung' IS active!</SettingForeverYoungActive>

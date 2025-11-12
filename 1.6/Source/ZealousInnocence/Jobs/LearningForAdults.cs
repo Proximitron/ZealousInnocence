@@ -44,9 +44,18 @@ namespace ZealousInnocence
             return true;
         }
     }
-    public static class Patch_InteractionWorker_RomanceAttempt_SuccessChance
+    public static class Patch_InteractionWorker_RomanceAttempt
     {
-        public static bool Prefix(Pawn initiator, Pawn recipient, float baseChance, ref float __result)
+        public static bool SuccessChance_Prefix(Pawn initiator, Pawn recipient, float baseChance, ref float __result)
+        {
+            if (!initiator.isAdultInEveryWay() || !recipient.isAdultInEveryWay())
+            {
+                __result = 0f;
+                return false;
+            }
+            return true;
+        }
+        public static bool RandomSelectionWeight_Prefix(Pawn initiator, Pawn recipient, ref float __result)
         {
             if (!initiator.isAdultInEveryWay() || !recipient.isAdultInEveryWay())
             {

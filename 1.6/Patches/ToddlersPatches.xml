@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <!--<Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>cyanobot.toddlers</li>
+    </mods>
+    <match Class="PatchOperationSequence">
+      <operations>
+        <li Class="PatchOperationAdd">
+          <xpath>Defs/Toddlers.DefListDef[defName="WearableByBaby"]/whitelist</xpath>
+          <value>
+            <li>Apparel_Diaper_Flimsy</li>
+            <li>Apparel_Diaper_Night</li>
+            <li>Apparel_Diaper</li>
+            <li>Apparel_Premium_Diaper</li>
+            <li>Apparel_Diaper_Disposable</li>
+            <li>Apparel_Simplie</li>
+            <li>Apparel_Onesie</li>
+            <li>Apparel_Gunsie</li>
+          </value>
+        </li>
+      </operations>
+    </match>
+  </Operation>-->
+</Patch>

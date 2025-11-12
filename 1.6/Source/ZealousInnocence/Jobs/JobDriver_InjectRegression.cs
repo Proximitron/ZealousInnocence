@@ -84,15 +84,14 @@ namespace ZealousInnocence
 
             var props = effectComp?.Props;
 
-            float severityPhysical = (props?.severityPerDosePhysical ?? severityBase) * dose;
-            float severityMental = (props?.severityPerDoseMental ?? severityBase) * dose;
+            float severity = (props?.severityPerDose ?? severityBase) * dose;
 
             SoundDefOf.MechSerumUsed.PlayOneShot(SoundInfo.InMap(pawn));
             if (moteDef != null)
                 MoteMaker.MakeAttachedOverlay(pawn, moteDef, Vector3.zero, 1f, -1f);
 
-            Helper_Regression.SetIncreasedRegressionSeverityPhysical(pawn,Item.def, severityPhysical, severityPhysical / 2);
-            Helper_Regression.SetIncreasedRegressionSeverityMental(pawn, Item.def, severityMental, severityMental / 2);
+            Helper_Regression.IncreaseRegressionHediff(pawn, Item.def, props.hediffCaused, severity);
+
             // consume exactly 'dose' from the stack (even if carried)
             Item.SplitOff(dose).Destroy(DestroyMode.Vanish);
         }

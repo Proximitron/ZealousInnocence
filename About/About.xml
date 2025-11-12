@@ -10,7 +10,11 @@
 	</supportedVersions>
 	<packageId>Proximo.ZealousInnocence</packageId>
 	<loadAfter>
+		<li>rah.rbse</li>
+		<li>brrainz.harmony</li>
 		<li>Dubwise.DubsBadHygiene</li>
+		<li>cyanobot.toddlers</li>
+		<li>erdelf.humanoidalienraces</li>
 	</loadAfter>
 	<description>
 Adds a lot of diaper and regression related functions to RimWorld. If that's not your thing, please move along.

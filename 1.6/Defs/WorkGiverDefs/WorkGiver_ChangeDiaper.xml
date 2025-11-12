@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
   <WorkGiverDef>
+    <defName>ChangePatientDiaperChildcare</defName>
+    <label>changing diaper</label>
+    <giverClass>ZealousInnocence.WorkGiver_ChangePatientDiaper</giverClass>
+    <workType>Childcare</workType>
+    <verb>change diaper</verb>
+    <gerund>changing diaper</gerund>
+    <priorityInType>79</priorityInType>
+    <prioritizeSustains>true</prioritizeSustains>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+		<directOrderable>false</directOrderable>
+  </WorkGiverDef>
+	
+  <WorkGiverDef>
     <defName>ChangePatientDiaperDoctor</defName>
     <label>changing diaper</label>
     <giverClass>ZealousInnocence.WorkGiver_ChangePatientDiaper</giverClass>
@@ -12,7 +27,7 @@
     <requiredCapacities>
       <li>Manipulation</li>
     </requiredCapacities>
-    <feedHumanlikesOnly>true</feedHumanlikesOnly>
+		<directOrderable>false</directOrderable>
   </WorkGiverDef>
 
   <WorkGiverDef>
@@ -27,6 +42,6 @@
     <requiredCapacities>
       <li>Manipulation</li>
     </requiredCapacities>
-    <feedHumanlikesOnly>true</feedHumanlikesOnly>
+		<directOrderable>true</directOrderable>
   </WorkGiverDef>
 </Defs>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+		<success>Normal</success>
+		<operations>
+			<li Class="PatchOperationAdd">
+				<xpath>/Defs/InteractionDef[defName = "Chitchat"]/logRulesInitiator/rulesStrings</xpath>
+				<value>
+					<li>r_logentry(INITIATOR_age&lt;=4,INITIATOR_underwearType==Diaper,priority=5)->[child_dipe]</li>
+					<li>child_dipe(tag=Child_inDiaper,RECIPIENT_age&lt;=4,RECIPIENT_underwearType==Diaper,priority=6)->[dipe_childs]</li>
+					<li>child_dipe(tag=Child_noDiaper,RECIPIENT_age&lt;=4,priority=5)->[dipe_to_nodipe]</li>
+					<li>child_secret(INITIATOR_underwearType==Diaper)->Me nebba, EBBA, wayuh da unduh-wayuh! Me keepded wayuhing diapees fuh-ebba!</li>
+					<li>child_adultsecret(INITIATOR_underwearType==Diaper)->Me duss wike habbing dis diapee fuh makeded da pee pee and poopy in! Pwease no tell me mommy and daddy!</li>
+					<li>child_adultsecret(INITIATOR_underwearType==Diaper)->Pwease no tell me mommy and daddy dis, otay? Me duss no wike go potty, me duss wike makeded da pee pee and poopy in me diapee...da potty am toopid! You no tell dem, otay?</li>
+					<li>child_adultsecret(INITIATOR_underwearType==Diaper)->Me nebba, EBBA, wayuh da unduh-wayuh! Me keepded da diapees!</li>
+				
+					<!-- ===talk to baby=== -->
+					
+					<li>r_logentry(INITIATOR_age&lt;=3,priority=9)->[baby_good]</li>
+							<li>baby_good(tag=Baby_Upset,INITIATOR_thoughtDefName==NeedFood,priority=5)->[baby_action_upset]</li>
+							<li>baby_good(INITIATOR_thoughtDefName==NeedRest,priority=5)->[baby_action_upset]</li>
+							<li>baby_good->*[baby_action]*</li>
+							<li>baby_good->[baby_babble][baby_babble]</li>
+							<li>baby_good->[baby_babble][baby_babble][baby_babble]</li>
+							<li>baby_good->[baby_babble]*[baby_action]*[baby_babble]</li>
+							<li>baby_good->*[baby_action]*[baby_babble][baby_babble]</li>
+							<li>baby_good->*[baby_action]*[baby_babble][baby_babble][baby_babble]</li>
+							<li>baby_good->[baby_babble][baby_babble][baby_babble]*[baby_action]*</li>
+								<li>baby_babble_upset->AAA</li>
+								<li>baby_babble_upset->WAA</li>
+								<li>baby_babble->goo</li>
+								<li>baby_babble->ga</li>
+								<li>baby_babble->brr</li>
+								<li>baby_babble->na</li>
+								<li>baby_babble->noo</li>	
+								<li>baby_action_upset->*sobs*</li>
+								<li>baby_action_upset->*cries*</li>
+								<li>baby_action->blows spit bubbles</li>
+								<li>baby_action->giggles</li>
+								<li>baby_action->smiles</li>	
+								<li>baby_good(tag=Baby_Upset,INITIATOR_opinion&lt;=0,priority=5)->[baby_scared]</li>
+								<li>baby_scared->WAAAAAHHHH!!!AAAAAHHHHHHHH!!!WAA!!!WAA!!!WAAAAAAAAAAAAAAAAAAAHHHH!!!</li>
+								<li>baby_scared->*lip quivers* mmmMMMHHHAHAAAAA!!!!WAAAAAAHHHH!!!!!</li>
+				</value>
+			</li>	
+		</operations>
+	</Operation>
+</Patch>

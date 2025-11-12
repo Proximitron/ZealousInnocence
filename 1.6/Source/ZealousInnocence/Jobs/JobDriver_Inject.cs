@@ -56,10 +56,9 @@ namespace ZealousInnocence
         public int minDose = 1;
         public int maxDose = 30;
         public int defaultDose = 1;
-        public float severityPerDosePhysical = 0.05f;
-        public float severityPerDoseMental = 0.05f;
+        public float severityPerDose = 0.05f;
         public ThingDef moteDef;
-
+        public HediffDef hediffCaused;
         public CompProperties_TargetEffectFoyDose()
         {
             compClass = typeof(CompTargetEffectFoyDose);
@@ -103,7 +102,7 @@ namespace ZealousInnocence
             {
                 Find.WindowStack.Add(new Dialog_DosePicker(
                     min, max, initial,
-                    n => $"Dose: x{n} ({n * Props.severityPerDosePhysical * 100f:0}%)",
+                    n => $"Dose: x{n} ({n * Props.severityPerDose * 100f:0}%)",
                     dose =>
                     {
                         CallJob(user,targetEntity,dose);

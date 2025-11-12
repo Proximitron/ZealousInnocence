@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 using Verse.AI;
-using static ZealousInnocence.Hediff_RegressionDamage;
+using static ZealousInnocence.Hediff_PhysicalRegression;
 
 namespace ZealousInnocence
 {
@@ -25,7 +25,7 @@ namespace ZealousInnocence
 
         public static bool PercentGrowth(Pawn p, ref float __result)
         {
-            var band = ChildBands.Get(p);
+            var band = Hediff_RegressionBase.ChildBands.Get(p);
             var childCore = band.core;
             //2 years * 60 days per year * 60000 ticks per day
             float toddlerStageInTicks = (childCore - GenDate.TicksPerYear);

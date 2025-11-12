@@ -24,4 +24,18 @@
     <reportString>injecting TargetA.</reportString>
     <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
   </JobDef>
+	
+	<JobDef>
+		<defName>TrappedInCrib</defName>
+		<driverClass>ZealousInnocence.JobDriver_TrappedInCrib</driverClass>
+		<reportString>trapped in crib.</reportString>
+	</JobDef>
+	
+	<JobDef>
+		<defName>RegressedWiggleInCrib</defName>
+		<driverClass>ZealousInnocence.JobDriver_RegressedWiggleInCrib</driverClass>
+		<reportString>wiggels a lot.</reportString>
+	</JobDef>
+	
+	
 </Defs>

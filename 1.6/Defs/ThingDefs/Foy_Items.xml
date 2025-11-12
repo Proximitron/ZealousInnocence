@@ -5,8 +5,8 @@
     <label>FOY Injector (130%)</label>
     <description>A one-use over-dose of regression nanites, from the fountain of youth. Enough to heal major injuries and even resurrect the dead. Administered to a corpse, the overdose will regress the body to the age of a baby, heal any and all injuries and trigger its rebirth. While having no other known sideeffects, there is currently no known way to lower the amount of regression, beside waiting for its natural progression. Can only be administered to a fresh body, but if a body is preserved, it can even be resurrected long after death. (Causes 120% mental and physical regression)</description>
 		<descriptionHyperlinks>
-      <HediffDef>RegressionDamage</HediffDef>
-			<HediffDef>RegressionDamageMental</HediffDef>
+      <HediffDef>PhysicalRegressionDamage</HediffDef>
+			<HediffDef>MentalRegressionDamage</HediffDef>
     </descriptionHyperlinks>
     <graphicData>
       <texPath>Things/Item/Injector</texPath>
@@ -39,8 +39,8 @@
 				<minDose>1</minDose>
 				<maxDose>1</maxDose>
 				<defaultDose>1</defaultDose>
-				<severityPerDosePhysical>1.30</severityPerDosePhysical>
-				<severityPerDoseMental>1.30</severityPerDoseMental>
+				<severityPerDose>1.30</severityPerDose>
+				<hediffCaused>RegressionDamage_FoyWater_Injected</hediffCaused>
 				<moteDef>Mote_ResurrectFlash</moteDef>
 			</li>
     </comps>
@@ -69,14 +69,14 @@
         <showUseGizmo>true</showUseGizmo>
       </li>
 			<li Class="ZealousInnocence.CompProperties_UseEffectInjectNanites">
-				<hediffDef>RegressionDamage</hediffDef>
+				<hediffDef>PhysicalRegressionDamage</hediffDef>
 				<severity>1.0</severity>
 				<minIncrease>0.2</minIncrease>
 			</li>
       <li Class="CompProperties_UseEffectDestroySelf" />
     </comps>
   </ThingDef>-->
-	
+
 	<RecipeDef>
 		<defName>Make_ZI_Foy_Injector_Overdose</defName>
 		<label>craft FOY injector (130%)</label>
@@ -117,8 +117,8 @@
     <label>administer FOY overdose</label>
     <description>Administer FOY (130%).</description>
 		<descriptionHyperlinks>
-      <HediffDef>RegressionDamage</HediffDef>
-			<HediffDef>RegressionDamageMental</HediffDef>
+	    <HediffDef>PhysicalRegressionDamage</HediffDef>
+			<HediffDef>MentalRegressionDamage</HediffDef>
     </descriptionHyperlinks>
     <workerClass>Recipe_AdministerUsableItem</workerClass>
     <jobString>Administering regression.</jobString>
@@ -149,8 +149,8 @@
     <label>administer full FOY dose</label>
     <description>Administer FOY (100%).</description>
 		<descriptionHyperlinks>
-      <HediffDef>RegressionDamage</HediffDef>
-			<HediffDef>RegressionDamageMental</HediffDef>
+	    <HediffDef>PhysicalRegressionDamage</HediffDef>
+			<HediffDef>MentalRegressionDamage</HediffDef>
     </descriptionHyperlinks>
     <workerClass>Recipe_AdministerUsableItem</workerClass>
     <jobString>Administering regression.</jobString>
@@ -181,8 +181,8 @@
     <label>administer half FOY dose</label>
     <description>Administer FOY (50%).</description>
 		<descriptionHyperlinks>
-      <HediffDef>RegressionDamage</HediffDef>
-			<HediffDef>RegressionDamageMental</HediffDef>
+	    <HediffDef>PhysicalRegressionDamage</HediffDef>
+			<HediffDef>MentalRegressionDamage</HediffDef>
     </descriptionHyperlinks>
     <workerClass>Recipe_AdministerUsableItem</workerClass>
     <jobString>Administering regression.</jobString>
@@ -249,13 +249,8 @@
 		<ingestible>
 		  <outcomeDoers>
         <li Class="IngestionOutcomeDoer_GiveHediff">
-          <hediffDef>RegressionDamage</hediffDef>
+          <hediffDef>RegressionDamage_FoyWater_Ingested</hediffDef>
           <severity>0.10</severity>
-          <doToGeneratedPawnIfAddicted>true</doToGeneratedPawnIfAddicted>
-        </li>
-				<li Class="IngestionOutcomeDoer_GiveHediff">
-          <hediffDef>RegressionDamageMental</hediffDef>
-          <severity>0.05</severity>
           <doToGeneratedPawnIfAddicted>true</doToGeneratedPawnIfAddicted>
         </li>
       </outcomeDoers>
@@ -277,8 +272,8 @@
 				<minDose>1</minDose>
 				<maxDose>13</maxDose>
 				<defaultDose>1</defaultDose>
-				<severityPerDosePhysical>0.10</severityPerDosePhysical>
-				<severityPerDoseMental>0.05</severityPerDoseMental>
+				<severityPerDose>0.10</severityPerDose>
+				<hediffCaused>RegressionDamage_FoyWater_Ingested</hediffCaused>
 				<moteDef>Mote_ResurrectFlash</moteDef>
 			</li>
 		</comps>
@@ -297,7 +292,8 @@
 	
 	<ThingDef Name="ZI_Foy" ParentName="DrugPillBase" Abstract="True">
     <descriptionHyperlinks>
-      <HediffDef>RegressionDamage</HediffDef>
+      <HediffDef>PhysicalRegressionDamage</HediffDef>
+			<HediffDef>MentalRegressionDamage</HediffDef>
     </descriptionHyperlinks>
     <rotatable>false</rotatable>
 		<soundInteract>Standard_Drop</soundInteract>

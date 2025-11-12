@@ -86,7 +86,7 @@ namespace ZealousInnocence
                     .FirstOrDefault(d => d.GetModExtension<RegressionDamageExtension>() != null);
             */
             private static DamageDef FindRegressionDamageDef() => DefDatabase<DamageDef>.GetNamedSilentFail("RegressionEffectDamage");
-
+            private static DamageDef FindRegressionEffectDamageMentalDef() => DefDatabase<DamageDef>.GetNamedSilentFail("RegressionEffectDamageMental");
             public static void ApplyByDamage(Pawn p, float dmgAmount)
             {
                 var def = FindRegressionDamageDef();
@@ -103,7 +103,7 @@ namespace ZealousInnocence
             }
             public static float GetCurrentSeverityMental(Pawn p)
             {
-                var def = FindRegressionDamageDef();
+                var def = FindRegressionEffectDamageMentalDef();
                 if (def == null)
                 {
                     Log.Warning("[ZI] No DamageDef with RegressionDamageExtension found.");
@@ -112,7 +112,7 @@ namespace ZealousInnocence
                 var ext = def.GetModExtension<RegressionDamageExtension>();
                 if (ext == null) return 0.0f;
 
-                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamageMental);
+                var hd = p.health.hediffSet.GetFirstHediffOfDef(ext.hediffCaused);
                 if (hd == null) return 0.0f;
                 return hd.Severity;
             }
@@ -127,13 +127,13 @@ namespace ZealousInnocence
                 var ext = def.GetModExtension<RegressionDamageExtension>();
                 if (ext == null) return 0.0f;
 
-                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamage);
+                var hd = p.health.hediffSet.GetFirstHediffOfDef(ext.hediffCaused);
                 if (hd == null) return 0.0f;
                 return hd.Severity;
             }
             public static void ApplyBySeverityMental(Pawn p, float targetSeverity)
             {
-                var def = FindRegressionDamageDef();
+                var def = FindRegressionEffectDamageMentalDef();
                 if (def == null)
                 {
                     Log.Warning("[ZI] No DamageDef with RegressionDamageExtension found.");
@@ -142,14 +142,8 @@ namespace ZealousInnocence
                 var ext = def.GetModExtension<RegressionDamageExtension>();
                 if (ext == null) return;
 
-                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamageMental);
-                if (hd == null)
-                {
-                    hd = HediffMaker.MakeHediff(HediffDefOf.RegressionDamageMental, p);
-                    p.health.AddHediff(hd);
-                }
-                hd.Severity = Mathf.Clamp(targetSeverity, 0f, Mathf.Min(HediffDefOf.RegressionDamageMental.maxSeverity, ext.mentalMaxSeverity));
-                Log.Message($"[ZI][DBG] Set regression severity → {hd.Severity:0.###}");
+                Helper_Regression.SetRegressionHediff(p, p.def, ext.hediffCaused, targetSeverity);
+                Log.Message($"[ZI][DBG] Set regression severity → {targetSeverity:0.###}");
             }
             public static void ApplyBySeverityPhysical(Pawn p, float targetSeverity)
             {
@@ -162,14 +156,8 @@ namespace ZealousInnocence
                 var ext = def.GetModExtension<RegressionDamageExtension>();
                 if (ext == null) return;
 
-                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionDamage);
-                if (hd == null)
-                {
-                    hd = HediffMaker.MakeHediff(HediffDefOf.RegressionDamage, p);
-                    p.health.AddHediff(hd);
-                }
-                hd.Severity = Mathf.Clamp(targetSeverity, 0f, Mathf.Min(HediffDefOf.RegressionDamage.maxSeverity, ext.physicalMaxSeverity));
-                Log.Message($"[ZI][DBG] Set regression severity → {hd.Severity:0.###}");
+                Helper_Regression.SetRegressionHediff(p, p.def, ext.hediffCaused, targetSeverity);
+                Log.Message($"[ZI][DBG] Set regression severity → {targetSeverity:0.###}");
             }
         }
     }

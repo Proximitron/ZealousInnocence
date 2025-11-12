@@ -14,17 +14,12 @@ namespace ZealousInnocence
         /// <summary>
         /// The hediff severity per damage point
         /// </summary>
-        public float mentalSeverityPerDamage = 0.01f;
-
-        public float physicalSeverityPerDamage = 0.01f;
+        public float magnitudePerDamage = 0.01f;
 
         /// <summary>the amount by which to reduce the raw damage to the pawn</summary>
         public float reduceValue = 1 / 3f;
 
-        /// <summary>the maximum severity this damage can cause. 1.0f is 3 years for humans. Anything over that would be a baby.</summary>
-        public float mentalMaxSeverity = 1.0f;
-
-        public float physicalMaxSeverity = 1.2f;
+        public HediffDef hediffCaused;
 
         /// <summary>
         /// gets all Configuration errors with this instance.
@@ -36,7 +31,21 @@ namespace ZealousInnocence
             {
                 yield return configError;
             }
+            if (hediffCaused == null)
+                yield return "[ZI] RegressionDamageExtension: hediffCaused is null.";
 
+            if (reduceValue < 0f || reduceValue > 1f)
+                yield return "[ZI] RegressionDamageExtension: reduceValue must be in [0,1].";
+
+            if (hediffCaused != null &&
+                hediffCaused.CompProps<CompProperties_RegressionInfluence>() == null)
+            {
+                yield return $"[ZI] RegressionDamageExtension: hediffCaused '{hediffCaused.defName}' " +
+                             "has no CompProperties_RegressionInfluence (it should).";
+            }
+
+            if (magnitudePerDamage < 0f)
+                yield return "[ZI] RegressionDamageExtension: magnitudePerDamage should be >= 0.";
         }
     }
 }

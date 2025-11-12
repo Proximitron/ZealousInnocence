@@ -61,13 +61,13 @@ namespace ZealousInnocence
         {
             return pawn.TryGetComp<CompRegressionMemory>();
         }
-        public static float GetFoySeverityPerDose()
+        public static float GetFoyWaterSeverityPerDose()
         {
             var def = ThingDefOf.ZI_Foy_Vial;
             var doers = def?.ingestible?.outcomeDoers;
             if (doers != null)
                 foreach (var d in doers)
-                    if (d is IngestionOutcomeDoer_GiveHediff gh && gh.hediffDef == HediffDefOf.RegressionDamage)
+                    if (d is IngestionOutcomeDoer_GiveHediff gh && gh.hediffDef == HediffDefOf.RegressionDamage_FoyWater_Ingested)
                         return gh.severity;
             return 0.10f; // fallback
         }
@@ -94,7 +94,7 @@ namespace ZealousInnocence
             if (overdose != null && overdose.Severity >= 0.4f) { reason = "overdose"; return false; }
 
 
-            var reg = Hediff_RegressionDamage.HediffByPawn(p);
+            var reg = Hediff_PhysicalRegression.HediffByPawn(p);
             if (reg == null)
             {
                 reason = "no-regression";
@@ -113,7 +113,7 @@ namespace ZealousInnocence
             float targetS = reg.SeverityForTargetYears(mem.desiredAgeYears);
 
             // Tolerance = half a pill (e.g., 5% if a pill is 10%)
-            float doseDelta = GetFoySeverityPerDose();    // e.g., 0.10
+            float doseDelta = GetFoyWaterSeverityPerDose();    // e.g., 0.10
             float tol = doseDelta * 0.5f;                 // e.g., 0.05
 
             float lower = targetS - tol;

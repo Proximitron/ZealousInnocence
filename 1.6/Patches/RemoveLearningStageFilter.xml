@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
-  <Operation Class="PatchOperationAddModExtension">
-    <xpath>Defs/NeedDef[defName="Learning"]</xpath>
-    <value>
-      <li Class="ZealousInnocence.DevStageExtension">
-        <allowChild>true</allowChild>
-        <priority>30</priority>
-				<mentalStat>true</mentalStat>
-				<physicalStat>false</physicalStat>
-      </li>
-    </value>
+  <!-- Removing ALL vanilla stage filters and manage it myself -->
+  <Operation Class="PatchOperationRemove">
+    <xpath>Defs/NeedDef[defName="Learning"]/developmentalStageFilter</xpath>
+  </Operation>
+  <Operation Class="PatchOperationRemove">
+    <xpath>Defs/NeedDef[defName="Play"]/developmentalStageFilter</xpath>
+  </Operation>
+  <Operation Class="PatchOperationRemove">
+    <xpath>Defs/NeedDef[defName="Joy"]/developmentalStageFilter</xpath>
   </Operation>
 
-  <!-- Play: children only -->
+	<!-- ZealousInnocence.DevStageExtension will always check on Play and then on Learning. If both are not applicable we assume Joy by default -->
+  <!-- Play: babies (and toddlers if toddlers is installed) -->
   <Operation Class="PatchOperationAddModExtension">
     <xpath>Defs/NeedDef[defName="Play"]</xpath>
     <value>
       <li Class="ZealousInnocence.DevStageExtension">
         <allowBaby>true</allowBaby>
-        <priority>20</priority>
+				<mentalStat>true</mentalStat>
+				<physicalStat>false</physicalStat>
+      </li>
+    </value>
+  </Operation>
+	
+	<!-- Learning: children only -->
+	<Operation Class="PatchOperationAddModExtension">
+    <xpath>Defs/NeedDef[defName="Learning"]</xpath>
+    <value>
+      <li Class="ZealousInnocence.DevStageExtension">
+        <allowChild>true</allowChild>
 				<mentalStat>true</mentalStat>
 				<physicalStat>false</physicalStat>
       </li>
@@ -31,21 +42,9 @@
     <value>
       <li Class="ZealousInnocence.DevStageExtension">
         <allowAdult>true</allowAdult>
-        <priority>10</priority>
 				<mentalStat>true</mentalStat>
 				<physicalStat>false</physicalStat>
       </li>
     </value>
-  </Operation>
-
-  <!-- Optional: remove vanilla stage filters so your code fully governs -->
-  <Operation Class="PatchOperationRemove">
-    <xpath>Defs/NeedDef[defName="Learning"]/developmentalStageFilter</xpath>
-  </Operation>
-  <Operation Class="PatchOperationRemove">
-    <xpath>Defs/NeedDef[defName="Play"]/developmentalStageFilter</xpath>
-  </Operation>
-  <Operation Class="PatchOperationRemove">
-    <xpath>Defs/NeedDef[defName="Joy"]/developmentalStageFilter</xpath>
   </Operation>
 </Patch>

@@ -1,20 +1,184 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-  
-  <InteractionDef>
-    <defName>RegressedPlayTime</defName>
-    <label>play</label>
-    <workerClass>ZealousInnocence.InteractionWorker_RegressedPlayTime</workerClass>
-    <symbol>Things/Motes/SpeechSymbols/RegressedGames</symbol>
-    <logRulesInitiator>
-      <rulesStrings>
-        <li>r_logentry->[INITIATOR_nameDef] asked [RECIPIENT_nameDef] to play with [INITIATOR_objective].</li>
-				
+	<InteractionDef>
+		<defName>RegressedPlayTime</defName>
+		<label>play</label>
+		<workerClass>ZealousInnocence.InteractionWorker_RegressedPlayTime</workerClass>
+		<symbol>Things/Motes/SpeechSymbols/RegressedGames</symbol>
+		<logRulesInitiator>
+			<rulesStrings>
+				<li>r_logentry->[INITIATOR_nameDef] asked [RECIPIENT_nameDef] to play with [INITIATOR_objective].</li>
 				<li>babygame->peek-a-boo</li>
-        <li>babygame->toy</li>
-        <li>babygame->tickle</li>
-      </rulesStrings>
-    </logRulesInitiator>
-  </InteractionDef>
-
+				<li>babygame->toy</li>
+				<li>babygame->tickle</li>
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+	<InteractionDef ParentName="SpeakUpReply">
+		<defName>Diaper_YouToo</defName>
+		<label>diaper — youToo</label>
+		<logRulesInitiator>
+			<rulesStrings>
+				<li>r_logentry(INITIATOR_stage=Baby,priority=5)->[baby]</li>
+				<li>r_logentry(INITIATOR_stage=Baby,priority=5)->[toddler]</li>
+				<li>r_logentry(INITIATOR_stage=Toddler,priority=5)->[adult]</li>
+				<li>r_logentry(INITIATOR_stage=Toddler,priority=5)->[adult]</li>
+				<li>toddler->Me weawwy wub dis diapee too! Hee hee!</li>
+				<li>toddler->Dis am da bestest day tuz me hab da cwean and comfy diapee fuh makeded aww da pee pee in!</li>
+				<li>toddler->Me nebba go toopid potty! Me duss wayuh da diapee fuhebba!</li>
+				<li>toddler->You am wight! Me weawwy wub da diapees!</li>
+				<li>toddler->We wub diapees too!</li>
+				<li>toddler->Mommy saided "[INITIATOR_nameDef], me no wike you and you hab go potty wiffout you diapee tuz me am da big meany!"...Me duss cwy a wot and dey gib me one! Toopid mommy! Me nebba go pee pee in da potty tuz me wub deez diapees too mutts!</li>
+				<li>toddler->Me wub deez diapees!</li>
+				<li>toddler->Da gwown ups ebba twy getted me go pee pee in da potty, me duss makeded da pee pee aww obah dem! Me nebba top habbing da diapee den!</li>
+				<li>toddler->Me wub be da wittle kid wiff da diapee! Hee hee!</li>
+				<li>toddler->[excited]! Me hab da cwean and comfy diapee too!</li>
+				<li>toddler(INITIATOR_trait==poop-eater,priority=5)->Me wub da comfy diapees too! Me duss wike dem wiff da chocowate in dem...me wiss da gwown ups top gibbded me cwean diapees befuh me eated dat dewishus chocowate...</li>
+				<li>toddler(INITIATOR_trait==poop-eater,priority=5)->Me wub diapees, but me wub da diapees wiff da chocowate in dem eeben bettuh!</li>
+				<li>toddler(INITIATOR_trait==poop-eater,priority=5)->Me getted weawwy hungee waituh, you wet me hab sum uh you chocowate in you diapee? Me know you hab dat chocowate tuz me 'mell it obah heeyah! Hee hee!</li>
+				<li>toddler(INITIATOR_trait==poopaholic,priority=5)->Me wub deez diapees! Me duss no wike da cwean diapees...tuz me getted hungee sum time and me no hab da poopy fuh eated if me diapee am cwean...</li>
+				<li>toddler(INITIATOR_trait==poopaholic,priority=5)->Me nebba go potty tuz me no wike da poopy when it am duss weawwy wet! Dat gwoss! Da bestest poopy am da diapee poopy! *smiles*</li>
+				<li>toddler(INITIATOR_opinion&lt;=0,priority=5)->[meankid]</li>
+				<li>meankid(tag=Child_UpsetDiapee)->Sut up! Me no want tawk bout deez weawwy comfy diapees wiff you, [child_insult]!</li>
+				<li>meankid(tag=Child_UpsetDiapee)->Me duss saided you mommy dat you no want diapee ebba again! See saided see no gib you one den, [child_insult]! *laughs*</li>
+				<li>meankid(tag=Child_UpsetDiapee)->Me am bouts ta takeded you diapee fwom you and fwow it da twash!</li>
+				<li>meankid(tag=Child_UpsetDiapee,INITIATOR_trait==poop-eater,priority=5)->Sut up! Me am bouts ta takeded you chocowate fwom you diapee, den me duss eated it aww and you no getted any da chocowate, [child_insult]!</li>
+				<li>meankid(tag=Child_UpsetDiapee,INITIATOR_trait==poop-eater,priority=5)->You go night night waituh, me duss comeded obah and takeded aww da chocowate fwom you diapee and den eated aww uh it tuz you am toopid and ugwee wittle baby! Haha wittle baby! You no getted da chocowate!</li>
+				<li>meankid(tag=Child_UpsetDiapee,INITIATOR_trait==poopaholic,priority=5)->Me no wike you! Me not eeben eated da poopy out you diapee tuz you am gwoss!...Me do wub dat poopy doe...</li>
+				<li>meankid(tag=Child_UpsetDiapee,INITIATOR_trait==poopaholic,priority=5)->You gibbded me aww da poopy in you diapee wight now, toopid!</li>
+				<li>adult->Well...I'm glad you like diapers so much. *smiles*</li>
+				<li>adult->One day you'll be too big for diapers, [child_noun_good]. But for now, I'm glad you like wearing them!</li>
+				<li>adult->I think you're very adorable running around and playing with you cute little diaper on, [child_noun_good]! *smiles*</li>
+				<li>adult->You look so cute with you little diaper on, [RECIPIENT_nameDef]!</li>
+				<li>adult->I'm glad you like diapers, [child_noun_good]! I think it's very cute to see you playing with the other little kids in your cute little diaper!</li>
+				<li>adult(INITIATOR_relationship==Parent,INITIATOR_gender==Female)->Mommy is very happy you love your cute little diaper so much! *smiles*</li>
+				<li>adult(INITIATOR_relationship==Parent,INITIATOR_gender==Male)->Daddy is very happy you love your cute little diaper so much! *smiles*</li>
+				<li>adult(INITIATOR_opinion&lt;=0,priority=5)->[meanadult]</li>
+				<li>meanadult->Well if you like it so much, how about you keep that one on for a few days? I'm sure that will give you an awful rash, you little shit!</li>
+				<li>meanadult(tag=Child_Upset_By)->Fuck off, [child_noun_bad]!</li>
+				<li>meanadult(tag=Child_Upset_ByPain)->How about I take that diaper off and beat your bare ass, [child_noun_bad]?</li>
+				<li>meanadult(RECIPIENT_trait==poop-eater,priority=5)->You're fucking gross...that's not chocolate you fucking idiot!</li>
+				<li>meanadult(RECIPIENT_trait==poopaholic,priority=5)->You're fucking gross...ya know what? Just shovel as much shit in your mouth as you can. Maybe you'll get sick and die from it.</li>
+				
+				<li>r_logentry(INITIATOR_stage=Baby,priority=10)->[baby_good]</li>
+				<li>baby_good(tag=Baby_Upset,INITIATOR_thoughtDefName==NeedFood,priority=5)->[baby_action_upset]</li>
+				<li>baby_good(INITIATOR_thoughtDefName==NeedRest,priority=5)->[baby_action_upset]</li>
+				<li>baby_good(tag=Babble_Baby)->*[baby_action]*</li>
+				<li>baby_good(tag=Babble_Baby)->[baby_babble][baby_babble]</li>
+				<li>baby_good(tag=Babble_Baby)->[baby_babble][baby_babble][baby_babble]</li>
+				<li>baby_good(tag=Babble_Baby)->[baby_babble]*[baby_action]*[baby_babble]</li>
+				<li>baby_good(tag=Babble_Baby)->*[baby_action]*[baby_babble][baby_babble]</li>
+				<li>baby_good(tag=Babble_Baby)->*[baby_action]*[baby_babble][baby_babble][baby_babble]</li>
+				<li>baby_good(tag=Babble_Baby)->[baby_babble][baby_babble][baby_babble]*[baby_action]*</li>
+				<li>baby_babble->goo</li>
+				<li>baby_babble->ga</li>
+				<li>baby_babble->brr</li>
+				<li>baby_babble->na</li>
+				<li>baby_babble->noo</li>
+				<li>baby_action_upset->*sobs*</li>
+				<li>baby_action_upset->*cries*</li>
+				<li>baby_action->blows spit bubbles</li>
+				<li>baby_action->giggles</li>
+				<li>baby_action->smiles</li>
+				<li>baby_good(tag=Baby_Upset,INITIATOR_opinion&lt;=0,priority=5)->[baby_scared]</li>
+				<li>baby_scared->WAAAAAHHHH!!!AAAAAHHHHHHHH!!!WAA!!!WAA!!!WAAAAAAAAAAAAAAAAAAAHHHH!!!</li>
+				<li>baby_scared->*lip quivers* mmmMMMHHHAHAAAAA!!!!WAAAAAAHHHH!!!!!</li>
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+	
+	<InteractionDef ParentName="SpeakUpReply">
+		<defName>Babble_Baby</defName>
+		<label>babble — baby</label>
+		<logRulesInitiator>
+			<rulesStrings>
+				<li>r_logentry(INITIATOR_age&lt;=4,priority=5)->[child_to_baby]</li>
+				<li>r_logentry(INITIATOR_age>=11,priority=5)->[adult_to_baby]</li>
+				<li>child_to_baby->Me not know wut you am saided...</li>
+				<li>child_to_baby->You am vewy coot!</li>
+				<li>child_to_baby->You am da cootiest wittle pie fuh tawk wike dat! Hee hee!</li>
+				<li>child_to_baby->Wut dat mean?</li>
+				<li>child_to_baby->Why fuh you duss makeded da sounds wike dat? Dat not tawking...</li>
+				<li>child_to_baby->Me not know wut dat mean...but you am coots!</li>
+				<li>child_to_baby->How fuh you 'pit dat bubble out you mouff wike dat?</li>
+				<li>child_to_baby->*looks confused*</li>
+				<li>child_to_baby->Why fuh you no tawk good fuh?</li>
+				<li>child_to_baby->Why fuh you you tawk wike dat? Dat tuz you am wittle baby?</li>
+				<li>child_to_baby->You saided fings wike wittle baby...me not know wut dat tuff means...</li>
+				<li>child_to_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Male)->You am my wittle bwovah...but me not know wut you am saided tuz you am da wittle baby...sowwy.</li>
+				<li>child_to_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Femle)->You am my wittle sistah...but me not know wut you am saided tuz you am da wittle baby...sowwy.</li>
+				<li>child_to_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Male)->Me wiss me hab da wittle bwovah dat saided fings good...not wike dat wittle baby...sowwy</li>
+				<li>child_to_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Femle)->Me wiss me hab da wittle sistah dat saided fings good...not wike dat wittle baby...sowwy</li>
+				<li>child_to_baby(INITIATOR_opinion&lt;=0)->[child_mean_baby]</li>
+				<li>child_mean_baby->Sut up toopid ugwee wittle baby!</li>
+				<li>child_mean_baby->Sut up!</li>
+				<li>child_mean_baby->Sut up toopid! Me no wike you cwy aww da time!!!</li>
+				<li>child_mean_baby->You no makeded dem sounds, toopid!</li>
+				<li>child_mean_baby->Me no wike toopid tinky wittle babies wike you!</li>
+				<li>child_mean_baby->You want me hitted you uh sum fing? SUT UP! ME NO WIKE YOU!</li>
+				<li>child_mean_baby->Me am bout ta getted da gwown up belt and hitted you in you tooshie WEAWWY A WOT you no sut up! Toopid ugwee pee pee wittle baby! ME NO WIKE YOU!</li>
+				<li>child_mean_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Male)->Sut up toopid ugwee wittle bwovah! Me no wike you  cwy aww da time!!!</li>
+				<li>child_mean_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Female)->Sut up toopid ugwee wittle sistah! Me no wike you  cwy aww da time!!!</li>
+				<li>child_mean_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Male)->Me wiss you not me wittle bwovah tuz me no wike you!</li>
+				<li>child_mean_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Female)->Me wiss you not me wittle sistah tuz me no wike you!</li>
+				<li>child_mean_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Male)->Me wiss me hab da wittle bwovah dat no cwy aww time wike you, toopid!</li>
+				<li>child_mean_baby(INITIATOR_relationship==Sibling,RECIPIENT_gender==Female)->Me wiss me hab da wittle sistah dat no cwy aww time wike you, toopid!</li>
+				<li>adult_to_baby->You're so [elderbabycompliment]!</li>
+				<li>adult_to_baby->That's so [elderbabycompliment]!</li>
+				<li>adult_to_baby->It's very [elderbabycompliment] when you babble!</li>
+				<li>adult_to_baby->Aww, how [elderbabycompliment]!</li>
+				<li>adult_to_baby(INITIATOR_relationship==Parent,INITIATOR_gender==Female)->Say "Momma"!</li>
+				<li>adult_to_baby(INITIATOR_relationship==Parent,INITIATOR_gender==Female)->I'm your Mommy! Can you say, "Momma"?</li>
+				<li>adult_to_baby(INITIATOR_relationship==Parent,INITIATOR_gender==Male)->Say "Dadda"!</li>
+				<li>adult_to_baby(INITIATOR_relationship==Parent,INITIATOR_gender==Male)->I'm daddy! Can you say "Dadda"?</li>
+				<li>adult_to_baby(INITIATOR_opinion&lt;=0,priority=5)->[mean_adult]</li>
+				<li>adult_to_baby(INITIATOR_trait==dislikes children,priority=5)->[mean_adult]</li>
+				<li>mean_adult->Ugh...you're gross.</li>
+				<li>mean_adult->Fucking retarded ass baby...</li>
+				<li>mean_adult->This thing is supposed to be cute?</li>
+				<li>mean_adult->Fuck off baby, find your piece of shit parents.</li>
+				<li>mean_adult->You're not too young to get your ass beat with a belt!</li>
+				<li>r_logentry(INITIATOR_age&lt;=3,priority=10)->[baby_good]</li>
+				<li>baby_good(tag=Baby_Upset,INITIATOR_opinion&lt;=0,priority=5)->[baby_scared]</li>
+				<li>baby_good(tag=Child_Baby)->*[baby_action]*</li>
+				<li>baby_good(tag=Child_Baby)->[baby_babble][baby_babble]</li>
+				<li>baby_good(tag=Child_Baby)->[baby_babble][baby_babble][baby_babble]</li>
+				<li>baby_good(tag=Child_Baby)->[baby_babble]*[baby_action]*[baby_babble]</li>
+				<li>baby_good(tag=Child_Baby)->*[baby_action]*[baby_babble][baby_babble]</li>
+				<li>baby_good(tag=Child_Baby)->*[baby_action]*[baby_babble][baby_babble][baby_babble]</li>
+				<li>baby_good(tag=Child_Baby)->[baby_babble][baby_babble][baby_babble]*[baby_action]*</li>
+				<li>baby_babble_upset->AAA</li>
+				<li>baby_babble_upset->WAA</li>
+				<li>baby_babble->goo</li>
+				<li>baby_babble->ga</li>
+				<li>baby_babble->brr</li>
+				<li>baby_babble->na</li>
+				<li>baby_babble->noo</li>
+				<li>baby_action_upset->*sobs*</li>
+				<li>baby_action_upset->*cries*</li>
+				<li>baby_action_upset->*screams*</li>
+				<li>baby_action_upset->*wails*</li>
+				<li>baby_action_upset->*poops*</li>
+				<li>baby_action->blows spit bubbles</li>
+				<li>baby_action->giggles</li>
+				<li>baby_action->smiles</li>
+				<li>baby_action(tag=Baby_Upset,INITIATOR_thoughtDefName==NeedFood,priority=5)->[baby_babble_upset][baby_babble_upset][baby_babble_upset] [baby_action_upset]</li>
+				<li>baby_action(tag=Baby_Upset,INITIATOR_thoughtDefName==NeedRest,priority=5)->[baby_babble_upset][baby_babble_upset][baby_babble_upset][baby_action_upset]</li>
+				<li>baby_good(tag=Baby_Upset,INITIATOR_thoughtDefName==NeedFood,priority=5)->[baby_action_upset]</li>
+				<li>baby_good(tag=Baby_Upset,INITIATOR_thoughtDefName==NeedRest,priority=5)->[baby_action_upset]</li>
+				<li>baby_action(tag=Baby_Upset,INITIATOR_mood&lt;=0.5,priority=5)->[baby_babble_upset][baby_babble_upset][baby_babble_upset] [baby_action_upset]</li>
+				<li>baby_action(tag=Baby_Upset,INITIATOR_mood&lt;=0.5,priority=5)->[baby_babble_upset][baby_babble_upset][baby_babble_upset][baby_action_upset]</li>
+				<li>baby_action(tag=Baby_Upset,INITIATOR_mood&lt;=0.5,priority=5)->[baby_action_upset]</li>
+				<li>baby_action(tag=Baby_Upset,INITIATOR_mood&lt;=0.5,priority=5)->[baby_action_upset]</li>
+				<li>baby_scared->WAAAAAHHHH!!!AAAAAHHHHHHHH!!!WAA!!!WAA!!!WAAAAAAAAAAAAAAAAAAAHHHH!!!</li>
+				<li>baby_scared->*lip quivers* mmmMMMHHHAHAAAAA!!!!WAAAAAAHHHH!!!!!</li>
+				<!--==wildcards==-->
+				<li>elderbabycompliment->cute</li>
+				<li>elderbabycompliment->adorable</li>
+				<li>elderbabycompliment->sweet</li>
+				<li>elderbabycompliment->nice</li>
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+	
 </Defs>

@@ -182,11 +182,9 @@
 
 		<modExtensions>
 			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<mentalSeverityPerDamage>0.020</mentalSeverityPerDamage>
-				<physicalSeverityPerDamage>0.005</physicalSeverityPerDamage>
+				<magnitudePerDamage>0.012</magnitudePerDamage>
 				<reduceValue>0.85</reduceValue>
-				<mentalMaxSeverity>1.2</mentalMaxSeverity>
-				<physicalMaxSeverity>0.4</physicalMaxSeverity>
+				<hediffCaused>RegressionDamage_RayGression</hediffCaused>
 			</li>
 		</modExtensions>
 	</DamageDef>
@@ -393,11 +391,9 @@
 
 		<modExtensions>
 			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<mentalSeverityPerDamage>0.015</mentalSeverityPerDamage>
-				<physicalSeverityPerDamage>0.020</physicalSeverityPerDamage>
+				<magnitudePerDamage>0.015</magnitudePerDamage>
 				<reduceValue>0.9</reduceValue>
-				<mentalMaxSeverity>1.0</mentalMaxSeverity>
-				<physicalMaxSeverity>1.2</physicalMaxSeverity>
+				<hediffCaused>RegressionDamage_FoyWater_SkinContact</hediffCaused>
 			</li>
 		</modExtensions>
 	</DamageDef>

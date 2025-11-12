@@ -61,9 +61,6 @@
     <Reference Include="BadHygiene">
       <HintPath>..\..\..\..\..\..\..\workshop\content\294100\836308268\1.6\Assemblies\BadHygiene.dll</HintPath>
     </Reference>
-    <Reference Include="Toddlers">
-      <HintPath>..\..\..\..\..\..\..\workshop\content\294100\2903359152\1.6\Assemblies\Toddlers.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /Y &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.6\Assemblies\$(TargetFileName)&quot;" />

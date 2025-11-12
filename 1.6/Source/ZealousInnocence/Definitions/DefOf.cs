@@ -37,6 +37,8 @@ namespace ZealousInnocence
         public static ThingDef Apparel_Diaper_Disposable;
 
         public static ThingDef Mote_FoyBurst;
+
+        public static ThingDef ZI_RayGun;
     }
     [DefOf]
     public class FountainOfYouthLevelDefOf
@@ -99,8 +101,17 @@ namespace ZealousInnocence
     public class HediffDefOf
     {
         public static HediffDef RegressionState;
-        public static HediffDef RegressionDamage;
-        public static HediffDef RegressionDamageMental;
+
+        public static HediffDef RegressionMental;
+        public static HediffDef RegressionPhysical;
+
+        public static HediffDef PhysicalRegressionDamage;
+        public static HediffDef MentalRegressionDamage;
+
+        public static HediffDef RegressionDamage_FoyWater_Injected;
+        public static HediffDef RegressionDamage_FoyWater_Ingested;
+        public static HediffDef RegressionDamage_FoyWater_SkinContact;
+        
         public static HediffDef DiaperRash;
 
         public static HediffDef BigBladder;
@@ -108,6 +119,9 @@ namespace ZealousInnocence
 
         public static HediffDef BedWetting;
         public static HediffDef Incontinent;
+
+        public static HediffDef RegressionDamageMental;
+        public static HediffDef RegressionDamage;
     }
 
     [DefOf]
@@ -151,10 +165,19 @@ namespace ZealousInnocence
 
         public static JobDef RestockDisposableToInventory;
         public static JobDef ChangeDisposableFromInventory;
+
+        public static JobDef TrappedInCrib;
+        public static JobDef RegressedWiggleInCrib;
         //public static JobDef WearSleepwear;
         // public static JobDef OptimizeApparel;
         //public static JobDef ChangeSleepwear;
     }
+    [DefOf]
+    public class AnimationDefOf
+    {
+        public static AnimationDef RegressedWiggleInCrib;
+    }
+    
     [DefOf]
     public class DutyDefOf
     {

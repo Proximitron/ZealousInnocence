@@ -120,15 +120,13 @@
 		<defName>FoyWater</defName>
 		<label>FOY splash</label>
 		
-		<deathMessage>{0} got soaked.</deathMessage>
+		<deathMessage>{0} got killed by water pressure.</deathMessage>
 
 		<modExtensions>
 			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<mentalSeverityPerDamage>0.012</mentalSeverityPerDamage>
-				<physicalSeverityPerDamage>0.012</physicalSeverityPerDamage>
+				<magnitudePerDamage>0.012</magnitudePerDamage>
 				<reduceValue>0.7</reduceValue>
-				<mentalMaxSeverity>1.2</mentalMaxSeverity>
-				<physicalMaxSeverity>1.2</physicalMaxSeverity>
+				<hediffCaused>RegressionDamage_FoyWater_SkinContact</hediffCaused>
 			</li>
 		</modExtensions>
 	</DamageDef>
@@ -148,11 +146,31 @@
 		<makesAnimalsFlee>true</makesAnimalsFlee>
 		<modExtensions>
 			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<mentalSeverityPerDamage>0.012</mentalSeverityPerDamage>
-				<physicalSeverityPerDamage>0.012</physicalSeverityPerDamage>
+				<magnitudePerDamage>0.012</magnitudePerDamage>
 				<reduceValue>0.5</reduceValue>
-				<mentalMaxSeverity>1.3</mentalMaxSeverity>
-				<physicalMaxSeverity>1.3</physicalMaxSeverity>
+				<hediffCaused>PhysicalRegressionDamage</hediffCaused>
+			</li>
+		</modExtensions>
+	</DamageDef>
+
+	<DamageDef>
+		<defName>RegressionEffectDamageMental</defName>
+		<label>regression effect damage</label>
+		<workerClass>ZealousInnocence.Worker_RegressionDamage</workerClass>
+		<externalViolence>true</externalViolence>
+		<deathMessage>{0} has been shot to death.</deathMessage>
+		<hediff>Gunshot</hediff>
+		<harmAllLayersUntilOutside>true</harmAllLayersUntilOutside>
+		<impactSoundType>Bullet</impactSoundType>
+		<armorCategory>Sharp</armorCategory>
+		<overkillPctToDestroyPart>0~0.7</overkillPctToDestroyPart>
+		<isRanged>true</isRanged>
+		<makesAnimalsFlee>true</makesAnimalsFlee>
+		<modExtensions>
+			<li Class="ZealousInnocence.RegressionDamageExtension">
+				<magnitudePerDamage>0.012</magnitudePerDamage>
+				<reduceValue>0.5</reduceValue>
+				<hediffCaused>MentalRegressionDamage</hediffCaused>
 			</li>
 		</modExtensions>
 	</DamageDef>

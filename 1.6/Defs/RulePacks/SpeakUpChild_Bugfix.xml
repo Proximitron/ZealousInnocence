@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
+		<defName>Child_Diaper</defName>
+		<label>child - diaper</label>
+		<logRulesInitiator>
+			<rulesStrings>
+				
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+</Defs>

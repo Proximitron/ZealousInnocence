@@ -19,32 +19,6 @@ namespace ZealousInnocence
 
         public override Danger MaxPathDanger(Pawn pawn) => Danger.Deadly;
 
-        public override IEnumerable<Thing> PotentialWorkThingsGlobal(Pawn pawn)
-        {
-            if (this.def.workType == WorkTypeDefOf.Warden)
-            {
-                foreach (Pawn pawn2 in pawn.Map.mapPawns.SlavesAndPrisonersOfColonySpawned)
-                {
-                    Need_Diaper need_diaper = pawn2.needs.TryGetNeed<Need_Diaper>();
-                    if (pawn2.needs.food != null && need_diaper != null && need_diaper.CurLevel < 0.5f)
-                    {
-                        yield return pawn2;
-                    }
-                }
-            }
-            else
-            {
-                foreach (Pawn pawn3 in pawn.Map.mapPawns.FreeColonistsSpawned)
-                {
-                    Need_Diaper need_diaper = pawn3.needs.TryGetNeed<Need_Diaper>();
-                    if (pawn3.needs.food != null && need_diaper != null && need_diaper.CurLevel < 0.5f)
-                    {
-                        yield return pawn3;
-                    }
-                }
-            }
-            yield break;
-        }
         private LocalTargetInfo cachedDiaperTarget;
         private float lastCacheUpdateTime;
         private const float CacheUpdateInterval = 1f; // 1 second
@@ -59,7 +33,6 @@ namespace ZealousInnocence
             return cachedDiaperTarget;
         }
 
-
         public override bool HasJobOnThing(Pawn caretaker, Thing t, bool forced = false)
         {
             JobFailReason.Clear();
@@ -67,8 +40,38 @@ namespace ZealousInnocence
             {
                 return false;
             }
+            bool isGuest = patient.guest != null && patient.guest.GuestStatus == GuestStatus.Guest;
+            if (!forced)
+            {
+                if(caretaker.workSettings == null || def.workType == null)
+                {
+                    return false;
+                }
+                if (!caretaker.workSettings.WorkIsActive(def.workType))
+                {
+                    JobFailReason.Is("Work settings prevent.");
+                    return false;
+                }
+                if(def.workType == WorkTypeDefOf.Childcare)
+                {
+                    if (!patient.isToddlerOrBabyMentalOrPhysical()) return false;
+                }
+                else if(def.workType == WorkTypeDefOf.Warden)
+                {
+                    if (!patient.IsPrisoner && !patient.IsSlaveOfColony && !isGuest) return false;
+                }
+                else if (def.workType == WorkTypeDefOf.Doctor || def.workType == DefDatabase<WorkTypeDef>.GetNamedSilentFail("FSFNurse"))
+                {
+                    if (!Helper_Diaper.shouldStayPut(patient)) return false;
+                }
+            }
+
             if (JobDriver_ChangePatientDiaper.immediateFailReasons(patient, caretaker))
             {
+                if (patient.GetPosture() == PawnPosture.Standing && !patient.isToddlerOrBabyMentalOrPhysical())
+                {
+                    JobFailReason.Is("Needs to be in a bed.");
+                }
                 return false;
             }
 
@@ -90,17 +93,8 @@ namespace ZealousInnocence
                 }
             }
 
-            if (patient.GetPosture() == PawnPosture.Standing)
-            {
-                JobFailReason.Is("Needs to lie down.");
-                return false;
-            }
-            if (!patient.InBed())
-            {
-                JobFailReason.Is("Needs to be in a bed.");
-                return false;
-            }
-            bool isGuest = patient.guest != null && patient.guest.GuestStatus == GuestStatus.Guest;
+           
+            
             if (!isGuest && !patient.IsPrisoner && !patient.IsSlaveOfColony && Helper_Regression.canChangeDiaperOrUnderwear(patient) && !Helper_Diaper.shouldStayPut(patient))
             {
                 JobFailReason.Is("Is big enough to do it themselfs.");

@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,8 +13,9 @@ namespace ZealousInnocence
 {
     public class ZealousInnocenceSettings : ModSettings
     {
-        
-        public bool reduceAge = false;
+        private const int CurrentSettingsVersion = 162;
+        public int settingVersion = -1;
+        public bool reduceAge = true;
         //public float targetChronoAge = 10f;
         //public bool formerAdultsNeedLearning = true;
         //public bool formerAdultsCanHaveIdeoRoles = true;
@@ -28,7 +31,7 @@ namespace ZealousInnocence
 
         public bool faecesActive = false;
 
-        public float bladderRelieveAmount = 0.15f;
+        public float bladderRelieveAmount = 0.2f;
 
         public float needDiapers = 0.45f;
         public float needPullUp = 0.6f;
@@ -46,6 +49,7 @@ namespace ZealousInnocence
         public bool debuggingApparelGenerator = false;
         public bool debuggingRects = false; // draw layout boxes
         public bool debuggingHarmonyPatching = false;
+        public bool debuggingNeeds = false;
 
         // --- behavior toggles ---
         public bool enableTwoUp = true;  // pair rows side-by-side when wide enough
@@ -73,7 +77,7 @@ namespace ZealousInnocence
         /// <summary>
         /// Base amount of regression severity healed per in-game day under neutral conditions.
         /// </summary>
-        public float Regression_BaseRecoveryPerDay = 0.04f;
+        public float Regression_BaseRecoveryPerDay = 0.01f;
 
         /// <summary>
         /// Multiplier applied when pawn is in bed (resting bonus).
@@ -111,8 +115,9 @@ namespace ZealousInnocence
         public override void ExposeData()
         {
             base.ExposeData();
-            
-            Scribe_Values.Look(ref reduceAge, "reduceAge", false);
+
+            Scribe_Values.Look(ref settingVersion, "settingVersion", -1);
+            Scribe_Values.Look(ref reduceAge, "reduceAge", true);
             /*Scribe_Values.Look(ref targetChronoAge, "targetChronoAge", 10f);
             Scribe_Values.Look(ref formerAdultsNeedLearning, "formerAdultsNeedLearning", true);
             Scribe_Values.Look(ref formerAdultsCanHaveIdeoRoles, "formerAdultsCanHaveIdeoRoles", true);*/
@@ -132,7 +137,7 @@ namespace ZealousInnocence
 
             Scribe_Values.Look(ref faecesActive, "faecesActive", false);
             
-            Scribe_Values.Look(ref bladderRelieveAmount, "bladderRelieveAmount", 0.15f);
+            Scribe_Values.Look(ref bladderRelieveAmount, "bladderRelieveAmount", 0.2f);
 
             Scribe_Values.Look(ref debugging, "debugging", false);
             Scribe_Values.Look(ref debuggingCloth, "debuggingCloth", false);
@@ -144,6 +149,8 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref debuggingApparelGenerator, "debuggingApparelGenerator", false);
             Scribe_Values.Look(ref debuggingRects, "debuggingRects", false);
             Scribe_Values.Look(ref debuggingHarmonyPatching, "debuggingHarmonyPatching", false);
+            Scribe_Values.Look(ref debuggingNeeds, "debuggingNeeds", false);
+            
 
             Scribe_Values.Look(ref enableTwoUp, "enableTwoUp", true);
             Scribe_Values.Look(ref snapToUIScale, "snapToUIScale", true);
@@ -164,11 +171,33 @@ namespace ZealousInnocence
 
             Scribe_Values.Look(ref maxLeftFrac, "maxLeftFrac", 0.58f);
 
-            Scribe_Values.Look(ref Regression_BaseRecoveryPerDay, "Regression_BaseRecoveryPerDay", 0.04f);
+            Scribe_Values.Look(ref Regression_BaseRecoveryPerDay, "Regression_BaseRecoveryPerDay", 0.01f);
             Scribe_Values.Look(ref Regression_RestingMultiplier, "Regression_RestingMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_ChildMultiplier, "Regression_ChildMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_AnimalMultiplier, "Regression_AnimalMultiplier", 2.0f);
             Scribe_Values.Look(ref Regression_LevelMaskBySeverity, "Regression_LevelMaskBySeverity", 0.8f);
+
+            if (Scribe.mode == LoadSaveMode.LoadingVars && settingVersion != CurrentSettingsVersion)
+            {
+                Log.Message($"[ZI] Resetting all settings because of major version change or first start {settingVersion} => {CurrentSettingsVersion}");
+                var oldPoop = faecesActive;
+                ResetAllToDefaults();
+                settingVersion = CurrentSettingsVersion;
+                faecesActive = oldPoop;
+            }
+        }
+        private void ResetAllToDefaults()
+        {
+            // Create a fresh default instance to copy values from
+            var defaults = new ZealousInnocenceSettings();
+
+            var flags = BindingFlags.Instance | BindingFlags.Public;
+            foreach (var field in typeof(ZealousInnocenceSettings)
+                     .GetFields(flags)
+                     .Where(f => !f.IsStatic))
+            {
+                field.SetValue(this, field.GetValue(defaults));
+            }
         }
 
         public Listing_Standard list;
@@ -283,21 +312,9 @@ namespace ZealousInnocence
             list.GapLine(gabSize);
             list.CheckboxLabeled("SettingActivateFaeces".Translate(), ref faecesActive, "SettingActivateFaecesHelp".Translate());
             list.GapLine(gabSize);
-            list.Label("SettingBladderRelieveAmount".Translate() + $": {Math.Round(bladderRelieveAmount * 100)}%", tooltip: "SettingBladderRelieveAmountHelp".Translate(NamedArgumentUtility.Named("15", "CHANCE")));
-            bladderRelieveAmount = list.Slider(bladderRelieveAmount, 0.10f, 1f);
+            list.Label("SettingBladderRelieveAmount".Translate() + $": {Math.Round(bladderRelieveAmount * 100)}%", tooltip: "SettingBladderRelieveAmountHelp".Translate(NamedArgumentUtility.Named("20", "CHANCE")));
+            bladderRelieveAmount = list.Slider(bladderRelieveAmount, 0.05f, 1f);
             list.End();
-
-            /*
-            this.row.GapLine(12f);
-            this.row.DoubleTrouble("DisableNeeds".Translate(), ref this.BladderNeed, ref this.HygieneNeed, "DisableNeedsTip".Translate());
-            this.row.DoubleTrouble("PrisonersGetNeeds".Translate(), ref this.PrisonersGetBladder, ref this.PrisonersGetHygiene, "PrisonersGetNeedsTip".Translate());
-            this.row.DoubleTrouble("HospitalityGuestsGetNeeds".Translate(), ref this.GuestsGetBladder, ref this.GuestsGetHygiene, "HospitalityGuestsGetNeedsTip".Translate());
-            this.row.CheckboxLabeled("AllowNonHuman".Translate(), ref this.AllowNonHuman, "AllowNonHumanTip".Translate(), 0f, 1f);
-            this.row.GapLine(12f);
-            this.row.CheckboxLabeled("PetsGetBladder".Translate(), ref this.PetsGetBladder, "PetsGetBladderTip".Translate(), 0f, 1f);
-            this.row.CheckboxLabeled("WildAnimalsGetBladder".Translate(), ref this.AnimalsGetBladder, "WildAnimalsGetBladderTip".Translate(), 0f, 1f);
-            this.row.GapLine(12f);
-            */
         }
         public void DoRegression(Rect inRect)
         {
@@ -310,7 +327,7 @@ namespace ZealousInnocence
             list.Label("SettingRegressionHealing".Translate(), -1f, tooltip: "SettingRegressionHealingHelp".Translate());
 
             SliderPct(list, "SettingBaseRecovery".Translate(), ref Regression_BaseRecoveryPerDay,
-                0f, Prefs.DevMode ? 3.6f : 0.25f, 0.04f,
+                0f, Prefs.DevMode ? 3.6f : 0.2f, 0.01f,
                 "SettingBaseRecoveryHelp".Translate());
 
             SliderPct(list, "SettingRestingMultiplier".Translate(), ref Regression_RestingMultiplier,
@@ -447,6 +464,7 @@ this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.
                 list.CheckboxLabeled("SettingDebugApparel".Translate(), ref debuggingApparelGenerator, "SettingDebugApparelHelp".Translate());
                 list.CheckboxLabeled("SettingDebugRects".Translate(), ref debuggingRects, "SettingDebugRectsHelp".Translate());
                 list.CheckboxLabeled("SettingDebugHarmony".Translate(), ref debuggingHarmonyPatching, "SettingDebugHarmonyHelp".Translate());
+                list.CheckboxLabeled("SettingDebugNeeds".Translate(), ref debuggingNeeds, "SettingDebugNeedsHelp".Translate());
             }
             else
             {
@@ -459,6 +477,7 @@ this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.
                 debuggingApparelGenerator = false;
                 debuggingRects = false;
                 debuggingHarmonyPatching = false;
+                debuggingNeeds = false;
             }
 
             list.NewColumn();
@@ -525,7 +544,7 @@ this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.
 
         private void ResetRegressionToDefaults()
         {
-            Regression_BaseRecoveryPerDay = 0.3f;
+            Regression_BaseRecoveryPerDay = 0.01f;
             Regression_RestingMultiplier = 1.0f;
             Regression_ChildMultiplier = 1.0f;
             Regression_AnimalMultiplier = 3.0f;

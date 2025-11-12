@@ -123,21 +123,11 @@ namespace ZealousInnocence
         public bool allowChild = false;
         public bool allowAdult = false;
 
-        // Optional mutual-exclusion group
-        public string group;
-        public int priority;
-
         public bool mentalStat;
         public bool physicalStat;
 
         public bool Allows(Pawn pawn)
         {
-            /*DevelopmentalStage s = pawn.DevelopmentalStage;
-            var stageBase = (s == DevelopmentalStage.Baby && allowBaby)
-            || (s == DevelopmentalStage.Child && allowChild)
-            || (s == DevelopmentalStage.Adult && allowAdult);
-            */
-
             if(pawn == null || pawn.ageTracker == null) return false;
             float age = pawn.ageTracker.AgeBiologicalYearsFloat;
             pawn.refreshAllAgeStageCaches();
@@ -173,10 +163,16 @@ namespace ZealousInnocence
 
     public static class Patch_ShouldHaveNeed_Debug
     {
-        // Toggle at runtime from dev console or add a settings UI later
-        public static bool Enabled = false;
+        private static ZealousInnocenceSettings Settings => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+        public static bool Enabled
+        {
+            get
+            {
+                if (Settings == null) return false;
+                return Settings.debuggingNeeds;
+            }
+        }
 
-        // We capture the pawn via reflection (Pawn_NeedsTracker.pawn is a private field)
         private static Pawn GetPawn(Pawn_NeedsTracker tracker)
         {
             return AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>(tracker, "pawn");
@@ -207,6 +203,12 @@ namespace ZealousInnocence
             var pawn = GetPawn(__instance);
             if (pawn == null || !pawn.RaceProps.Humanlike) return false;
 
+            if(nd.defName == "Bladder")
+            {
+                __result = true;
+                return true;
+            }
+
             var ext = nd.GetModExtension<DevStageExtension>();
             if (ext == null) return false; // No custom rule → leave vanilla outcome.
 
@@ -225,7 +227,7 @@ namespace ZealousInnocence
             if (__result) return false; // We don't touch anything that is already allowed
 
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            var debug = settings.debugging && settings.debuggingCapacities;
+            var debug = settings.debuggingCapacities;
 
             if (!settings.bladderForRaidCaravanVisitors) return false; // Deactivated by setting. We keep it untouched!
 

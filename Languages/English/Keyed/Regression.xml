@@ -28,6 +28,8 @@
 	<StateWordVeryHigh>very high</StateWordVeryHigh>
 	
 	<!-- Descriptions why the pawn is now allowed to use the potty -->
+	<ShortReasonNotUnderstand>Doesn't understand how that works</ShortReasonNotUnderstand>
+	<ShortReasonIsTooSmall>Is too small to use this</ShortReasonIsTooSmall>
 	<ShortReasonNotComply>Doesn't want to</ShortReasonNotComply>
 	<ShortReasonWrongMentalState>Not in a mental state to do so</ShortReasonWrongMentalState>
 	<ShortReasonCantChangeDiaperOrUnderwearSelf>Can't get out of their diaper</ShortReasonCantChangeDiaperOrUnderwearSelf>	

@@ -150,6 +150,7 @@ namespace ZealousInnocence
                 JobFailReason.Is("Can't remove underwear.");
             }
         }
+
         private static LocalTargetInfo findBestUndieOrDiaper(Pawn caretaker, Pawn patient, float minRating = -0.1f)
         {
             Thing bestThing = null;
@@ -162,21 +163,34 @@ namespace ZealousInnocence
             if (!caretaker.IsColonist || (!patient.IsColonist && !patient.IsPrisoner)) return LocalTargetInfo.Invalid;
             if (!caretaker.Spawned || !patient.Spawned) return LocalTargetInfo.Invalid;
             if (caretaker.Map == null || patient.Map == null) return LocalTargetInfo.Invalid;
-            foreach (Thing thing in patient.Map.listerThings.AllThings)
-            {
-                if (thing is Apparel app)
-                {
-                    if (app.HitPoints < (app.MaxHitPoints / 2)) continue;
 
-                    float rating = Helper_Diaper.getDiaperOrUndiesRating(patient, app);
-                    if (rating > bestRating && caretaker.CanReserveAndReach(thing, PathEndMode.ClosestTouch, Danger.Deadly))
-                    {
-                        bestRating = rating;
-                        bestThing = thing;
-                    }
+            foreach (Thing thing in caretaker?.inventory?.innerContainer)
+            {
+                EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, false);
+            }
+            if (bestThing == null)
+            {
+                foreach (Thing thing in patient.Map.listerThings.AllThings)
+                {
+                    EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, true);
                 }
             }
             return bestThing != null ? new LocalTargetInfo(bestThing) : LocalTargetInfo.Invalid;
+        }
+        public static void EvaluateSingleApparel(
+            Pawn caretaker, Pawn patient, Thing thing,
+            ref Thing bestThing, ref float bestRating, bool checkReachable = true)
+        {
+            if (thing is not Apparel app) return;
+            if (app.HitPoints < (app.MaxHitPoints / 2)) return;
+
+            float rating = Helper_Diaper.getDiaperOrUndiesRating(patient, app);
+            if (rating > bestRating && (!checkReachable ||
+                caretaker.CanReserveAndReach(thing, PathEndMode.ClosestTouch, Danger.Deadly)))
+            {
+                bestRating = rating;
+                bestThing = thing;
+            }
         }
         public override void SetInitialLevel()
         {
@@ -347,8 +361,8 @@ namespace ZealousInnocence
             isHavingAccident = true;
             peeing = pee;
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            var debugging = settings.debugging && settings.debuggingCapacities;
-            if (debugging) Log.Message("debug: starting accident '" + (peeing ? "pee" : "poop") + "' for " + pawn.Name);
+            var debugging = settings.debuggingCapacities;
+            if (debugging) Log.Message("[ZI] startAccident '" + (peeing ? "pee" : "poop") + "' for " + pawn.Name);
 
             var liked = Helper_Diaper.getDiaperPreference(pawn);
             var diaper = Helper_Diaper.getDiaper(pawn);
@@ -450,6 +464,7 @@ namespace ZealousInnocence
         public override void NeedInterval()
         {
             if (pawn.Dead || !pawn.RaceProps.Humanlike || !pawn.RaceProps.IsFlesh) return;
+            Helper_Toddlers.AdjustToddlersHediffs(pawn);
             pawn.health.capacities.Notify_CapacityLevelsDirty(); // Yes, nessesary. The caching doesn't keep track of changes like sleeping and things that not cause hediffs
             currProtectionCache = null;
 
@@ -540,7 +555,7 @@ namespace ZealousInnocence
                                 pawn.jobs.StartJob(job, JobCondition.InterruptForced);
                             }
                         }
-                        else if (CanPolitelyInterrupt(pawn, pawn.CurJob))
+                        else if (pawn.CanPolitelyInterrupt())
                         {
                             if (debugging) Log.Message($"[ZI] polite override: interrupting {pawn.CurJobDef?.defName} for toilet ({pawn.LabelShort})");
 
@@ -578,7 +593,7 @@ namespace ZealousInnocence
                 }
                 else
                 {
-                    if (bladder.CurLevel <= 0.28f && Rand.ChanceSeeded(1f / 32f, pawn.HashOffsetTicks()+812) && bladder.CurLevel <= (Helper_Diaper.getBladderControlFailPoint(pawn) + 0.1f) && Helper_Diaper.remembersPotty(pawn) && CanPolitelyInterrupt(pawn, pawn.CurJob))
+                    if (bladder.CurLevel <= 0.28f && Rand.ChanceSeeded(1f / 32f, pawn.HashOffsetTicks()+812) && bladder.CurLevel <= (Helper_Diaper.getBladderControlFailPoint(pawn) + 0.1f) && Helper_Diaper.remembersPotty(pawn) && pawn.CanPolitelyInterrupt())
                     {
                         var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
                         Job toiletJob = jobGiver.TryGiveJob(pawn);
@@ -730,7 +745,7 @@ namespace ZealousInnocence
         {
             if (isHavingAccident)
             {
-                if(pawn.CurJob.def != JobDefOf.PeePoopEvent && pawn.Awake() && CanPolitelyInterrupt(pawn, pawn.CurJob) && !Helper_Diaper.isDiaper(currProtection))
+                if(pawn.CurJob.def != JobDefOf.PeePoopEvent && pawn.Awake() && pawn.CanPolitelyInterrupt() && !Helper_Diaper.isDiaper(currProtection))
                 {
                     
                     var job = JobMaker.MakeJob(JobDefOf.PeePoopEvent);
@@ -748,51 +763,8 @@ namespace ZealousInnocence
                 }
             }
         }
-        private static bool CanPolitelyInterrupt(Pawn pawn, Job curJob)
-        {
-            if (pawn == null || curJob == null) return false;
-            if (pawn.Downed || pawn.InMentalState) return false;
-            if(pawn.CurJob?.playerForced == true) return false;
 
-            // If job def says it’s NOT interruptible for the player, treat it as essential
-            if (curJob.def?.playerInterruptible == false) return false;
-            if (curJob.locomotionUrgency == LocomotionUrgency.Sprint) return false;
-            // Avoid interrupting critical things
-            if (IsEssentialJob(curJob)) return false;
-            if(ForbidsLongNeeds(pawn)) return false;
 
-            return true;
-        }
-        private static bool ForbidsLongNeeds(Pawn pawn)
-        {
-            var duty = pawn?.mindState?.duty;
-            if (duty == null) return false;
-
-            // Try common names across versions
-            var t = duty.GetType();
-            var f = t.GetField("allowSatisfyLongNeeds", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (f?.FieldType == typeof(bool)) return !(bool)f.GetValue(duty);
-            var p = t.GetProperty("allowSatisfyLongNeeds", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (p?.PropertyType == typeof(bool)) return !(bool)p.GetValue(duty);
-
-            return false; // unknown => don’t block
-        }
-
-        private static bool IsEssentialJob(Job job)
-        {
-            if (job?.def == null) return false;
-            var def = job.def;
-
-            // conservative deny-list: combat, emergency, tending, rescuing, hauling a downed pawn, arrest, manhunter-like, fleeing, ingest while starving, etc.
-            if (def == RimWorld.JobDefOf.AttackMelee || def == RimWorld.JobDefOf.AttackStatic || def == RimWorld.JobDefOf.Wait_Combat || def == RimWorld.JobDefOf.Hunt)
-                return true;
-            if (def == RimWorld.JobDefOf.Flee || def == RimWorld.JobDefOf.TakeWoundedPrisonerToBed || def == RimWorld.JobDefOf.Rescue || def == RimWorld.JobDefOf.Capture || def == RimWorld.JobDefOf.Arrest)
-                return true;
-            if (def == RimWorld.JobDefOf.TendPatient || def == RimWorld.JobDefOf.TendEntity || def == RimWorld.JobDefOf.BeatFire || def == RimWorld.JobDefOf.ExtinguishSelf)
-                return true;
-
-            return false;
-        }
         void CategoryChanged()
         {
         }
