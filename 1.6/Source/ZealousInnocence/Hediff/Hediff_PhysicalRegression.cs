@@ -459,6 +459,55 @@ namespace ZealousInnocence
             }
         }
 
+        public string TipExtraDetails(bool mental) {
+            string tip = "";
+            var info = pawn.ComputeTotalRegression(mental: mental);
+            tip += $"\n\nTotal = {info.finalTotal:0.###}  (Σ {info.sumContrib:0.###} × {info.productMult:0.###})";
+            if (!float.IsInfinity(info.postEffectCap))
+                tip += $"  |  Cap ≤ {info.postEffectCap:0.###}";
+
+            var sources = pawn.health.hediffSet.hediffs
+                .OfType<HediffWithComps>()
+                .Select(h => (h, c: h.TryGetComp<HediffComp_RegressionInfluence>()))
+                .Where(t => t.c != null && t.c.IsInfluence(mental: mental))
+                .Select(t => new
+                {
+                    label = t.h.def.label.CapitalizeFirst(),
+                    contrib = t.c.GetExternalCappedContribution(mental: mental),
+                    mult = t.c.GetMultiplierFactor(mental: mental),
+                    cap = t.c.GetCap(mental: mental),
+                    decPerDay = t.c.decayPerDay,
+                    severity = t.c.parent.Severity,
+                })
+                .Where(x => x.contrib > 0f || Mathf.Abs(x.mult - 1f) > 0.001f || x.cap > 0f)
+                .OrderByDescending(x => x.contrib)
+                .ThenByDescending(x => x.mult)
+                .ToList();
+
+            if (sources.Count > 0)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("\nSources:");
+                foreach (var s in sources)
+                {
+                    sb.Append("  • ").Append(s.label).Append("  -> ");
+                    if (s.contrib > 0f) sb.Append($"+{s.contrib:0.###}  ");
+                    if (Mathf.Abs(s.mult - 1f) > 0.001f) sb.Append($"×{s.mult:0.###}  ");
+                    if (s.cap > 0f) sb.Append($"(cap ≤ {s.cap:0.###})  ");
+                    if (s.decPerDay > 0f)
+                    {
+                        var remaining = s.severity / s.decPerDay;
+                        sb.Append($"(≈ {remaining:0.#} day");
+                        if (remaining >= 2f) sb.Append("s");
+                        sb.Append(" left)  ");
+                    }
+                    sb.AppendLine();
+                }
+                tip += sb.ToString().TrimEnd();
+            }
+            return tip;
+        }
+
     }
 
 
@@ -582,6 +631,8 @@ namespace ZealousInnocence
                 {
                     tip += $"\nEstimated recovery: ~{EstimatedRecoveryDays():0.#} day(s)";
                 }*/
+
+                tip += TipExtraDetails(mental: true);
                 return tip;
             }
         }
@@ -1455,50 +1506,7 @@ namespace ZealousInnocence
                     tip += $"\nEstimated recovery: ~{EstimatedRecoveryDays():0.#} day(s)";
                 }
 
-                var info = pawn.ComputeTotalRegression(false);
-                tip += $"\n\nTotal = {info.finalTotal:0.###}  (Σ {info.sumContrib:0.###} × {info.productMult:0.###})";
-                if (!float.IsInfinity(info.postEffectCap))
-                    tip += $"  |  Cap ≤ {info.postEffectCap:0.###}";
-
-                var sources = pawn.health.hediffSet.hediffs
-                    .OfType<HediffWithComps>()
-                    .Select(h => (h, c: h.TryGetComp<HediffComp_RegressionInfluence>()))
-                    .Where(t => t.c != null && t.c.IsInfluence(mental: false))
-                    .Select(t => new
-                    {
-                        label = t.h.def.label.CapitalizeFirst(),
-                        contrib = t.c.GetExternalCappedContribution(mental: false),
-                        mult = t.c.GetMultiplierFactor(mental: false),
-                        cap = t.c.GetCap(mental: false),
-                        decPerDay = t.c.decayPerDay,
-                        severity = t.c.parent.Severity,
-                    })
-                    .Where(x => x.contrib > 0f || Mathf.Abs(x.mult - 1f) > 0.001f || x.cap > 0f)
-                    .OrderByDescending(x => x.contrib)
-                    .ThenByDescending(x => x.mult)
-                    .ToList();
-
-                if (sources.Count > 0)
-                {
-                    var sb = new StringBuilder();
-                    sb.AppendLine("\nSources:");
-                    foreach (var s in sources)
-                    {
-                        sb.Append("  • ").Append(s.label).Append("  -> ");
-                        if (s.contrib > 0f) sb.Append($"+{s.contrib:0.###}  ");
-                        if (Mathf.Abs(s.mult - 1f) > 0.001f) sb.Append($"×{s.mult:0.###}  ");
-                        if (s.cap > 0f) sb.Append($"(cap ≤ {s.cap:0.###})  ");
-                        if (s.decPerDay > 0f)
-                        {
-                            var remaining = s.decPerDay / s.severity;
-                            sb.Append($"(≈ {remaining:0.#} day");
-                            if (remaining >= 2f) sb.Append("s");
-                            sb.Append(" left)  ");
-                        }
-                        sb.AppendLine();
-                    }
-                    tip += sb.ToString().TrimEnd();
-                }
+                tip += TipExtraDetails(mental: false);
 
                 return tip;
             }
