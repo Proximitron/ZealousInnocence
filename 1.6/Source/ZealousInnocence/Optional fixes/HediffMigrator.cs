@@ -121,8 +121,6 @@ namespace ZealousInnocence
         private long lastBioSeen = -1;       // The last chronological age we have seen/updates ourself. The time difference to it is what we need to advance on the baseline
         public bool forceTick = false;
         private BeardDef lastBeardType = null;
-        private TickTimer resurrectTimer = new TickTimer();
-        private TickTimer resurrectTimerLetter = new TickTimer();
         // Growth moments
         public static bool AllowBirthdayThrough = false;
         public bool suppressVanillaBirthdays = true;
@@ -137,9 +135,6 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref lastBioSeen, "ZI_reg_lastBioSeen", -1);
 
             Scribe_Defs.Look(ref lastBeardType, "ZI_reg_lastBeardType");
-            Scribe_Deep.Look<TickTimer>(ref resurrectTimerLetter, "ZI_reg_resurrectTimerLetter", Array.Empty<object>());
-            Scribe_Deep.Look<TickTimer>(ref resurrectTimer, "ZI_reg_resurrectTimer", Array.Empty<object>());
-
 
             Scribe_Collections.Look(ref deferredBirthdays, "ZI_deferredBirthdays", LookMode.Value);
             if (Scribe.mode == LoadSaveMode.PostLoadInit && deferredBirthdays == null) deferredBirthdays = new HashSet<int>();
@@ -148,7 +143,7 @@ namespace ZealousInnocence
         {
             var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionPhysical) ?? pawn.health.AddHediff(HediffDefOf.RegressionPhysical, BodyPart);
 
-            CopyCommonFields(this, hediff, new[] { "_lastHealTick", "baselineBioTicks", "lastBioSeen", "lastBeardType", "resurrectTimerLetter", "resurrectTimer", "deferredBirthdays" });
+            CopyCommonFields(this, hediff, new[] { "_lastHealTick", "baselineBioTicks", "lastBioSeen", "lastBeardType", "deferredBirthdays" });
 
             return hediff;
         }

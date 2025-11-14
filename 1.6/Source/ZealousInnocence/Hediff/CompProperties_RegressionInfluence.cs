@@ -108,7 +108,15 @@ namespace ZealousInnocence
                 }
             }
         }
-        
+
+        public override void CompPostPostRemoved()
+        {
+            if (Settings.debugging)
+            {
+                Log.Message($"[ZI] Removing hediff '{parent.LabelCap}' for '{parent.pawn.LabelCap}: {parent.Severity}");
+            }
+        }
+
         private static ZealousInnocenceSettings Settings
     => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
         public override void CompPostTick(ref float severityAdjustment)

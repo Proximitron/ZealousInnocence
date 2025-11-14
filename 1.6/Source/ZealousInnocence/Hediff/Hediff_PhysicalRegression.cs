@@ -452,11 +452,11 @@ namespace ZealousInnocence
         public override void Tick()
         {
             base.Tick();
-            if (this.def == HediffDefOf.RegressionDamage || this.def == HediffDefOf.RegressionDamageMental)
+            /*if (this.def == HediffDefOf.RegressionDamage || this.def == HediffDefOf.RegressionDamageMental)
             {
                 Severity = 0;
                 return;
-            }
+            }*/
         }
 
         /*public string TipExtraDetails(bool mental) {
@@ -520,75 +520,74 @@ namespace ZealousInnocence
 
             // collect raw entries
             var entries = pawn.health.hediffSet.hediffs
-                .OfType<HediffWithComps>()
-                .Select(h => (h, c: h.TryGetComp<HediffComp_RegressionInfluence>()))
-                .Where(t => t.c != null && t.c.IsInfluence(mental: mental))
-                .Select(t =>
-                {
-                    float contrib = t.c.GetExternalCappedContribution(mental: mental);
-                    float mult = t.c.GetMultiplierFactor(mental: mental);
-                    float cap = t.c.GetCap(mental: mental);
-                    float decPerDay = t.c.decayPerDay;
-                    float sev = t.c.parent.Severity;
+    .OfType<HediffWithComps>()
+    .Select(h => (h, c: h.TryGetComp<HediffComp_RegressionInfluence>()))
+    .Where(t => t.c != null && t.c.IsInfluence(mental: mental))
+    .Select(t =>
+    {
+        var props = t.c.props; // per-def, same across instances of this HediffDef
+        float contrib = t.c.GetExternalCappedContribution(mental: mental);
+        float mult = t.c.GetMultiplierFactor(mental: mental);
+        float capDef = t.c.GetCap(mental);
+        float decPerDay = t.c.decayPerDay;
+        float sev = t.c.parent.Severity;
 
-                    // remaining days bucket (one decimal, or "∞" if no decay)
-                    string bucket;
-                    float remaining = 0f;
-                    if (decPerDay > 0f)
-                    {
-                        remaining = sev / decPerDay;
-                        bucket = $"{remaining:0.#}";
-                    }
-                    else
-                    {
-                        remaining = float.PositiveInfinity;
-                        bucket = "∞";
-                    }
+        // remaining time (in days)
+        float remaining = decPerDay > 0f ? sev / decPerDay : float.PositiveInfinity;
 
-                    return new
-                    {
-                        def = t.h.def,
-                        label = t.h.def.label.CapitalizeFirst(),
-                        contrib,
-                        mult,
-                        cap,
-                        decPerDay,
-                        severity = sev,
-                        remaining,
-                        bucket
-                    };
-                })
-                .Where(x => x.contrib > 0f || Mathf.Abs(x.mult - 1f) > 0.001f || x.cap > 0f)
-                .ToList();
+        return new
+        {
+            def = t.h.def,
+            label = t.h.def.label.CapitalizeFirst(),
+            contrib,
+            mult,
+            capDef,           // << per-def cap
+            decPerDay,
+            severity = sev,
+            remaining
+        };
+    })
+    .Where(x => x.contrib > 0f || Mathf.Abs(x.mult - 1f) > 0.001f || x.capDef > 0f)
+    .ToList();
 
             if (entries.Count == 0)
                 return tipSb.ToString();
 
-            // group by (type label, bucket)
+            // group by HediffDef (one row per hediff type)
             var groups = entries
-                .GroupBy(e => new { e.label, e.bucket })
+                .GroupBy(e => e.def)
                 .Select(g =>
                 {
                     float sumContrib = g.Sum(e => e.contrib);
+
                     float prodMult = 1f;
                     foreach (var e in g) prodMult *= e.mult;
 
-                    // choose a representative cap for the bucket (max makes sense for display)
-                    float cap = g.Max(e => e.cap);
+                    // per-def cap is identical across instances; pick any (or max for safety)
+                    float capDef = g.Max(e => e.capDef);
 
-                    // pick a representative remaining (from the first)
-                    var first = g.First();
-                    float rem = first.remaining;
+                    // summarize remaining time as a bucket range
+                    float minRem = g.Min(e => e.remaining);
+                    float maxRem = g.Max(e => e.remaining);
+                    string bucket =
+                        float.IsPositiveInfinity(minRem) && float.IsPositiveInfinity(maxRem)
+                            ? "no decay"
+                            : (minRem == maxRem
+                                ? $"≈ {minRem:0.#} day{(minRem >= 2f ? "s" : "")}"
+                                : $"≈ {minRem:0.#}–{maxRem:0.#} days");
+
+                    // optional: show the post-cap contribution per group (display only)
+                    float cappedContrib = (capDef > 0f) ? Mathf.Min(sumContrib, capDef) : sumContrib;
 
                     return new
                     {
-                        typeLabel = g.Key.label,
-                        bucket = g.Key.bucket,      // e.g., "1.1" or "∞"
+                        typeLabel = g.First().label,
                         count = g.Count(),
                         sumContrib,
+                        cappedContrib,
                         prodMult,
-                        cap,
-                        remaining = rem
+                        capDef,
+                        bucket
                     };
                 })
                 .OrderByDescending(gr => gr.sumContrib)
@@ -596,32 +595,27 @@ namespace ZealousInnocence
                 .ThenBy(gr => gr.typeLabel)
                 .ToList();
 
+            // render
             var sb = new StringBuilder();
             sb.AppendLine("\nSources :");
-
             foreach (var g in groups)
             {
-                sb.Append("  • ").Append(g.typeLabel);
+                sb.Append("  • ").Append(g.typeLabel)
+                  .Append(" (x").Append(g.count).Append(", ").Append(g.bucket).Append(")  -> ");
 
-                // show merge count & time bucket
-                sb.Append(" (x").Append(g.count).Append(", ");
-                if (g.bucket == "∞")
-                {
-                    sb.Append("no decay");
-                }
-                else
-                {
-                    sb.Append("≈ ").Append(g.bucket).Append(" day");
-                    if (g.remaining >= 2f) sb.Append("s");
-                }
-                sb.Append(")  -> ");
+                // contribution (show capped if a cap exists)
+                if (g.capDef > 0f)
+                    sb.Append($"+{g.cappedContrib:0.###}  ");
+                else if (g.sumContrib > 0f)
+                    sb.Append($"+{g.sumContrib:0.###}  ");
 
-                // merged contribution & multiplier product
-                if (g.sumContrib > 0f) sb.Append($"+{g.sumContrib:0.###}  ");
-                if (Mathf.Abs(g.prodMult - 1f) > 0.001f) sb.Append($"×{g.prodMult:0.###}  ");
+                // multiplier product
+                if (Mathf.Abs(g.prodMult - 1f) > 0.001f)
+                    sb.Append($"×{g.prodMult:0.###}  ");
 
-                // cap note if any source in this bucket has one
-                if (g.cap > 0f) sb.Append($"(cap ≤ {g.cap:0.###})  ");
+                // single cap note per group
+                if (g.capDef > 0f)
+                    sb.Append($"(cap ≤ {g.capDef:0.###})  ");
 
                 sb.AppendLine();
             }
@@ -1623,7 +1617,7 @@ namespace ZealousInnocence
                     tip += $"\nBehaves Like: {pawn.getAgeBehaviour()}";
                     
                     // Neutral-condition ETA: assumes multiplier ~1
-                    tip += $"\nEstimated recovery: ~{EstimatedRecoveryDays():0.#} day(s)";
+                    //tip += $"\nEstimated recovery: ~{EstimatedRecoveryDays():0.#} day(s)";
                 }
 
                 tip += TipExtraDetails(mental: false);
