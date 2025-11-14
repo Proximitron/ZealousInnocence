@@ -459,7 +459,7 @@ namespace ZealousInnocence
             }
         }
 
-        public string TipExtraDetails(bool mental) {
+        /*public string TipExtraDetails(bool mental) {
             string tip = "";
             var info = pawn.ComputeTotalRegression(mental: mental);
             tip += $"\n\nTotal = {info.finalTotal:0.###}  (Σ {info.sumContrib:0.###} × {info.productMult:0.###})";
@@ -508,8 +508,128 @@ namespace ZealousInnocence
             return tip;
         }
 
-    }
+    }*/
+        public string TipExtraDetails(bool mental)
+        {
+            var info = pawn.ComputeTotalRegression(mental: mental);
 
+            var tipSb = new StringBuilder();
+            tipSb.Append($"\n\nTotal = {info.finalTotal:0.###}  (Σ {info.sumContrib:0.###} × {info.productMult:0.###})");
+            if (!float.IsInfinity(info.postEffectCap))
+                tipSb.Append($"  |  Cap ≤ {info.postEffectCap:0.###}");
+
+            // collect raw entries
+            var entries = pawn.health.hediffSet.hediffs
+                .OfType<HediffWithComps>()
+                .Select(h => (h, c: h.TryGetComp<HediffComp_RegressionInfluence>()))
+                .Where(t => t.c != null && t.c.IsInfluence(mental: mental))
+                .Select(t =>
+                {
+                    float contrib = t.c.GetExternalCappedContribution(mental: mental);
+                    float mult = t.c.GetMultiplierFactor(mental: mental);
+                    float cap = t.c.GetCap(mental: mental);
+                    float decPerDay = t.c.decayPerDay;
+                    float sev = t.c.parent.Severity;
+
+                    // remaining days bucket (one decimal, or "∞" if no decay)
+                    string bucket;
+                    float remaining = 0f;
+                    if (decPerDay > 0f)
+                    {
+                        remaining = sev / decPerDay;
+                        bucket = $"{remaining:0.#}";
+                    }
+                    else
+                    {
+                        remaining = float.PositiveInfinity;
+                        bucket = "∞";
+                    }
+
+                    return new
+                    {
+                        def = t.h.def,
+                        label = t.h.def.label.CapitalizeFirst(),
+                        contrib,
+                        mult,
+                        cap,
+                        decPerDay,
+                        severity = sev,
+                        remaining,
+                        bucket
+                    };
+                })
+                .Where(x => x.contrib > 0f || Mathf.Abs(x.mult - 1f) > 0.001f || x.cap > 0f)
+                .ToList();
+
+            if (entries.Count == 0)
+                return tipSb.ToString();
+
+            // group by (type label, bucket)
+            var groups = entries
+                .GroupBy(e => new { e.label, e.bucket })
+                .Select(g =>
+                {
+                    float sumContrib = g.Sum(e => e.contrib);
+                    float prodMult = 1f;
+                    foreach (var e in g) prodMult *= e.mult;
+
+                    // choose a representative cap for the bucket (max makes sense for display)
+                    float cap = g.Max(e => e.cap);
+
+                    // pick a representative remaining (from the first)
+                    var first = g.First();
+                    float rem = first.remaining;
+
+                    return new
+                    {
+                        typeLabel = g.Key.label,
+                        bucket = g.Key.bucket,      // e.g., "1.1" or "∞"
+                        count = g.Count(),
+                        sumContrib,
+                        prodMult,
+                        cap,
+                        remaining = rem
+                    };
+                })
+                .OrderByDescending(gr => gr.sumContrib)
+                .ThenByDescending(gr => gr.prodMult)
+                .ThenBy(gr => gr.typeLabel)
+                .ToList();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("\nSources :");
+
+            foreach (var g in groups)
+            {
+                sb.Append("  • ").Append(g.typeLabel);
+
+                // show merge count & time bucket
+                sb.Append(" (x").Append(g.count).Append(", ");
+                if (g.bucket == "∞")
+                {
+                    sb.Append("no decay");
+                }
+                else
+                {
+                    sb.Append("≈ ").Append(g.bucket).Append(" day");
+                    if (g.remaining >= 2f) sb.Append("s");
+                }
+                sb.Append(")  -> ");
+
+                // merged contribution & multiplier product
+                if (g.sumContrib > 0f) sb.Append($"+{g.sumContrib:0.###}  ");
+                if (Mathf.Abs(g.prodMult - 1f) > 0.001f) sb.Append($"×{g.prodMult:0.###}  ");
+
+                // cap note if any source in this bucket has one
+                if (g.cap > 0f) sb.Append($"(cap ≤ {g.cap:0.###})  ");
+
+                sb.AppendLine();
+            }
+
+            tipSb.Append(sb.ToString().TrimEnd());
+            return tipSb.ToString();
+        }
+    }
 
     public class Hediff_MentalRegression : Hediff_RegressionBase
     {

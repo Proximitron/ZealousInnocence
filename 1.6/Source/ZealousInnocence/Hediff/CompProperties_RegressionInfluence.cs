@@ -14,18 +14,12 @@ namespace ZealousInnocence
 
     public class CompProperties_RegressionInfluence : HediffCompProperties
     {
-        // most comps simply use the severity of the hediff as magnitude
-        public bool useSeverityAsMagnitude = true;
-
-        // Base runtime magnitude that then fans out into domain contributions via power multipliers.
-        public float magnitudeBase = 0f;
-
         // Decay & caps
         public float decayPerDayBase = 0f;
 
         // Domain contribution caps
-        public float maxContributionMental = 0.20f;
-        public float maxContributionPhysical = 0.20f;
+        public float maxContributionMental = 9999f;
+        public float maxContributionPhysical = 9999f;
 
         public float totalCapMental = 0f;     // e.g., 1.00f to keep mental ≤ 1.0 while this hediff is active
         public float totalCapPhysical = 0f;
@@ -40,7 +34,7 @@ namespace ZealousInnocence
         public float multiplierPhysical = 1f;
 
         // Stacking rules
-        public ZIStacking stacking = ZIStacking.Refresh;
+        public ZIStacking stacking = ZIStacking.Additive;
         public string exclusiveGroup;
 
         // Aura feeding (if true and inArea==true, skip decay this tick)
@@ -53,6 +47,14 @@ namespace ZealousInnocence
         public string onThresholdHediff;
         public float severityThreshold = 0f;
         public float applyChance = 1f;
+
+        public bool affectsBodyParts = false;
+
+        // How much tending accelerates recovery:
+        public float tendRecoveryBonusPerQuality = 0.0f;
+
+        // If true, the injury stops contributing while tended (hard off switch)
+        public bool suppressContributionWhileTended = false;
 
         public CompProperties_RegressionInfluence()
         {
@@ -76,6 +78,17 @@ namespace ZealousInnocence
             {
                 float perDay = Props.decayPerDayBase;
                 float mult = Settings.Regression_BaseRecoveryPerDay * 100f;
+
+                if (parent.def.tendable)
+                {
+                    var tend = parent.TryGetComp<HediffComp_TendDuration>();
+                    if (tend != null && tend.IsTended)
+                    {
+                        float q = Mathf.Clamp01(tend.tendQuality); // 0..1
+                        float bonus = Props.tendRecoveryBonusPerQuality * q;
+                        mult += bonus; 
+                    }
+                }
                 return perDay * mult;
             }
         }
@@ -95,6 +108,7 @@ namespace ZealousInnocence
                 }
             }
         }
+        
         private static ZealousInnocenceSettings Settings
     => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
         public override void CompPostTick(ref float severityAdjustment)

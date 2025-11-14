@@ -110,7 +110,7 @@
 
 		<!-- Overkill and body logic -->
 		<overkillPctToDestroyPart>0</overkillPctToDestroyPart>
-		<hediff>Bruise</hediff>                         <!-- harmless mark if any -->
+		<hediff>RegressionDamage_FoyWater_SkinContact</hediff>
 
 		<!-- Optional flavor for logs -->
 		<deathMessage>{0} got regressed.</deathMessage>
@@ -121,14 +121,6 @@
 		<label>FOY splash</label>
 		
 		<deathMessage>{0} got killed by water pressure.</deathMessage>
-
-		<modExtensions>
-			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<magnitudePerDamage>0.012</magnitudePerDamage>
-				<reduceValue>0.7</reduceValue>
-				<hediffCaused>RegressionDamage_FoyWater_SkinContact</hediffCaused>
-			</li>
-		</modExtensions>
 	</DamageDef>
 	
 	<DamageDef>
@@ -137,20 +129,13 @@
 		<workerClass>ZealousInnocence.Worker_RegressionDamage</workerClass>
 		<externalViolence>true</externalViolence>
 		<deathMessage>{0} has been shot to death.</deathMessage>
-		<hediff>Gunshot</hediff>
+		<hediff>PhysicalRegressionDamage</hediff>
 		<harmAllLayersUntilOutside>true</harmAllLayersUntilOutside>
 		<impactSoundType>Bullet</impactSoundType>
 		<armorCategory>Sharp</armorCategory>
 		<overkillPctToDestroyPart>0~0.7</overkillPctToDestroyPart>
 		<isRanged>true</isRanged>
 		<makesAnimalsFlee>true</makesAnimalsFlee>
-		<modExtensions>
-			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<magnitudePerDamage>0.012</magnitudePerDamage>
-				<reduceValue>0.5</reduceValue>
-				<hediffCaused>PhysicalRegressionDamage</hediffCaused>
-			</li>
-		</modExtensions>
 	</DamageDef>
 
 	<DamageDef>
@@ -159,19 +144,12 @@
 		<workerClass>ZealousInnocence.Worker_RegressionDamage</workerClass>
 		<externalViolence>true</externalViolence>
 		<deathMessage>{0} has been shot to death.</deathMessage>
-		<hediff>Gunshot</hediff>
+		<hediff>MentalRegressionDamage</hediff>
 		<harmAllLayersUntilOutside>true</harmAllLayersUntilOutside>
 		<impactSoundType>Bullet</impactSoundType>
 		<armorCategory>Sharp</armorCategory>
 		<overkillPctToDestroyPart>0~0.7</overkillPctToDestroyPart>
 		<isRanged>true</isRanged>
 		<makesAnimalsFlee>true</makesAnimalsFlee>
-		<modExtensions>
-			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<magnitudePerDamage>0.012</magnitudePerDamage>
-				<reduceValue>0.5</reduceValue>
-				<hediffCaused>MentalRegressionDamage</hediffCaused>
-			</li>
-		</modExtensions>
 	</DamageDef>
 </Defs>

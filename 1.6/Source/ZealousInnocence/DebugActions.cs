@@ -99,7 +99,7 @@ namespace ZealousInnocence
                 // Minimal DamageInfo for debug
                 var dinfo = new DamageInfo(def, dmgAmount, armorPenetration: 0f, angle: -1f, instigator: null, weapon: null);
                 var res = new DamageWorker.DamageResult();
-                Helper_Regression.ApplyPureRegressionDamage(dinfo, p, res, dmgAmount);
+                //Helper_Regression.ApplyRegressionPoolDamage(dinfo, p, res, dmgAmount);
             }
             public static float GetCurrentSeverityMental(Pawn p)
             {
@@ -109,10 +109,10 @@ namespace ZealousInnocence
                     Log.Warning("[ZI] No DamageDef with RegressionDamageExtension found.");
                     return 0.0f;
                 }
-                var ext = def.GetModExtension<RegressionDamageExtension>();
-                if (ext == null) return 0.0f;
+                /*var ext = def.GetModExtension<RegressionDamageExtension>();
+                if (ext == null) return 0.0f;*/
 
-                var hd = p.health.hediffSet.GetFirstHediffOfDef(ext.hediffCaused);
+                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionMental);
                 if (hd == null) return 0.0f;
                 return hd.Severity;
             }
@@ -124,10 +124,8 @@ namespace ZealousInnocence
                     Log.Warning("[ZI] No DamageDef with RegressionDamageExtension found.");
                     return 0.0f;
                 }
-                var ext = def.GetModExtension<RegressionDamageExtension>();
-                if (ext == null) return 0.0f;
 
-                var hd = p.health.hediffSet.GetFirstHediffOfDef(ext.hediffCaused);
+                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionPhysical);
                 if (hd == null) return 0.0f;
                 return hd.Severity;
             }
@@ -139,10 +137,10 @@ namespace ZealousInnocence
                     Log.Warning("[ZI] No DamageDef with RegressionDamageExtension found.");
                     return;
                 }
-                var ext = def.GetModExtension<RegressionDamageExtension>();
-                if (ext == null) return;
+                /*var ext = def.GetModExtension<RegressionDamageExtension>();
+                if (ext == null) return;*/
 
-                Helper_Regression.SetRegressionHediff(p, p.def, ext.hediffCaused, targetSeverity);
+                Helper_Regression.SetRegressionHediff(p, p.def, HediffDefOf.MentalRegressionDamage, targetSeverity);
                 Log.Message($"[ZI][DBG] Set regression severity → {targetSeverity:0.###}");
             }
             public static void ApplyBySeverityPhysical(Pawn p, float targetSeverity)
@@ -153,10 +151,10 @@ namespace ZealousInnocence
                     Log.Warning("[ZI] No DamageDef with RegressionDamageExtension found.");
                     return;
                 }
-                var ext = def.GetModExtension<RegressionDamageExtension>();
-                if (ext == null) return;
+                /*var ext = def.GetModExtension<RegressionDamageExtension>();
+                if (ext == null) return;*/
 
-                Helper_Regression.SetRegressionHediff(p, p.def, ext.hediffCaused, targetSeverity);
+                Helper_Regression.SetRegressionHediff(p, p.def, HediffDefOf.PhysicalRegressionDamage, targetSeverity);
                 Log.Message($"[ZI][DBG] Set regression severity → {targetSeverity:0.###}");
             }
         }

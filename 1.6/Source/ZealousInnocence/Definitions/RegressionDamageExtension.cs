@@ -8,7 +8,7 @@ using Verse;
 
 namespace ZealousInnocence
 {
-    public class RegressionDamageExtension : DefModExtension
+    /*public class RegressionDamageExtension : DefModExtension
     {
 
         /// <summary>
@@ -31,9 +31,11 @@ namespace ZealousInnocence
             {
                 yield return configError;
             }
-            if (hediffCaused == null)
+            
+            /* This is acceptable as this causes the damage to be directly applied and the pool mechanic to be skipped
+             * if (hediffCaused == null)
                 yield return "[ZI] RegressionDamageExtension: hediffCaused is null.";
-
+            *//*
             if (reduceValue < 0f || reduceValue > 1f)
                 yield return "[ZI] RegressionDamageExtension: reduceValue must be in [0,1].";
 
@@ -47,5 +49,5 @@ namespace ZealousInnocence
             if (magnitudePerDamage < 0f)
                 yield return "[ZI] RegressionDamageExtension: magnitudePerDamage should be >= 0.";
         }
-    }
+    }*/
 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Rendering.VirtualTexturing;
 using Verse;
@@ -201,7 +202,8 @@ namespace ZealousInnocence
                 float cap = c.GetCap(mental);
                 if (cap > 0f) highestPostCap = Math.Max(highestPostCap, cap);
             }
-
+            float sizeScaleMulti = SeveritySizeScale(pawn);
+            mult *= sizeScaleMulti;
             float preCapTotal = sum * mult;
             float total = preCapTotal;
             if (highestPostCap >= 0f)
@@ -211,6 +213,7 @@ namespace ZealousInnocence
             {
                 sumContrib = sum,
                 productMult = mult,
+                sizeMult = sizeScaleMulti,
                 preCapTotal = preCapTotal,
                 postEffectCap = highestPostCap,
                 finalTotal = Math.Max(0f, total)
@@ -220,6 +223,7 @@ namespace ZealousInnocence
         {
             public float sumContrib;        // Σ of clamped contributions
             public float productMult;       // product of all multipliers
+            public float sizeMult;          // Only the multiplier of size as reference
             public float preCapTotal;       // sum*mult before applying caps
             public float postEffectCap;     // highest effect cap (−1 = none)
             public float finalTotal;        // final value after caps
@@ -675,7 +679,7 @@ namespace ZealousInnocence
             if (pawn?.RaceProps?.IsFlesh == true) return true;
             return false;
         }
-        public static DamageInfo ReduceDamage(DamageInfo dInfo) //we want to reduce the damage so weapons look more damage then they actually are 
+        /*public static DamageInfo ReduceDamage(DamageInfo dInfo, Pawn pawn) //we want to reduce the damage so weapons look more damage then they actually are 
         {
             float reduceAmount = 1f;
             var extensionInfo = dInfo.Def.GetModExtension<RegressionDamageExtension>();
@@ -683,13 +687,35 @@ namespace ZealousInnocence
             {
                 reduceAmount = extensionInfo.reduceValue;
             }
-            float reducedDamage = dInfo.Amount - (dInfo.Amount * reduceAmount);
 
+            float reducedDamage = dInfo.Amount - (dInfo.Amount * reduceAmount);
+            reducedDamage *= Worker_RegressionDamage.SeveritySizeScale(pawn);
             dInfo = new DamageInfo(dInfo.Def, reducedDamage, dInfo.ArmorPenetrationInt, dInfo.Angle, dInfo.Instigator,
                                    dInfo.HitPart, dInfo.Weapon, dInfo.Category, dInfo.intendedTargetInt);
             return dInfo;
-        }
+        }*/
+        private static readonly SimpleCurve SpeciesSizeToSeverityMult = new SimpleCurve
+        {
+            new CurvePoint(0.25f, 1.35f), // tiny: +35%
+            new CurvePoint(1.00f, 1.00f), // human baseline
+            new CurvePoint(2.00f, 0.75f), // big: -25%
+            new CurvePoint(4.00f, 0.55f), // very big: -45%
+        };
+        public static float SeveritySizeScale(Pawn p)
+        {
+            if (p?.RaceProps == null) return 1f;
 
+            float speciesBase = Mathf.Max(p.RaceProps.baseBodySize, 0.1f);
+
+            // Evaluate raw multiplier
+            float mult = SpeciesSizeToSeverityMult.Evaluate(speciesBase);
+
+            // Normalize so that humans (baseBodySize≈1) are exactly 1×
+            float humanRef = SpeciesSizeToSeverityMult.Evaluate(RimWorld.ThingDefOf.Human.race.baseBodySize);
+            mult /= humanRef;
+
+            return Mathf.Clamp(mult, 0.25f, 2f);
+        }
         public static void SetRegressionHediff(Pawn pawn, ThingDef source, HediffDef hediffDef, float severityAmount)
         {
             severityAmount = Math.Min(severityAmount, hediffDef.maxSeverity);
@@ -718,7 +744,7 @@ namespace ZealousInnocence
             }
             hediff.sourceDef = source;
         }
-        public static void ApplyPureRegressionDamage(DamageInfo dInfo, [NotNull] Pawn pawn, DamageWorker.DamageResult result, float originalDamage)
+        /*public static void ApplyRegressionPoolDamage(DamageInfo dInfo, [NotNull] Pawn pawn, DamageWorker.DamageResult result, float originalDamage)
         {
             var ext = dInfo.Def.GetModExtension<RegressionDamageExtension>();
             if (ext == null)
@@ -727,24 +753,97 @@ namespace ZealousInnocence
                 return;
             }
 
-            
-            float severityTotal = Mathf.Clamp(originalDamage * ext.magnitudePerDamage, 0, ext.hediffCaused.maxSeverity);
-            IncreaseRegressionHediff(pawn, dInfo.Weapon, ext.hediffCaused, severityTotal);
+            var def = ext.hediffCaused;
+            float amount = Mathf.Clamp(originalDamage * ext.magnitudePerDamage, 0f, def.maxSeverity);
 
+            var props = def.CompProps<CompProperties_RegressionInfluence>();
+            var hitPart = dInfo.HitPart;
+            var stacking = props?.stacking ?? ZIStacking.Refresh;
+            string exGroup = props?.exclusiveGroup;
 
-            /*if (hediff is ICaused caused)
+            // decide target part depending on affectsBodyParts
+            BodyPartRecord targetPart = (props?.affectsBodyParts == true) ? hitPart : null;
+
+            // Helper: add a new instance
+            HediffWithComps AddNew(float sev, BodyPartRecord part)
             {
-                if (dInfo.Weapon != null)
-                    caused.Causes.Add(MutationCauses.WEAPON_PREFIX, dInfo.Weapon);
+                var h = (HediffWithComps)HediffMaker.MakeHediff(def, pawn, part);
+                ApplyAmount(h, sev, setNotAdd: true);
+                h.sourceDef = dInfo.Weapon;
+                pawn.health.AddHediff(h, part);
+                return h;
+            }
 
-                if (mutagen != null)
-                    caused.Causes.Add(MutationCauses.MUTAGEN_PREFIX, mutagen);
+            // Helper: write amount into Severity/currentMagnitude
+            void ApplyAmount(HediffWithComps h, float sev, bool setNotAdd)
+            {
+                float cap = h.def.maxSeverity > 0 ? h.def.maxSeverity : float.MaxValue;
+                if (setNotAdd) h.Severity = Mathf.Min(cap, sev);
+                else h.Severity = Mathf.Min(cap, h.Severity + sev);
+            }
 
-                if (dInfo.Def != null)
-                    caused.Causes.Add(string.Empty, dInfo.Def);
-            }*/
-            Log.Message($"[ZI]original damage:{originalDamage}, reducedDamage: {dInfo.Amount}, severityAdded: {severityTotal},");
-        }
+            // If EXCLUSIVE: only one hediff in this group may exist (optionally per-part)
+            if (stacking == ZIStacking.Exclusive && !string.IsNullOrEmpty(exGroup))
+            {
+                var groupHediffs = pawn.health.hediffSet.hediffs
+                    .OfType<HediffWithComps>()
+                    .Where(h =>
+                    {
+                        var c = h.TryGetComp<HediffComp_RegressionInfluence>();
+                        if (c == null || c.Props.exclusiveGroup != exGroup) return false;
+                        // if body-part-scoped, only consider same part
+                        return (props?.affectsBodyParts == true) ? h.Part == targetPart : true;
+                    })
+                    .ToList();
+
+                var survivor = groupHediffs.FirstOrDefault(h => h.def == def);
+                if (survivor == null)
+                {
+                    survivor = AddNew(amount, targetPart);
+                    foreach (var h in groupHediffs)
+                        if (h != survivor) pawn.health.RemoveHediff(h);
+                }
+                else
+                {
+                    ApplyAmount(survivor, amount, setNotAdd: true);
+                    foreach (var h in groupHediffs)
+                        if (h != survivor) pawn.health.RemoveHediff(h);
+                }
+
+                Log.Message($"[ZI]original damage:{originalDamage}, reducedDamage:{dInfo.Amount}, severityAdded:{amount}, part:{targetPart?.Label ?? "whole body"} (exclusive).");
+            }
+
+            // Not exclusive: check for an existing instance of this exact def (optionally per-part)
+            HediffWithComps existing = null;
+            if (props?.affectsBodyParts == true)
+            {
+                existing = pawn.health.hediffSet.hediffs
+                    .OfType<HediffWithComps>()
+                    .FirstOrDefault(h => h.def == def && h.Part == targetPart);
+            }
+            else
+            {
+                existing = pawn.health.hediffSet.GetFirstHediffOfDef(def) as HediffWithComps;
+            }
+
+            switch (stacking)
+            {
+                case ZIStacking.Additive:
+                    if (existing == null) AddNew(amount, targetPart);
+                    else ApplyAmount(existing, amount, setNotAdd: false);
+                    break;
+
+                case ZIStacking.Refresh:
+                default:
+                    if (existing == null) AddNew(amount, targetPart);
+                    else ApplyAmount(existing, amount, setNotAdd: true);
+                    break;
+            }
+
+            //IncreaseRegressionHediff(pawn, dInfo.Weapon, ext.hediffCaused, amount);
+
+            Log.Message($"[ZI]original damage:{originalDamage}, reducedDamage: {dInfo.Amount}, severityAdded: {amount},");
+        }*/
     }
 
     public class AgeStageInfo

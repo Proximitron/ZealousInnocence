@@ -168,7 +168,7 @@
     
     <projectile>
 			<damageDef>RayGression</damageDef>
-      <damageAmountBase>4</damageAmountBase>
+      <damageAmountBase>2.5</damageAmountBase>
     </projectile>
 	
 		<beamWidth>0.6</beamWidth>
@@ -176,22 +176,15 @@
   
 	<DamageDef ParentName="FoyWaterBase">
 		<defName>RayGression</defName>
-		<label>Ray-Gression damage</label>
+		<label>Ray-Gression</label>
 		
 		<deathMessage>{0}'s brain got fried.</deathMessage>
-
-		<modExtensions>
-			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<magnitudePerDamage>0.012</magnitudePerDamage>
-				<reduceValue>0.85</reduceValue>
-				<hediffCaused>RegressionDamage_RayGression</hediffCaused>
-			</li>
-		</modExtensions>
+		<hediff>RegressionDamage_RayGression</hediff>
 	</DamageDef>
 	
   <ThingDef ParentName="BaseRayGun" Class="ZealousInnocence.LaserGunDef">
     <defName>ZI_RayGun</defName>
-    <label>ray-gression gun</label>
+    <label>ray gun</label>
     <description>Fires a concentrated beam that will scramble adult minds and make them behave like toddlers quickly.</description>
     <graphicData>
       <texPath>Things/Weapons/Ray_gun</texPath>
@@ -259,7 +252,7 @@
     
     <projectile>
 			<damageDef>RayGression</damageDef>
-      <damageAmountBase>7</damageAmountBase>
+      <damageAmountBase>6</damageAmountBase>
     </projectile>
 		
 		<beamWidth>0.8</beamWidth>
@@ -267,7 +260,7 @@
 
   <ThingDef ParentName="BaseRayGun" Name="ZI_LaserRifle" Class="ZealousInnocence.LaserGunDef">
     <defName Inherit="False">ZI_RayRifle</defName>
-    <label>ray-gression rifle</label>
+    <label>ray rifle</label>
     <description>Fires a concentrated beam that will scramble adult minds and make them behave like toddlers quickly. Does double damage to the gun but fires half as fast. In addition much more reliable at a distance.</description>
     <graphicData>
       <texPath>Things/Weapons/Ray_Rifle2</texPath>
@@ -388,14 +381,6 @@
 		<label>Squirt damage</label>
 		
 		<deathMessage>{0} got drowned in FOY water.</deathMessage>
-
-		<modExtensions>
-			<li Class="ZealousInnocence.RegressionDamageExtension">
-				<magnitudePerDamage>0.015</magnitudePerDamage>
-				<reduceValue>0.9</reduceValue>
-				<hediffCaused>RegressionDamage_FoyWater_SkinContact</hediffCaused>
-			</li>
-		</modExtensions>
 	</DamageDef>
 	
 	<ThingDef ParentName="BaseHumanMakeableGun">

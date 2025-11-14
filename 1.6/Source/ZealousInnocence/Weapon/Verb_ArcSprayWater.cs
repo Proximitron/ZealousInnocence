@@ -15,15 +15,13 @@ namespace ZealousInnocence
         // --- CONFIG (tweak to taste) ---
         // Width (in cells) around the beam line that receives damage
         [TweakValue("ArcSprayWater", 0f, 10f)] public static float DamageHalfWidth = 1.5f;
-        // Damage per sub-shot (your verb bursts 20, ticksBetweenBurstShots = 2)
-        [TweakValue("ArcSprayWater", 0f, 10f)] public static float DamagePerHit = 2.0f;
-        // Name of your custom DamageDef
+
+        [TweakValue("ArcSprayWater", 0f, 10f)] public static float DamagePerHit = 3.5f;
         private const string SquirtDamageDefName = "SquirtSpray";
 
         private static DamageDef SquirtSprayDef
             => DefDatabase<DamageDef>.GetNamed(SquirtDamageDefName, errorOnFail: true);
 
-        // vanilla incinerator tuning you already had
         [TweakValue("ArcSprayWater", 0f, 10f)] public static float DistanceToLifetimeScalar = 5f;
         [TweakValue("ArcSprayWater", -2f, 7f)] public static float BarrelOffset = 5f;
 

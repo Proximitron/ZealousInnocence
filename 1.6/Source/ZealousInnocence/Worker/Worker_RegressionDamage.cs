@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
+using static Verse.DamageWorker;
 
 namespace ZealousInnocence
 {
@@ -12,22 +13,8 @@ namespace ZealousInnocence
         /// </summary>
         protected const float EPSILON = 0.001f;
 
-        private static readonly SimpleCurve BodySizeToSeverityMult = new SimpleCurve
-        {
-            new CurvePoint(0.25f, 1.35f), // tiny: +35%
-            new CurvePoint(1.00f, 1.00f), // human baseline
-            new CurvePoint(2.00f, 0.75f), // big: -25%
-            new CurvePoint(4.00f, 0.55f), // very big: -45%
-        };
 
-        private static float SeveritySizeScale(Pawn p)
-        {
-            if (p == null) return 1f;
-            // Safety clamp; evaluate curve and clamp result to reasonable bounds.
-            float size = Mathf.Max(p.BodySize, 0.1f);
-            float mult = BodySizeToSeverityMult.Evaluate(size);
-            return Mathf.Clamp(mult, 0.25f, 2f);
-        }
+
 
         /// <summary>
         ///     Applies the specified dinfo.
@@ -98,7 +85,8 @@ namespace ZealousInnocence
             var dinfo = new DamageInfo(damageDef, amount, armorPenetrationAt, angle, instigator, null, weapon,
                                        DamageInfo.SourceCategory.ThingOrUnknown, explosion.intendedTarget);
 
-            Helper_Regression.ApplyPureRegressionDamage(dinfo, pawn,null, SeveritySizeScale(pawn) * amount);
+            DamageResult res = base.Apply(dinfo, pawn);
+            //Helper_Regression.ApplyRegressionPoolDamage(dinfo, pawn, res, SeveritySizeScale(pawn) * amount);
 
             Find.BattleLog.Add(new BattleLogEntry_ExplosionImpact(explosion.instigator, t, explosion.weapon, explosion.projectile, def));
 
@@ -108,26 +96,63 @@ namespace ZealousInnocence
 
 
 
-        /// <summary>Reduces the damage.</summary>
+        /*/// <summary>Reduces the damage.</summary>
         /// <param name="dInfo">The d information.</param>
         /// <param name="pawn">The pawn.</param>
         /// <returns></returns>
         protected DamageInfo ReduceDamage(DamageInfo dInfo, Pawn pawn)
         {
-            return Helper_Regression.ReduceDamage(dInfo);
-        }
+            return Helper_Regression.ReduceDamage(dInfo,pawn);
+        }*/
 
-        private DamageResult ApplyToPawn(DamageInfo dinfo, Pawn pawn)
+        private DamageResult ApplyToPawn(DamageInfo dInfo, Pawn pawn)
         {
-            //reduce the amount to make it less likely to kill the pawn 
-            float originalDamage = dinfo.Amount;
+            /*            var emptyRes = new DamageInfo(dInfo.Def, 0f, dInfo.ArmorPenetrationInt, dInfo.Angle, dInfo.Instigator,
+                       dInfo.HitPart, dInfo.Weapon, dInfo.Category, dInfo.intendedTargetInt);*/
+            var emptyRes = new DamageResult();
 
-            dinfo = ReduceDamage(dinfo, pawn);
 
-            DamageResult res = base.Apply(dinfo, pawn);
-            Helper_Regression.ApplyPureRegressionDamage(dinfo, pawn, res, SeveritySizeScale(pawn) * originalDamage);
+            //dinfo = ReduceDamage(dinfo, pawn);
+            var hdef = def.hediff;
+            var props = hdef?.CompProps<CompProperties_RegressionInfluence>();
+            bool wantGlobal = props != null && !props.affectsBodyParts;
+
+            if (wantGlobal)
+            {
+                // Apply global hediff, skip injury flow entirely
+                if (hdef != null && dInfo.Amount > 0f)
+                {
+                    bool isBeam = dInfo.Weapon is ThingDef weap && weap.Verbs?.Any(v => v.beamDamageDef != null) == true;
+                    var hd = pawn.health.AddHediff(hdef, part: null,dInfo, emptyRes);
+                    hd.Severity += dInfo.Amount;
+                    emptyRes.AddHediff(hd);
+                    if (dInfo.Amount > 0)
+                    {
+                        pawn.MapHeld.damageWatcher.Notify_DamageTaken(pawn, dInfo.Amount);
+                    }
+
+                    float blunt = Mathf.Max(dInfo.Amount * 0.1f, 0.1f);
+                    dInfo.Def = DamageDefOf.Blunt;
+                    dInfo.SetAmount(blunt);
+                    dInfo.SetIgnoreArmor(true);
+                }
+                //return emptyRes; // IMPORTANT: don’t call base.Apply
+            }
+
+            DamageResult res = base.Apply(dInfo, pawn);
+            //Helper_Regression.ApplyRegressionPoolDamage(dinfo, pawn, res, SeveritySizeScale(pawn) * originalDamage);
 
             return res;
         }
+
+        /*protected override BodyPartRecord ChooseHitPart(DamageInfo dinfo, Pawn pawn)
+        {
+            if (def.hediff.CompProps<CompProperties_RegressionInfluence>() is { } c)
+            {
+                return c.affectsBodyParts ? base.ChooseHitPart(dinfo, pawn) : null;
+
+            }
+            return base.ChooseHitPart(dinfo, pawn);
+        }*/
     }
 }
