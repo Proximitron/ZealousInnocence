@@ -70,7 +70,7 @@ namespace ZealousInnocence
         // set by aura system / map gizmo each tick for pawns inside an area emitter
         public bool inArea;
 
-        private int _lastDecayTick;
+        private int _lastDecayTick = -1;
 
         public float decayPerDay
         {
@@ -138,6 +138,7 @@ namespace ZealousInnocence
                     float days = elapsed / (float)GenDate.TicksPerDay;
                     float delta = decayPerDay * days;
 
+                    if(Settings.debugging && Settings.debuggingRegression) Log.Message($"[ZI] Delta {delta:F3} for '{parent.LabelCap}' for '{parent.pawn.LabelCap}: {parent.Severity}");
                     // clamp
                     parent.Severity -= delta;
                 }
