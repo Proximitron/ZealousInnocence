@@ -111,7 +111,7 @@ namespace ZealousInnocence
 
         public override void CompPostPostRemoved()
         {
-            if (Settings.debugging)
+            if (Settings.debugging && Settings.debuggingRegression)
             {
                 Log.Message($"[ZI] Removing hediff '{parent.LabelCap}' for '{parent.pawn.LabelCap}: {parent.Severity}");
             }
@@ -138,7 +138,7 @@ namespace ZealousInnocence
                     float days = elapsed / (float)GenDate.TicksPerDay;
                     float delta = decayPerDay * days;
 
-                    if(Settings.debugging && Settings.debuggingRegression) Log.Message($"[ZI] Delta {delta:F3} for '{parent.LabelCap}' for '{parent.pawn.LabelCap}: {parent.Severity}");
+                    //if(Settings.debugging && Settings.debuggingRegression) Log.Message($"[ZI] Delta {delta:F3} for '{parent.LabelCap}' for '{parent.pawn.LabelCap}: {parent.Severity}");
                     // clamp
                     parent.Severity -= delta;
                 }
