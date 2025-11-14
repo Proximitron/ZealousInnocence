@@ -168,13 +168,15 @@ namespace ZealousInnocence
             {
                 EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, false);
             }
-            if (bestThing == null)
+            if (bestThing != null)
             {
-                foreach (Thing thing in patient.Map.listerThings.AllThings)
-                {
-                    EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, true);
-                }
+                bestRating += 0.5f; // Nudge rating to make it more likely carried things will be used
             }
+            foreach (Thing thing in patient.Map.listerThings.AllThings)
+            {
+                EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, true);
+            }
+            
             return bestThing != null ? new LocalTargetInfo(bestThing) : LocalTargetInfo.Invalid;
         }
         public static void EvaluateSingleApparel(

@@ -40,7 +40,8 @@ namespace ZealousInnocence
             {
                 return false;
             }
-            bool isGuest = patient.guest != null && patient.guest.GuestStatus == GuestStatus.Guest;
+            bool isRealGuest = patient.HostFaction != null && patient.HostFaction != patient.Faction && patient.guest != null && patient.guest.GuestStatus == GuestStatus.Guest;
+            bool isWardenJob = patient.IsPrisoner || patient.IsSlaveOfColony || isRealGuest;
             if (!forced)
             {
                 if(caretaker.workSettings == null || def.workType == null)
@@ -52,13 +53,15 @@ namespace ZealousInnocence
                     JobFailReason.Is("Work settings prevent.");
                     return false;
                 }
-                if(def.workType == WorkTypeDefOf.Childcare)
+                
+
+                if (def.workType == WorkTypeDefOf.Childcare)
                 {
                     if (!patient.isToddlerOrBabyMentalOrPhysical()) return false;
                 }
                 else if(def.workType == WorkTypeDefOf.Warden)
                 {
-                    if (!patient.IsPrisoner && !patient.IsSlaveOfColony && !isGuest) return false;
+                    if (!isWardenJob) return false;
                 }
                 else if (def.workType == WorkTypeDefOf.Doctor || def.workType == DefDatabase<WorkTypeDef>.GetNamedSilentFail("FSFNurse"))
                 {
@@ -95,7 +98,7 @@ namespace ZealousInnocence
 
            
             
-            if (!isGuest && !patient.IsPrisoner && !patient.IsSlaveOfColony && Helper_Regression.canChangeDiaperOrUnderwear(patient) && !Helper_Diaper.shouldStayPut(patient))
+            if (!isWardenJob && Helper_Regression.canChangeDiaperOrUnderwear(patient) && !Helper_Diaper.shouldStayPut(patient))
             {
                 JobFailReason.Is("Is big enough to do it themselfs.");
                 return false;
