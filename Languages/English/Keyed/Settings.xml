@@ -7,8 +7,8 @@
   <SettingRegressionHealing>Regression Healing Settings</SettingRegressionHealing>
   <SettingRegressionHealingHelp>Controls how fast regression severity heals naturally.</SettingRegressionHealingHelp>
 
-  <SettingBaseRecovery>Base recovery per day</SettingBaseRecovery>
-  <SettingBaseRecoveryHelp>Amount of severity healed per in-game day under neutral conditions.</SettingBaseRecoveryHelp>
+  <SettingBaseRecovery>Base recovery multiplier</SettingBaseRecovery>
+  <SettingBaseRecoveryHelp>The amount of severity healed, times the natural regeneration of the particular condition. 100% is normal regeneration while 0% is none and 200% double as fast.</SettingBaseRecoveryHelp>
 
   <SettingRestingMultiplier>Resting multiplier</SettingRestingMultiplier>
   <SettingRestingMultiplierHelp>Multiplier to recovery while pawn is resting in bed.</SettingRestingMultiplierHelp>

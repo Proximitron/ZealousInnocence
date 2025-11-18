@@ -160,7 +160,7 @@ namespace ZealousInnocence
             if (!pawn.IsColonist) return false;
             if (!pawn.Spawned) return false;
 
-            return HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || (pawn.health?.capacities != null && pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f) || (pawn.CurJob != null &&  pawn.CurJob.playerForced) || (pawn.health?.capacities != null && !pawn.health.capacities.CanBeAwake);
+            return HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || (pawn.health?.capacities != null && pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f) || (pawn.CurJob != null &&  pawn.CurJob.playerForced && pawn.InBed()) || (pawn.health?.capacities != null && !pawn.health.capacities.CanBeAwake);
         }
         public static bool remembersPotty(Pawn pawn)
         {
@@ -393,10 +393,12 @@ namespace ZealousInnocence
         }
         public static bool needsDiaperNight(Pawn pawn)
         {
-            if (!pawn.Awake()) return getBladderControlLevel(pawn) <= NeedsDiaperNightBreakpoint;
+            if (!pawn.Awake()) return getBladderControlLevel(pawn) <= NeedsDiaperNightBreakpoint; // Shortcut for when the pawn is sleeping. Because now there is no sim nessesary.
 
             var bladderControlWorker = new PawnCapacityWorker_BladderControl();
-            return bladderControlWorker.SimulateBladderControlDuringSleep(pawn) <= NeedsDiaperNightBreakpoint;
+            var simResult = bladderControlWorker.SimulateBladderControlDuringSleep(pawn);
+            //Log.Message($"[ZI] Sim result for '{pawn.LabelShort}' is '{simResult}");
+            return simResult <= NeedsDiaperNightBreakpoint;
         }
         public static bool acceptsDiaperNight(Pawn pawn)
         {
@@ -473,6 +475,16 @@ namespace ZealousInnocence
         public static bool isDisposable(Apparel cloth)
         {
             return cloth is Apparel_Disposable_Diaper;
+        }
+        public static bool needsDiaperChange(this Pawn pawn)
+        {
+            var oldDiaper = getUnderwearOrDiaper(pawn);
+            Need_Diaper need_diaper = pawn.needs.TryGetNeed<Need_Diaper>();
+            if (need_diaper == null) return false;
+            var needDiaper = needsDiaper(pawn);
+            var needDiaperNight = isNightDiaper(oldDiaper);
+            if (oldDiaper == null && (needDiaper || needDiaperNight)) return true;
+            return need_diaper.CurLevel < 0.5f;
         }
 
         public static BodyPartRecord getBladder(Pawn pawn)

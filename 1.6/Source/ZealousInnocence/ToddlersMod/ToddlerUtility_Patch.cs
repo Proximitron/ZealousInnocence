@@ -32,8 +32,8 @@ namespace ZealousInnocence
             //age up at 1 yearold
             float ticksSinceBaby = (float)(p.getAgeStageMental() * GenDate.TicksPerYear) - band.toddler;
 
-            Log.Message("MaxAge: " + childCore + ", toddlerStageInTicks: " + toddlerStageInTicks + ", ageStageMental: " + p.getAgeStageMental()
-                + ", ticksSinceBaby: " + ticksSinceBaby + ", PercentGrowth: " + (ticksSinceBaby / toddlerStageInTicks));
+            /*Log.Message("MaxAge: " + childCore + ", toddlerStageInTicks: " + toddlerStageInTicks + ", ageStageMental: " + p.getAgeStageMental()
+                + ", ticksSinceBaby: " + ticksSinceBaby + ", PercentGrowth: " + (ticksSinceBaby / toddlerStageInTicks));*/
             __result = ticksSinceBaby / toddlerStageInTicks;
             return false;
         }

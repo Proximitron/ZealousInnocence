@@ -337,8 +337,8 @@
 		<techLevel>Industrial</techLevel>
 		<smeltable>false</smeltable>
 		<statBases>
-			<Absorbency>0.8</Absorbency>
-			<DiaperSupport>0.50</DiaperSupport>
+			<Absorbency>0.6</Absorbency>
+			<DiaperSupport>0.40</DiaperSupport>
 			<MaxHitPoints>60</MaxHitPoints>
 			<WorkToMake>400</WorkToMake>
 			<Mass>0.02</Mass>
@@ -393,7 +393,7 @@
 		<costStuffCount>5</costStuffCount>-->
 		<statBases>
 			<Absorbency>1.5</Absorbency>
-			<DiaperSupport>0.50</DiaperSupport>
+			<DiaperSupport>0.75</DiaperSupport>
 			<MaxHitPoints>60</MaxHitPoints>
 			<WorkToMake>400</WorkToMake>
 			<Mass>0.08</Mass>

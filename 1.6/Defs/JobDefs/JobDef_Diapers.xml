@@ -8,7 +8,19 @@
 	</JobDef>
 	
 	<JobDef>
-		<defName>PeePoopEvent</defName>
+		<defName>CheckPatientDiaper</defName>
+		<driverClass>ZealousInnocence.JobDriver_CheckPatientDiaper</driverClass>
+		<reportString>diaper checking TargetB</reportString>
+	</JobDef>
+	
+	<JobDef>
+		<defName>PoopEvent</defName>
+		<driverClass>ZealousInnocence.JobDriver_PeePoopEvent</driverClass>
+		<reportString>?report error?</reportString>
+		<casualInterruptible>true</casualInterruptible>
+	</JobDef>
+	<JobDef>
+		<defName>PeeEvent</defName>
 		<driverClass>ZealousInnocence.JobDriver_PeePoopEvent</driverClass>
 		<reportString>?report error?</reportString>
 		<casualInterruptible>true</casualInterruptible>

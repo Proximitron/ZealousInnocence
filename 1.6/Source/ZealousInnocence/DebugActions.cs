@@ -29,7 +29,7 @@ namespace ZealousInnocence
                     }
                     Helper_Bedwetting.RandomizeBedwettingSeed(pawn);
                     Log.Message($"[ZI]Seed reset for {pawn.Name} complete.");
-                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Reset wetting!", UnityEngine.Color.white, 3.85f);
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, "Reset wetting!", UnityEngine.Color.white, 3.85f);
                 }
             }
         }
@@ -54,7 +54,7 @@ namespace ZealousInnocence
                     }
                     need.FailureSeed = 0;
                      Log.Message($"[ZI]Seed reset for {pawn.Name} complete.");
-                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Reset failure seed!", UnityEngine.Color.white, 3.85f);
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, "Reset failure seed!", UnityEngine.Color.white, 3.85f);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace ZealousInnocence
                 /*var ext = def.GetModExtension<RegressionDamageExtension>();
                 if (ext == null) return 0.0f;*/
 
-                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionMental);
+                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.MentalRegressionDamage);
                 if (hd == null) return 0.0f;
                 return hd.Severity;
             }
@@ -125,7 +125,7 @@ namespace ZealousInnocence
                     return 0.0f;
                 }
 
-                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.RegressionPhysical);
+                var hd = p.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PhysicalRegressionDamage);
                 if (hd == null) return 0.0f;
                 return hd.Severity;
             }

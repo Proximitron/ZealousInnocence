@@ -126,7 +126,7 @@ namespace ZealousInnocence
             return body.HasPartWithTag(BodyPartTagDefOf.BladderControlSource);
         }
 
-        private float GetAgeFactor(Pawn pawn)
+        /*private float GetAgeFactor(Pawn pawn)
         {
             if (!pawn.RaceProps.Humanlike) return 1.0f;
             int age = Helper_Regression.getAgeStageMentalInt(pawn);
@@ -169,6 +169,72 @@ namespace ZealousInnocence
             // Round to 2 decimal places
             factor = Mathf.Round(factor * 100f) / 100f;
 
+            return factor;
+        }*/
+        private float GetAgeFactor(Pawn pawn)
+        {
+            if (!pawn.RaceProps.Humanlike)
+                return 1.0f;
+
+            float ageYears = pawn.getAgeStagePhysicalMentalMin(); //pawn.ageTracker.AgeBiologicalYearsFloat;
+
+            // Per-race band boundaries (in years)
+            float toddlerStart = pawn.toddlerMinAge();   // start of toddler band
+            float childStart = pawn.childMinAge();     // start of child band
+            float adultStart = pawn.adultMinAge();     // start of adult/teen band
+            float teenEnd = pawn.teenMaxAge();      // end of teen window (inside adult)
+            float oldStart = pawn.oldMinAge();       // start of "old" band
+            float lifeExp = pawn.RaceProps.lifeExpectancy;
+
+            // Make sure the bands are in sensible order even for weird races
+            if (teenEnd < adultStart) teenEnd = adultStart;
+            if (oldStart < teenEnd) oldStart = teenEnd;
+            if (lifeExp < oldStart) lifeExp = oldStart;
+
+            float factor;
+
+            // 0) Babies (before toddlerBand) → no control
+            if (ageYears < toddlerStart)
+            {
+                factor = 0f;
+            }
+            // 1) Toddler band: 0 → 0.3
+            else if (ageYears < childStart)
+            {
+                float t = Mathf.InverseLerp(toddlerStart, childStart, ageYears);
+                factor = Mathf.Lerp(0f, 0.3f, t);
+            }
+            // 2) Child band: 0.3 → 0.9
+            else if (ageYears < adultStart)
+            {
+                float t = Mathf.InverseLerp(childStart, adultStart, ageYears);
+                factor = Mathf.Lerp(0.3f, 0.9f, t);
+            }
+            // 3) Teen / early adult: 0.9 → 1.0 (adultMin..teenMax)
+            else if (ageYears < teenEnd)
+            {
+                float t = Mathf.InverseLerp(adultStart, teenEnd, ageYears);
+                factor = Mathf.Lerp(0.9f, 1.0f, t);
+            }
+            // 4) Adult (after teenMax until oldStart): full control
+            else if (ageYears < oldStart)
+            {
+                factor = 1.0f;
+            }
+            // 5) Old age: gently drop from 1.0 → 0.8 between oldStart and lifeExpectancy
+            else if (ageYears < lifeExp)
+            {
+                float t = Mathf.InverseLerp(oldStart, lifeExp, ageYears);
+                factor = Mathf.Lerp(1.0f, 0.8f, t);
+            }
+            // 6) Very old (beyond life expectancy): keep reduced but stable
+            else
+            {
+                factor = 0.8f;
+            }
+
+            // Round to 2 decimals
+            factor = Mathf.Round(factor * 100f) / 100f;
             return factor;
         }
         private float GetSleepingFactor(Pawn pawn, bool isAwake)

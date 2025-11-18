@@ -155,7 +155,9 @@ namespace ZealousInnocence
         public static JobDef RegressedPlayAround;
         public static JobDef LayDown;
         public static JobDef ChangePatientDiaper;
-        public static JobDef PeePoopEvent;
+        public static JobDef CheckPatientDiaper;
+        public static JobDef PeeEvent;
+        public static JobDef PoopEvent;
 
         public static JobDef FountainOfYouthInvestigate;
         public static JobDef FountainOfYouthActivate;

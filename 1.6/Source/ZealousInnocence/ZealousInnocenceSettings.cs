@@ -13,7 +13,7 @@ namespace ZealousInnocence
 {
     public class ZealousInnocenceSettings : ModSettings
     {
-        private const int CurrentSettingsVersion = 162;
+        private const int CurrentSettingsVersion = 163;
         public int settingVersion = -1;
         public bool reduceAge = true;
         //public float targetChronoAge = 10f;
@@ -77,7 +77,7 @@ namespace ZealousInnocence
         /// <summary>
         /// Base amount of regression severity healed per in-game day under neutral conditions.
         /// </summary>
-        public float Regression_BaseRecoveryPerDay = 0.01f;
+        public float Regression_BaseRecoveryPerDay = 1.00f;
 
         /// <summary>
         /// Multiplier applied when pawn is in bed (resting bonus).
@@ -92,7 +92,7 @@ namespace ZealousInnocence
         /// <summary>
         /// Multiplier applied to animals (shorter lifecycle).
         /// </summary>
-        public float Regression_AnimalMultiplier = 3.0f;
+        public float Regression_AnimalMultiplier = 2.0f;
 
 
         public float Regression_RessurectChance = 0.5f;
@@ -102,14 +102,14 @@ namespace ZealousInnocence
         /// <summary>
         /// The amount of the skill levels that are hidden while max severity
         /// </summary>
-        public float Regression_LevelMaskBySeverity = 0.8f;
+        public float Regression_LevelMaskBySeverity = 0.7f;
 
 
         // Ageing complications caused by regress being reversed
-        public bool AgingComplications_Enabled = true;
+        /*public bool AgingComplications_Enabled = true;
         public float AgingComplications_RiskPerYear = 0.15f; // chance per crossed birthday
         public int AgingComplications_MaxNew = 1;      // cap per aging event
-
+        */
 
         public float gabSize = 12f;
         public override void ExposeData()
@@ -171,11 +171,11 @@ namespace ZealousInnocence
 
             Scribe_Values.Look(ref maxLeftFrac, "maxLeftFrac", 0.58f);
 
-            Scribe_Values.Look(ref Regression_BaseRecoveryPerDay, "Regression_BaseRecoveryPerDay", 0.01f);
+            Scribe_Values.Look(ref Regression_BaseRecoveryPerDay, "Regression_BaseRecoveryPerDay", 1.00f);
             Scribe_Values.Look(ref Regression_RestingMultiplier, "Regression_RestingMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_ChildMultiplier, "Regression_ChildMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_AnimalMultiplier, "Regression_AnimalMultiplier", 2.0f);
-            Scribe_Values.Look(ref Regression_LevelMaskBySeverity, "Regression_LevelMaskBySeverity", 0.8f);
+            Scribe_Values.Look(ref Regression_LevelMaskBySeverity, "Regression_LevelMaskBySeverity", 0.7f);
 
             if (Scribe.mode == LoadSaveMode.LoadingVars && settingVersion != CurrentSettingsVersion)
             {
@@ -327,7 +327,7 @@ namespace ZealousInnocence
             list.Label("SettingRegressionHealing".Translate(), -1f, tooltip: "SettingRegressionHealingHelp".Translate());
 
             SliderPct(list, "SettingBaseRecovery".Translate(), ref Regression_BaseRecoveryPerDay,
-                0f, Prefs.DevMode ? 3.6f : 0.2f, 0.01f,
+                0f, Prefs.DevMode ? 10.0f : 3.00f, 1.00f,
                 "SettingBaseRecoveryHelp".Translate());
 
             SliderPct(list, "SettingRestingMultiplier".Translate(), ref Regression_RestingMultiplier,
@@ -339,7 +339,7 @@ namespace ZealousInnocence
                 "SettingChildMultiplierHelp".Translate());
 
             SliderPct(list, "SettingAnimalMultiplier".Translate(), ref Regression_AnimalMultiplier,
-                0.5f, 6f, 3.0f,
+                0.5f, 6f, 2.0f,
                 "SettingAnimalMultiplierHelp".Translate());
 
             SliderPct(list, "SettingRessurectChance".Translate(), ref Regression_RessurectChance,
@@ -352,7 +352,7 @@ namespace ZealousInnocence
             list.Label("SettingSkillMasking".Translate(), -1f, tooltip: "SettingSkillMaskingHelp".Translate());
 
             SliderPct(list, "SettingLevelMaskBySeverity".Translate(), ref Regression_LevelMaskBySeverity,
-                0f, 1f, 0.8f,
+                0f, 1f, 0.7f,
                 "SettingLevelMaskBySeverityHelp".Translate());
 
 
@@ -544,12 +544,12 @@ this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.
 
         private void ResetRegressionToDefaults()
         {
-            Regression_BaseRecoveryPerDay = 0.01f;
+            Regression_BaseRecoveryPerDay = 1.0f;
             Regression_RestingMultiplier = 1.0f;
             Regression_ChildMultiplier = 1.0f;
-            Regression_AnimalMultiplier = 3.0f;
+            Regression_AnimalMultiplier = 2.0f;
             Regression_RessurectChance = 0.5f;
-            Regression_LevelMaskBySeverity = 0.8f;
+            Regression_LevelMaskBySeverity = 0.7f;
             
         }
 

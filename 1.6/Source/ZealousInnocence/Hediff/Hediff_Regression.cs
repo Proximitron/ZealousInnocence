@@ -101,7 +101,7 @@ namespace ZealousInnocence
         }
         private float EstimatedRecoveryDays()
         {
-            float perDay = Settings.Regression_BaseRecoveryPerDay;
+            float perDay = Settings.Regression_BaseRecoveryPerDay / 100f;
             if (perDay <= 0f) return 0f;
             return Severity / perDay;
         }
@@ -282,7 +282,7 @@ namespace ZealousInnocence
                 }
                 catch (Exception e)
                 {
-                    Log.Warning($"[ZI] Error accessing toddlerEndAge: {e}");
+                    Log.Warning($"[ZI] Error accessing toddlerEndAge for {pawn.LabelShort}: {e}");
                     return false;
                 }
             }
@@ -302,14 +302,14 @@ namespace ZealousInnocence
                 }
                 catch (Exception e)
                 {
-                    Log.Warning($"[ZI] Error accessing toddlerEndAge: {e}");
+                    Log.Warning($"[ZI] Error accessing ToddlerMinAge for {pawn.LabelShort}: {e}");
                     return false;
                 }
             }
 
             // Small, auto-cleaning cache keyed by Pawn (no leaks).
             private static readonly ConditionalWeakTable<Pawn, DevelopmentStages> _cache = new();
-            private const int TTL = 300; // recompute after 300 ticks (~5 seconds)
+            private const int TTL = GenDate.TicksPerYear; // recompute after a year
 
             public sealed class DevelopmentStages
             {
@@ -355,8 +355,33 @@ namespace ZealousInnocence
                         {
                             float? adultStart = p.def.race.lifeStageAges.Where(s => s.def?.developmentalStage == DevelopmentalStage.Adult).Select(s => s.minAge).FirstOrDefault();
 
-                            if (adultStart.HasValue)
+                            if (adultStart.HasValue && adultStart > 1f)
                             {
+                                if(toddlerMinAge < toddlerEndAge){
+                                    var cache = toddlerMinAge;
+                                    toddlerMinAge = toddlerEndAge;
+                                    toddlerEndAge = cache;
+                                }
+
+                                bool toddlerInvalid =
+                                 toddlerMinAge <= 0f ||
+                                 toddlerEndAge <= 0f ||
+                                 Math.Abs(toddlerMinAge - toddlerEndAge) < 0.0001f ||
+                                 toddlerEndAge >= adultStart;
+
+                                if (toddlerInvalid)
+                                {
+                                    toddlerMinAge = adultStart.Value / 4f;
+                                    toddlerEndAge = adultStart.Value / 2f;
+                                }
+
+                                if (!(toddlerMinAge < toddlerEndAge && toddlerEndAge < adultStart))
+                                {
+                                    // If still somehow broken, clamp them into a simple stepped sequence
+                                    toddlerMinAge = adultStart.Value / 4f;
+                                    toddlerEndAge = adultStart.Value / 2f;
+                                }
+
                                 e.toddler = toddlerMinAge * GenDate.TicksPerYear;
                                 e.core = toddlerEndAge * GenDate.TicksPerYear;
                                 e.edge = adultStart.Value * GenDate.TicksPerYear;
@@ -569,12 +594,21 @@ namespace ZealousInnocence
                     // summarize remaining time as a bucket range
                     float minRem = g.Min(e => e.remaining);
                     float maxRem = g.Max(e => e.remaining);
-                    string bucket =
-                        float.IsPositiveInfinity(minRem) && float.IsPositiveInfinity(maxRem)
-                            ? "no decay"
-                            : (minRem == maxRem
-                                ? $"≈ {minRem:0.#} day{(minRem >= 2f ? "s" : "")}"
-                                : $"≈ {minRem:0.#}–{maxRem:0.#} days");
+                    string bucket;
+                    if (float.IsPositiveInfinity(minRem) && float.IsPositiveInfinity(maxRem))
+                    {
+                        bucket = "no decay";
+                    }
+                    else if (minRem == maxRem)
+                    {
+                        bucket = Helper_Regression.FormatDays(minRem);
+                    }
+                    else
+                    {
+                        string minStr = Helper_Regression.FormatDays(minRem);
+                        string maxStr = Helper_Regression.FormatDays(maxRem);
+                        bucket = $"{minStr} – {maxStr}";
+                    }
 
                     // optional: show the post-cap contribution per group (display only)
                     float cappedContrib = (capDef > 0f) ? Mathf.Min(sumContrib, capDef) : sumContrib;
@@ -700,7 +734,7 @@ namespace ZealousInnocence
         {
             if (Severity <= 0f) return;
 
-            float perDay = Mathf.Max(0f, Settings.Regression_BaseRecoveryPerDay);
+            float perDay = Mathf.Max(0f, Settings.Regression_BaseRecoveryPerDay / 100f);
             if (perDay <= 0f) return;
 
             float mult = 1f;
@@ -871,8 +905,8 @@ namespace ZealousInnocence
         private long baselineBioTicks = -1;     // original biological age (ticks) when effect first applied
         private long lastBioSeen = -1;       // The last chronological age we have seen/updates ourself. The time difference to it is what we need to advance on the baseline
         private int lastWholeYears = -1;
-        public bool forceTick = false;
         private BeardDef lastBeardType = null;
+
         private TickTimer resurrectTimer = new TickTimer();
         private TickTimer resurrectTimerLetter = new TickTimer();
         // Growth moments
@@ -884,14 +918,6 @@ namespace ZealousInnocence
 
         //public override bool ShouldRemove => false;
 
-        private SimpleCurve RegressionCurve = new SimpleCurve
-        {
-            new CurvePoint(0f, 0f),
-            new CurvePoint(0.25f, 0.2f),
-            new CurvePoint(0.5f, 0.5f),
-            new CurvePoint(0.75f, 0.8f),
-            new CurvePoint(1f, 1f)
-        };
         private enum AgeStagePhysicalTransform { Baby, Child, Adult }
         private AgeStagePhysicalTransform StageFor(long bioTicks)
         {
@@ -1564,7 +1590,7 @@ namespace ZealousInnocence
         {
             if (Severity <= 0f) return;
 
-            float perDay = Mathf.Max(0f, Settings.Regression_BaseRecoveryPerDay);
+            float perDay = Mathf.Max(0f, Settings.Regression_BaseRecoveryPerDay / 100f);
             if (perDay <= 0f) return;
 
             float mult = 1f;
@@ -1592,7 +1618,7 @@ namespace ZealousInnocence
         }
         private float EstimatedRecoveryDays()
         {
-            float perDay = Settings.Regression_BaseRecoveryPerDay;
+            float perDay = Settings.Regression_BaseRecoveryPerDay / 100f;
             if (perDay <= 0f) return 0f;
             return Severity / perDay;
         }

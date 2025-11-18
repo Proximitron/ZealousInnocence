@@ -236,7 +236,7 @@
     <description>Water from the fountain of youth. Can be directly ingested or used as an ingredient for many regression related technologies. (Causes 10% physical and 5% mental regression per dose)</description>
 		<graphicData>
 			<texPath>Things/Item/Vials</texPath>
-			<graphicClass>DubsBadHygiene.Graphic_StackCountTech</graphicClass>
+			<graphicClass>ZealousInnocence.Graphic_StackCount4</graphicClass>
 			<drawSize>0.88</drawSize>
 		</graphicData>
 		<statBases>

@@ -14,6 +14,8 @@ using UnityEngine.UI;
 using Verse;
 using Verse.AI;
 using Verse.Grammar;
+using ZealousInnocence.Interactions;
+using ZealousInnocence.ToddlersMod;
 
 namespace ZealousInnocence
 {
@@ -199,7 +201,6 @@ namespace ZealousInnocence
                 info: "Pawn_ApparelTracker.Wear"
             );
 
-
             // Functions after this are all related to "LearningForAdults.cs"
             patchFunctionPrefix(
                 original: AccessTools.Method(typeof(LearningGiver), nameof(LearningGiver.CanDo)),
@@ -299,17 +300,47 @@ namespace ZealousInnocence
             );
             // Functions until this are all related to "BabyInteractions.cs"
 
+            if (ModChecker.SpeakUpActive())
+            {
+                if (settings.debugging) Log.Message($"[ZI]ZealousInnocence is patching for SpeakUp.");
+                /*var extraGrammarPawn = AccessTools.Method(AccessTools.TypeByName("SpeakUp.ExtraGrammarUtility")
+               ?? AccessTools.TypeByName("ExtraGrammarUtility"),
+               "ExtraRulesForPawn");
+                patchFunctionPostfix(
+                    original: extraGrammarPawn,
+                    postfix: new HarmonyMethod(typeof(Patch_ExtraGrammarUtility_ExtraRulesForPawn), nameof(Patch_ExtraGrammarUtility_ExtraRulesForPawn.Postfix)),
+                    info: "SpeakUp.ExtraGrammarUtility.ExtraRulesForPawn"
+                );*/
+                patchFunctionPrefix(
+                    original: AccessTools.Method(typeof(SocialInteractionUtility), nameof(SocialInteractionUtility.CanInitiateRandomInteraction)),
+                    prefix: new HarmonyMethod(typeof(Patch_SocialInteractionUtility_CanInitiateRandomInteraction), nameof(Patch_SocialInteractionUtility_CanInitiateRandomInteraction.Prefix)),
+                    info: "SocialInteractionUtility.CanInitiateRandomInteraction"
+                );
+                patchFunctionPostfix(
+                    original: AccessTools.Method(typeof(GrammarUtility), nameof(GrammarUtility.RulesForPawn), new System.Type[] { typeof(string), typeof(Pawn), typeof(Dictionary<string, string>), typeof(bool), typeof(bool) }),
+                    postfix: new HarmonyMethod(typeof(Patch_GrammarUtility_RulesForPawn), nameof(Patch_GrammarUtility_RulesForPawn.Postfix)),
+                    info: "GrammarUtility.RulesForPawn"
+                );
 
-            patchFunctionPostfix(
-                original: AccessTools.Method(typeof(GrammarUtility), nameof(GrammarUtility.RulesForPawn), new System.Type[] { typeof(string), typeof(Pawn), typeof(Dictionary<string, string>), typeof(bool), typeof(bool) }),
-                postfix: new HarmonyMethod(typeof(Patch_GrammarUtility_RulesForPawn), nameof(Patch_GrammarUtility_RulesForPawn.Postfix)),
-                info: "GrammarUtility.RulesForPawn"
-            );
+                var speakUp = AccessTools.Method(AccessTools.TypeByName("SpeakUp.DialogManager")
+               ?? AccessTools.TypeByName("DialogManager"),
+               "FireStatement");
+                if (speakUp != null)
+                {
+                    patchFunctionPostfix(
+                        original: speakUp,
+                        postfix: new HarmonyMethod(typeof(SpeakUp_DialogManager), nameof(SpeakUp_DialogManager.FireStatement_Postfix)),
+                        info: "SpeakUp.DialogManager.FireStatement"
+                    );
+                }
+                else Log.Warning($"[ZI] Bind failed for SpeakUp.DialogManager");
+            }
 
             ModChecker.ZealousInnocenceActive();
 
             if (Helper_Toddlers.ToddlersLoaded)
             {
+                if(settings.debugging) Log.Message($"[ZI]ZealousInnocence is patching for Toddlers.");
                 var isToddler = AccessTools.Method(AccessTools.TypeByName("Toddlers.ToddlerUtility")
                                ?? AccessTools.TypeByName("ToddlerUtility"),
                                "IsToddler");
@@ -318,10 +349,11 @@ namespace ZealousInnocence
                     patchFunctionPrefix(
                         original: isToddler,
                         prefix: new HarmonyMethod(typeof(Patch_ToddlerUtility), nameof(Patch_ToddlerUtility.IsToddler)),
-                        info: "ToddlerUtility.IsToddler"
+                        info: "Toddlers.ToddlerUtility.IsToddler"
                     );
                 }
-                else Log.Warning($"[ZI] Bind failed for ToddlerUtility.IsToddler");
+                else Log.Warning($"[ZI] Bind failed for Toddlers.ToddlerUtility.IsToddler");
+
                 var percentGrowth = AccessTools.Method(AccessTools.TypeByName("Toddlers.ToddlerUtility")
                                ?? AccessTools.TypeByName("ToddlerUtility"),
                                "PercentGrowth");
@@ -330,14 +362,28 @@ namespace ZealousInnocence
                     patchFunctionPrefix(
                         original: percentGrowth,
                         prefix: new HarmonyMethod(typeof(Patch_ToddlerUtility), nameof(Patch_ToddlerUtility.PercentGrowth)),
-                        info: "ToddlerUtility.PercentGrowth"
+                        info: "Toddlers.ToddlerUtility.PercentGrowth"
                     );
                 }
-                else Log.Warning($"[ZI] Bind failed for ToddlerUtility.PercentGrowth");    
+                else Log.Warning($"[ZI] Bind failed for Toddlers.ToddlerUtility.PercentGrowth");
+
+               var optimizeBabyApparel = AccessTools.Method(AccessTools.TypeByName("Toddlers.JobGiver_OptimizeBabyApparel")
+               ?? AccessTools.TypeByName("JobGiver_OptimizeBabyApparel"),
+               "TryGiveJob");
+                if (optimizeBabyApparel != null)
+                {
+                    patchFunctionPostfix(
+                        original: optimizeBabyApparel,
+                        postfix: new HarmonyMethod(typeof(Patch_JobGiver_OptimizeBabyApparel_TryGiveJob), nameof(Patch_JobGiver_OptimizeBabyApparel_TryGiveJob.Postfix)),
+                        info: "Toddlers.JobGiver_OptimizeBabyApparel.TryGiveJobg"
+                    );
+                }
+                else Log.Warning($"[ZI] Bind failed for Toddlers.JobGiver_OptimizeBabyApparel.TryGiveJob");
             }
 
             if (!ModChecker.ForeverYoungActive())
             {
+                if (settings.debugging) Log.Message($"[ZI]ZealousInnocence is patching because ForeverYoung is not available.");
                 // Can allow or disallow Rols for children (again)
                 patchFunctionPrefix(
                     original: AccessTools.Method(typeof(Precept_Role), nameof(Precept_Role.RequirementsMet)),
@@ -502,6 +548,10 @@ namespace ZealousInnocence
         public static bool ToddlersActive()
         {
             return ModLister.GetActiveModWithIdentifier("cyanobot.toddlers") != null;
+        }
+        public static bool SpeakUpActive()
+        {
+            return ModLister.GetActiveModWithIdentifier("JPT.speakup") != null;
         }
         public static bool ZealousInnocenceActive()
         {

@@ -443,4 +443,217 @@ namespace ZealousInnocence
             return false;
         }
     }
+
+    internal class JobDriver_CheckPatientDiaper : JobDriver
+    {
+        protected Pawn Patient
+        {
+            get
+            {
+                return (Pawn)this.job.targetB.Thing;
+            }
+        }
+
+        public override bool TryMakePreToilReservations(bool errorOnFailed)
+        {
+            Pawn pawn = this.pawn;
+            LocalTargetInfo target = this.Patient;
+            Job job = this.job;
+
+            if (!pawn.Reserve(target, job, 1, -1, null, errorOnFailed, false))
+            {
+                Log.Message($"[ZI]JobDriver_CheckPatientDiaper Fails Toil reservations stage 2");
+                return false;
+            }
+
+            return true;
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+        }
+
+        public override void Notify_Starting()
+        {
+            base.Notify_Starting();
+
+        }
+        private bool startedPatientHoldJob = false;
+        private Toil holdPatient()
+        {
+            // Put the patient into a wait/hold posture so they don't get up
+            Toil holdPatient = new Toil();
+            holdPatient.initAction = () =>
+            {
+                var patient = this.Patient;
+                if (patient != null && patient.Spawned)
+                {
+                    // Only start if they aren't already in a compatible wait job
+                    if (patient.CurJobDef != RimWorld.JobDefOf.Wait_MaintainPosture)
+                    {
+                        PawnPosture posture = PawnPosture.LayingOnGroundFaceUp;
+                        if (patient.InBed())
+                        {
+                            posture |= PawnPosture.InBedMask;
+                        }
+
+
+                        var wait = JobMaker.MakeJob(RimWorld.JobDefOf.Wait_MaintainPosture);
+                        wait.expiryInterval = 10000;
+                        wait.checkOverrideOnExpire = true;
+                        wait.playerForced = true;
+                        startedPatientHoldJob = true;
+
+                        // Interrupt to force it now but allow resume of prior job later
+                        patient.jobs.StartJob(wait, JobCondition.InterruptForced, null, resumeCurJobAfterwards: true);
+                        patient.jobs.posture = posture;
+                    }
+                }
+            };
+            holdPatient.defaultCompleteMode = ToilCompleteMode.Instant;
+            holdPatient.FailOnDespawnedNullOrForbidden(TargetIndex.B);
+            return holdPatient;
+        }
+        private Toil releasePatient()
+        {
+            Toil releasePatient = new Toil();
+            releasePatient.initAction = () =>
+            {
+                if (startedPatientHoldJob && Patient != null && Patient.Spawned)
+                {
+                    // End their waiting job so they can resume normal AI
+                    if (Patient.CurJobDef == RimWorld.JobDefOf.Wait_MaintainPosture)
+                        Patient.jobs.EndCurrentJob(JobCondition.InterruptForced);
+                }
+                startedPatientHoldJob = false;
+            };
+            releasePatient.defaultCompleteMode = ToilCompleteMode.Instant;
+            return releasePatient;
+        }
+        private void releasePatientFinal()
+        {
+            this.AddFinishAction(delegate
+            {
+                if (startedPatientHoldJob && Patient != null && Patient.Spawned &&
+                    Patient.CurJobDef == RimWorld.JobDefOf.Wait_MaintainPosture)
+                {
+                    Patient.jobs.EndCurrentJob(JobCondition.InterruptForced);
+                }
+                startedPatientHoldJob = false;
+            });
+        }
+        public static bool immediateFailReasons(Pawn patient, Pawn actor)
+        {
+            if (patient == null || patient.Dead) return true;
+            if (!patient.isToddlerOrBabyMentalOrPhysical())
+
+                if (actor == null || actor.Dead || actor.Downed) return true;
+            return false;
+        }
+        public static void orientBaby(Pawn patient, Pawn actor)
+        {
+            float angle = (actor.Position - patient.Position).AngleFlat;
+            patient.Rotation = Rot4.FromAngleFlat(angle).Opposite;
+        }
+        private Apparel Spare => job.targetA.Thing as Apparel;
+
+        bool doByGrabbing = false;
+        protected Toil Pursue()
+        {
+            const int sprintAfterTicks = 300;        // 300 => 5s @ 60 TPS
+
+            int chaseTicks = 0;
+            bool sprinting = false;
+            var pursue = Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.Touch);
+            pursue.FailOnDestroyedNullOrForbidden(TargetIndex.B);
+            pursue.FailOn(() => Patient.Dead);
+
+            // keep it focused on movement (no chat)
+            pursue.socialMode = RandomSocialMode.Off;
+
+            // Escalation + repath loop
+            pursue.AddPreTickAction(() =>
+            {
+                chaseTicks++;
+
+                // tiny nudge to repath if target changed cell (GotoThing already repaths; this just tightens it)
+                if (pawn.pather.Moving && (chaseTicks % 15 == 0)) // every 15 ticks
+                {
+                    if (pawn.pather.Destination.Thing != Patient)
+                        pawn.pather.StartPath(Patient, PathEndMode.Touch);
+                }
+
+                // Sprint escalation
+                if (!sprinting && chaseTicks >= sprintAfterTicks)
+                {
+                    sprinting = true;
+                    if (pawn.jobs?.curJob != null)
+                    {
+                        pawn.jobs.curJob.locomotionUrgency = LocomotionUrgency.Sprint;
+                        // poke pather to pick up new urgency quickly
+                        pawn.pather?.TryRecoverFromUnwalkablePosition();
+                    }
+                    Log.Message($"[ZI]CheckPatientDiaper Escalate: Sprint after {chaseTicks} ticks for {pawn.LabelShort} and {Patient.LabelShort}");
+                }
+            });
+            return pursue;
+        }
+        protected override IEnumerable<Toil> MakeNewToils()
+        {
+            this.FailOn(() => immediateFailReasons(Patient, this.pawn));
+
+            releasePatientFinal();
+
+            var thinkNow = Toils_General.Wait(20); // 1/3 second so this doesn't crash the game in case of issues
+            yield return thinkNow;
+
+            if (doByGrabbing)
+            {
+                Toil carryingBabyStart = Toils_General.Label();
+                yield return Toils_Jump.JumpIf(carryingBabyStart, () => this.pawn.IsCarryingPawn(Patient));
+
+                // PURSUE the moving toddler
+                yield return Pursue();
+
+                yield return Toils_Haul.StartCarryThing(TargetIndex.B, false, false, false, true, false);
+                yield return carryingBabyStart;
+            }
+            else
+            {
+                yield return Pursue();
+                yield return holdPatient();
+            }
+
+            Toil checkingProcess = Toils_General.Wait(250, TargetIndex.B);
+            checkingProcess.tickAction = () =>
+            {
+                if (this.pawn.IsHashIntervalTick(150))
+                {
+                    SoundStarter.PlayOneShotOnCamera(DiaperChangie.Diapertape, pawn.Map);
+                }
+            };
+            checkingProcess.AddFinishAction(() =>
+            {
+                if (Patient.needsDiaperChange())
+                {
+                    Need_Diaper need_diaper = Patient.needs.TryGetNeed<Need_Diaper>();
+                    need_diaper.KnowsNeedChange = true;
+                    if (need_diaper.KnowsNeedChange)
+                    {
+                        Log.Message($"[ZI] Diaper change is needed '{Patient.LabelCap}'");
+                    }
+                }
+            });
+            checkingProcess.WithProgressBarToilDelay(TargetIndex.B);
+            checkingProcess.defaultCompleteMode = ToilCompleteMode.Delay;
+            checkingProcess.FailOnCannotTouch(TargetIndex.B, PathEndMode.Touch);
+            yield return checkingProcess;
+
+            yield return releasePatient();
+
+            // Log.Message($"[ZI]Ended toils for {this.ClothThing.LabelShort}");
+            yield break;
+        }
+    }
 }

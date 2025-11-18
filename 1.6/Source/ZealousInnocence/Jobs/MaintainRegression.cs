@@ -54,7 +54,7 @@ namespace ZealousInnocence
         }
 
 
-        public const int MinIntervalTicks = 6000; // 1 in-game hour
+        public const int MinIntervalTicks = 3000; // 30 ingame minutes
         public const float ExtraHysteresis = 0.005f;
 
         public static CompRegressionMemory GetMemory(Pawn pawn)

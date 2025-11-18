@@ -24,6 +24,8 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref this.failureSeed, "failureSeed", 0);
             Scribe_Values.Look(ref this.bedwettingSeed, "bedwettingSeed", 0);
             Scribe_Values.Look(ref this.sleepTrack, "sleepTrack", 0);
+            Scribe_Values.Look(ref this.knowsNeedChange, "knowsNeedChange", false);
+            Scribe_Values.Look(ref this.lastLevel, "lastLevel", -1f);
         }
         private bool isHavingAccident;
         private bool isAdditionalCrapPants;
@@ -37,6 +39,19 @@ namespace ZealousInnocence
         public int bedwettingSeed = 0;
 
         private int sleepTrack = 0;
+
+        private bool knowsNeedChange = false;
+
+        private float lastLevel = -1;
+
+        public bool KnowsNeedChange
+        {
+            get
+            {
+                return knowsNeedChange;
+            }
+            set => knowsNeedChange = value;
+        }
         public int FailureSeed
         {
             get
@@ -312,7 +327,7 @@ namespace ZealousInnocence
                     }
                 }
                 if(!isAdditionalCrapPants)
-                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, IsPeeing ? "PhrasePantsWetting".Translate() : "PhrasePantsSoiling".Translate(), IsPeeing ? settings.wettingColor : settings.solingColor);
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, IsPeeing ? "PhrasePantsWetting".Translate() : "PhrasePantsSoiling".Translate(), IsPeeing ? settings.wettingColor : settings.solingColor);
             }
 
             if (pawn.InBed())
@@ -322,7 +337,7 @@ namespace ZealousInnocence
                 bed.HitPoints -= Math.Min(bed.HitPoints - 1, chancedDamage(damage));
                 if (!isAdditionalCrapPants)
                 {
-                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "PhraseBedwetting".Translate(), settings.wettingColor);
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, "PhraseBedwetting".Translate(), settings.wettingColor);
                     foreach (var curr in pawn.CurrentBed().CurOccupants)
                     {
                         if (curr != pawn)
@@ -358,6 +373,7 @@ namespace ZealousInnocence
         public void startAccident(bool pee = true)
         {
             if (IsHavingAccident) return;
+            pawn.TriggerRandomInteractionWithNearby();
             StartSound(pee);
             FailureSeed = 0;
             isHavingAccident = true;
@@ -372,7 +388,7 @@ namespace ZealousInnocence
             {
                 // This short time stagger will only happen for diaper, because without the pawn get staggered repeatetly anyway
                 pawn.stances?.stagger?.StaggerFor(150);
-                MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, IsPeeing ? "PhraseDiaperWetting".Translate(diaper.def.label) : "PhraseDiaperSoiling".Translate(diaper.def.label), IsPeeing ? settings.wettingColor : settings.solingColor);
+                MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, IsPeeing ? "PhraseDiaperWetting".Translate(diaper.def.label) : "PhraseDiaperSoiling".Translate(diaper.def.label), IsPeeing ? settings.wettingColor : settings.solingColor);
                 switch (liked)
                 {
                     case DiaperLikeCategory.Toddler:
@@ -414,7 +430,7 @@ namespace ZealousInnocence
                 var underwear = Helper_Diaper.getUnderwear(pawn);
                 if (underwear != null)
                 {
-                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, IsPeeing ? "PhraseUnderwearWetting".Translate(underwear.def.label) : "PhraseUnderwearSoiling".Translate(underwear.def.label), IsPeeing ? settings.wettingColor : settings.solingColor);
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, IsPeeing ? "PhraseUnderwearWetting".Translate(underwear.def.label) : "PhraseUnderwearSoiling".Translate(underwear.def.label), IsPeeing ? settings.wettingColor : settings.solingColor);
                 }
                 switch (liked)
                 {
@@ -470,14 +486,39 @@ namespace ZealousInnocence
             pawn.health.capacities.Notify_CapacityLevelsDirty(); // Yes, nessesary. The caching doesn't keep track of changes like sleeping and things that not cause hediffs
             currProtectionCache = null;
 
+            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            var debugging = settings.debugging && settings.debuggingCapacities;
+
             Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
             if (bladder == null)
             {
                 return;
             }
+            if (lastLevel < 0) lastLevel = CurLevel; // Init
+            if (lastLevel < CurLevel && knowsNeedChange)
+            {
+                if (debugging) Log.Message($"[ZI] Because of lastLevel higher than current {pawn.Name} is now unaware of the need to change their diapers");
+                knowsNeedChange = false; // Means usually diaper change
+            }
+            lastLevel = CurLevel;
+            if (!knowsNeedChange && CurLevel <= 0.5f && pawn.canChangeDiaperOrUnderwear())
+            {
+                if (debugging) Log.Message($"[ZI] {pawn.Name} is now aware of the need to change their diapers");
+                knowsNeedChange = true;
+            }
+            /*if(!pawn.canChangeDiaperOrUnderwear())
+            {
+                if (knowsNeedChange)
+                {
+                    if (debugging) Log.Message($"[ZI] {pawn.Name} knows that they need changed");
+                }
+                else
+                {
+                    if (debugging) Log.Message($"[ZI] {pawn.Name} don't knows that they need changed");
+                }
+            }*/
+
             
-            var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            var debugging = settings.debugging && settings.debuggingCapacities;
             var debugBedwetting = settings.debugging && settings.debuggingBedwetting;
 
             new HediffGiver_BedWetting().OnIntervalPassed(pawn, null);
@@ -747,10 +788,10 @@ namespace ZealousInnocence
         {
             if (isHavingAccident)
             {
-                if(pawn.CurJob.def != JobDefOf.PeePoopEvent && pawn.Awake() && pawn.CanPolitelyInterrupt() && !Helper_Diaper.isDiaper(currProtection))
+                if((pawn.CurJob.def != JobDefOf.PeeEvent || pawn.CurJob.def != JobDefOf.PoopEvent) && pawn.Awake() && pawn.CanPolitelyInterrupt() && (!Helper_Diaper.isDiaper(currProtection) || pawn.isToddlerOrBabyMentalOrPhysical()))
                 {
                     
-                    var job = JobMaker.MakeJob(JobDefOf.PeePoopEvent);
+                    var job = JobMaker.MakeJob(IsPeeing ? JobDefOf.PeeEvent : JobDefOf.PoopEvent);
                     job.expiryInterval = TicksAccidentLeftCalc;
                     job.checkOverrideOnExpire = true;   // let normal AI resume/override when it ends
                     job.playerForced = false;           // makes it easy to interrupt by the player

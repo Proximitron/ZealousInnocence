@@ -136,22 +136,22 @@
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			<li>
-				<label>Clean</label>
+				<label>Wearing a comfy Diapee</label>
 				<description>Mmmm...</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 			<li>
-				<label>Soggy</label>
+				<label>Wearing a comfy Diapee</label>
 				<description>*Giggles*</description>
 				<baseMoodEffect>3</baseMoodEffect>
 			</li>
 			<li>
-				<label>Dirty</label>
+				<label>Wearing a comfy Diapee</label>
 				<description>Nuh... guh...</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			<li>
-				<label>Filthy</label>
+				<label>Wearing a comfy Diapee</label>
 				<description>*Waaah*</description>
 				<baseMoodEffect>-10</baseMoodEffect>
 			</li>

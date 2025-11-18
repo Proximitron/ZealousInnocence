@@ -352,6 +352,10 @@ namespace ZealousInnocence
             return isToddlerMentalOrPhysical(pawn, forceRecheck) || isBabyMentalOrPhysical(pawn, forceRecheck);
         }
 
+        public static bool isBabyAtAge(this Pawn pawn, float ageYears)
+        {
+            return ageYears < toddlerMinAge(pawn);
+        }
         public static float toddlerMinAge(this Pawn pawn)
         {
             
@@ -380,11 +384,8 @@ namespace ZealousInnocence
         {
             return Mathf.FloorToInt(pawn.RaceProps.lifeExpectancy * 0.65f);
         }
-       
-        public static bool isBabyAtAge(this Pawn pawn, float ageYears)
-        {
-            return ageYears < toddlerMinAge(pawn);
-        }
+
+
         public static bool isToddlerAtAge(this Pawn pawn, float ageYears)
         {
             return ageYears >= toddlerMinAge(pawn) && ageYears < childMinAge(pawn);
@@ -471,13 +472,50 @@ namespace ZealousInnocence
             }*/
 
         }
+        public static List<Hediff_Injury> PermanentInjuries(this Pawn pawn)
+        {
+            var result = new List<Hediff_Injury>();
 
+            if (pawn?.health?.hediffSet == null)
+                return result;
+
+            // Copy list to avoid enumeration issues
+            var hediffs = pawn.health.hediffSet.hediffs.ToList();
+
+            foreach (var h in hediffs)
+            {
+                if (h is Hediff_Injury inj)
+                {
+                    var perm = inj.TryGetComp<HediffComp_GetsPermanent>();
+                    if (perm != null && perm.IsPermanent)
+                    {
+                        result.Add(inj);
+                    }
+                }
+            }
+
+            return result;
+        }
+        public static List<Hediff>MissingBodyParts(this Pawn pawn)
+        {
+            var resultList = new List<Hediff>();
+            if (pawn?.health?.hediffSet != null)
+            {
+                var hediffs = pawn.health.hediffSet.hediffs.ToList();
+                foreach (var h in hediffs)
+                {
+                    if (h is Hediff_MissingPart miss && miss.Part != null)
+                    {
+                        resultList.Add(h);
+                    }
+                }
+            }
+            return resultList;
+        }
         private static void healPawnMissingBodyparts(Pawn pawn, bool healAddictions = false)
         {
-            if (pawn?.health?.hediffSet == null) return;
-            var hediffs = new List<Hediff>(pawn.health.hediffSet.hediffs);
             // Restore missing natural parts (no implant replacement)
-            foreach (var h in hediffs)
+            foreach (var h in MissingBodyParts(pawn))
             {
                 if (h is Hediff_MissingPart miss && miss.Part != null)
                 {
@@ -564,7 +602,34 @@ namespace ZealousInnocence
             }
             return false;
         }
+        public static string FormatDays(float days)
+        {
+            if (float.IsInfinity(days))
+                return "∞";
 
+            if (days < 0f)
+                days = 0f;
+
+            // 1 year = 60 days in RimWorld (default), change to 365 if you prefer realism
+            const float DaysPerYear = 60f;
+
+            // YEARS
+            if (days >= DaysPerYear)
+            {
+                float years = days / DaysPerYear;
+                return $"~{years:0.#} y";
+            }
+
+            // DAYS
+            if (days >= 1f)
+            {
+                return $"{days:0.#} d";
+            }
+
+            // HOURS
+            float hours = days * 24f;
+            return $"{hours:0.#} h";
+        }
         public static bool TrySetHediffSeverity(Pawn pawn, string hediffDefName, float severity)
         {
             if (pawn?.health?.hediffSet == null) return false;

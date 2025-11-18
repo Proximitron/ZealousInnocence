@@ -37,14 +37,6 @@ namespace ZealousInnocence
                             "Expected *_a, *_b, *_c, *_d as single textures. " +
                             $"SubGraphics={subGraphics?.Length ?? 0}, maskPath={(maskPath ?? "null")}");
             }
-
-
-            /*if (subGraphics != null)
-            {
-                for (int i = 0; i < subGraphics.Length; i++)
-                    Log.Message($"[StackCount4] {path} sub[{i}] = {subGraphics[i]?.path ?? "null"}");
-                Log.Message($"[StackCount4] stages A:{gA?.path}  B:{gB?.path}  C:{gC?.path}  D:{gD?.path}");
-            }*/
 #endif
         }
 

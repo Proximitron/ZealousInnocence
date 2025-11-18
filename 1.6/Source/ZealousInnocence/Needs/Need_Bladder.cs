@@ -129,6 +129,9 @@ namespace ZealousInnocence
         public bool Allows(Pawn pawn)
         {
             if(pawn == null || pawn.ageTracker == null) return false;
+            if (pawn.RaceProps == null || !pawn.RaceProps.Humanlike) return false;
+            if (pawn.RaceProps.intelligence != Intelligence.Humanlike) return false;
+
             float age = pawn.ageTracker.AgeBiologicalYearsFloat;
             pawn.refreshAllAgeStageCaches();
             if (mentalStat && physicalStat)
@@ -201,11 +204,11 @@ namespace ZealousInnocence
         {
             if (__instance == null || nd == null) return false;
             var pawn = GetPawn(__instance);
-            if (pawn == null || !pawn.RaceProps.Humanlike) return false;
+            if (pawn == null) return false;
 
             if(nd.defName == "Bladder")
             {
-                __result = true;
+                __result = pawn.RaceProps.EatsFood || pawn.RaceProps.IsFlesh;
                 return true;
             }
 

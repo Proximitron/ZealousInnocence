@@ -5,14 +5,119 @@
 		<operations>
 			<li Class="PatchOperationAdd">
 				<xpath>/Defs/InteractionDef[defName = "Chitchat"]/logRulesInitiator/rulesStrings</xpath>
-				<value>
+				<value>				
 					<li>r_logentry(INITIATOR_age&lt;=4,INITIATOR_underwearType==Diaper,priority=5)->[child_dipe]</li>
-					<li>child_dipe(tag=Child_inDiaper,RECIPIENT_age&lt;=4,RECIPIENT_underwearType==Diaper,priority=6)->[dipe_childs]</li>
+					<li>child_dipe(tag=Child_inDiaper,RECIPIENT_age&lt;=4,RECIPIENT_underwearType==Diaper,priority=7)->[dipe_childs]</li>
 					<li>child_dipe(tag=Child_noDiaper,RECIPIENT_age&lt;=4,priority=5)->[dipe_to_nodipe]</li>
+					<li>child_dipe(tag=Child_inDiaper,RECIPIENT_age>=11,priority=5)->[dipe_to_adult]</li>
 					<li>child_secret(INITIATOR_underwearType==Diaper)->Me nebba, EBBA, wayuh da unduh-wayuh! Me keepded wayuhing diapees fuh-ebba!</li>
 					<li>child_adultsecret(INITIATOR_underwearType==Diaper)->Me duss wike habbing dis diapee fuh makeded da pee pee and poopy in! Pwease no tell me mommy and daddy!</li>
 					<li>child_adultsecret(INITIATOR_underwearType==Diaper)->Pwease no tell me mommy and daddy dis, otay? Me duss no wike go potty, me duss wike makeded da pee pee and poopy in me diapee...da potty am toopid! You no tell dem, otay?</li>
 					<li>child_adultsecret(INITIATOR_underwearType==Diaper)->Me nebba, EBBA, wayuh da unduh-wayuh! Me keepded da diapees!</li>
+				
+				
+				<!--==bladder and bowels==-->
+				<li>r_logentry(tag=Child_Accident,INITIATOR_age&lt;=4,INITIATOR_jobDefName==PoopEvent,priority=10)->[child_poo]</li>
+				<li>r_logentry(tag=Child_Accident,INITIATOR_age&lt;=4,INITIATOR_jobDefName==PeeEvent,priority=10)->[child_pee]</li>
+					<li>child_poo(RECIPIENT_age&lt;=4)->[child_openpoo]</li>
+					<li>child_poo(RECIPIENT_age>=11)->[adult_openpoo]</li>
+					<li>child_pee(RECIPIENT_age&lt;=4)->[child_openpee]</li>
+					<li>child_pee(RECIPIENT_age>=11)->[adult_openpee]</li>
+					
+					<li>child_openpee(INITIATOR_underwearType==Diaper,INITIATOR_mood>=0.5)->Me was wunning 'wound A WOT...pwaying wiff dat fwiends...den me diapee getted weawwy hot...me pee pee in it and me not eebun know me do dat! *giggles*</li>
+					<li>child_openpoo(INITIATOR_underwearType==Diaper,INITIATOR_mood>=0.5)->Me was wunning 'wound A WOT...pwaying wiff dat fwiends...den me get twummy ouw... me stop an push a widdle an tummy all betta! *giggles*</li>
+					
+					<li>child_openpoo(INITIATOR_underwearType==Diaper,INITIATOR_mood&lt;0.49)->Me tummy ouch...me no wike go potty aww da time...</li>
+					<li>child_openpoo->You no wook at me! Me am twy go potty obah heeyuh!</li>
+					<li>child_openpoo->Me duss twy makeded da poopy weawwy fass...*grunts*....Otay me weady pway now!</li>
+					<li>child_openpoo->You go way pwease! Me twy potty obah heeyah!</li>
+					<li>child_openpoo->Me duss takeded da bweak fwom pwaying...*grunts*...uh oooooh...me duss getted WOTS uh poopy in me diapee...*whimpers*...</li>
+					<li>child_openpee(INITIATOR_thoughtLabel==need the bathroom)->Me WEAWWY need go potty!!!....*grunts*....oops...now me no need go potty!</li>
+					<li>child_openpoo(INITIATOR_thoughtLabel==need the bathroom)->Me WEAWWY need go potty!!!....*grunts*....oops...now me no need go potty!</li>
+					<li>child_openpee(INITIATOR_underwearType==Diaper)->*grunting* Me weawwy wike pway wiff you *more grunting*...Otay me weady now..me makeded a tinky in me diapee. Wet's pway!</li>
+					<li>child_openpoo(INITIATOR_underwearType==Diaper)->*grunting* Me weawwy wike pway wiff you *more grunting*...Otay me weady now..me makeded poo poo in me diapee. Wet's pway!</li>
+					<li>adult_openpoo(INITIATOR_underwearType==Diaper)->*grunting* Wut you mean? Me not need go poopy.... *more grunting*...Otay...me was wying...me makeded a poope in me diapee. Sowwy!</li>
+					<li>adult_openpee(INITIATOR_underwearType==Diaper)->*grunting* Wut you mean? Me not need go pee pee.... *more grunting*...Otay...me was wying...me makeded a tinky in me diapee. Sowwy!</li>
+					<li>adult_openpee(INITIATOR_underwearType==Diaper)->Me WEAWWY need go potty!!!....*grunts*....ok me good now!</li>
+					<li>adult_openpoo(INITIATOR_underwearType==Diaper)->Me WEAWWY need go potty!!!....*grunts*....ok me good now!</li>
+					<li>adult_openpoo(INITIATOR_underwearType==None)->ME WEAWWY NEED DA POTTY!...PWEASE!!!!.....*face turns red from grunting*...sowwy me poopded on da gwound...</li>
+					<li>adult_openpee(INITIATOR_underwearType==None)->ME WEAWWY NEED DA POTTY!...PWEASE!!!!.....*face turns red from grunting*...sowwy me pee peed on da gwound...</li>
+					<li>adult_openpoo->ME WEAWWY NEED DA POTTY!...PWEASE!!!!.....*face turns red from grunting*...sowwy me poopded my pwants...</li>
+					<li>adult_openpee->ME WEAWWY NEED DA POTTY!...PWEASE!!!!.....*face turns red from grunting*...sowwy me pee peed my pwants...</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper)->Me am vewy sowwy...me makeded da tinky in da diapee...you getted me da cwean one, pwease?</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper)->Me am vewy sowwy...no getted to da potty befuh da pee pee go in me diapee...you changeded it fuh me pwease?</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper,RECIPIENT_relationship==Parent,RECIPIENT_gender==Female)->Mommy...me am sowwy fuh makeded da tinky poopy in me diapee..you getted me cwean pwease mommy? Me gwoss...</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper,RECIPIENT_relationship==Parent,RECIPIENT_gender==Female)->Mommy...me was pwaying WEAWWY A WOT...and me not know me go pee pee in da diapee...me am sowwy...me fink me makeded poopy in dayuh too now...</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper,RECIPIENT_relationship==Parent,RECIPIENT_gender==Male)->Daddy, you getted me da cwean diapee fuh me pwease? Me getted poopy EBBY-WAYUH...sowwy! *smiles*</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper,RECIPIENT_relationship==Parent,RECIPIENT_gender==Male)->Daddy, me sowwy...me getted da pee pee and da tinky poopy in me diapee an' now me need da baff pwease!</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper,RECIPIENT_relationship==Parent,RECIPIENT_gender==Male,RECIPIENT_trait==dislikes children)->Daddy, pwease you no beated me wiff da belt! Me sowwy fuh makeded da poopy in me diapee! Me no do dat ebba 'gain you no beated me! Pwease?! *starts whimpering*</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper,RECIPIENT_relationship==Parent,RECIPIENT_gender==Male,RECIPIENT_trait==dislikes children)->Pwease no hitted me wiff dat belt...me no mean makeded da pee pee and da tinky poopy in diapee...me duss pwaying too a wot...me pwomise me not meanded to.. *starts whimpering*</li>
+					<li>child_adult(RECIPIENT_relationship==Parent,RECIPIENT_gender==Female,RECIPIENT_trait==dislikes children)->Mommy, pwease...me no twy makeded you mad...me duss pway wots and me not know dat da poopy was in da diapee...den me see it on me weg...You pwease no hitted me wiff da belt?</li>
+					<li>child_adult(INITIATOR_underwearType==Diaper,RECIPIENT_relationship==Parent,RECIPIENT_gender==Female,RECIPIENT_trait==dislikes children)->Me am VEWY sowwy mommy...me not twy makeded da poopy in me diapee...pwease you no getted mad and beated da tooshie...it awweady huhts fwom da poopy...</li>	
+				
+				<li>r_logentry(INITIATOR_jobDefName==PoopEvent,INITIATOR_age==0,priority=10)->[baby_poop]</li>
+					<li>baby_poop->*grunts*</li>
+					<li>baby_poop->*grunts and farts*</li>
+					<li>baby_poop->*poops a smelly one*</li>
+					
+				<li>r_logentry(INITIATOR_jobDefName==PoopEvent,INITIATOR_age==0,priority=10)->[baby_pee]</li>
+					<li>baby_pee->*giggles*</li>
+					<li>baby_pee->*grunts a little*</li>
+					<li>baby_pee->*diaper changes color*</li>
+
+					
+				<li>r_logentry(tag=Child_Poopsie,INITIATOR_age&lt;=4,RECIPIENT_age&lt;=4,RECIPIENT_jobDefName==PoopEvent,priority=10)->[child_poops]</li>
+				<li>r_logentry(tag=Child_Poopsie,INITIATOR_age&lt;=4,RECIPIENT_age&lt;=4,RECIPIENT_jobDefName==PeeEvent,priority=9)->[child_poops]</li>
+				<li>r_logentry(tag=Child_Poopsie,INITIATOR_age&lt;=10,RECIPIENT_age&lt;=4,RECIPIENT_underwearType==None,priority=8)->[child_openpoopy]</li>
+				<li>r_logentry(tag=Child_Poopsie,INITIATOR_age==0,RECIPIENT_age&lt;=4,RECIPIENT_jobDefName==PoopEvent,priority=10)->[baby_good]</li>
+				<li>r_logentry(tag=Child_Poopsie,INITIATOR_age==0,RECIPIENT_age&lt;=4,RECIPIENT_jobDefName==PeeEvent,priority=9)->[baby_good]</li>
+				<li>r_logentry(tag=Child_Poopsie,INITIATOR_age&lt;=3,RECIPIENT_age&lt;=4,RECIPIENT_underwearType==None,priority=8)->[baby_poop]</li>
+					<li>child_poops->You makeded wots uh poopy uh sumfin?</li>
+					<li>child_poops->Dat good dat you no hab da diapee! Den you no makeded poopy in you diapee and getted you tooshie beated!</li>
+					<li>child_poops->Sowwy! Me not seed you go potty!</li>
+					<li>child_poops->You want go pway wiff me when you am aww done wiff makeded da tinky poopy on youseff?</li>
+					<li>child_poops->Me duss go obah heeyah so you go pee pee and poopy aww awone...sowwy!</li>
+					<li>child_poops->You till want pway wiff me when you am aww done wiff you poopy? You no hab to wipe you tooshie tuz you no hab da diapee!</li>
+					<li>child_poops(RECIPIENT_underwearType==Diaper,priority=10)->[poopy_diapee]</li>
+					<li>child_poops->Why fuh you duss makeded wots uh poopy and pee pee ebby-wayuh fuh? It vewy tinky!</li>
+					<li>child_poops->You no wike go potty uh sumfin? You not da wittle aminaw...you not 'pose to makeded da pee pee and poopy on da gwound, siwwy! Hee hee!</li>
+					<li>child_poops(INITIATOR_trait==poop-eater)->Wowee! Dat am weawwy a wot uh chocowate!</li>
+					<li>child_poops(INITIATOR_trait==poop-eater)->How you makeded dat mutts chocowate out you tooshie? You sowe me how do dat pwease?</li>
+					<li>child_poops(INITIATOR_trait==poopaholic)->How fuh you duss makeded aww dat poopy on da gwound fuh? Me hab dat tuff pwease? It dewishus!</li>
+					<li>child_poops(INITIATOR_trait==poopaholic,INITIATOR_moving==Yes)->Wait fuh me! Me duss twy catched dat poopy in me mouff! It duss so vewy dewishus!</li>
+					<li>child_poops(INITIATOR_trait==poopaholic)->Dat am duss vewy tinky! Me wike dat a wot! Me eated dat poopy pwease? Fanks!</li>
+					<li>child_poops(INITIATOR_opinion&lt;0)->[meanpoopy]</li>
+					<li>poopy_diapee->Oopsie! Sowwy me not know you duss twying ta makeded da poopy in you diapee wight now!</li>
+					<li>poopy_diapee->Hee hee! You am makeded wots uh poopy in you diapee wight now! Me mell dat obah heeyah! Hee hee! You want getted da cwean diapee befuh we pway?</li>
+					<li>poopy_diapee->Dat am da tinky wittle faht you duss makeded out you tooshie! You bettuh wook in you diapee duss tuz dayuh am da poopy uh sumfin in dayuh! Hee hee!</li>
+					<li>poopy_diapee->Dat am da weawwy tinky wittle faht! You twy makeded da poopy uh sumfin?Hee hee!</li>
+					<li>poopy_diapee(INITIATOR_moving==Yes)->Me duss twy getted you da cwean diapee weawwy fass, den we duss pway! You duss makeded da poopy, me be wight back!</li>
+					<li>poopy_diapee->Dat weawwy am tinky...you pwobby getted da cwean diapee now...</li>
+					<li>poopy_diapee->You bettuh not wet da big meany gwown ups mell dat! Dem duss hitted me weawwy hawd in da tooshie wiff da belt fuh makeded da poopy in me diapee...Huwwy! Me fink me heeyah dem!</li>
+					<li>poopy_diapee->You no wike go poopy in da potty uh sumfin?</li>
+					<li>poopy_diapee->Hee hee! Dat am weawwy tinky!</li>
+					<li>poopy_diapee(INITIATOR_trait==poop-eater)->Me hab dat diapee when you am aww done? Dey am pwobby wots uh dat dewishus chocowate in dayuh!</li>
+					<li>poopy_diapee(INITIATOR_trait==poop-eater)->You makeded da chocowate in you diapee? Pwease me hab sum uh dat? Me shayah wiff you!</li>
+					<li>poopy_diapee(INITIATOR_trait==poopaholic)->*sniffs* Mmmm! Dat mell weawwy dewishus! You gib me dat poopy diapee pwease?</li>
+					<li>poopy_diapee(INITIATOR_trait==poopaholic)->*sniffs* Me fwow dat diapee in da twash fuh you? Me duss takeded da poopy out uh dayuh, den me fwowded in da twash. Fanks!</li>
+					<li>poopy_diapee(INITIATOR_opinion&lt;0)->[meanpoopydiapee]</li>
+					<li>meanpoopy->Why fuh you duss vewy gwoss fuh?</li>
+					<li>meanpoopy->You am toopid! You duss go poopy ebby-wayuh! Now it tinky! Me no wike you!</li>
+					<li>meanpoopy->You am vewy gwoss and duss da wittle aminaw fuh poopy on da gwound. Me am tewwing you mommy, toopid!</li>
+					<li>meanpoopy->Eew! Me am tewwing da gwown ups you am poopy ebby-wayuh! You bouts ta getted you tooshie beated wiff da belt! Ha ha! Toopid!</li>
+					<li>meanpoopy->Me bouts ta hitted you! You tink weawwy A WOT and me bouts ta fwow up! You am ugwee and tinky toopid head!</li>
+					<li>meanpoopydiapee->Awww!!!! Me am tewwing you mommy you makeded da poopy in you diapee! You am getted in twouble fuh dat! Ha ha! Toopid!</li>
+					<li>meanpoopydiapee->You am vewy gwoss fuh poopy in you diapee aww da time! You am duss da ugwee toopid wittle baby tuz you no go potty wike da big kid!</li>
+					<li>meanpoopydiapee->You awe gwoss!</li>
+					<li>meanpoopydiapee->You awe ditusting! Me tewwing on you!</li>
+					<li>child_openpoopy->You no wike go potty uh sum fin? Pwease top poopy da gwound!</li>
+					<li>child_openpoopy->Why fuh you awways duss getted you poopy and pee pee ebby-wayuh fuh?</li>
+					<li>child_openpoopy->Me tep in you poopy on da gwound... now me wittle footses am tinky wike you poopy! Dat gwoss!</li>
+					<li>child_openpoopy->Me getted you poopy on me wittle footses! Pwease you no makeded da poopy on da gwound no more?</li>
+					<li>child_openpoopy(INITIATOR_opinion&lt;0)->[mean_openpoo]</li>
+						<li>mean_openpoo->ARRGH!!! Pwease top getted you distusting poopy ebby-wayuh! Me duss getted you poopy on me wittle footses! Now me am tinky wike you, toopid!</li>
+						<li>mean_openpoo->Me bouts ta fwow you poopy at you fuh weeb you poopy on da gwound! Me duss makeded you eat it!</li>
+						<li>mean_openpoo->Me no wike you fuh weeb you poopy and pee pee ebby-wayuh! You am gwoss!</li>
 				
 					<!-- ===talk to baby=== -->
 					

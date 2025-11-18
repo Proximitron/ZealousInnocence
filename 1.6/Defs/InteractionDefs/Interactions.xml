@@ -14,7 +14,8 @@
 			</rulesStrings>
 		</logRulesInitiator>
 	</InteractionDef>
-	<InteractionDef ParentName="SpeakUpReply">
+	
+	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
 		<defName>Diaper_YouToo</defName>
 		<label>diaper — youToo</label>
 		<logRulesInitiator>
@@ -87,7 +88,7 @@
 		</logRulesInitiator>
 	</InteractionDef>
 	
-	<InteractionDef ParentName="SpeakUpReply">
+	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
 		<defName>Babble_Baby</defName>
 		<label>babble — baby</label>
 		<logRulesInitiator>
