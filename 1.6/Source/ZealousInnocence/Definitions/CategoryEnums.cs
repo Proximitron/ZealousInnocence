@@ -22,4 +22,16 @@ namespace ZealousInnocence
         Child,
         Toddler
     }
+
+    [System.Flags]
+    public enum AgeStage
+    {
+        None = 0,
+        Baby = 1 << 0,
+        Toddler = 1 << 1,
+        Child = 1 << 2,
+        Teen = 1 << 3,
+        Adult = 1 << 4,
+        Old = 1 << 5,
+    }
 }

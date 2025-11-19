@@ -405,6 +405,14 @@ namespace ZealousInnocence
             var pref = getDiaperPreference(pawn);
             return pref == DiaperLikeCategory.Toddler || pref == DiaperLikeCategory.Child || pref == DiaperLikeCategory.Liked || (pref != DiaperLikeCategory.Disliked && needsDiaperNight(pawn));
         }
+        public static bool canHaveBladder(this Pawn pawn)
+        {
+            return pawn.RaceProps.IsFlesh || pawn.RaceProps.EatsFood;
+        }
+        public static bool canWearDiaper(this Pawn pawn)
+        {
+            return pawn.RaceProps.Humanlike && pawn.canHaveBladder();
+        }
         public static Apparel getUnderwearOrDiaper(Pawn pawn)
         {
             List<Apparel> wornApparel = pawn?.apparel?.WornApparel;

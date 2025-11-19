@@ -174,29 +174,20 @@ namespace ZealousInnocence
             AddKeyUnique(rules, pawnSymbol + "_ageMental", pawn.getAgeStageMentalInt().ToString());
             AddKeyUnique(rules, pawnSymbol + "_agePhysical", pawn.getAgeStagePhysicalInt().ToString());
 
+            AgeStage stages = pawn.GetAgeSocial();
             string speechStage = pawnSymbol + "_stage";
-            if (pawn.isBabyMentalOrPhysical())
+            foreach (AgeStage st in Enum.GetValues(typeof(AgeStage)))
+            {
+                if (st == AgeStage.None)
+                    continue;
+
+                if (stages.HasFlag(st))
+                    AddKey(rules, speechStage, st.ToString());
+            }
+            if (!stages.HasFlag(AgeStage.Baby))
             {
                 AddKey(rules, speechStage, "Baby");
             }
-            else
-            {
-                AddKey(rules, speechStage, "NotBaby");
-                if (pawn.isToddlerMentalOrPhysical() || pawn.getAgeBehaviour() == 4)
-                {
-                    AddKey(rules, speechStage, "Toddler");
-                }
-                else if (pawn.isChildMental() || pawn.getAgeBehaviour() < pawn.adultMinAge())
-                {
-                    AddKey(rules, speechStage, "Child");
-                }
-                else
-                {
-                    AddKey(rules, speechStage, "Adult");
-                }
-            }
-            if (pawn.isOld()) AddKey(rules, speechStage, "Old");
-            if(pawn.isTeen()) AddKey(rules, speechStage, "Teen");
 
             string underwear = pawnSymbol + "_underwearType";
             var current = Helper_Diaper.getUnderwearOrDiaper(pawn);

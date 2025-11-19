@@ -99,11 +99,19 @@ namespace ZealousInnocence
                     impactors.Add(new CapacityImpactorCustom { customLabel = $"Physical", customString = Helper_Regression.getAgeStagePhysical(pawn) });*/
                     if (settings.debugging)
                     {
+                        impactors.Add(new CapacityImpactorCustom { customLabel = $"Debug Values", customString = "---" });
                         if (pawn.isAdultMental()) impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental State", customString = "Adult" });
                         if (pawn.isChildMental()) impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental State", customString = "Child" });
                         if (pawn.isToddlerMental()) impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental State", customString = "Toddler" });
                         if (pawn.isBabyMental()) impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental State", customString = "Baby" });
-                        
+
+                        AgeStage stages = pawn.GetAgeSocial();
+                        foreach (AgeStage st in Enum.GetValues(typeof(AgeStage)))
+                        {
+                            if(st == AgeStage.None) continue;
+                            if(stages.HasFlag(st)) impactors.Add(new CapacityImpactorCustom { customLabel = $"Social Behaviour", customString = st.ToString() });
+                        }
+
                         impactors.Add(new CapacityImpactorCustom { customLabel = $"Mental Age", customString = pawn.getAgeStageMental().ToString("F2") });
                         impactors.Add(new CapacityImpactorCustom { customLabel = $"Physical Age", customString = pawn.getAgeStagePhysical().ToString("F2") });
                         impactors.Add(new CapacityImpactorCustom { customLabel = $"Bedwetting Chance", customString = (Helper_Bedwetting.PawnBedwettingChance(pawn, Helper_Regression.getAgeStagePhysicalMentalMin(pawn)) * 100).ToString("F2") + "%" });
@@ -126,51 +134,6 @@ namespace ZealousInnocence
             return body.HasPartWithTag(BodyPartTagDefOf.BladderControlSource);
         }
 
-        /*private float GetAgeFactor(Pawn pawn)
-        {
-            if (!pawn.RaceProps.Humanlike) return 1.0f;
-            int age = Helper_Regression.getAgeStageMentalInt(pawn);
-            float factor;
-
-            // Young age factor calculation
-            if (age <= 3)
-            {
-                factor = 0f; // Toddlers have no bladder control
-            }
-            else if (age <= 6)
-            {
-                factor = Mathf.Lerp(0f, 0.5f, Mathf.InverseLerp(3, 6, age));
-            }
-            else if (age <= 9)
-            {
-                factor = Mathf.Lerp(0.5f, 0.75f, Mathf.InverseLerp(6, 9, age));
-            }
-            else if (age <= 17)
-            {
-                factor = Mathf.Lerp(0.75f, 1.0f, Mathf.InverseLerp(9, 17, age));
-            }
-            // Senior age factor calculation
-            else if (age >= 50)
-            {
-                if (age <= 70)
-                {
-                    factor = 1.0f - (age - 50) / 20f * 0.2f; // Linear decrease from 1.0 at age 50 to 0.75 at age 70
-                }
-                else
-                {
-                    factor = 0.80f; // Maximum reduction at age 70 and beyond
-                }
-            }
-            else
-            {
-                factor = 1.0f; // Full control for ages 14 to 50
-            }
-
-            // Round to 2 decimal places
-            factor = Mathf.Round(factor * 100f) / 100f;
-
-            return factor;
-        }*/
         private float GetAgeFactor(Pawn pawn)
         {
             if (!pawn.RaceProps.Humanlike)
@@ -202,13 +165,13 @@ namespace ZealousInnocence
             else if (ageYears < childStart)
             {
                 float t = Mathf.InverseLerp(toddlerStart, childStart, ageYears);
-                factor = Mathf.Lerp(0f, 0.3f, t);
+                factor = Mathf.Lerp(0f, 0.5f, t);
             }
             // 2) Child band: 0.3 → 0.9
             else if (ageYears < adultStart)
             {
                 float t = Mathf.InverseLerp(childStart, adultStart, ageYears);
-                factor = Mathf.Lerp(0.3f, 0.9f, t);
+                factor = Mathf.Lerp(0.5f, 0.9f, t);
             }
             // 3) Teen / early adult: 0.9 → 1.0 (adultMin..teenMax)
             else if (ageYears < teenEnd)

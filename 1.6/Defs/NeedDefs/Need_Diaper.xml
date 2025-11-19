@@ -6,18 +6,18 @@
 		<label>underwear status</label>
 		<description>The current state of pawns underwear or diaper.</description>
 		<showOnNeedList>true</showOnNeedList>
-		<minIntelligence>Humanlike</minIntelligence>
+		<!--<minIntelligence>Humanlike</minIntelligence>-->
 		<baseLevel>0</baseLevel>
 		<listPriority>321</listPriority>
 		<major>false</major>
 		<freezeWhileSleeping>false</freezeWhileSleeping>
 		<freezeInMentalState>false</freezeInMentalState>
 		<showForCaravanMembers>true</showForCaravanMembers>
-		<developmentalStageFilter>
+		<!--<developmentalStageFilter>
 			<li>Baby</li>
 			<li>Child</li>
 			<li>Adult</li>
-		</developmentalStageFilter>
+		</developmentalStageFilter>-->
 		<fallPerDay>0</fallPerDay>
 	</NeedDef>
 </Defs>

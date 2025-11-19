@@ -11,7 +11,7 @@ namespace ZealousInnocence.Stats
 {
     public class StatPart_BladderAge : StatPart
     {
-        static float ageFactorMin = 2.5f;
+        static float ageFactorMin = 3.0f;
         public override void TransformValue(StatRequest req, ref float val)
         {
             if (!(req.Thing is Pawn pawn))
@@ -20,7 +20,7 @@ namespace ZealousInnocence.Stats
             float age = pawn.getAgeStagePhysical();
 
           
-            float t = Mathf.Clamp01(age / pawn.adultMinAge());
+            float t = Mathf.Clamp01(age / pawn.teenMaxAge());
             float ageFactor = Mathf.Lerp(ageFactorMin, 1.0f, t);
 
             val *= ageFactor;
@@ -32,7 +32,7 @@ namespace ZealousInnocence.Stats
                 return null;
 
             float age = pawn.getAgeStagePhysical();
-            float t = Mathf.Clamp01(age / pawn.adultMinAge());
+            float t = Mathf.Clamp01(age / pawn.teenMaxAge());
             float ageFactor = Mathf.Lerp(ageFactorMin, 1.0f, t);
 
             if (Mathf.Approximately(ageFactor, 1f))

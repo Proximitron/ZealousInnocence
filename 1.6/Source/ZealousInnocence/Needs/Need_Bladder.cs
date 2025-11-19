@@ -17,27 +17,6 @@ namespace ZealousInnocence
 {
     public static class Need_Bladder_Patch
     {
-        /*public static void BladderRate_Postfix(Need_Bladder __instance, ref float __result)
-        {
-            // Access the private pawn field
-            Pawn pawn = (Pawn)AccessTools.Field(typeof(Need), "pawn").GetValue(__instance);
-            // Add your custom logic here
-            // For example, modify the bladder rate based on certain conditions
-            float bladderStrength = pawn.GetStatValue(StatDefOf.BladderStrengh, true);
-            var debugging = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            var dbug = true; // debugging.debugging && debugging.debuggingCapacities;
-            if (dbug)  Log.Message($"[ZI]BladderRate_Postfix: {pawn.Name} changing rate from {__result} on {bladderStrength}");
-            if (bladderStrength != 1f)
-            {
-                float factor = 1f / bladderStrength;
-               
-                if (dbug)  Log.Message($"[ZI]BladderRate_Postfix: {pawn.Name} changing rate from {__result} to {__result*factor}");
-                
-                __result *= factor;
-            }
-
-        }*/
-
         public static bool NeedInterval_Prefix(Need_Bladder __instance)
         {
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
@@ -78,14 +57,6 @@ namespace ZealousInnocence
                 Pawn pawn = (Pawn)AccessTools.Field(typeof(Need), "pawn").GetValue(__instance);
                 if (!Helper_Diaper.remembersPotty(pawn)) __result = BowelCategory.Empty;
             }
-            // Add your custom logic here
-            /*if (pawn.story.traits.HasTrait(TraitDefOf.AnotherTrait))
-            {
-                if (__result == BowelCategory.needBathroom && __instance.CurLevel < 0.1f)
-                {
-                    __result = BowelCategory.Busting; // Make the pawn more likely to feel urgent if they have another trait
-                }
-            }*/
         }
     }
 
@@ -166,13 +137,24 @@ namespace ZealousInnocence
 
     public static class Patch_ShouldHaveNeed_Debug
     {
-        private static ZealousInnocenceSettings Settings => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+        private static readonly Lazy<ZealousInnocenceSettings> _settings =
+            new Lazy<ZealousInnocenceSettings>(() =>
+                LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>());
+
+        public static ZealousInnocenceSettings Settings => _settings.Value;
         public static bool Enabled
         {
             get
             {
                 if (Settings == null) return false;
                 return Settings.debuggingNeeds;
+            }
+        }
+        public static bool EnabledDetailed
+        {
+            get
+            {
+                return Enabled && Prefs.LogVerbose;
             }
         }
 
@@ -196,7 +178,7 @@ namespace ZealousInnocence
             if (Bladder_RaidCaravanVisitor_Postfix(__instance, ref __result, nd)) return;
             if (Postfix_StageTracker(__instance, nd, ref __result)) return;
 
-            if (!Enabled) return;
+            if (!EnabledDetailed) return;
             string reason = ExplainDecision(pawn, nd, __result);
             Log.Message($"[ZI]Postfix pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} {reason}");
         }
@@ -206,17 +188,20 @@ namespace ZealousInnocence
             var pawn = GetPawn(__instance);
             if (pawn == null) return false;
 
-            if(nd.defName == "Bladder")
+            if(nd.defName == "Bladder" || nd.defName == "Diaper")
             {
-                __result = pawn.RaceProps.EatsFood || pawn.RaceProps.IsFlesh;
-                return true;
+                __result = pawn.canHaveBladder();
+            }
+            else
+            {
+                var ext = nd.GetModExtension<DevStageExtension>();
+                if (ext == null) return false; // No custom rule → leave vanilla outcome.
+
+                // Stage gating (mandatory now that vanilla filter is gone)
+                __result = ext.Allows(pawn);
             }
 
-            var ext = nd.GetModExtension<DevStageExtension>();
-            if (ext == null) return false; // No custom rule → leave vanilla outcome.
 
-            // Stage gating (mandatory now that vanilla filter is gone)
-            __result = ext.Allows(pawn);
             if(Enabled) Log.Message($"[ZI]Postfix_StageTracker pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} StageTracker");
             return true;
         }
@@ -224,7 +209,7 @@ namespace ZealousInnocence
         public static bool Bladder_RaidCaravanVisitor_Postfix(Pawn_NeedsTracker __instance, ref bool __result, NeedDef nd)
         {
             // Only care about the DBH need named "Bladder"
-            if (nd == null || nd.defName != "Bladder")
+            if (nd == null || (nd.defName != "Bladder" && nd.defName != "Diaper"))
                 return false; // run vanilla
 
             if (__result) return false; // We don't touch anything that is already allowed

@@ -4,7 +4,7 @@
 	<RitualOutcomeExtraDesc_UnbladderingPsylink>Thanks to a satisfying unbladdering ritual, {PAWN_labelShort} gained a psylink level!</RitualOutcomeExtraDesc_UnbladderingPsylink>
 	
 	<!-- Destruction of cloth by accidents (pee/poop) -->
-	<MessageClothDestroyedByAccident>{PAWN_labelShort}'s {CLOTH_labelShort} was destroyed by an accident.</MessageClothDestroyedByAccident>
+	<MessageClothDestroyedByAccident>{PAWN_labelShort} destroyed {PAWN_possessive} {CLOTH_labelShort} by having a little accident.</MessageClothDestroyedByAccident>
 	
 	<RimlaserChangeBeamColor>Change color: {0}</RimlaserChangeBeamColor>
 </LanguageData>

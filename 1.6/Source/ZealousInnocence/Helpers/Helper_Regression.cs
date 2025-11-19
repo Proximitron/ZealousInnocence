@@ -155,7 +155,7 @@ namespace ZealousInnocence
             if (pawn.isToddlerPhysical()) return 4;
             if (pawn.isToddlerMental()) return 4;
             int minAge = Math.Min(pawn.getAgeStageMentalInt(),pawn.getAgeStagePhysicalInt());
-            if (minAge < 6) return 4;
+            if (minAge < 6 && !pawn.isAdultAtAge(minAge)) return 4;
 
             if (pawn.isChildPhysical() && minAge < pawn.adultMinAge())
             {
@@ -163,6 +163,46 @@ namespace ZealousInnocence
             }
 
             return pawn.getAgeStageMentalInt();           
+        }
+        public static AgeStage GetAgeSocial(this Pawn pawn)
+        {
+            AgeStage s = AgeStage.None;
+
+            if (pawn.getAgeSocialIsBaby())
+                s |= AgeStage.Baby;
+
+            if (pawn.getAgeSocialIsToddler())
+                s |= AgeStage.Toddler;
+
+            if (pawn.getAgeSocialIsChild())
+                s |= AgeStage.Child;
+
+            if (pawn.isTeen())
+                s |= AgeStage.Teen;
+
+            if (pawn.getAgeSocialIsAdult())
+                s |= AgeStage.Adult;
+
+            if (pawn.isOld())
+                s |= AgeStage.Old;
+
+            return s;
+        }
+        public static bool getAgeSocialIsBaby(this Pawn pawn)
+        {
+            return pawn.getAgeBehaviour() == 0;
+        }
+        public static bool getAgeSocialIsToddler(this Pawn pawn)
+        {
+            return pawn.getAgeBehaviour() == 4;
+        }
+        public static bool getAgeSocialIsChild(this Pawn pawn)
+        {
+            return pawn.getAgeBehaviour() > 4 && !pawn.getAgeSocialIsAdult();
+        }
+        public static bool getAgeSocialIsAdult(this Pawn pawn)
+        {
+            return pawn.isAdultAtAge(pawn.getAgeBehaviour());
         }
         public static bool canChangeDiaperOrUnderwear(this Pawn p)
         {

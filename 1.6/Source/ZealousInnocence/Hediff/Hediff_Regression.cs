@@ -191,7 +191,7 @@ namespace ZealousInnocence
             float split = Mathf.Lerp(minSplit, maxSplit, f); // e.g. 0.40..0.75
 
             const double eps = 1e-9;
-
+            long calculatedResult = 0;
             if (s < split)
             {
                 // Adult zone: baseline → childEdge with exponent 1.25
@@ -199,7 +199,7 @@ namespace ZealousInnocence
                 t = Math.Pow(t, 1.25);
                 double d = baselineBioTicks + (childEdge - (double)baselineBioTicks) * t;
                 long desired = (long)Math.Round(d);
-                return Math.Max(0L, Math.Min(desired, Math.Max(baselineBioTicks, (long)childEdge)));
+                calculatedResult = Math.Max(0L, Math.Min(desired, Math.Max(baselineBioTicks, (long)childEdge)));
             }
             else if (s <= 1f)
             {
@@ -210,7 +210,7 @@ namespace ZealousInnocence
                 long desired = (long)Math.Round(d);
                 long lo = Math.Min((long)childCore, (long)childEdge);
                 long hi = Math.Max((long)childCore, (long)childEdge);
-                return Math.Max(lo, Math.Min(desired, hi));
+                calculatedResult = Math.Max(lo, Math.Min(desired, hi));
             }
             else
             {
@@ -226,8 +226,9 @@ namespace ZealousInnocence
                 double d = childCore - span * r;
 
                 long desired = (long)Math.Round(d);
-                return Math.Max(0L, Math.Min(desired, (long)childCore));
+                calculatedResult = Math.Max(0L, Math.Min(desired, (long)childCore));
             }
+            return Math.Min(calculatedResult, baselineBioTicks);
         }
         public static class ChildBands
         {
@@ -355,9 +356,9 @@ namespace ZealousInnocence
                         {
                             float? adultStart = p.def.race.lifeStageAges.Where(s => s.def?.developmentalStage == DevelopmentalStage.Adult).Select(s => s.minAge).FirstOrDefault();
 
-                            if (adultStart.HasValue && adultStart > 1f)
+                            if (adultStart.HasValue && adultStart.Value > 1f)
                             {
-                                if(toddlerMinAge < toddlerEndAge){
+                                if(toddlerMinAge > toddlerEndAge){
                                     var cache = toddlerMinAge;
                                     toddlerMinAge = toddlerEndAge;
                                     toddlerEndAge = cache;
@@ -371,20 +372,23 @@ namespace ZealousInnocence
 
                                 if (toddlerInvalid)
                                 {
-                                    toddlerMinAge = adultStart.Value / 4f;
-                                    toddlerEndAge = adultStart.Value / 2f;
-                                }
-
-                                if (!(toddlerMinAge < toddlerEndAge && toddlerEndAge < adultStart))
-                                {
-                                    // If still somehow broken, clamp them into a simple stepped sequence
-                                    toddlerMinAge = adultStart.Value / 4f;
-                                    toddlerEndAge = adultStart.Value / 2f;
+                                    var toddlerMinAgeNew = adultStart.Value / 4f;
+                                    var toddlerEndAgeNew = adultStart.Value / 2f;
+#if DEBUG
+                                    if (Settings.debugging)
+                                    {
+                                        Log.Warning($"[ZI] Given toddler ages {toddlerMinAge:F1}-{toddlerEndAge:F1} to adultStart {adultStart.Value} was invalid. FIX -> " +
+                                            $"{toddlerMinAgeNew:F1}-{toddlerEndAgeNew:F1}");
+                                    }
+#endif
+                                    toddlerMinAge = toddlerMinAgeNew;
+                                    toddlerEndAge = toddlerEndAgeNew;
                                 }
 
                                 e.toddler = toddlerMinAge * GenDate.TicksPerYear;
                                 e.core = toddlerEndAge * GenDate.TicksPerYear;
                                 e.edge = adultStart.Value * GenDate.TicksPerYear;
+
                                 return;
                             }
                         }
@@ -1107,13 +1111,15 @@ namespace ZealousInnocence
             long dtBio = curBio - lastBioSeen;
             if (dtBio > 0)
             {
-                if (dtBio > MaxDelta)
-                {
-#if DEBUG
-                    Log.Warning($"[ZI] Regression: bio delta {dtBio} over {MaxDelta}. Probably debugging step for {pawn.LabelShortCap}");
-#endif
-                }
+                /* #if DEBUG
+                                Unused now because bio deltas can be really high with some of the easier to cure damages
+                                 * if (dtBio > MaxDelta)
+                                {
 
+                                    Log.Warning($"[ZI] Regression: bio delta {dtBio} over {MaxDelta}. Probably debugging step for {pawn.LabelShortCap}");
+
+                                }
+                #endif */
                 long prevBaseline = baselineBioTicks;
                 baselineBioTicks += dtBio;
                 lastBioSeen = curBio;

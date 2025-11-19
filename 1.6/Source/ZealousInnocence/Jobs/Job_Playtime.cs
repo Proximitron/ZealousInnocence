@@ -74,7 +74,13 @@ namespace ZealousInnocence
         private bool jumping;
 
         public int Ticks => Find.TickManager.TicksGame - startTick;
-
+        protected Pawn Friend
+        {
+            get
+            {
+                return (Pawn)this.job.targetA.Thing;
+            }
+        }
         public override Vector3 ForcedBodyOffset
         {
             get
@@ -89,7 +95,7 @@ namespace ZealousInnocence
         {
             return true;
         }
-
+        static float roomPlayGainFactor = -1f;
         protected override IEnumerable<Toil> MakeNewToils()
         {
             Toil toil = ToilMaker.MakeToil("MakeNewToils");
@@ -104,9 +110,20 @@ namespace ZealousInnocence
                 {
                     pawn.Rotation = Rot4.Random;
                 }
- 
-                if (pawn.needs.joy != null) pawn.needs.joy.GainJoy(job.def.joyGainRate * 0.000644f, JoyKindDefOf.Social);
-                else if (pawn.needs.learning != null) LearningUtility.LearningTickCheckEnd(pawn,delta);
+
+                if (pawn.needs.joy != null) pawn.needs.joy.GainJoy(job.def.joyGainRate * 0.000644f * delta, JoyKindDefOf.Social);
+                else if (pawn.needs.learning != null) LearningUtility.LearningTickCheckEnd(pawn, delta);
+                else if (pawn.needs.play != null)
+                {
+                    if (roomPlayGainFactor < 0f)
+                    {
+                        roomPlayGainFactor = BabyPlayUtility.GetRoomPlayGainFactors(pawn);
+                    }
+                    if (BabyPlayUtility.PlayTickCheckEnd(pawn, Friend, roomPlayGainFactor, delta))
+                    {
+                        pawn.jobs.curDriver.EndJobWith(JobCondition.Succeeded);
+                    }
+                }
             };
             toil.socialMode = RandomSocialMode.SuperActive;
             toil.defaultCompleteMode = ToilCompleteMode.Delay;
@@ -261,7 +278,7 @@ namespace ZealousInnocence
             }
             if (lordToil_PlayTime.playTime == null || lordToil_PlayTime.ticksToNextJoy < Find.TickManager.TicksGame)
             {
-                lordToil_PlayTime.playTime = new Job(JobDefOf.RegressedPlayAround); 
+                lordToil_PlayTime.playTime = new Job(JobDefOf.RegressedPlayAround, friend); 
                 lordToil_PlayTime.ticksToNextJoy = Find.TickManager.TicksGame + Rand.RangeInclusiveSeeded(2500, 7500, pawn.HashOffsetTicks());
             }
             Need need = pawn.needs.joy;
@@ -329,7 +346,7 @@ namespace ZealousInnocence
                         }
                     }
 
-                    Job job2 = new Job(JobDefOf.RegressedPlayAround, result2);
+                    Job job2 = new Job(JobDefOf.RegressedPlayAround, friend, result2);
                     pawn.Map.pawnDestinationReservationManager.Reserve(pawn, job2, result2);
                     return job2;
                 }
