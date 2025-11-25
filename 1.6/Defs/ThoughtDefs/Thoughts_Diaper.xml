@@ -4,8 +4,8 @@
 		<defName>Apparel_Diaper</defName>
 		<workerClass>ZealousInnocence.ThoughtWorker_Diaper_Dressed</workerClass>
 		<validWhileDespawned>true</validWhileDespawned>
-		<developmentalStageFilter>Adult, Child</developmentalStageFilter>
-    <socialTargetDevelopmentalStageFilter>Adult, Child</socialTargetDevelopmentalStageFilter>
+		<developmentalStageFilter>Adult, Child, Baby</developmentalStageFilter>
+    <socialTargetDevelopmentalStageFilter>Adult, Child, Baby</socialTargetDevelopmentalStageFilter>
 		<stages>
 		
 			<!-- Thoughts if diaper is not required but still worn-->
@@ -136,22 +136,22 @@
 				<baseMoodEffect>-1</baseMoodEffect>
 			</li>
 			<li>
-				<label>Wearing a comfy Diapee</label>
+				<label>Clean</label>
 				<description>Mmmm...</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
 			<li>
-				<label>Wearing a comfy Diapee</label>
+				<label>Cosy</label>
 				<description>*Giggles*</description>
 				<baseMoodEffect>3</baseMoodEffect>
 			</li>
 			<li>
-				<label>Wearing a comfy Diapee</label>
+				<label>Heavy</label>
 				<description>Nuh... guh...</description>
 				<baseMoodEffect>-5</baseMoodEffect>
 			</li>
 			<li>
-				<label>Wearing a comfy Diapee</label>
+				<label>Full</label>
 				<description>*Waaah*</description>
 				<baseMoodEffect>-10</baseMoodEffect>
 			</li>

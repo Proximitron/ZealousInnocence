@@ -162,6 +162,21 @@ namespace ZealousInnocence
 
             return HealthAIUtility.ShouldSeekMedicalRestUrgent(pawn) || pawn.Downed || (pawn.health?.capacities != null && pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving) < 0.3f) || (pawn.CurJob != null &&  pawn.CurJob.playerForced && pawn.InBed()) || (pawn.health?.capacities != null && !pawn.health.capacities.CanBeAwake);
         }
+        public static bool accidentOngoing(Pawn pawn)
+        {
+            var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+            if (diaperNeed == null) return false;
+            if(!diaperNeed.IsHavingAccident) return false;
+            return true;
+        }
+        public static bool? accidentTypePee(Pawn pawn)
+        {
+            if (pawn == null) return null;
+            var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
+            if (diaperNeed == null) return null;
+            return diaperNeed.IsPeeing;
+        }
+
         public static bool remembersPotty(Pawn pawn)
         {
             if (pawn != null && pawn.RaceProps.Humanlike)

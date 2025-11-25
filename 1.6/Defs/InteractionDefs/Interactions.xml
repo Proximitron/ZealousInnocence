@@ -15,86 +15,715 @@
 		</logRulesInitiator>
 	</InteractionDef>
 	
+	<!-- Call if toddler try to run for the potty -->
 	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
-		<defName>Diaper_YouToo</defName>
+		<defName>Custom_PottyTraining_Failure</defName>
+		<label>custom — potty training failure</label>
+
+		<logRulesInitiator>
+			<rulesStrings>
+				<!-- ==================== POTTY TRAINING ROUTES ==================== -->
+
+				<!-- Toddler potty training fail (1–4) -->
+				<li>r_logentry(tag=Custom_PottyTraining_Failure_Reaction,INITIATOR_age>=1,INITIATOR_age&lt;=4,priority=10)->[toddler_toilet]</li>
+
+				<!-- Child fail potty training (5–12) -->
+				<li>r_logentry(tag=Custom_PottyTraining_Failure_Reaction,INITIATOR_age>=5,INITIATOR_age&lt;=12,priority=10)->[child_toilet_fail]</li>
+
+				<!-- Adult fail potty (13+) -->
+				<li>r_logentry(tag=Custom_PottyTraining_Failure_Reaction,INITIATOR_age>=13,priority=10)->[adult_toilet_fail]</li>
+
+
+				<!-- ==================== TODDLER FAIL LINES (1–4) ==================== -->
+
+				<!-- Route toddler fail into pee/poop -->
+				<li>toddler_toilet->[toddler_toilet_pee]</li>
+				<li>toddler_toilet(INITIATOR_pottyAccident==Poop,priority=3)->[toddler_toilet_poop]</li>
+				<li>toddler_toilet(RECIPIENT_age&lt;=4,priority=2)->[toddler_toilet_to_toddler_pee]</li>
+				<li>toddler_toilet(INITIATOR_pottyAccident==Poop,priority=4,RECIPIENT_age&lt;=4)->[toddler_toilet_poop]</li>
+
+				
+				<!-- ==== TODDLER PEE FAIL ==== -->
+				<li>toddler_toilet_pee->Me twy potty! Me wun fast… but pee pee come out on da floor… sowwy…</li>
+				<li>toddler_toilet_pee->Me run potty! Me almost— *sploot* …oopsie… me no fast nuff…</li>
+				<li>toddler_toilet_pee->Me see potty doow… but me no make it… pee pee stop me wegs…</li>
+				<li>toddler_toilet_pee->Me pushin’! Me pushin’! …no hold it… pee pee come out befo’ potty…</li>
+				<li>toddler_toilet_pee->Me wanna potty… but me legs too wiggly… me faww an’ pee pee come out…</li>
+				<li>toddler_toilet_pee->Me twy big kid potty! But NOOOO!!! Me leak on da way!</li>
+				<li>toddler_toilet_pee->Me tink me make it… but me puddwe happen befo’ potty…</li>
+				<li>toddler_toilet_pee->Me almost at potty… almost… ALMOST— nope! Pee pee eberywhere!!!</li>
+				<li>toddler_toilet_pee->Me do potty wun! Me wun FAST! But pee pee wun FASTER!!!</li>
+				<li>toddler_toilet_pee(INITIATOR_gender==Male)->Me big boy… but pee pee still come out befo’ potty…</li>
+				<li>toddler_toilet_pee(INITIATOR_gender==Female)->Me big gayuh… but me no make it… pee pee got out fiwst…</li>
+				<li>toddler_toilet_pee->Me twy potty! Me cwimb… me stuh… me wiggle… pee pee win…</li>
+
+				<!-- ==== TODDLER => TODDLER PEE FAIL ==== -->
+				<li>toddler_toilet_to_toddler_pee->Hold on… tummy feel funny… me gotta pee pee now… *giggles*</li>
+				<li>toddler_toilet_to_toddler_pee->Wait! Me need do pee pee in me diapie… den we pway ‘gain!</li>
+				<li>toddler_toilet_to_toddler_pee->Me stop pway… pee pee wanna come out… wait!</li>
+				<li>toddler_toilet_to_toddler_pee->Uh oh… pee pee comin’… me make it in diapie, iss otay</li>
+				<li>toddler_toilet_to_toddler_pee->Me wiggle wiggle… an’ pee pee go *pssshh*…</li>
+				<li>toddler_toilet_to_toddler_pee->You wait? Me pee pee in diapie real quick!</li>
+				<li>toddler_toilet_to_toddler_pee->Hee hee… pee pee sneaky… jump out in me diapie!</li>
+				<li>toddler_toilet_to_toddler_pee->Me jus’ make pee pee… me still pway!</li>
+				<li>toddler_toilet_to_toddler_pee->Shhh… pee pee happen… Pway hav wait!</li>
+				
+				<!-- ==== TODDLER POOP FAIL ==== -->
+				<li>toddler_toilet_poop->Me pushin’! Me pushin’! …me no make it… poopy come out befo’ potty…</li>
+				<li>toddler_toilet_poop->Me twy potty! Me cwimb… me stuh… uh oh… poopy fall in me pants…</li>
+				<li>toddler_toilet_poop->Me tink me make it to potty… but poopy say “nope” an’ jump out fuwst…</li>
+				<li>toddler_toilet_poop->Me almost at potty… den me feel big poopy come an’ it too wate…</li>
+				<li>toddler_toilet_poop->Me push so hawd… me make toot noise… den big poopy come out an’ me cwy…</li>
+				<li>toddler_toilet_poop->Me wun potty… but poopy go “plop” in me diapee befo’ me get dewe…</li>
+				<li>toddler_toilet_poop->Me twy big kid potty! But NOOOO!!! Poopy no wait fow potty!</li>
+				<li>toddler_toilet_poop->Me see potty doow… but poopy sneak out in me pants…</li>
+				<li>toddler_toilet_poop->Me faww down… an’ poopy faww out in me diapee too…</li>
+				
+				<!-- ==== TODDLER => TODDLER POOP FAIL ==== -->
+				<li>toddler_toilet_poop->Uh… tummy make big noise… me need make poopy now…</li>
+				<li>toddler_toilet_poop->Hold pway… poopy comin’… me do it in diapie…</li>
+				<li>toddler_toilet_poop->*nnnhh!* …Poopy! *nnnh*!</li>
+				<li>toddler_toilet_poop->Me gotta make poopy in me diapie… den me betta!</li>
+				<li>toddler_toilet_poop->Hee hee… poopy try run ‘way… me catch it in diapie!</li>
+				<li>toddler_toilet_poop->Me stoop pway… gotta do poopy… *nnnhh*</li>
+				<li>toddler_toilet_poop->Uh oh… poopy wanna come… me no stop it…</li>
+				<li>toddler_toilet_poop->Me in da middwe of poopy… don’ push me!</li>
+				<li>toddler_toilet_poop->Dat poopy was big… me need tiny sit… den pway!</li>
+				
+
+
+				<!-- ===================== CHILD FAIL LINES (5–12) ===================== -->
+
+				<!-- Route child fail into pee/poop -->
+				<li>child_toilet_fail->[child_toilet_fail_pee]</li>
+				<li>child_toilet_fail(INITIATOR_pottyAccident==Poop,priority=2)->[child_toilet_fail_poop]</li>
+
+				<!-- Mean child response route on fail (any fail type) -->
+				<li>child_toilet_fail(INITIATOR_opinion&lt;0)->[mean_pottykid]</li>
+
+				<!-- Child being mean about potty (5–12) -->
+				<li>mean_pottykid->Don’t look at me, idiot! I just had an accident on the way to the toilet.</li>
+				<li>mean_pottykid(RECIPIENT_underwearType==Diaper,priority=2)->Oh, YOU still get diapers? I mess myself and you still get to stay dry.</li>
+				<li>mean_pottykid->If you tell anyone about this, I’m telling everyone you still pee your pants too.</li>
+				<li>mean_pottykid(INITIATOR_underwearType==Diaper,priority=3)->Don't laugh!</li>
+
+				<li>child_toilet_fail_pee(INITIATOR_underwearType==Diaper,priority=2)->[child_toilet_fail_pee_diaper]</li>
+				
+				<li>child_toilet_fail_pee_diaper->I peed my diaper again, i think.</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState&lt;40)->My diaper is really soaked!</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>60)->My diaper is wet again.</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>60)->I wet my diaper again, but i think i don’t need a change yet.</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>60)->Yea i had to pee. But it‘s ok, my diaper got it.</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>60)->I only wet a little.</li>
+				
+				<!-- ==== CHILD PEE FAIL ==== -->
+				<li>child_toilet_fail_pee->Oh no… I didn’t make it in time… again.</li>
+				<li>child_toilet_fail_pee->Ugh. I was *almost* at the toilet and still peed myself.</li>
+				<li>child_toilet_fail_pee->Great. Now everyone’s going to see I didn’t make it to the bathroom.</li>
+				<li>child_toilet_fail_pee->I tried to hold it, okay? It just came out before I got there.</li>
+				<li>child_toilet_fail_pee->Can we just pretend I slipped and that’s why there’s a puddle?</li>
+				<li>child_toilet_fail_pee->I swear I’m not a baby, I just couldn’t get there fast enough.</li>
+				<li>child_toilet_fail_pee->Why does this always happen right when someone’s watching…</li>
+
+				<li>child_toilet_fail_poop(INITIATOR_underwearType==DiaperNight,priority=3)->[child_toilet_fail_poop_pullup]</li>
+
+				<li>child_toilet_fail_poop_pullup->I know that’s not what my pullups are for. It just happend!</li>
+				<li>child_toilet_fail_poop_pullup(INITIATOR_underwearState&lt;40)->I pooped a lot! I really need a change!</li>
+				<li>child_toilet_fail_poop_pullup->My pullups are full again, i think.</li>
+				<li>child_toilet_fail_poop_pullup->I pooped my pullups again, but i didn't meant to.</li>
+				
+				<li>child_toilet_fail_poop(INITIATOR_underwearType==Diaper,priority=2)->[child_toilet_fail_poop_diaper]</li>
+
+				<li>child_toilet_fail_poop_diaper(INITIATOR_underwearState&lt;40)->I pooped a lot! I really need a change!</li>
+				<li>child_toilet_fail_poop_diaper->I had to poop again.</li>
+				<li>child_toilet_fail_poop_diaper(INITIATOR_underwearState&lt;40)->Uh, my diaper is full. Can i get changed?</li>
+				<li>child_toilet_fail_poop_diaper->I had to go number 2.</li>
+				<li>child_toilet_fail_poop_diaper->Yea i pooped again. I thought thats what my diaper is for.</li>
+				<li>child_toilet_fail_poop_diaper->Um… i have poop in my diaper again…</li>
+				
+				<!-- ==== CHILD POOP FAIL ==== -->
+				<li>child_toilet_fail_poop->Oh no… I didn’t make it to the toilet before I messed myself.</li>
+				<li>child_toilet_fail_poop->Ugh. I was *right there* and still ended up with poop in my pants.</li>
+				<li>child_toilet_fail_poop->Great. Now everyone’s going to know I didn’t make it in time.</li>
+				<li>child_toilet_fail_poop->I tried to hold it, okay? It just… came out before I got there.</li>
+				<li>child_toilet_fail_poop->Can we just pretend this never happened and nobody smells anything?</li>
+				<li>child_toilet_fail_poop->I swear I’m not a baby, I just couldn’t get there fast enough this time.</li>
+				<li>child_toilet_fail_poop->Why does this always happen when I *really* don’t want it to…</li>
+
+
+				<!-- ===================== ADULT FAIL LINES (13+) ===================== -->
+
+				<!-- Route adult fail into pee/poop -->
+				<li>adult_toilet_fail->[adult_toilet_fail_pee]</li>
+				<li>adult_toilet_fail(INITIATOR_pottyAccident==Poop,priority=2)->[adult_toilet_fail_poop]</li>
+
+				<!-- Adult being mean / defensive route (any fail type) -->
+				<li>adult_toilet_fail(INITIATOR_opinion&lt;0)->[mean_pottyadult]</li>
+
+				<!-- Mean / snappy adult reaction to being seen -->
+				<li>mean_pottyadult->You didn’t see anything, understand?</li>
+				<li>mean_pottyadult->Yes, I had an accident. No, you’re not allowed to laugh.</li>
+				<li>mean_pottyadult->If you tell anyone about this, I will *remember*.</li>
+				
+				<li>adult_toilet_fail_pee(INITIATOR_underwearType==Diaper,priority=2)->[adult_toilet_fail_pee_by_clothing_diaper]</li>
+				
+				<li>adult_toilet_fail_pee_by_clothing_diaper(INITIATOR_diaperStance==LikeDiaper,priority=2)->[adult_toilet_fail_pee_by_clothing_diaper_liked]</li>
+				<li>adult_toilet_fail_pee_by_clothing_diaper_liked->This diaper is great! I pee and it just gets warm, no wetness!</li>
+				<li>adult_toilet_fail_pee_by_clothing_diaper_liked->My diaper gets warm and fuzzy!</li>
+				<li>adult_toilet_fail_pee_by_clothing_diaper_liked->I am not standing strange, i am just peeing!</li>
+				<li>adult_toilet_fail_pee_by_clothing_diaper_liked->Oh comeon, you can't hear that! I nearly didn't notice!</li>
+				
+				<li>adult_toilet_fail_pee_by_clothing_diaper->I swear I'm not a baby, but here I am in diapers again… *sigh*</li>
+				<li>adult_toilet_fail_pee_by_clothing_diaper->At least the diaper caught it. Now can we please forget this ever happened?</li>
+				<li>adult_toilet_fail_pee_by_clothing_diaper->I'm an adult, and I just peed in a *diaper*. This is so humiliating.</li>
+				<li>adult_toilet_fail_pee_by_clothing_diaper->If you laugh, I'll never forgive you. Not even for the rest of my life.</li>
+
+				<li>adult_toilet_fail_pee(INITIATOR_underwearType==DiaperNight,priority=3)->[adult_toilet_fail_pee_by_clothing_pullup]</li>
+				
+				<li>adult_toilet_fail_pee_by_clothing_pullup->Why do I keep wearing these stupid pullups?</li>
+				<li>adult_toilet_fail_pee_by_clothing_pullup->I'm not a kid, but here I am in wet *pullups* again. Ugh.</li>
+				<li>adult_toilet_fail_pee_by_clothing_pullup->This isn't how adults are supposed to act… but the pullups are soaked anyway.</li>
+				
+				<li>adult_toilet_fail_pee->I was busy, waited too long, and the toilet was too far. That’s it.</li>
+				<li>adult_toilet_fail_pee->…Fantastic. I didn’t make it to the toilet in time.</li>
+				<li>adult_toilet_fail_pee->I waited too long and the toilet was too far. That’s all you need to know.</li>
+				<li>adult_toilet_fail_pee->I was busy, waited too long, and the toilet was too far. That’s it.</li>
+				<li>adult_toilet_fail_pee->Of course this happens right now, in front of everyone.</li>
+				<li>adult_toilet_fail_pee->I’m going to pretend this never happened, and so are you.</li>
+				<li>adult_toilet_fail_pee->Apparently I needed that toilet sooner than I thought.</li>
+				
+				<li>adult_toilet_fail_poop(INITIATOR_underwearType==Diaper,priority=2)->[adult_toilet_fail_poop_by_clothing_diaper]</li>
+				<li>adult_toilet_fail_poop_by_clothing_diaper->At least it stayed in the diaper…</li>
+				<li>adult_toilet_fail_poop_by_clothing_diaper->I suppose thats why i wear them…</li>
+				
+				<li>adult_toilet_fail_poop_by_clothing_diaper(INITIATOR_diaperStance==LikeDiaper,priority=2)->[adult_toilet_fail_poop_by_clothing_diaper_liked]</li>
+				<li>adult_toilet_fail_poop_by_clothing_diaper_liked->Diaper full, tummy empty. The way i like it!</li>
+				<li>adult_toilet_fail_poop_by_clothing_diaper_liked->*squads a little* *hnnn*</li>
+				<li>adult_toilet_fail_poop_by_clothing_diaper_liked->That wasn’t me. *hnnng* ok maybe…</li>
+				<li>adult_toilet_fail_poop_by_clothing_diaper_liked->What? Me? *hnnng* I smell nothing…</li>
+				
+				<li>adult_toilet_fail_poop(INITIATOR_underwearType==DiaperNight,priority=3)->[adult_toilet_fail_poop_by_clothing_pullup]</li>
+				<li>adult_toilet_fail_poop_by_clothing_pullup->I can't believe I messed myself in *pullups*. This is a disaster.</li>
+				<li>adult_toilet_fail_poop_by_clothing_pullup->Don’t say a word. Not. One. Word. It was an accident.</li>
+				
+				<li>adult_toilet_fail_poop->This isn’t funny. Underwear’s ruined… and I’m an adult. That’s the worst.</li>
+				<li>adult_toilet_fail_poop->I’ll have to change my clothes before anyone sees this stain. Again.</li>
+				<li>adult_toilet_fail_poop->…Great. I didn’t make it to the toilet before I messed myself.</li>
+				<li>adult_toilet_fail_poop->Don’t say a word about the smell. Not one word.</li>
+				<li>adult_toilet_fail_poop->Of course a full-blown accident happens right now, in front of everyone.</li>
+				<li>adult_toilet_fail_poop->We’re all going to pretend this never happened. Understood?</li>
+				<li>adult_toilet_fail_poop->Apparently my body decided the toilet wasn’t invited to this event.</li>
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+		
+	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
+		<defName>Custom_PottyTraining_Failure_Reaction</defName>
+		<label>custom — potty training failure reactions</label>
+
+		<logRulesInitiator>
+			<rulesStrings>
+
+				<!-- ==================== AGE / TARGET ROUTING ==================== -->
+
+				<!-- TODDLER RESPONSES (1–4) -->
+
+				<!-- Toddler reacting to toddler fail -->
+				<li>r_logentry(INITIATOR_age>=1,INITIATOR_age&lt;=4,RECIPIENT_age>=1,RECIPIENT_age&lt;=4,priority=6)->[toddler_react_toddler_pottyfail]</li>
+
+				<!-- Toddler reacting to child fail -->
+				<li>r_logentry(INITIATOR_age>=1,INITIATOR_age&lt;=4,RECIPIENT_age>=5,RECIPIENT_age&lt;=12,priority=5)->[toddler_react_child_pottyfail]</li>
+
+
+				<!-- CHILD RESPONSES (5–12) -->
+
+				<!-- Child reacting to toddler fail -->
+				<li>r_logentry(INITIATOR_age>=5,INITIATOR_age&lt;=12,RECIPIENT_age>=1,RECIPIENT_age&lt;=4,priority=6)->[child_react_toddler_pottyfail]</li>
+
+				<!-- Child reacting to child fail -->
+				<li>r_logentry(INITIATOR_age>=5,INITIATOR_age&lt;=12,RECIPIENT_age>=5,RECIPIENT_age&lt;=12,priority=5)->[child_react_child_pottyfail]</li>
+
+				<!-- Child reacting to adult fail -->
+				<li>r_logentry(INITIATOR_age>=5,INITIATOR_age&lt;=12,RECIPIENT_age>=13,priority=4)->[child_react_adult_pottyfail]</li>
+
+
+				<!-- ADULT RESPONSES (13+) -->
+
+				<!-- Adult reacting to toddler fail -->
+				<li>r_logentry(INITIATOR_age>=13,RECIPIENT_age>=1,RECIPIENT_age&lt;=4,priority=7)->[adult_react_toddler_pottyfail]</li>
+
+				<!-- Adult reacting to child fail -->
+				<li>r_logentry(INITIATOR_age>=13,RECIPIENT_age>=5,RECIPIENT_age&lt;=12,priority=6)->[adult_react_child_pottyfail]</li>
+
+				<!-- Adult reacting to adult fail -->
+				<li>r_logentry(INITIATOR_age>=13,RECIPIENT_age>=13,priority=5)->[adult_react_adult_pottyfail]</li>
+
+
+
+				<!-- ==================== TODDLER REACTIONS ==================== -->
+
+				<!-- Toddler reacting to toddler fail -->
+				<li>toddler_react_toddler_pottyfail->Hee hee… sneaky poopies an’ pee pee again, huh?</li>
+
+				
+				<li>toddler_react_toddler_pottyfail(priority=2)->[toddler_react_toddler_pottyfail_pee]</li>
+				<li>toddler_react_toddler_pottyfail(INITIATOR_pottyAccident==Poop,priority=3)->[toddler_react_toddler_pottyfail_poop]</li>
+				
+				<li>toddler_react_toddler_pottyfail_pee->Pee pee ninjas win dis time… next time we wun faster!</li>
+				<li>toddler_react_toddler_pottyfail_pee->Otay! Me wait till you done pee pees!</li>
+				<li>toddler_react_toddler_pottyfail_pee->Your diapie can take it! Make all da pee pee!</li>
+				<li>toddler_react_toddler_pottyfail_pee->Hee hee! Pee pee go fast! You go faster!</li>
+				<li>toddler_react_toddler_pottyfail_pee->You all done? Den we pway more!</li>
+				<li>toddler_react_toddler_pottyfail_pee->Me too sometimes do pee pee when pway!</li>
+				<li>toddler_react_toddler_pottyfail_pee->Diapie hungry for pee pees! Feed it!</li>
+				<li>toddler_react_toddler_pottyfail_pee->Is otay! Pee pee no stop pway time!</li>
+
+				<li>toddler_react_toddler_pottyfail_poop->You makin’ poopies? Otay, me wait!</li>
+				<li>toddler_react_toddler_pottyfail_poop->Dat a big poopy face! Hee hee!</li>
+				<li>toddler_react_toddler_pottyfail_poop->Your diapie get da poopy! Good job diapie!</li>
+				<li>toddler_react_toddler_pottyfail_poop->Me smell poopy! You all done now?</li>
+				<li>toddler_react_toddler_pottyfail_poop->Me help watch! Poopy no run ‘way!</li>
+				<li>toddler_react_toddler_pottyfail_poop->Hee hee! Me too sometimes make big poopy when pwaying!</li>
+				<li>toddler_react_toddler_pottyfail_poop->You finish your poopies? Den we go pway more!</li>
+
+				<!-- Toddler reacting to child fail -->
+				<li>toddler_react_child_pottyfail->Oh no… you pants leaky too?</li>
+				<li>toddler_react_child_pottyfail->Iss otay, big kid. Me pee pants too.</li>
+				<li>toddler_react_child_pottyfail->You wan’ gwown up fix it? Dey give new pants.</li>
+				<li>toddler_react_child_pottyfail->See? Big kids get oopsies too. Not just me.</li>
+				<li>toddler_react_child_pottyfail->Me fink you need changey like me sometimes.</li>
+
+
+
+				<!-- ==================== CHILD REACTIONS ==================== -->
+
+				<!-- Child reacting to toddler fail -->
+				<li>child_react_toddler_pottyfail->Hey, it’s okay, [RECIPIENT_nameDef]. Toddlers have accidents all the time.</li>
+				<li>child_react_toddler_pottyfail->Come on, let’s find an adult to get you cleaned up.</li>
+				<li>child_react_toddler_pottyfail->You were trying to make it. That’s what counts.</li>
+				<li>child_react_toddler_pottyfail->Don’t cry, we’ll get you changed and it’ll be fine.</li>
+				<li>child_react_toddler_pottyfail->You’re little, nobody expects you to be perfect at this yet.</li>
+
+				<!-- Mild teasing child → toddler -->
+				<li>child_react_toddler_pottyfail(INITIATOR_opinion&lt;0)->Wow, you really didn’t make it, huh? Come on, let’s go get you cleaned.</li>
+				<li>child_react_toddler_pottyfail(INITIATOR_opinion&lt;0)->You leaked everywhere… but whatever, I’ll go get a grown-up.</li>
+
+
+				<!-- Child reacting to child fail (no diaper) -->
+				<li>child_react_child_pottyfail(INITIATOR_opinion>=0)->Hey, it’s okay. Sometimes you just don’t make it in time.</li>
+				<li>child_react_child_pottyfail(INITIATOR_opinion>=0)->Want some help finding clean clothes?</li>
+				<li>child_react_child_pottyfail(INITIATOR_opinion>=0)->Don’t panic, we’ll clean it up and pretend it never happened.</li>
+				<li>child_react_child_pottyfail(INITIATOR_opinion>=0)->Everyone has accidents sometimes. You’re not the only one.</li>
+
+				<!-- Child reacting to child fail (diaper / pullups) -->
+				<li>child_react_child_pottyfail(RECIPIENT_underwearType==Diaper,priority=2)->It’s okay, that’s what the diaper’s for. Do you need help getting changed?</li>
+				<li>child_react_child_pottyfail(RECIPIENT_underwearType==Diaper,priority=2)->We kind of knew this might happen. Let’s get your diaper sorted.</li>
+
+				<li>child_react_child_pottyfail(RECIPIENT_underwearType==DiaperNight,priority=3)->Hey, it’s just your night pullup. Need help changing it?</li>
+				<li>child_react_child_pottyfail(RECIPIENT_underwearType==DiaperNight,priority=3)->We knew it could happen. That’s why you’ve got the pullup, right?</li>
+
+				<!-- Mean / teasing child → child -->
+					<!-- Mean / teasing child → child (low opinion) -->
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,priority=3)->Wow, seriously? You still can’t hold it? That’s pathetic.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,priority=3)->You were SO close… and still ruined your pants. Classic you.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,priority=3)->Should I call the whole colony so they can see what you did?</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,priority=3)->You know toilets don’t chase you, right? You could’ve actually made it.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,priority=3)->Ugh, gross. Please don’t walk near me until you’re cleaned up.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,priority=3)->Wow… imagine being old enough to talk and still having accidents.</li>
+
+					<!-- with diaper -->
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==Diaper,priority=4)->That diaper sure didn’t save you, did it? Maybe you need TWO.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==Diaper,priority=4)->Still leaking *with* a diaper? That’s actually impressive.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==Diaper,priority=4)->Guess diapers were the right choice for you after all, baby butt.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==Diaper,priority=4)->You’re like a toddler that never grew up. Want a pacifier too?</li>
+
+					<!-- with pullups (night underwear) -->
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==DiaperNight,priority=5)->“Just for night”, huh? Looks like they’re for daytime too.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==DiaperNight,priority=5)->Your pullups didn’t even last five minutes. Amazing.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==DiaperNight,priority=5)->So those are “training pants”? Seems like you need a LOT more training.</li>
+					<li>child_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==DiaperNight,priority=5)->I bet those night pants are tired of being your backup plan.</li>
+
+
+				<!-- Child reacting to adult fail -->
+				<li>child_react_adult_pottyfail->Um… it’s okay. Adults mess up too, I guess.</li>
+				<li>child_react_adult_pottyfail->Do you… need help getting towels or something?</li>
+				<li>child_react_adult_pottyfail->I won’t tell anyone if you don’t want me to.</li>
+				<li>child_react_adult_pottyfail(INITIATOR_opinion&lt;0,priority=2)->Wow. And *I’m* the one still “learning,” huh.</li>
+
+
+				<!-- ==================== ADULT REACTIONS ==================== -->
+
+				<!-- Adult reacting to toddler fail -->
+				<li>adult_react_toddler_pottyfail->It’s okay, [RECIPIENT_nameDef]. Accidents happen when you’re little.</li>
+				<li>adult_react_toddler_pottyfail->Come on, let’s get you cleaned up and into something dry.</li>
+				<li>adult_react_toddler_pottyfail->You tried to get to the toilet. That’s what matters right now.</li>
+				<li>adult_react_toddler_pottyfail->No need to cry[child_change_optional]</li>
+				<li>adult_react_toddler_pottyfail->You’re still learning. It’s my job to help you, not get mad.</li>
+				<li>adult_react_toddler_pottyfail(INITIATOR_relationship==Parent)->Come here, little one[child_change_optional]</li>
+				<li>adult_react_toddler_pottyfail(INITIATOR_relationship==Parent)->No crying, [RECIPIENT_nameDef]. Everyone misses the potty sometimes.</li>
+					
+				<!-- Stricter / tired adults with low opinion -->
+				<li>adult_react_toddler_pottyfail(INITIATOR_opinion&lt;0)->Another accident already? Fine[child_change_optional]</li>
+				<li>adult_react_toddler_pottyfail(INITIATOR_opinion&lt;0)->Come on, let’s clean this up before it spreads everywhere.</li>
+
+
+				<!-- Adult reacting to child fail (no diaper) -->
+				<li>adult_react_child_pottyfail->It’s okay, [RECIPIENT_nameDef]. These things happen.</li>
+				<li>adult_react_child_pottyfail->Do you need a change of clothes? I can help you find some.</li>
+				<li>adult_react_child_pottyfail->You waited a bit too long, that’s all[child_change_optional]</li>
+				<li>adult_react_child_pottyfail->We’ll sort this out. Try to head for the toilet sooner next time, okay?</li>
+
+				<!-- Adult reacting to child fail (diaper / pullups) -->
+				<li>adult_react_child_pottyfail(RECIPIENT_underwearType==Diaper,priority=2)->It’s alright, that’s what the diaper is for[child_change_optional]</li>
+				<li>adult_react_child_pottyfail(RECIPIENT_underwearType==Diaper,priority=2)->We knew this might happen[child_change_optional]</li>
+
+				<li>child_change_optional(priority=-1)->…</li>
+				<li>child_change_optional(RECIPIENT_underwearState&lt;80)->. Do you need a change?</li>
+				<li>child_change_optional(RECIPIENT_underwearState&lt;55)->. Let’s get that sorted out.</li>
+				<li>child_change_optional(RECIPIENT_underwearState&lt;55)->. Let’s just get you changed.</li>
+				<li>child_change_optional(RECIPIENT_underwearState&lt;55)->. We’ll change you and try again later.</li>
+				<li>child_change_optional(RECIPIENT_underwearType==Diaper,RECIPIENT_underwearState&lt;50)->. Come on, fresh diaper time.</li>
+				<li>child_change_optional(RECIPIENT_underwearState&lt;55)->. You know the drill, change time.</li>
+				<li>child_change_optional(RECIPIENT_underwearType==Diaper,RECIPIENT_underwearState&lt;30,priority=2)->. I think you leaked a little. Lets get you in a fresh one quickly.</li>
+				<li>child_change_optional(RECIPIENT_underwearState&lt;30,priority=2)->. You definitly need a change now!</li>
+
+				<li>adult_react_child_pottyfail(RECIPIENT_underwearType==DiaperNight,priority=3)->Looks like your pullup had some work to do[child_change_optional]</li>
+				<li>adult_react_child_pottyfail(RECIPIENT_underwearType==DiaperNight,priority=3)->It’s okay, that’s what the night pants are for[child_change_optional]</li>
+				<li>adult_react_child_pottyfail(RECIPIENT_underwearType==DiaperNight,priority=3)->You promissed to try at daytime[child_change_optional]</li>
+				
+				<!-- Stricter adults with low opinion -->
+				<li>adult_react_child_pottyfail(INITIATOR_opinion&lt;0)->You pushed it too far again, didn’t you[child_change_optional]</li>
+				<li>adult_react_child_pottyfail(INITIATOR_opinion&lt;0,RECIPIENT_underwearType==Diaper,priority=4)->We put you in a diaper for a reason.</li>
+
+				<!-- Adult reacting to adult fail -->
+				<li>adult_react_adult_pottyfail->…Yeah. It happens to the best of us.</li>
+				<li>adult_react_adult_pottyfail->Don’t worry, I’m not going to make a big deal out of it.</li>
+				<li>adult_react_adult_pottyfail->Need a hand grabbing fresh clothes?</li>
+				<li>adult_react_adult_pottyfail->We can just quietly sort this out. No one else needs to know.</li>
+
+				<li>adult_react_adult_pottyfail(RECIPIENT_underwearType==Diaper,priority=2)->Your diapers really have a rough job, hu?</li>
+				<li>adult_react_adult_pottyfail(RECIPIENT_underwearType==Diaper,priority=2)->I would like to say I’m surprised, but not even your diapers are.</li>
+				<li>adult_react_adult_pottyfail(RECIPIENT_underwearType==Diaper,priority=2)->Um… you know, thats why you wear them, right?</li>
+				
+				<!-- Lightly teasing / familiar adults -->
+				<li>adult_react_adult_pottyfail(INITIATOR_opinion>=0,priority=3)->Rough timing, huh? I’ll pretend I saw nothing.</li>
+				<li>adult_react_adult_pottyfail(INITIATOR_opinion>=0,priority=3)->Well… that was unfortunate. I’ve been there too.</li>
+
+				<!-- Mean / snarky adults -->
+				<li>adult_react_adult_pottyfail(INITIATOR_opinion&lt;0,priority=5)->And you tell the kids not to wait too long…</li>
+				<li>adult_react_adult_pottyfail(INITIATOR_opinion&lt;0,priority=5)->Guess “grown-ups don’t have accidents” was a lie.</li>
+				<li>adult_react_adult_pottyfail(INITIATOR_opinion&lt;0,priority=5)->Don’t worry, I’ll only remember this forever.</li>
+
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+
+
+	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
+		<defName>Ask_Diapered_Too</defName>
 		<label>diaper — youToo</label>
 		<logRulesInitiator>
 			<rulesStrings>
-				<li>r_logentry(INITIATOR_stage=Baby,priority=5)->[baby]</li>
-				<li>r_logentry(INITIATOR_stage=Baby,priority=5)->[toddler]</li>
-				<li>r_logentry(INITIATOR_stage=Toddler,priority=5)->[adult]</li>
-				<li>r_logentry(INITIATOR_stage=Toddler,priority=5)->[adult]</li>
-				<li>toddler->Me weawwy wub dis diapee too! Hee hee!</li>
-				<li>toddler->Dis am da bestest day tuz me hab da cwean and comfy diapee fuh makeded aww da pee pee in!</li>
-				<li>toddler->Me nebba go toopid potty! Me duss wayuh da diapee fuhebba!</li>
-				<li>toddler->You am wight! Me weawwy wub da diapees!</li>
-				<li>toddler->We wub diapees too!</li>
-				<li>toddler->Mommy saided "[INITIATOR_nameDef], me no wike you and you hab go potty wiffout you diapee tuz me am da big meany!"...Me duss cwy a wot and dey gib me one! Toopid mommy! Me nebba go pee pee in da potty tuz me wub deez diapees too mutts!</li>
-				<li>toddler->Me wub deez diapees!</li>
-				<li>toddler->Da gwown ups ebba twy getted me go pee pee in da potty, me duss makeded da pee pee aww obah dem! Me nebba top habbing da diapee den!</li>
-				<li>toddler->Me wub be da wittle kid wiff da diapee! Hee hee!</li>
-				<li>toddler->[excited]! Me hab da cwean and comfy diapee too!</li>
-				<li>toddler(INITIATOR_trait==poop-eater,priority=5)->Me wub da comfy diapees too! Me duss wike dem wiff da chocowate in dem...me wiss da gwown ups top gibbded me cwean diapees befuh me eated dat dewishus chocowate...</li>
-				<li>toddler(INITIATOR_trait==poop-eater,priority=5)->Me wub diapees, but me wub da diapees wiff da chocowate in dem eeben bettuh!</li>
-				<li>toddler(INITIATOR_trait==poop-eater,priority=5)->Me getted weawwy hungee waituh, you wet me hab sum uh you chocowate in you diapee? Me know you hab dat chocowate tuz me 'mell it obah heeyah! Hee hee!</li>
-				<li>toddler(INITIATOR_trait==poopaholic,priority=5)->Me wub deez diapees! Me duss no wike da cwean diapees...tuz me getted hungee sum time and me no hab da poopy fuh eated if me diapee am cwean...</li>
-				<li>toddler(INITIATOR_trait==poopaholic,priority=5)->Me nebba go potty tuz me no wike da poopy when it am duss weawwy wet! Dat gwoss! Da bestest poopy am da diapee poopy! *smiles*</li>
-				<li>toddler(INITIATOR_opinion&lt;=0,priority=5)->[meankid]</li>
-				<li>meankid(tag=Child_UpsetDiapee)->Sut up! Me no want tawk bout deez weawwy comfy diapees wiff you, [child_insult]!</li>
-				<li>meankid(tag=Child_UpsetDiapee)->Me duss saided you mommy dat you no want diapee ebba again! See saided see no gib you one den, [child_insult]! *laughs*</li>
-				<li>meankid(tag=Child_UpsetDiapee)->Me am bouts ta takeded you diapee fwom you and fwow it da twash!</li>
-				<li>meankid(tag=Child_UpsetDiapee,INITIATOR_trait==poop-eater,priority=5)->Sut up! Me am bouts ta takeded you chocowate fwom you diapee, den me duss eated it aww and you no getted any da chocowate, [child_insult]!</li>
-				<li>meankid(tag=Child_UpsetDiapee,INITIATOR_trait==poop-eater,priority=5)->You go night night waituh, me duss comeded obah and takeded aww da chocowate fwom you diapee and den eated aww uh it tuz you am toopid and ugwee wittle baby! Haha wittle baby! You no getted da chocowate!</li>
-				<li>meankid(tag=Child_UpsetDiapee,INITIATOR_trait==poopaholic,priority=5)->Me no wike you! Me not eeben eated da poopy out you diapee tuz you am gwoss!...Me do wub dat poopy doe...</li>
-				<li>meankid(tag=Child_UpsetDiapee,INITIATOR_trait==poopaholic,priority=5)->You gibbded me aww da poopy in you diapee wight now, toopid!</li>
-				<li>adult->Well...I'm glad you like diapers so much. *smiles*</li>
-				<li>adult->One day you'll be too big for diapers, [child_noun_good]. But for now, I'm glad you like wearing them!</li>
-				<li>adult->I think you're very adorable running around and playing with you cute little diaper on, [child_noun_good]! *smiles*</li>
-				<li>adult->You look so cute with you little diaper on, [RECIPIENT_nameDef]!</li>
-				<li>adult->I'm glad you like diapers, [child_noun_good]! I think it's very cute to see you playing with the other little kids in your cute little diaper!</li>
-				<li>adult(INITIATOR_relationship==Parent,INITIATOR_gender==Female)->Mommy is very happy you love your cute little diaper so much! *smiles*</li>
-				<li>adult(INITIATOR_relationship==Parent,INITIATOR_gender==Male)->Daddy is very happy you love your cute little diaper so much! *smiles*</li>
-				<li>adult(INITIATOR_opinion&lt;=0,priority=5)->[meanadult]</li>
-				<li>meanadult->Well if you like it so much, how about you keep that one on for a few days? I'm sure that will give you an awful rash, you little shit!</li>
-				<li>meanadult(tag=Child_Upset_By)->Fuck off, [child_noun_bad]!</li>
-				<li>meanadult(tag=Child_Upset_ByPain)->How about I take that diaper off and beat your bare ass, [child_noun_bad]?</li>
-				<li>meanadult(RECIPIENT_trait==poop-eater,priority=5)->You're fucking gross...that's not chocolate you fucking idiot!</li>
-				<li>meanadult(RECIPIENT_trait==poopaholic,priority=5)->You're fucking gross...ya know what? Just shovel as much shit in your mouth as you can. Maybe you'll get sick and die from it.</li>
+				<!-- ==================== AGE ROUTING ==================== -->
+
+				<!-- Adult (13+) -->
+				<li>r_logentry(INITIATOR_age&gt;=13)->[adult_diapered_too]</li>
+
+				<!-- Child (5–12) -->
+				<li>r_logentry(INITIATOR_age&gt;=5,INITIATOR_age&lt;=12,priority=4)->[child_diapered_too]</li>
+				<li>r_logentry(INITIATOR_age&gt;=5,INITIATOR_age&lt;=12,INITIATOR_underwearType==DiaperNight,priority=5)->[child_diapered_too_pullups]</li>
+
+				<!-- Toddler (1–4) -->
+				<li>r_logentry(INITIATOR_age&gt;=1,INITIATOR_age&lt;=4,priority=6)->[toddler_diapered_too]</li>
+
+
+				<!-- ================= TODDLER REPLIES (1–4) ================= -->
+
+				<li>toddler_diapered_too->Me weawwy wub dis diapee too! Hee hee!</li>
+				<li>toddler_diapered_too->Dis am da bestest day tuz me hab da cwean an' comfy diapee fuh makeded aww da pee pee in!</li>
+				<li>toddler_diapered_too->Me nebba go toopid potty! Me duss wayuh da diapee fuhebba!</li>
+				<li>toddler_diapered_too->You am wight! Me weawwy wub da diapees!</li>
+				<li>toddler_diapered_too->We wub diapees too! Hee hee!</li>
+				<li>toddler_diapered_too->[excited]! Me hab da cwean an' comfy diapee too!</li>
+				<li>toddler_diapered_too->Me wub be da wittle kid wiff da diapee! Me no want big kid panties!</li>
+				<li>toddler_diapered_too->Da gwown ups ebba twy getted me go pee pee in da potty, me duss makeded da pee pee aww obah dem! Me nebba top habbing da diapee den!</li>
+
+				<!-- Toddler – sad backstory / parents forcing potty -->
+				<li>toddler_diapered_too->Mommy saided \"[INITIATOR_nameDef], no mo' diapee, you go potty now!\" Me cwy an' cwy… den dem gib me comfy diapee ‘gain! Me wub deez diapees!</li>
+
+				<!-- Toddler traits -->
+				<li>toddler_diapered_too(INITIATOR_trait==poop-eater,priority=5)->Me wub da comfy diapees too! Me wike dem wiff da chocowate in dem…me wiss da gwown ups top gibbded me cwean diapees befuh me eated dat dewishus chocowate…</li>
+				<li>toddler_diapered_too(INITIATOR_trait==poop-eater,priority=5)->Me wub diapees, but me wub da diapees wiff da chocowate in dem eeben bettuh!</li>
+				<li>toddler_diapered_too(INITIATOR_trait==poop-eater,priority=5)->You hab chocowate in you diapee too? Me knowed it, me 'mell it obah heeyah! Hee hee!</li>
+
+				<li>toddler_diapered_too(INITIATOR_trait==poopaholic,priority=5)->Me wub deez diapees! Me no wike da cwean diapees…tuz me getted hungee an' me no hab da poopy fuh eated if me diapee am cwean…</li>
+				<li>toddler_diapered_too(INITIATOR_trait==poopaholic,priority=5)->Me nebba go potty! Da bestest poopy am da diapee poopy! *smiles*</li>
+
+				<!-- Toddler mean / jealous -->
+				<li>toddler_diapered_too(INITIATOR_opinion&lt;=0,priority=5)->[meankid_diapered_too]</li>
+
+				<li>meankid_diapered_too(tag=Child_UpsetDiapee)->Sut up! Me no want tawk 'bout deez comfy diapees wiff you, [child_insult]!</li>
+				<li>meankid_diapered_too(tag=Child_UpsetDiapee)->Me duss teww you mommy dat you no want diapee ebba again! Den she no gib you one, [child_insult]! *laughs*</li>
+				<li>meankid_diapered_too(tag=Child_UpsetDiapee)->Me am bouts ta takeded you diapee fwom you an' fwow it da twash!</li>
+				<li>meankid_diapered_too(tag=Child_UpsetDiapee,INITIATOR_trait==poop-eater,priority=5)->Sut up! Me am bouts ta takeded you chocowate fwom you diapee an' eated it aww, you no get any, [child_insult]!</li>
+				<li>meankid_diapered_too(tag=Child_UpsetDiapee,INITIATOR_trait==poopaholic,priority=5)->You gibbded me aww da poopy in you diapee wight now, toopid!</li>
+
+
+				<!-- ================= CHILD REPLIES (5–12) ================= -->
+
+				<!-- Child who also still wears diapers -->
+				<li>child_diapered_too->Yeah… I still wear diapers too. They’re comfy, okay?</li>
+				<li>child_diapered_too->You do? Yeah… me too. Don’t tell the others.</li>
+				<li>child_diapered_too->Diapers aren’t that bad. At least we don’t have to sprint to the toilet.</li>
+				<li>child_diapered_too->Honestly? I kinda like them too. Feels safer than having an accident.</li>
+				<li>child_diapered_too->Yeah, I’ve got one on as well. Makes things easier when stuff happens.</li>
+				<li>child_diapered_too->We’re the “diaper squad,” I guess. Could be worse.</li>
+
+				<!-- Child teasing but also diapered -->
+				<li>child_diapered_too(INITIATOR_opinion&lt;0)->Don’t get too excited, diaper-lover. We still look like babies to everyone else.</li>
+				<li>child_diapered_too(INITIATOR_opinion&lt;0)->Yeah, I wear one too. Doesn’t mean I’m happy about it like you are.</li>
+
+				<!-- Child traits -->
+				<li>child_diapered_too(INITIATOR_trait==poop-eater,priority=5)->Yeah… diapers are kinda useful. Especially when there’s “snacks” involved.</li>
+				<li>child_diapered_too(INITIATOR_trait==poopaholic,priority=5)->Honestly, I like what ends up *in* the diaper more than the diaper itself.</li>
+
+				<!-- ===== CHILD REPLIES – NIGHT DIAPERS / PULLUPS SPECIAL CASE ===== -->
 				
-				<li>r_logentry(INITIATOR_stage=Baby,priority=10)->[baby_good]</li>
-				<li>baby_good(tag=Baby_Upset,INITIATOR_thoughtDefName==NeedFood,priority=5)->[baby_action_upset]</li>
-				<li>baby_good(INITIATOR_thoughtDefName==NeedRest,priority=5)->[baby_action_upset]</li>
-				<li>baby_good(tag=Babble_Baby)->*[baby_action]*</li>
-				<li>baby_good(tag=Babble_Baby)->[baby_babble][baby_babble]</li>
-				<li>baby_good(tag=Babble_Baby)->[baby_babble][baby_babble][baby_babble]</li>
-				<li>baby_good(tag=Babble_Baby)->[baby_babble]*[baby_action]*[baby_babble]</li>
-				<li>baby_good(tag=Babble_Baby)->*[baby_action]*[baby_babble][baby_babble]</li>
-				<li>baby_good(tag=Babble_Baby)->*[baby_action]*[baby_babble][baby_babble][baby_babble]</li>
-				<li>baby_good(tag=Babble_Baby)->[baby_babble][baby_babble][baby_babble]*[baby_action]*</li>
-				<li>baby_babble->goo</li>
-				<li>baby_babble->ga</li>
-				<li>baby_babble->brr</li>
-				<li>baby_babble->na</li>
-				<li>baby_babble->noo</li>
-				<li>baby_action_upset->*sobs*</li>
-				<li>baby_action_upset->*cries*</li>
-				<li>baby_action->blows spit bubbles</li>
-				<li>baby_action->giggles</li>
-				<li>baby_action->smiles</li>
-				<li>baby_good(tag=Baby_Upset,INITIATOR_opinion&lt;=0,priority=5)->[baby_scared]</li>
-				<li>baby_scared->WAAAAAHHHH!!!AAAAAHHHHHHHH!!!WAA!!!WAA!!!WAAAAAAAAAAAAAAAAAAAHHHH!!!</li>
-				<li>baby_scared->*lip quivers* mmmMMMHHHAHAAAAA!!!!WAAAAAAHHHH!!!!!</li>
+				<!-- Emphasizing it’s only for night -->
+				<li>child_diapered_too_pullups->It’s just for nighttime, okay? Don't look at them!</li>
+				<li>child_diapered_too_pullups->Thats different! They just for protection while i sleep!</li>
+				<li>child_diapered_too_pullups->These are just for bed so I don’t wet it, that’s all.</li>
+				<li>child_diapered_too_pullups->It’s not a baby diaper, it’s just so my bed stays dry.</li>
+
+				<!-- Framing it as “big kid pants” -->
+				<li>child_diapered_too_pullups->I’m not allowed diapers anymore, they are protective underwear!</li>
+				<li>child_diapered_too_pullups->They’re more like thick underwear, not baby diapers.</li>
+				<li>child_diapered_too_pullups->They look like normal undies, just… a bit puffier, okay?</li>
+				<li>child_diapered_too_pullups->It’s a pullup, not a baby diaper. I still use the toilet, most of the time!</li>
+				<li>child_diapered_too_pullups->It’s just extra protection, not because I can’t go potty!</li>
+
+				<!-- Defensive / embarrassed variants -->
+				<li>child_diapered_too_pullups(INITIATOR_opinion&lt;0)->Don't call it a diaper! It’s only for accidents at night.</li>
+				<li>child_diapered_too_pullups(INITIATOR_opinion&lt;0)->Yeah, I wear one at night. Happy now?</li>
+				<li>child_diapered_too_pullups(INITIATOR_opinion&lt;0)->Laugh if you want, I’d rather this than a soaked bed.</li>
+
+				<!-- Trait-based, still insisting it’s just night protection -->
+				<li>child_diapered_too_pullups(INITIATOR_trait==poop-eater,priority=5)->Yeah, I’ve got one… and no, you’re not getting near it.</li>
+				<li>child_diapered_too_pullups(INITIATOR_trait==poopaholic,priority=5)->It’s only for night. And no, you are *not* seeing what’s in it.</li>
+
+				<!-- ================= ADULT REPLIES (13+) ================= -->
+
+				<!-- Adults who also wear diapers (medical / nighttime / etc.) -->
+				<li>adult_diapered_too->Yeah, I’m wearing a diaper too, [RECIPIENT_nameDef]. Sometimes grown-ups need them as well.</li>
+				<li>adult_diapered_too->I do, actually. It helps me when I can’t get to the bathroom in time.</li>
+				<li>adult_diapered_too->You’re not the only one in diapers here. Mine just looks a bit different.</li>
+				<li>adult_diapered_too->Sometimes adults have accidents too. Diapers help with that.</li>
+				<li>adult_diapered_too->I’m glad you like yours. Mine is here so I can still work and move around without worrying.</li>
+
+				<!-- Parent variants -->
+				<li>adult_diapered_too(INITIATOR_relationship==Parent,INITIATOR_gender==Female)->Yes, mommy has one on too right now. We both get a little extra padding today. *smiles*</li>
+				<li>adult_diapered_too(INITIATOR_relationship==Parent,INITIATOR_gender==Male)->Yeah, daddy’s wearing one at the moment too. You’re not alone, kiddo. *smiles*</li>
+
+				<!-- Adults joking, a bit self-deprecating -->
+				<li>adult_diapered_too->Don’t tell everyone, okay? Let’s keep our diaper club a secret.</li>
+				<li>adult_diapered_too->Getting old or having problems sometimes means diapers come back. Life’s funny like that.</li>
+
+				<!-- Mean / annoyed adults even if diapered too -->
+				<li>adult_diapered_too(INITIATOR_opinion&lt;=0,priority=5)->[meanadult_diapered_too]</li>
+				<li>adult_diapered_too(INITIATOR_trait==dislikes children,priority=5)->[meanadult_diapered_too]</li>
+
+				<li>meanadult_diapered_too->Yeah, I’ve got one on. No, that doesn’t mean I want to talk about it with you.</li>
+				<li>meanadult_diapered_too->Yes, I wear one. No, it’s not “fun.” It’s just a problem I have to deal with.</li>
+				<li>meanadult_diapered_too(tag=Child_Upset_By)->Congratulations, we both wear diapers. Now stop making a big deal out of it.</li>
+
+				<li>meanadult_diapered_too(RECIPIENT_trait==poop-eater,priority=5)->If you even *think* about what’s in my diaper, I’m walking away.</li>
+				<li>meanadult_diapered_too(RECIPIENT_trait==poopaholic,priority=5)->Don’t even look at my diaper. We are not doing whatever you’re thinking.</li>
+
 			</rulesStrings>
 		</logRulesInitiator>
 	</InteractionDef>
 	
+	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
+		<defName>Ask_Diapered_Not</defName>
+		<label>diaper — youNot</label>
+		<logRulesInitiator>
+			<rulesStrings>
+
+				<!-- ==================== AGE ROUTING ==================== -->
+				<!-- Toddler (1–4) -->
+				<li>r_logentry(INITIATOR_age&gt;=1,INITIATOR_age&lt;=4,priority=6)->[toddler_notdiapee]</li>
+
+				<!-- Child (5–12) -->
+				<li>r_logentry(INITIATOR_age&gt;=5,INITIATOR_age&lt;=12,priority=5)->[child_notdiapee]</li>
+
+				<!-- Adult (13+) -->
+				<li>r_logentry(INITIATOR_age&gt;=13)->[adult_notdiapee]</li>
+
+
+				<!-- =================== TODDLER REACTIONS =================== -->
+
+				<!-- Normal / sad / confused toddlers without diapers -->
+				<li>toddler_notdiapee->Me no hab diapee… me haf to use toopid potty now…</li>
+				<li>toddler_notdiapee->Me mommy say “no mo’ diapee!” Me sad…</li>
+				<li>toddler_notdiapee->Me no weah diapee… me pants no hold pee pee… pants bwoken!!!</li>
+				<li>toddler_notdiapee->Me wanna diapee! Me no wanna big kid panties…</li>
+				<li>toddler_notdiapee->Me haf go potty now… no mo’ comfy diapee… is dumb!</li>
+				<li>toddler_notdiapee->Dey say me “big kid” now… but me no want be big kid!</li>
+				<li>toddler_notdiapee->Me miss me poofy diapee… dis feews cowd an’ weiwdo…</li>
+				<li>toddler_notdiapee->Me no hab diapee, so if pee pee run ‘way… uh oh… big mess…</li>
+
+				<!-- Toddler a bit grumpy about it -->
+				<li>toddler_notdiapee(INITIATOR_opinion&lt;=0)->Me no need diapee! Me big! You baby!</li>
+				<li>toddler_notdiapee(INITIATOR_opinion&lt;=0)->Me no diapee an’ still no pee pants! You jealous, baby?</li>
+
+				<!-- Toddler traits -->
+				<li>toddler_notdiapee(INITIATOR_trait==poop-eater,priority=5)->Me no hab diapee… no mo’ chocowate in diapee… me sad…</li>
+				<li>toddler_notdiapee(INITIATOR_trait==poop-eater,priority=5)->Dey took me diapee… now poopy go potty, no in diapee… no fair…</li>
+
+				<li>toddler_notdiapee(INITIATOR_trait==poopaholic,priority=5)->Me no diapee… all poopy go in potty… me no can get it…</li>
+				<li>toddler_notdiapee(INITIATOR_trait==poopaholic,priority=5)->Me wanna diapee back! Potty no fun, diapee poopy best!</li>
+
+
+				<!-- ==================== CHILD REACTIONS ==================== -->
+
+				<!-- Normal child who’s just outgrown diapers -->
+				<li>child_notdiapee->I’m not in diapers anymore. I’m supposed to be a “big kid” now.</li>
+				<li>child_notdiapee->My parents said I’m too old for diapers, so… here we are.</li>
+				<li>child_notdiapee->I used to wear them, but now I have to use the toilet like everyone else.</li>
+				<li>child_notdiapee->Diapers were comfy, sure, but I kind of like not being treated like a baby.</li>
+				<li>child_notdiapee->No diaper for me. I’ve graduated to underpants and constant toilet trips.</li>
+				<li>child_notdiapee->If I was still in diapers, everyone would never shut up about it.</li>
+
+				<!-- Child teasing a diaper-lover -->
+				<li>child_notdiapee(INITIATOR_opinion&gt;=0)->You still in diapers? Must be nice not having to run to the toilet all the time.</li>
+				<li>child_notdiapee(INITIATOR_opinion&lt;0)->You actually *like* diapers? Wow. Couldn’t be me.</li>
+				<li>child_notdiapee(INITIATOR_opinion&lt;0)->Diapers are for babies. I’m not a baby anymore.</li>
+
+				<!-- Traits -->
+				<li>child_notdiapee(INITIATOR_trait==poop-eater,priority=5)->I kinda miss what’s *inside* the diapers, but not the diaper part.</li>
+				<li>child_notdiapee(INITIATOR_trait==poopaholic,priority=5)->They won’t let me near diapers anymore… apparently I “made it weird.”</li>
+
+
+				<!-- ==================== ADULT REACTIONS ==================== -->
+
+				<!-- Normal adults talking down / explaining -->
+				<li>adult_notdiapee->No, I’m not wearing a diaper. I’m a grown-up.</li>
+				<li>adult_notdiapee->Diapers are for babies and little kids, [RECIPIENT_nameDef], not for me.</li>
+				<li>adult_notdiapee->I used diapers a long time ago. Now I use the toilet like an adult.</li>
+				<li>adult_notdiapee->You like your diaper? That’s fine. But you won’t wear them forever.</li>
+				<li>adult_notdiapee->Someone has to be the one who *changes* the diapers, not wears them.</li>
+				<li>adult_notdiapee->If I wore a diaper, everyone would panic. You at least have the excuse of being tiny.</li>
+
+				<!-- Gentle but firm -->
+				<li>adult_notdiapee(INITIATOR_relationship==Parent)->I’m happy you love your diaper, but one day we’ll have to teach you the potty too.</li>
+				<li>adult_notdiapee(INITIATOR_relationship==Parent)->Enjoy your diapers while you can, little one. Growing up comes faster than you think.</li>
+
+				<!-- Mean adults / upset with diaper-obsessed kid -->
+				<li>adult_notdiapee(INITIATOR_opinion&lt;=0,priority=5)->[meanadult_notdiapee]</li>
+				<li>adult_notdiapee(INITIATOR_trait==dislikes children,priority=5)->[meanadult_notdiapee]</li>
+
+				<li>meanadult_notdiapee->No, I don’t wear diapers. Unlike you, I actually learned the toilet.</li>
+				<li>meanadult_notdiapee->Why would I want a diaper? I don’t piss myself every five minutes.</li>
+				<li>meanadult_notdiapee(tag=Child_Upset_By)->If you love diapers that much, maybe you can keep yours on until it rots.</li>
+
+				<li>meanadult_notdiapee(RECIPIENT_trait==poop-eater,priority=5)->You’re disgusting enough without me joining you in diapers.</li>
+				<li>meanadult_notdiapee(RECIPIENT_trait==poopaholic,priority=5)->As if I’d ever wear a diaper around a kid who eats what’s inside it.</li>
+
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+
+	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
+		<defName>Ask_SillyQuestion</defName>
+		<label>silly questions — ask(answers)</label>
+		<logRulesInitiator>
+			<rulesStrings>
+				<!-- ==================== ADULT ANSWERS (13+) ==================== -->
+				<!-- Adults (13+) answering silly questions -->
+				<li>r_logentry(INITIATOR_age>=13,priority=5)->[adult_silly_answer]</li>
+				
+				<!-- Neutral / gentle / generic “I dunno” -->
+				<li>adult_silly_answer->That’s a good question, [RECIPIENT_nameDef]. I don’t really know either.</li>
+				<li>adult_silly_answer->Hmm… I’m not totally sure. Some things are just like that.</li>
+				<li>adult_silly_answer->Honestly? I don’t know. The world’s a bit weird.</li>
+				<li>adult_silly_answer->Maybe one day we’ll figure that out. For now, it’s a mystery.</li>
+				<li>adult_silly_answer->Good question. I wish I had a proper answer for you.</li>
+
+				<!-- Lightly playful, still non-committal -->
+				<li>adult_silly_answer->Maybe it’s just how the universe decided to be. Who knows?</li>
+				<li>adult_silly_answer->Could be magic, could be science, could be both. Hard to say.</li>
+				<li>adult_silly_answer->If I knew that, I’d be a famous genius by now.</li>
+				<li>adult_silly_answer->Let’s just say “because it’s funny” and leave it at that.</li>
+				<li>adult_silly_answer->Maybe we don’t need to know everything. It’s fun to wonder, isn’t it?</li>
+
+				<!-- Caring adult talking down gently -->
+				<li>adult_silly_answer(INITIATOR_relationship==Parent)->I’m not sure, kiddo, but I like how you think.</li>
+				<li>adult_silly_answer(INITIATOR_relationship==Parent)->I don’t really know, but your questions always make me smile.</li>
+				<li>adult_silly_answer(INITIATOR_relationship==Parent)->We can guess together, even if we never find the real answer.</li>
+
+				<!-- Busy / distracted adults -->
+				<li>adult_silly_answer(INITIATOR_opinion>0)->I’m not sure, [RECIPIENT_nameDef]. Ask me again later, okay?</li>
+				<li>adult_silly_answer(INITIATOR_opinion>0)->No idea. I’m kind of busy, but it’s a fun thought.</li>
+
+				<!-- Slightly annoyed / tired adults -->
+				<li>adult_silly_answer(INITIATOR_opinion&lt;=0)->I don’t know, alright? Not everything has an answer.</li>
+				<li>adult_silly_answer(INITIATOR_opinion&lt;=0)->No clue. Maybe just accept it and move on.</li>
+				<li>adult_silly_answer(INITIATOR_opinion&lt;=0)->If I answered every strange question, we’d be here all day.</li>
+
+
+				<!-- ==================== CHILD ANSWERS (5–12) ==================== -->
+				<!-- Children (5–12) answering silly questions -->
+				<li>r_logentry(INITIATOR_age>=5,INITIATOR_age&lt;=12,priority=4)->[child_silly_answer]</li>
+				
+				<!-- Older kids trying to sound smart but vague -->
+				<li>child_silly_answer->Uh… I don’t really know. It just kind of works that way, I guess.</li>
+				<li>child_silly_answer->No idea. I’m not a grown-up, I just live here.</li>
+				<li>child_silly_answer->I think that’s just how the world is. Nobody really knows.</li>
+				<li>child_silly_answer->Sounds like a question for an adult, not me.</li>
+				<li>child_silly_answer->I mean, I’ve wondered that too. Still don’t know.</li>
+
+				<!-- Friendly older sibling style -->
+				<li>child_silly_answer(INITIATOR_opinion>0)->I don’t know, but it’s a pretty funny thing to think about.</li>
+				<li>child_silly_answer(INITIATOR_opinion>0)->No clue, but if you figure it out, tell me first.</li>
+				<li>child_silly_answer(INITIATOR_opinion>0)->I don’t know, [RECIPIENT_nameDef]. Maybe it’s just “because.”</li>
+
+				<!-- Annoyed / “stop bothering me” kids -->
+				<li>child_silly_answer(INITIATOR_opinion&lt;=0)->How should I know? I’m not a brain scientist.</li>
+				<li>child_silly_answer(INITIATOR_opinion&lt;=0)->I don’t know, okay? You ask too many weird questions.</li>
+				<li>child_silly_answer(INITIATOR_opinion&lt;=0)->No idea. Just… don’t think about it so hard.</li>
+
+
+				<!-- ==================== TODDLER ANSWERS (1–4) ==================== -->
+				<!-- Toddlers (1–4) answering other toddlers -->
+				<li>r_logentry(INITIATOR_age>=1,INITIATOR_age&lt;=4,priority=3)->[toddler_silly_answer]</li>
+				
+				<!-- Toddlers “answering” other toddlers with nonsense wisdom -->
+				<li>toddler_silly_answer->Me no know… me fink wowld duss silly.</li>
+				<li>toddler_silly_answer->Me dunno, but it funny, so iss otay.</li>
+				<li>toddler_silly_answer->Me no hab answer… me only hab big think.</li>
+				<li>toddler_silly_answer->Me fink iss “just cuz.” Dat am good ‘nuff.</li>
+				<li>toddler_silly_answer->Me no sure, but me wike da question!</li>
+
+				<!-- Slightly confident nonsense -->
+				<li>toddler_silly_answer->Pwobabwy ‘cuz dat how wowld go “whee.”</li>
+				<li>toddler_silly_answer->Me say da answer am “yes.” Dat awways wowks.</li>
+				<li>toddler_silly_answer->If me say “me no know,” dat still answer, wight?</li>
+
+				<!-- Toddler copying adults -->
+				<li>toddler_silly_answer->Gwood kwe-stion… me no know eiver.</li>
+				<li>toddler_silly_answer->Hmm… me need think ‘bout dat… foweber.</li>
+
+			</rulesStrings>
+		</logRulesInitiator>
+	</InteractionDef>
+
 	<InteractionDef ParentName="SpeakUpReply" MayRequire="JPT.speakup">
 		<defName>Babble_Baby</defName>
 		<label>babble — baby</label>
 		<logRulesInitiator>
 			<rulesStrings>
 				<li>r_logentry(INITIATOR_age&lt;=4,priority=5)->[child_to_baby]</li>
-				<li>r_logentry(INITIATOR_age>=11,priority=5)->[adult_to_baby]</li>
+				<li>r_logentry(INITIATOR_age>=13,priority=5)->[adult_to_baby]</li>
 				<li>child_to_baby->Me not know wut you am saided...</li>
 				<li>child_to_baby->You am vewy coot!</li>
 				<li>child_to_baby->You am da cootiest wittle pie fuh tawk wike dat! Hee hee!</li>

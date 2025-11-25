@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationSequence">
+    <success>Normal</success>
+    <operations>
+
+      <!-- 1) Ensure Chitchat has a logRulesInitiator with rulesStrings -->
+      <li Class="PatchOperationConditional">
+        <xpath>Defs/InteractionDef[defName="Chitchat"][not(logRulesInitiator)]</xpath>
+        <match Class="PatchOperationAdd">
+          <xpath>Defs/InteractionDef[defName="Chitchat"]</xpath>
+          <value>
+            <logRulesInitiator>
+              <rulesStrings>
+                <!-- empty, will be extended later -->
+              </rulesStrings>
+            </logRulesInitiator>
+          </value>
+        </match>
+      </li>
+
+      <!-- If logRulesInitiator exists but rulesStrings does not, add it -->
+      <li Class="PatchOperationConditional">
+        <xpath>Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator[not(rulesStrings)]</xpath>
+        <match Class="PatchOperationAdd">
+          <xpath>Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator</xpath>
+          <value>
+            <rulesStrings />
+          </value>
+        </match>
+      </li>
+
+      <!-- 2) Add your rules directly to Chitchat.logRulesInitiator.rulesStrings -->
+
+      <!-- Wildcard_DB logic, Random_Diapered_Interact, Reaction_Potty_Alert, etc. -->
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator/rulesStrings</xpath>
+        <value>
+          <!-- These lines are where you hook your packs in by tag / r_logentry -->
+
+          <!-- Example: let Wildcard_DB rules trigger via tag -->
+          <li>r_logentry(tag=Wildcard_DB)->[Wildcard_DB_root]</li>
+
+          <!-- Example: diapered interaction -->
+          <li>r_logentry(tag=Random_Diapered_Interact)->[Random_Diapered_Interact_root]</li>
+
+          <!-- Example: potty alert -->
+          <li>r_logentry(tag=Reaction_Potty_Alert)->[Reaction_Potty_Alert_root]</li>
+
+          <!-- Example: potty run -->
+          <li>r_logentry(tag=Reaction_Potty_Run)->[Reaction_Potty_Run_root]</li>
+
+          <!-- You can add as many r_logentry hooks here as needed -->
+        </value>
+      </li>
+
+    </operations>
+  </Operation>
+</Patch>

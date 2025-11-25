@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+	<success>Normal</success>
+	<operations>
+
+	<li Class="ZealousInnocence.PatchOperationMultiXpath">
+		<xpath>
+			<li>/Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator/rulesStrings</li>
+    </xpath>
+
+		<value>
+			<!-- ============ CHILD / TODDLER POTTY TRIGGERS ============ -->
+
+			<!-- Toddler potty (age 1–3, diaper, bowel need) -->
+			<li>r_logentry(tag=Potty_Need_Alert,INITIATOR_thoughtDefName==BowelLevel,INITIATOR_age>=1,INITIATOR_age&lt;4,RECIPIENT_age>=13,priority=7)->[in_diaper_potty_pee_alert]</li>
+			<!-- Toddler potty (age 1–3, diaper, bursting) -->
+			<li>r_logentry(tag=Potty_Need_Alert,INITIATOR_thoughtLabel==bursting,INITIATOR_age>=1,INITIATOR_age&lt;4,RECIPIENT_age>=13,priority=7)->[in_diaper_potty_poop_alert]</li>
+			<!-- Toddler potty (age 1–3, diaper, bowel need) -->
+			<li>r_logentry(tag=Potty_Need_Alert,INITIATOR_thoughtDefName==BowelLevel,INITIATOR_age>=1,INITIATOR_age&lt;4,RECIPIENT_age>=13,priority=7)->[no_diaper_potty_pee_alert]</li>
+			<!-- Toddler potty (age 1–3, diaper, bursting) -->
+			<li>r_logentry(tag=Potty_Need_Alert,INITIATOR_thoughtLabel==bursting,INITIATOR_age>=1,INITIATOR_age&lt;4,RECIPIENT_age>=13,priority=7)->[no_diaper_potty_poop_alert]</li>
+			
+			<!-- Child potty (age 4–12, diaper -->
+			<li>r_logentry(tag=Potty_Need_Alert,INITIATOR_underwearType==Diaper,INITIATOR_thoughtDefName==BowelLevel,INITIATOR_age>=5,INITIATOR_age&lt;12,RECIPIENT_age>=13,priority=6)->[in_diaper_potty_alert_child]</li>
+			<li>r_logentry(tag=Potty_Need_Alert,INITIATOR_underwearType==Diaper,INITIATOR_thoughtLabel==bursting,INITIATOR_age>=5,INITIATOR_age&lt;12,RECIPIENT_age>=13,priority=6)->[in_diaper_potty_alert_child]</li>
+			<!-- Child potty (age 4–12, no diaper -->
+			<li>r_logentry(tag=Potty_Need_Alert,INITIATOR_thoughtDefName==BowelLevel,INITIATOR_age>=5,INITIATOR_age&lt;12,RECIPIENT_age>=13,priority=5)->[no_diaper_potty_alert_child]</li>
+			<li>r_logentry(tag=Potty_Need_Alert,INITIATOR_thoughtLabel==bursting,INITIATOR_age>=5,INITIATOR_age&lt;12,RECIPIENT_age>=13,priority=5)->[no_diaper_potty_alert_child]</li>
+			
+			<!-- Baby upset (age 0, bowel need / bursting) -->
+			<li>r_logentry(tag=Baby_Upset,INITIATOR_thoughtDefName==BowelLevel,INITIATOR_age==0,priority=5)->[baby_action_upset]</li>
+			<li>r_logentry(tag=Baby_Upset,INITIATOR_thoughtLabel==bursting,INITIATOR_age==0,priority=5)->[baby_action_upset]</li>
+
+			<!-- ================= CHILD POTTY LINES (4–12) ================= -->
+			<li>in_diaper_potty_alert_child->Hey, I gotta go. If I wait any longer, this diaper’s going to lose the fight.</li>
+			<li>in_diaper_potty_alert_child->This diaper’s already seen enough today. Can we change it or let me use the toilet?</li>
+			<li>in_diaper_potty_alert_child->Can we go to the bathroom now? I really don’t want to mess this diaper again...</li>
+			<li>in_diaper_potty_alert_child(INITIATOR_trait==poop-eater)->Okay, it smells awful but also... kind of interesting. Don’t ask why.</li>
+			
+			<li>no_diaper_potty_alert_child->Um... I really need to use the toilet. Can you take me, please?</li>
+			<li>no_diaper_potty_alert_child->Ugh, my tummy hurts... I think I need the toilet. Please?</li>
+			<li>no_diaper_potty_alert_child->I’m about two seconds away from a disaster here. Bathroom. Now. Please.</li>
+			<li>no_diaper_potty_alert_child->If I sit here any longer, you’re going to regret standing this close to me.</li>
+			<li>no_diaper_potty_alert_child(INITIATOR_trait==poop-eater)->Okay, it smells awful but also... kind of interesting. Don’t ask why.</li>
+
+			<!-- =============== TODDLER POTTY LINES (1–3) =============== -->
+
+			<li>potty_need_alert_pee_toddler->Me pee pee diapee!!! Hee hee!</li>
+			<li>potty_need_alert_poop_toddler->Poopy diapee!!! *sniffs* Me yuckee!!! Yoo gibbee keen diapee peez? Fankoo!</li>
+			<li>potty_need_alert_pee_toddler->Me tummy say \"pee pee time\"! Peez hewp me! ... </li>
+			<li>potty_need_alert_poop_toddler->Me tummy say \"poopy time\"! Peez hewp me! ... </li>		
+		</value>
+	</li>
+	
+	</operations>
+	</Operation>
+</Patch>

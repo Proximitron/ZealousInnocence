@@ -311,6 +311,23 @@ namespace ZealousInnocence
             public static ThingDef ApparelMakeableBase = DefDatabase<ThingDef>.GetNamedSilentFail("blabla");
         }
 
+        /*private static readonly Dictionary<int, (ThoughtState state, int expireTick)> cache = new();
+        private const int CacheTicks = 250; //
+
+        protected  ThoughtState NewCurrentStateInternal(Pawn p)
+        {
+            int id = p.thingIDNumber;
+            int now = Find.TickManager.TicksGame;
+
+            // Return cached value if still valid
+            if (cache.TryGetValue(id, out var c) && now < c.expireTick)
+                return c.state;
+
+            // Recompute & refresh cache
+            ThoughtState result = RecomputeState(p);
+            cache[id] = (result, now + CacheTicks);
+            return ThoughtState.ActiveAtStage(2);
+        }*/
         protected override ThoughtState CurrentStateInternal(Pawn p)
         {
             var preference = Helper_Diaper.getDiaperPreference(p);

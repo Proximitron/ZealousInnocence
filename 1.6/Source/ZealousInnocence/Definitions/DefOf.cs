@@ -139,7 +139,11 @@ namespace ZealousInnocence
         public static GeneDef BladderStrenghWeak;
         public static GeneDef BladderStrenghStrong;
     }
-
+    [DefOf]
+    public class InteractionDefOf
+    {
+        public static InteractionDef Custom_PottyTraining_Failure;
+    }
     [DefOf]
     public class TraitDefOf
     {

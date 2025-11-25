@@ -119,33 +119,7 @@
 						<li>mean_openpoo->Me bouts ta fwow you poopy at you fuh weeb you poopy on da gwound! Me duss makeded you eat it!</li>
 						<li>mean_openpoo->Me no wike you fuh weeb you poopy and pee pee ebby-wayuh! You am gwoss!</li>
 				
-					<!-- ===talk to baby=== -->
-					
-					<li>r_logentry(INITIATOR_age&lt;=3,priority=9)->[baby_good]</li>
-							<li>baby_good(tag=Baby_Upset,INITIATOR_thoughtDefName==NeedFood,priority=5)->[baby_action_upset]</li>
-							<li>baby_good(INITIATOR_thoughtDefName==NeedRest,priority=5)->[baby_action_upset]</li>
-							<li>baby_good->*[baby_action]*</li>
-							<li>baby_good->[baby_babble][baby_babble]</li>
-							<li>baby_good->[baby_babble][baby_babble][baby_babble]</li>
-							<li>baby_good->[baby_babble]*[baby_action]*[baby_babble]</li>
-							<li>baby_good->*[baby_action]*[baby_babble][baby_babble]</li>
-							<li>baby_good->*[baby_action]*[baby_babble][baby_babble][baby_babble]</li>
-							<li>baby_good->[baby_babble][baby_babble][baby_babble]*[baby_action]*</li>
-								<li>baby_babble_upset->AAA</li>
-								<li>baby_babble_upset->WAA</li>
-								<li>baby_babble->goo</li>
-								<li>baby_babble->ga</li>
-								<li>baby_babble->brr</li>
-								<li>baby_babble->na</li>
-								<li>baby_babble->noo</li>	
-								<li>baby_action_upset->*sobs*</li>
-								<li>baby_action_upset->*cries*</li>
-								<li>baby_action->blows spit bubbles</li>
-								<li>baby_action->giggles</li>
-								<li>baby_action->smiles</li>	
-								<li>baby_good(tag=Baby_Upset,INITIATOR_opinion&lt;=0,priority=5)->[baby_scared]</li>
-								<li>baby_scared->WAAAAAHHHH!!!AAAAAHHHHHHHH!!!WAA!!!WAA!!!WAAAAAAAAAAAAAAAAAAAHHHH!!!</li>
-								<li>baby_scared->*lip quivers* mmmMMMHHHAHAAAAA!!!!WAAAAAAHHHH!!!!!</li>
+
 				</value>
 			</li>	
 		</operations>

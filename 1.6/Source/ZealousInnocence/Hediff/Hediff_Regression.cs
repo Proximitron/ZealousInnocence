@@ -232,80 +232,19 @@ namespace ZealousInnocence
         }
         public static class ChildBands
         {
-            private static Func<Pawn, object> getAlienRaceWrapper = null;
-            private static Func<object, float> getToddlerEndAge = null;
-            private static Func<object, float> getToddlerMinAge = null;
+            private static readonly MethodInfo MinAge = AccessTools.Method("Toddlers.HARFunctions:HARToddlerMinAge");
 
-            private static bool ToddlerAlienCompatInit = false;
-            private static void ToddlerAlienCompat()
+            private static readonly MethodInfo EndAge = AccessTools.Method("Toddlers.HARFunctions:HARToddlerEndAge");
+            public static float? GetMinAge(Pawn p)
             {
-                ToddlerAlienCompatInit = true;
-                try
-                {
-                    var harUtil = AccessTools.TypeByName("Toddlers.HARUtil");
-                    var alienRace = AccessTools.TypeByName("Toddlers.AlienRace");
-
-                    if (harUtil == null) throw new Exception("HARUtil binding error");
-
-                    getAlienRaceWrapper = AccessTools.MethodDelegate<Func<Pawn, object>>(
-                            AccessTools.Method(harUtil, "GetAlienRaceWrapper", new[] { typeof(Pawn) }));
-
-                    if (alienRace == null) throw new Exception("AlienRace binding error");
-
-
-                    var fEnd = AccessTools.Field(alienRace, "toddlerEndAge");
-                    if (fEnd == null) throw new Exception("toddlerEndAge field binding error");
-
-                    var fMin = AccessTools.Field(alienRace, "toddlerMinAge");
-                    if (fMin == null) throw new Exception("toddlerMinAge field binding error");
-
-                    getToddlerEndAge = obj => obj != null ? Convert.ToSingle(fEnd.GetValue(obj)) : -1f;
-                    getToddlerMinAge = obj => obj != null ? Convert.ToSingle(fMin.GetValue(obj)) : -1f;
-                }
-                catch (Exception e)
-                {
-                    Log.Warning($"[ZI] Failed to bind Toddlers HARUtil/AlienRace: {e}");
-                }
+                if (MinAge == null) return null;
+                return (float)MinAge.Invoke(null, new object[] { p });
             }
-            public static bool TryGetToddlerEndAge(Pawn pawn, out float age)
+
+            public static float? GetEndAge(Pawn p)
             {
-                if (!ToddlerAlienCompatInit) ToddlerAlienCompat();
-
-                age = 0f;
-                try
-                {
-                    var wrapper = getAlienRaceWrapper?.Invoke(pawn);
-                    if (wrapper == null) return false;
-
-                    age = getToddlerEndAge?.Invoke(wrapper) ?? -1f;
-                    if (age < 0f) throw new Exception("Negativ result");
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Log.Warning($"[ZI] Error accessing toddlerEndAge for {pawn.LabelShort}: {e}");
-                    return false;
-                }
-            }
-            public static bool TryGetToddlerMinAge(Pawn pawn, out float age)
-            {
-                if (!ToddlerAlienCompatInit) ToddlerAlienCompat();
-
-                age = 0f;
-                try
-                {
-                    var wrapper = getAlienRaceWrapper?.Invoke(pawn);
-                    if (wrapper == null) return false;
-
-                    age = getToddlerMinAge?.Invoke(wrapper) ?? -1f;
-                    if (age < 0f) throw new Exception("Negativ result");
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Log.Warning($"[ZI] Error accessing ToddlerMinAge for {pawn.LabelShort}: {e}");
-                    return false;
-                }
+                if (EndAge == null) return null;
+                return (float)EndAge.Invoke(null, new object[] { p });
             }
 
             // Small, auto-cleaning cache keyed by Pawn (no leaks).
@@ -352,8 +291,12 @@ namespace ZealousInnocence
                 {
                     if (HARLoaded && Helper_Toddlers.ToddlersLoaded)
                     {
-                        if (TryGetToddlerEndAge(p, out var toddlerEndAge) && TryGetToddlerMinAge(p, out var toddlerMinAge))
+                        var toddlerEndAgeSource = GetEndAge(p);
+                        var toddlerMinAgeSource = GetMinAge(p);
+                        if (toddlerEndAgeSource.HasValue && toddlerMinAgeSource.HasValue)
                         {
+                            float toddlerEndAge = toddlerEndAgeSource.Value;
+                            float toddlerMinAge = toddlerMinAgeSource.Value;
                             float? adultStart = p.def.race.lifeStageAges.Where(s => s.def?.developmentalStage == DevelopmentalStage.Adult).Select(s => s.minAge).FirstOrDefault();
 
                             if (adultStart.HasValue && adultStart.Value > 1f)

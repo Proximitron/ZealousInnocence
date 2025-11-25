@@ -6,13 +6,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.Grammar;
 
 namespace ZealousInnocence
 {
-    /*public static class Patch_ExtraGrammarUtility_ExtraRulesForPawn
+    public static class Patch_ExtraGrammarUtility_ExtraRulesForPawn
     {
         private static readonly Type ExtraType;
         private static readonly FieldInfo TempRulesField;
@@ -52,96 +53,58 @@ namespace ZealousInnocence
                 return null;
             }
         }
+        private static void SyncBackToTempRules(List<Rule_String> tempRules, List<Rule> working)
+        {
+            if (tempRules == null)
+                return;
 
+            if (working == null || working.Count == 0)
+            {
+                return;
+            }
+
+            // Build a set of keywords present in the working list
+            var keywords = new HashSet<string>();
+            foreach (var rule in working)
+            {
+                if (rule != null && !string.IsNullOrEmpty(rule.keyword))
+                    keywords.Add(rule.keyword);
+            }
+
+            // Remove all entries from tempRules that have a matching keyword
+            tempRules.RemoveAll(r =>
+                r != null &&
+                !string.IsNullOrEmpty(r.keyword) &&
+                keywords.Contains(r.keyword));
+
+            // Add back any Rule_String instances from the working list
+            foreach (var rule in working)
+            {
+                if (rule is Rule_String rs)
+                {
+                    tempRules.Add(rs);
+                }
+            }
+        }
         // Your postfix on ExtraRulesForPawn
         public static void Postfix(string symbol, Pawn pawn, Pawn other)
         {
             if (pawn == null)
                 return;
 
-            var rules = GetTempRules();
-            if (rules == null || rules.Count == 0)
+            var refList = GetTempRules();
+            if (refList == null || refList.Count == 0)
                 return;
 
-            AddKeyUnique(rules, symbol + "age", pawn.getAgeBehaviour().ToString());
-            AddKeyUnique(rules, symbol + "ageMental", pawn.getAgeStageMentalInt().ToString());
-            AddKeyUnique(rules, symbol + "agePhysical", pawn.getAgeStagePhysicalInt().ToString());
+            if (symbol.EndsWith("_"))
+                symbol = symbol.Substring(0, symbol.Length - 1);
 
-            string speechStage = symbol + "stage";
-            if (pawn.isBabyMentalOrPhysical())
-            {
-                AddKey(rules, speechStage, "Baby");
-            }
-            else
-            {
-                AddKey(rules, speechStage, "NotBaby");
-                if (pawn.isToddlerMentalOrPhysical() || pawn.getAgeBehaviour() == 4)
-                {
-                    AddKey(rules, speechStage, "Toddler");
-                }
-                else if (pawn.isChildMental() || pawn.getAgeBehaviour() < pawn.adultMinAge())
-                {
-                    AddKey(rules, speechStage, "Child");
-                }
-                else
-                {
-                    AddKey(rules, speechStage, "Adult");
-                }
-            }
-            if (pawn.isOld()) AddKey(rules, speechStage, "Old");
-            if (pawn.isTeen()) AddKey(rules, speechStage, "Teen");
-
-            string underwear = symbol + "underwearType";
-            var current = Helper_Diaper.getUnderwearOrDiaper(pawn);
-            if (current != null)
-            {
-                if (Helper_Diaper.isDiaper(current)) AddKeyUnique(rules, underwear, "Diaper");
-                if (Helper_Diaper.isNightDiaper(current)) AddKey(rules, underwear, "DiaperNight");
-                if (Helper_Diaper.isUnderwear(current)) AddKey(rules, underwear, "Underwear");
-            }
-            else
-            {
-                AddKeyUnique(rules, underwear, "None");
-            }
-
-            string pottyTraining = symbol + "pottyTraining";
-            if (Helper_Diaper.needsDiaper(pawn)) AddKey(rules, pottyTraining, "NeedsDiaper");
-            else if (Helper_Diaper.needsDiaperNight(pawn)) AddKey(rules, pottyTraining, "NeedsDiaperNight");
-            else AddKey(rules, pottyTraining, "Trained");
-
-            string stanceKey = symbol + "diaperStance";
-            if (Helper_Diaper.prefersDiaper(pawn))
-            {
-                AddKeyUnique(rules, stanceKey, "LikeDiaper");
-            }
-            else if (Helper_Diaper.acceptsDiaper(pawn))
-            {
-                AddKeyUnique(rules, stanceKey, "AcceptDiaper");
-            }
-            else if (Helper_Diaper.acceptsDiaperNight(pawn))
-            {
-                AddKeyUnique(rules, stanceKey, "AcceptDiaperNight");
-            }
-            else
-            {
-                AddKeyUnique(rules, stanceKey, "HateDiaper");
-            }
+            List<Rule> resultList = new List<Rule>();
+            Patch_GrammarUtility_RulesForPawn.AddRuleKeys(symbol, pawn, resultList);
+            SyncBackToTempRules(refList, resultList);
         }
 
-        public static void RemoveKey(List<Rule_String> rules, string key)
-        {
-            rules.RemoveAll(r => r.keyword == key);
-        }
-        private static void AddKey(List<Rule_String> rules, string key, string value)
-        {
-            rules.Add(new Rule_String(key, value));
-        }
-        private static void AddKeyUnique(List<Rule_String> rules, string key, string value)
-        {
-            RemoveKey(rules, key);
-            AddKey(rules, key, value);
-        }
-    }*/
+    }
 
     public static class Patch_SocialInteractionUtility_CanInitiateRandomInteraction
     {
@@ -152,30 +115,17 @@ namespace ZealousInnocence
         }
     }
 
-    
-
     public static class Patch_GrammarUtility_RulesForPawn
     {
-        public static void Postfix(
-            string pawnSymbol,
-            Pawn pawn,
-            Dictionary<string, string> constants,
-            bool addRelationInfoSymbol,
-            bool addTags,
-            ref IEnumerable<Rule> __result)
+        public static void AddRuleKeys(string pawnSymbol, Pawn pawn, List<Rule> rules)
         {
-            if (pawn == null)
-                return;
-
-            // Convert to a modifiable list
-            var rules = __result != null ? new List<Rule>(__result) : new List<Rule>();
-
             AddKeyUnique(rules, pawnSymbol + "_age", pawn.getAgeBehaviour().ToString());
             AddKeyUnique(rules, pawnSymbol + "_ageMental", pawn.getAgeStageMentalInt().ToString());
             AddKeyUnique(rules, pawnSymbol + "_agePhysical", pawn.getAgeStagePhysicalInt().ToString());
 
             AgeStage stages = pawn.GetAgeSocial();
             string speechStage = pawnSymbol + "_stage";
+            RemoveKey(rules, speechStage);
             foreach (AgeStage st in Enum.GetValues(typeof(AgeStage)))
             {
                 if (st == AgeStage.None)
@@ -193,29 +143,55 @@ namespace ZealousInnocence
             var current = Helper_Diaper.getUnderwearOrDiaper(pawn);
             if (current != null)
             {
-                if (Helper_Diaper.isDiaper(current)) AddKeyUnique(rules, underwear, "Diaper");
-                if (Helper_Diaper.isNightDiaper(current)) AddKey(rules, underwear, "DiaperNight");
-                if (Helper_Diaper.isUnderwear(current)) AddKey(rules, underwear, "Underwear");
+                if (Helper_Diaper.isDiaper(current))
+                {
+                    AddKeyUnique(rules, underwear, "Diaper");
+                    if (Helper_Diaper.isNightDiaper(current)) AddKey(rules, underwear, "DiaperNight");
+                }
+                else AddKeyUnique(rules, underwear, "Underwear");
             }
             else
             {
                 AddKeyUnique(rules, underwear, "None");
             }
 
+            string underwearState = pawnSymbol + "_underwearState";
+            Need_Diaper need_diaper = pawn.needs.TryGetNeed<Need_Diaper>();
+            if (need_diaper == null)
+            {
+                AddKeyUnique(rules, underwearState, "0");
+            }
+            else
+            {
+                // This is using a projection about the state of the diaper AFTER the accident is fully done, if an accident is ongoing. Otherwise discussions while having an accident would be inaccurate.
+                var value = Math.Max(0, Math.Min(100, Mathf.CeilToInt(need_diaper.CurrLevelProjection() * 100)));
+                AddKeyUnique(rules, underwearState, value.ToString());
+            }
+            string accidentKey = pawnSymbol + "_pottyAccident";
+            var type = Helper_Diaper.accidentTypePee(pawn);
+            if (Helper_Diaper.accidentOngoing(pawn))
+            {
+                AddKeyUnique(rules, accidentKey, "Ongoing");
+            }
+            if(type != null) AddKey(rules, accidentKey, type.Value ? "Pee" : "Poop");
+
             string pottyTraining = pawnSymbol + "_pottyTraining";
+            RemoveKey(rules, pottyTraining);
             if (Helper_Diaper.needsDiaper(pawn)) AddKey(rules, pottyTraining, "NeedsDiaper");
             else if (Helper_Diaper.needsDiaperNight(pawn)) AddKey(rules, pottyTraining, "NeedsDiaperNight");
             else AddKey(rules, pottyTraining, "Trained");
 
             string stanceKey = pawnSymbol + "_diaperStance";
-            if (Helper_Diaper.prefersDiaper(pawn)) {
+            RemoveKey(rules, stanceKey);
+            if (Helper_Diaper.prefersDiaper(pawn))
+            {
                 AddKeyUnique(rules, stanceKey, "LikeDiaper");
             }
             else if (Helper_Diaper.acceptsDiaper(pawn))
             {
                 AddKeyUnique(rules, stanceKey, "AcceptDiaper");
             }
-            else if(Helper_Diaper.acceptsDiaperNight(pawn))
+            else if (Helper_Diaper.acceptsDiaperNight(pawn))
             {
                 AddKeyUnique(rules, stanceKey, "AcceptDiaperNight");
             }
@@ -223,6 +199,22 @@ namespace ZealousInnocence
             {
                 AddKeyUnique(rules, stanceKey, "HateDiaper");
             }
+        }
+        public static void Postfix(
+            string pawnSymbol,
+            Pawn pawn,
+            Dictionary<string, string> constants,
+            bool addRelationInfoSymbol,
+            bool addTags,
+            ref IEnumerable<Rule> __result)
+        {
+            if (pawn == null)
+                return;
+
+            // Convert to a modifiable list
+            var rules = __result != null ? new List<Rule>(__result) : new List<Rule>();
+
+            AddRuleKeys(pawnSymbol, pawn, rules);
 
             // Return modified rule list
             __result = rules;

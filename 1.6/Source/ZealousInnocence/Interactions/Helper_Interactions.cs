@@ -50,6 +50,9 @@ namespace ZealousInnocence
                     if (p.InMentalState) 
                         continue;
 
+                    if(!SocialInteractionUtility.CanInitiateRandomInteraction(p))
+                        continue;
+
                     // Line of sight check
                     if (!GenSight.LineOfSight(pawn.Position, p.Position, map, skipFirstCell: true))
                         continue;
@@ -72,9 +75,19 @@ namespace ZealousInnocence
         }
         public static void TriggerRandomInteractionWithNearby(this Pawn initiator)
         {
+            TriggerInteractionWithNearby(initiator,RimWorld.InteractionDefOf.Chitchat);
+        }
+        public static void TriggerPottyFailInteractionWithNearby(this Pawn initiator)
+        {
+            TriggerInteractionWithNearby(initiator, InteractionDefOf.Custom_PottyTraining_Failure);
+        }
+        public static void TriggerInteractionWithNearby(this Pawn initiator, InteractionDef def)
+        {
             Pawn recipient = FindRandomLosNearbyColonist(initiator);
             if (recipient == null) return;
-            ForceTalk(initiator,recipient,InteractionDefOf.Chitchat);
+            ForceTalk(initiator, recipient, def);
         }
+
+        
     }
 }

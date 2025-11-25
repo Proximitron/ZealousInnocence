@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+	<success>Normal</success>
+	<operations>
+
+	<li Class="ZealousInnocence.PatchOperationMultiXpath">
+		<xpath>
+			<li>/Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator/rulesStrings</li>
+    </xpath>
+
+		<value>
+			<!-- random silly questions -->
+			
+			<!-- Toddler (1–4) starting silly questions -->
+			<li>r_logentry(INITIATOR_age>=1,INITIATOR_age&lt;=4,priority=5)->[toddler_silly]</li>
+
+				<!-- ================ TODDLER SILLY QUESTIONS TO ADULTS ================ -->
+				<!-- to adult -->
+				<li>toddler_silly(tag=Ask_SillyQuestion,RECIPIENT_age>=13,priority=5)->[toddler_silly_to_adult]</li>
+				
+				<!-- Generic “why” and “how” questions to adults -->
+				<li>toddler_silly_to_adult->Why sky so big an’ blue, [RECIPIENT_nameDef]?</li>
+				<li>toddler_silly_to_adult->Where sun go sleep at night?</li>
+				<li>toddler_silly_to_adult->Why we no faww off da wowld?</li>
+				<li>toddler_silly_to_adult->How come stars so tiny but so bwight?</li>
+				<li>toddler_silly_to_adult->Why wain come fwom da sky an’ not fwom da gwound?</li>
+				<li>toddler_silly_to_adult->If me jump weawwy high, me touch da moon?</li>
+				<li>toddler_silly_to_adult->Why bugs so wittle but dem no scawed uh me?</li>
+				<li>toddler_silly_to_adult->Where da wind wive when it no bwowin’?</li>
+				<li>toddler_silly_to_adult->If me eat wots uh veggie, me turn gween?</li>
+				<li>toddler_silly_to_adult->Why we hab sweep when toys still wanna pway?</li>
+
+				<!-- Colony / RimWorld -->
+				<li>toddler_silly_to_adult->Why da boomalope go boom, [RECIPIENT_nameDef]?</li>
+				<li>toddler_silly_to_adult->If me hug muffawo, it squish me?</li>
+				<li>toddler_silly_to_adult->Where da wocks come fwom? Da sky drop dem?</li>
+				<li>toddler_silly_to_adult->Why da food go bad but poopy neba go bad?</li>
+				<li>toddler_silly_to_adult->If me dig weawwy deep, me find othew cowony?</li>
+
+				<!-- Silly body / diaper -->
+				<li>toddler_silly_to_adult->Why tummy make gwowwy noise when hungwy?</li>
+				<li>toddler_silly_to_adult->Where pee pee go aftew diapee weg off?</li>
+				<li>toddler_silly_to_adult->If me no blink, me eyes fall out?</li>
+				<li>toddler_silly_to_adult->Why toots so funny but gwown ups say “stop”?</li>
+
+				<li>toddler_silly_to_adult->If me eat da snow… me turn into widdle snowman?</li>
+				<li>toddler_silly_to_adult->Why bug haf so many wiggly weggies? Dewey fall ovah a wot?</li>
+				<li>toddler_silly_to_adult->If me shout weawwy loud… da mountain shout back 'gain?</li>
+				<li>toddler_silly_to_adult->Where da sun hide when it pway peekaboo?</li>
+				<li>toddler_silly_to_adult->If me put rock in pocket, dat make me stwonk?</li>
+				<li>toddler_silly_to_adult->Why da water go "swish swish" an' not "bloop bloop" today?</li>
+				<li>toddler_silly_to_adult->If me cwose me mouf, how do da yawns get out?</li>
+
+				<li>toddler_silly_to_adult->If me keep jumpin', me bounce to da moon? Otay maybe da wittle moon?</li>
+				<li>toddler_silly_to_adult->Does da wind get tiwed fwom bwowin' aww day? Me get tiwed bwowin' candles…</li>
+				<li>toddler_silly_to_adult->Why da clouds wook wike mashed potato but no taste same?</li>
+				<li>toddler_silly_to_adult->If me spin too much, me tuwn into spinny pancake?</li>
+
+				<!-- Rimworld-chaos -->
+				<li>toddler_silly_to_adult->If boomalope haf boom… do boomrat haf wittwe boom?</li>
+				<li>toddler_silly_to_adult->Can muffawo get haircut? Dey so fwuffy… me want brush!</li>
+				<li>toddler_silly_to_adult->If me dig hole, me find bugs, gold, or da undewcowony peeple?</li>
+				<li>toddler_silly_to_adult->Does da chatbot in da comms consowe sweep? It sound sweepy.</li>
+
+				<!-- toddler brain glitching -->
+				<li>toddler_silly_to_adult->Where me shadow go when no wight? Does it go potty?</li>
+				<li>toddler_silly_to_adult->If me sip soup, does soup sip me back?</li>
+				<li>toddler_silly_to_adult->Why tummy make bwubble sound? Issa talkin' to bugs?</li>
+				<li>toddler_silly_to_adult->If me clap hands, do da sound get squished?</li>
+
+				<!-- escalating chaos -->
+				<li>toddler_silly_to_adult->If me chase me tail… me get dizzy pwize?</li>
+				<li>toddler_silly_to_adult->If me no wook at food… does food get sad?</li>
+				<li>toddler_silly_to_adult->Why cereal go soggy? It wun outta bones?</li>
+				<li>toddler_silly_to_adult->If me boop da muffawo… it boop back?</li>
+				<li>toddler_silly_to_adult->When me take nap, where me bwain go? On walk?</li>
+
+				<!-- extra chaotic energy -->
+				<li>toddler_silly_to_adult->If me eat cawot, me get night vision? Me wan' be bat!</li>
+				<li>toddler_silly_to_adult->Why da pawnts no scweam when me pick dem? Dey shy?</li>
+				<li>toddler_silly_to_adult->If me put sock on hand, does hand become foot?</li>
+				<li>toddler_silly_to_adult->How many toots make thundew? Me wanna count!</li>
+				<li>toddler_silly_to_adult->Why da moon fowwow me? It wike me? It wan' hug?</li>
+
+				<!-- absurdity-level rising -->
+				<li>toddler_silly_to_adult->If me wiggle enough, can me shake da boogies out me bwain?</li>
+				<li>toddler_silly_to_adult->Why me no remember bein’ tiny baby? Was me too tinier?</li>
+				<li>toddler_silly_to_adult->If me cwose da doow on da dawk… does dawk get stuck inside?</li>
+				<li>toddler_silly_to_adult->If me eat cookie upside down, does it taste diffwent?</li>
+				<li>toddler_silly_to_adult->Do trees tickle da sky when dey go tall?</li>
+
+				<!-- max silly -->
+				<li>toddler_silly_to_adult->If me shout "HELWO?" into da fwood, does da mops say "hewwo" back?</li>
+				<li>toddler_silly_to_adult->If me spin da spoon fast, soup become twister?</li>
+				<li>toddler_silly_to_adult->Why da wobots no take nappies? Dey need nappies too?</li>
+				<li>toddler_silly_to_adult->If me wiggle fingew in da aiw, me stiw da weathew?</li>
+				<li>toddler_silly_to_adult->Where da sound go when me say “aaaa”? It go hide?</li>
+
+				<!-- random non-tag chatter lines -->
+				<li>toddler_silly->Me hab big think in me head… but it go ‘way…</li>
+				<li>toddler_silly->Me bwain feew tickly when me twy think too hawd…</li>
+				<li>toddler_silly->If me cwose eyes, do wowld go poof?</li>
+			
+			<!-- ================= TODDLER QUESTIONS TO CHILDREN ================= -->
+			
+			<!-- to children -->
+			<li>toddler_silly(tag=Ask_SillyQuestion,RECIPIENT_age>=5,RECIPIENT_age&lt;=12,priority=6)->[toddler_silly_to_child]</li>
+			
+				<li>toddler_silly_to_child->Why you so tall? You eat gwowly food?</li>
+				<li>toddler_silly_to_child->If you run fast, you fly like birdie?</li>
+				<li>toddler_silly_to_child->Where your baby teef go when dem fehwoff?</li>
+				<li>toddler_silly_to_child->Why you no nap? You no get sweepy eber?</li>
+				<li>toddler_silly_to_child->If you jump in puddle, do puddle get happy?</li>
+				<li>toddler_silly_to_child->Where da colouring go when cwayon get tiny?</li>
+				<li>toddler_silly_to_child->If you hold bafwater, does it wiggle?</li>
+				<li>toddler_silly_to_child->Do big kids still get scawed uh da dawk?</li>
+				<li>toddler_silly_to_child->Why you no fall down when you spin? Me fall lots…</li>
+				<li>toddler_silly_to_child->If you eat too many candies, do you turn into candy?</li>
+
+				<!-- Slightly annoying "older sibling torture" energy -->
+				<li>toddler_silly_to_child->Why you aways say “stop”? Me duss askin’.</li>
+				<li>toddler_silly_to_child->If me poke you, do you go “beep”? Pwease?</li>
+				<li>toddler_silly_to_child->Why you make dat face when me follow you?</li>
+				<li>toddler_silly_to_child->If me copy you, do you copy me copy you?</li>
+			
+				<li>toddler_silly_to_child->Why you walk so fast? You got zoomies?</li>
+				<li>toddler_silly_to_child->If you gots homework… is it heavy? Can me hold?</li>
+				<li>toddler_silly_to_child->Why big kids no wobble when dem run?</li>
+				<li>toddler_silly_to_child->If you eat all da snacks… do you glow wike da sun?</li>
+				<li>toddler_silly_to_child->Where your imagy-nations wive? In tummy?</li>
+				<li>toddler_silly_to_child->Why your face make dat “ugh” when me talk?</li>
+				<li>toddler_silly_to_child->Do big kids hab fwiends invisible too?</li>
+				<li>toddler_silly_to_child->If you jump on bed… does bed get dizzy?</li>
+				<li>toddler_silly_to_child->Why you no pway tag? You allergic to fun?</li>
+				<li>toddler_silly_to_child->If you eat ice cweam fast… does your bwain get frozen?</li>
+				<li>toddler_silly_to_child->You know how to tie shoes? Can you tie me foot?</li>
+				<li>toddler_silly_to_child->Why you so smart? You eat book?</li>
+				<li>toddler_silly_to_child->If you wiggle eyebrows… does it make magic?</li>
+				<li>toddler_silly_to_child->Do big kids still get timeouts? Or you too big to be in da wrong?</li>
+				<li>toddler_silly_to_child->Why you no wanna hold my bug? It fwuffy… kind of.</li>
+
+			<!-- ================= TODDLER QUESTIONS TO TODDLERS ================= -->
+			
+			<!-- to toddlers -->
+			<li>toddler_silly(tag=Ask_SillyQuestion,RECIPIENT_age>=1,RECIPIENT_age&lt;=4,priority=7)->[toddler_silly_to_toddler]</li>
+			
+				<li>toddler_silly_to_toddler->Why you feet go tappytap when you happy?</li>
+				<li>toddler_silly_to_toddler->If we both shout “AAAAH,” which one win?</li>
+				<li>toddler_silly_to_toddler->You eva twy eat da wind? Me twied… no taste.</li>
+				<li>toddler_silly_to_toddler->If you spin, me spin too? We both spin fwends!</li>
+				<li>toddler_silly_to_toddler->You fink bugs hab names? Wike Mr. Cwunch?</li>
+				<li>toddler_silly_to_toddler->Why our hands so widdle but can grab so much?</li>
+				<li>toddler_silly_to_toddler->If we boff hug da toy, who toy hug back?</li>
+				<li>toddler_silly_to_toddler->Where da giggles go when you stop gigglin’?</li>
+				<li>toddler_silly_to_toddler->If you jump fwom sofa, me jump too? Same boom?</li>
+				<li>toddler_silly_to_toddler->Why naps come so fast but pwaytime go ‘way?</li>
+
+				<!-- derpy -->
+				<li>toddler_silly_to_toddler->Wanna see who blink wongest? Me no wanna wose.</li>
+				<li>toddler_silly_to_toddler->If me hide behind hands, me disappeaw?</li>
+				<li>toddler_silly_to_toddler->If we wawk backwads, do we go to yesterday?</li>
+				<li>toddler_silly_to_toddler->You eva wonder why tummy say “blorppp”? Me do.</li>
+				
+				<li>toddler_silly_to_toddler->Why your face do scrunchy when you smell stuff?</li>
+				<li>toddler_silly_to_toddler->If you jump on me, me bounce? Or me squish?</li>
+				<li>toddler_silly_to_toddler->Where nap go when nap run away?</li>
+				<li>toddler_silly_to_toddler->If we boff say “NO!” who win?</li>
+				<li>toddler_silly_to_toddler->You eva twy lick da window? It taste cold.</li>
+				<li>toddler_silly_to_toddler->If me hide toy in diaper… does diaper get mad?</li>
+				<li>toddler_silly_to_toddler->You fink cloud soft or wet? Me wanna hug cloud.</li>
+				<li>toddler_silly_to_toddler->Why our legs run fast but our bwains run slow?</li>
+				<li>toddler_silly_to_toddler->If we spin same way, do we become twinnies?</li>
+				<li>toddler_silly_to_toddler->If you stomp, does da fwoor say “ow”? Me fink it do.</li>
+				<li>toddler_silly_to_toddler->Where giggle go when we stop gigglin’? In tummy jail?</li>
+				<li>toddler_silly_to_toddler->You eva kiss a bug? It fwuffy? Or crispy?</li>
+				<li>toddler_silly_to_toddler->If we hold hands, we walk straighter or more wobbly?</li>
+				<li>toddler_silly_to_toddler->You eva twy eat da cwayon? It look yummy but me not allowed.</li>
+				<li>toddler_silly_to_toddler->If me jump fwom sofa, you catch me? Or we boff go boom?</li>
+		</value>
+	</li>
+	
+	</operations>
+	</Operation>
+</Patch>

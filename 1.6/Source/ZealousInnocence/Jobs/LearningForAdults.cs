@@ -184,7 +184,27 @@ namespace ZealousInnocence
         }
     }
 
-    public static class Patch_Pawn_GetGizmos
+    public static class GrowthTierGizmoCache
+    {
+        private static readonly Dictionary<int, Gizmo_GrowthTier> cache = new();
+
+        public static Gizmo_GrowthTier GetOrCreate(Pawn pawn)
+        {
+            if (!cache.TryGetValue(pawn.thingIDNumber, out var gizmo))
+            {
+                gizmo = new Gizmo_GrowthTier(pawn);
+                cache[pawn.thingIDNumber] = gizmo;
+            }
+
+            return gizmo;
+        }
+
+        public static void Remove(Pawn pawn)
+        {
+            cache.Remove(pawn.thingIDNumber);
+        }
+    }
+    /*public static class Patch_Pawn_GetGizmos
     {
         public static void Postfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
@@ -205,6 +225,49 @@ namespace ZealousInnocence
             }
 
             __result = list;
+        }
+
+        private static bool ShouldShow(Pawn p)
+        {
+            if (p.Drafted) return false;
+            if (Find.Selector?.SelectedPawns?.Count >= 2) return false;
+            if (p.RaceProps == null || !p.RaceProps.Humanlike) return false;
+
+            return p.needs?.learning != null;
+        }
+    }*/
+
+    public static class Patch_Pawn_GetGizmos
+    {
+        public static void Postfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
+        {
+            if (__instance == null || __instance.DestroyedOrNull()) return;
+            if (!ShouldShow(__instance)) return;
+
+            // Trying to avoid ToList
+            if (__result is not List<Gizmo> list)
+            {
+                if (__result == null)
+                {
+                    list = new List<Gizmo>();
+                }
+                else
+                {
+                    // Manual materialization – same as ToList but no LINQ
+                    list = new List<Gizmo>();
+                    foreach (var g in __result) list.Add(g);
+                }
+
+                __result = list;
+            }
+
+            // Manual loop, cutting out lamda issue
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] is Gizmo_GrowthTier) return;
+            }
+
+            list.Add(GrowthTierGizmoCache.GetOrCreate(__instance));
         }
 
         private static bool ShouldShow(Pawn p)

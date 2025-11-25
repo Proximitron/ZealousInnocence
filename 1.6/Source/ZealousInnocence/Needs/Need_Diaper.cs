@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
@@ -363,6 +364,27 @@ namespace ZealousInnocence
             else FilthMaker.TryMakeFilth(pawn.Position, pawn.Map, DubDef.FilthFaeces, 1, FilthSourceFlags.Pawn, true);
         }
 
+        public float CurrLevelProjection()
+        {
+            if (!pawn.canWearDiaper()) return 0f;
+
+            if (IsHavingAccident)
+            {
+                Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
+                var peeAmountPercentile = 1.0f - bladder.CurLevel;
+                var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
+
+                float absorbency = pawn.GetStatValue(StatDefOf.DiaperAbsorbency) / 3;
+                if (absorbency < 0.1f) absorbency = 0.1f;
+                float hitPointDamage = fluidAmount / (0.05f * absorbency);
+
+                int hitpoints = currProtection.HitPoints - Math.Min(currProtection.HitPoints, chancedDamage(hitPointDamage));
+
+                return Math.Max(0f, (float)hitpoints / (float)currProtection.MaxHitPoints);
+            }
+            return CurLevel;
+        }
+
         public void startAccident(bool pee = true)
         {
             if (IsHavingAccident) return;
@@ -372,8 +394,6 @@ namespace ZealousInnocence
             peeing = pee;
             if (debugging) Log.Message("[ZI] startAccident '" + (peeing ? "pee" : "poop") + "' for " + pawn.Name);
             if (!pawn.canWearDiaper()) return;
-
-            pawn.TriggerRandomInteractionWithNearby();
 
             var liked = Helper_Diaper.getDiaperPreference(pawn);
             var diaper = Helper_Diaper.getDiaper(pawn);
@@ -486,7 +506,8 @@ namespace ZealousInnocence
 
             Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
             if (bladder == null) return;
-            
+
+            bool hadAlreadyAccident = isHavingAccident;
             if (lastLevel < 0) lastLevel = CurLevel; // Init
             if (pawn.canWearDiaper())
             {
@@ -599,7 +620,7 @@ namespace ZealousInnocence
                     }
                     else
                     {
-                        if (bladder.CurLevel <= 0.28f && Rand.ChanceSeeded(1f / 32f, pawn.HashOffsetTicks() + 812) && bladder.CurLevel <= (Helper_Diaper.getBladderControlFailPoint(pawn) + 0.1f) && Helper_Diaper.remembersPotty(pawn) && pawn.CanPolitelyInterrupt())
+                        if (bladder.CurLevel <= 0.28f && Rand.ChanceSeeded(1f / 32f, pawn.HashOffsetTicks() + 812) && bladder.CurLevel <= (Helper_Diaper.getBladderControlFailPoint(pawn) + 0.05f) && Helper_Diaper.remembersPotty(pawn) && pawn.CanPolitelyInterrupt())
                         {
                             var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
                             Job toiletJob = jobGiver.TryGiveJob(pawn);
@@ -614,9 +635,16 @@ namespace ZealousInnocence
             }
             // Bedwetting block: end
 
-            if (!isHavingAccident && bladder.CurLevel <= 0f)
+            if (!isHavingAccident)
             {
-                startAccident(DecideRandomPeePoopIncident());
+                if (pawn?.CurJob?.def == DubDef.UseToilet && pawn.getAgeSocialIsToddler() && bladder.CurLevel <= 0.70f)
+                {
+                    startAccident(DecideRandomPeePoopIncident());
+                }
+                else if (bladder.CurLevel <= 0f)
+                {
+                    startAccident(DecideRandomPeePoopIncident());
+                }
             }
 
             
@@ -661,9 +689,9 @@ namespace ZealousInnocence
             if (isHavingAccident)
             {
                 ManageOngoingAccident();
+                if(!hadAlreadyAccident) pawn.TriggerPottyFailInteractionWithNearby();
                 if (currProtection != null)
                 {
-
                     var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, peePerTick);
                     var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
                     if (debugging) Log.Message($"[ZI]peeing in protection: {Helper_Diaper.getBladderControlLevel(pawn)} for {pawn.LabelShort} percentile {peeAmountPercentile} => {fluidAmount} amount");
@@ -767,9 +795,9 @@ namespace ZealousInnocence
             if (isHavingAccident)
             {
                 var curJob = pawn?.CurJob;
-                if (curJob.def != JobDefOf.PeeEvent && curJob.def != JobDefOf.PoopEvent && pawn.Awake() && pawn.CanPolitelyInterrupt() && (!Helper_Diaper.isDiaper(currProtection) || pawn.isToddlerOrBabyMentalOrPhysical()))
+                var noRelatedJobRunning = curJob == null || (curJob.def != JobDefOf.PeeEvent && curJob.def != JobDefOf.PoopEvent);
+                if (noRelatedJobRunning && pawn.Awake() && pawn.CanPolitelyInterrupt() && (!Helper_Diaper.isDiaper(currProtection) || pawn.isToddlerOrBabyMentalOrPhysical()))
                 {
-                    
                     var job = JobMaker.MakeJob(IsPeeing ? JobDefOf.PeeEvent : JobDefOf.PoopEvent);
                     job.expiryInterval = TicksAccidentLeftCalc;
                     job.checkOverrideOnExpire = true;   // let normal AI resume/override when it ends
