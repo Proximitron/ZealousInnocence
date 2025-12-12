@@ -63,6 +63,6 @@
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.6\Assemblies\$(TargetFileName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;C:\Games\steamapps\common\RimWorld\Mods\ZealousInnocence\1.6\Assemblies\$(TargetName).pdb&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetFileName)&quot; &quot;..\..\Assemblies\$(TargetFileName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;..\..\Assemblies\$(TargetName).pdb&quot;" />
   </Target>
 </Project>
