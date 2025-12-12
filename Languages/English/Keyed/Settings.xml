@@ -22,11 +22,24 @@
   <SettingRessurectChance>Ressurect chance</SettingRessurectChance>
   <SettingRessurectChanceHelp>The chance a pawn will be resurrected at a severity at between 149-150% regression. This will have a major impact on the amount of random ressurections if regression weapons are used to defend against raids.</SettingRessurectChanceHelp>
 	
+	<!-- Regression Learning -->
+  <SettingRegressionLearning>Regression Learing Settings</SettingRegressionLearning>
+  <SettingRegressionLearningHelp>Controls at what age pawns learn and master certain things.</SettingRegressionLearningHelp>
+
+  <SettingLearnChangePullups>Learned: Change Pullups</SettingLearnChangePullups>
+  <SettingLearnChangePullupsHelp>At what age pawns usually learn to change their own pullups or underwear.</SettingLearnChangePullupsHelp>
+	
+	<SettingLearnChangeDiapers>Learned: Change Diapers</SettingLearnChangeDiapers>
+  <SettingLearnChangeDiapersHelp>At what age pawns usually learn to change their own diapers.</SettingLearnChangeDiapersHelp>
+	
+	<SettingLearnChangeDiapersOthers>Learned: Change Others</SettingLearnChangeDiapersOthers>
+  <SettingLearnChangeDiapersOthersHelp>At what age pawns usually learn to change their diapers of other pawns.</SettingLearnChangeDiapersOthersHelp>
+	
   <!-- Skill Masking -->
   <SettingSkillMasking>Skill Masking Settings</SettingSkillMasking>
   <SettingSkillMaskingHelp>Controls how strongly regression lowers visible skill levels.</SettingSkillMaskingHelp>
 
-  <SettingLevelMaskBySeverity>Percent of Levels masked at full severity</SettingLevelMaskBySeverity>
+  <SettingLevelMaskBySeverity>Levels masked at full severity</SettingLevelMaskBySeverity>
   <SettingLevelMaskBySeverityHelp>The percent of acquired skill levels that are unavailable while severity is at 100%.</SettingLevelMaskBySeverityHelp>
 
   <SettingResetDefaults>Reset to defaults</SettingResetDefaults>

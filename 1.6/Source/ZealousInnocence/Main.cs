@@ -120,13 +120,12 @@ namespace ZealousInnocence
                 info: "PawnGenerator.GeneratePawn"
             );
 
-            // The following 3 function limits pawns from wearing underwear or diapers on their own and solve this by seeking medical rest for getting changed
-            patchFunctionPrefix(
+            // The following 4 function limits pawns from wearing underwear or diapers on their own and solve this by seeking medical rest for getting changed
+            patchFunctionPostfix(
                 original: AccessTools.Method(typeof(JobGiver_OptimizeApparel), "TryGiveJob"),
-                prefix: new HarmonyMethod(typeof(JobGiver_OptimizeApparel_TryGiveJob_Patch), nameof(JobGiver_OptimizeApparel_TryGiveJob_Patch.Prefix)),
+                postfix: new HarmonyMethod(typeof(JobGiver_OptimizeApparel_TryGiveJob_Patch), nameof(JobGiver_OptimizeApparel_TryGiveJob_Patch.Postfix)),
                 info: "JobGiver_OptimizeApparel.TryGiveJob"
             );
-
             patchFunctionPrefix(
                 original: AccessTools.Method(typeof(Building_AssignableFixture), nameof(Building_AssignableFixture.PawnAllowed)),
                 prefix: new HarmonyMethod(typeof(Building_AssignableFixture_PawnAllowed_Patch), nameof(Building_AssignableFixture_PawnAllowed_Patch.Prefix)),

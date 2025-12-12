@@ -32,14 +32,18 @@
 	<ShortReasonIsTooSmall>Is too small to use this</ShortReasonIsTooSmall>
 	<ShortReasonNotComply>Doesn't want to</ShortReasonNotComply>
 	<ShortReasonWrongMentalState>Not in a mental state to do so</ShortReasonWrongMentalState>
-	<ShortReasonCantChangeDiaperOrUnderwearSelf>Can't get out of their diaper</ShortReasonCantChangeDiaperOrUnderwearSelf>	
+	<ShortReasonNeedRemoveDiaper>Needs to first remove {PAWN_possessive} diaper</ShortReasonNeedRemoveDiaper>	
+	<ShortReasonCantChangeDiaper>Can't change {PAWN_possessive} own diaper</ShortReasonCantChangeDiaper>
+	<ShortReasonCantChangePullupOrUnderwearSelf>Can't change {PAWN_possessive} own underwear or pullups</ShortReasonCantChangePullupOrUnderwearSelf>
+	<ShortReasonCantChangeDiaperOthers>Can't change {PAWN_possessive} diapers of others</ShortReasonCantChangeDiaperOthers>
+	
 	<ShortReasonForcedInDiaper>Forced to wear diaper</ShortReasonForcedInDiaper>
 	
 	<StatPartPhysicalAgeDescriptor>Physical age: {0}} years</StatPartPhysicalAgeDescriptor>
 	<!-- Description why the pawn is not affected by its physical age at the moment -->
 	<ShortReasonPhysicalAgeNoEffect>Physical age has no affect due to insufficient awareness.</ShortReasonPhysicalAgeNoEffect>
 	
-	
+	<ShortCapReasonCantRemove>Can't remove {0}</ShortCapReasonCantRemove>
 	
 	<LetterResurrectStart>{PAWN_labelShort}'s body is stirring.</LetterResurrectStart>
 	<LetterLabelResurrectStart>Rebirth?</LetterLabelResurrectStart>

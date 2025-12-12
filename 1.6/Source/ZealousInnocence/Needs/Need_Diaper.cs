@@ -1,4 +1,5 @@
 ﻿using DubsBadHygiene;
+using Ionic.Zlib;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -181,6 +182,8 @@ namespace ZealousInnocence
             if (!caretaker.Spawned || !patient.Spawned) return LocalTargetInfo.Invalid;
             if (caretaker.Map == null || patient.Map == null) return LocalTargetInfo.Invalid;
 
+
+
             foreach (Thing thing in caretaker?.inventory?.innerContainer)
             {
                 EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, false);
@@ -191,6 +194,7 @@ namespace ZealousInnocence
             }
             foreach (Thing thing in patient.Map.listerThings.AllThings)
             {
+                if (!caretaker.CanReserveAndReach(thing, PathEndMode.OnCell, caretaker.NormalMaxDanger())) continue;
                 EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, true);
             }
             
@@ -202,6 +206,8 @@ namespace ZealousInnocence
         {
             if (thing is not Apparel app) return;
             if (app.HitPoints < (app.MaxHitPoints / 2)) return;
+
+            if (CompBiocodable.IsBiocoded(app) && !CompBiocodable.IsBiocodedFor(app, patient)) return;
 
             float rating = Helper_Diaper.getDiaperOrUndiesRating(patient, app);
             if (rating > bestRating && (!checkReachable ||
@@ -527,7 +533,7 @@ namespace ZealousInnocence
                     if (debugging) Log.Message($"[ZI] Because of lastLevel higher than current {pawn.Name} is now unaware of the need to change their diapers");
                     knowsNeedChange = false; // Means usually diaper change
                 }
-                if (!knowsNeedChange && CurLevel <= 0.5f && pawn.canChangeDiaperOrUnderwear())
+                if (!knowsNeedChange && CurLevel <= 0.5f && pawn.canNoticeNeedChange())
                 {
                     if (debugging) Log.Message($"[ZI] {pawn.Name} is now aware of the need to change their diapers");
                     knowsNeedChange = true;

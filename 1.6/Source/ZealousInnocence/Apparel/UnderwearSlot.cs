@@ -177,8 +177,9 @@ namespace ZealousInnocence
             // Only show to player when worn by a player pawn
             if (Wearer is not Pawn pawn || Wearer.Faction != Faction.OfPlayer) yield break;
 
-            // There is no point in this until the pawn can change their own diapers
-            if(!Helper_Regression.canChangeDiaperOrUnderwear(pawn)) yield break;
+            Apparel_Disposable_Diaper worn = (Apparel_Disposable_Diaper)pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
+            // There is no point in this until the pawn can change their own pullups or diapers
+            if (worn == null || !pawn.canChange(worn)) yield break;
 
             int count = SparesOfCurrentDiaper(pawn);
 

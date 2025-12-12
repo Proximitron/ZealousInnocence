@@ -25,8 +25,9 @@ namespace ZealousInnocence
 
             var diaperNeed = pawn.needs.TryGetNeed<Need_Diaper>();
             if (diaperNeed == null) return 0f; // no diaper need? No diaper change!
+            if(!diaperNeed.KnowsNeedChange) return 0f; // If we don't know, we can't obviously
 
-            if (!Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return 0f;
+            if (!pawn.canChange(worn)) return 0f;
             if (Helper_Diaper.shouldStayPut(pawn)) return 0f;
 
             int have = Apparel_Disposable_Diaper.SparesOfDiaper(pawn, worn);
@@ -183,11 +184,12 @@ namespace ZealousInnocence
 
             if (pawn.CurJobDef == JobDefOf.RestockDisposableToInventory) return 0f;
 
-            if (!Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return 0f;
             if (Helper_Diaper.shouldStayPut(pawn)) return 0f;
 
             Apparel_Disposable_Diaper worn = (Apparel_Disposable_Diaper)pawn.apparel?.WornApparel?.FirstOrDefault(a => a is Apparel_Disposable_Diaper);
             if (worn == null) return 0f;
+
+            if (!pawn.canChange(worn)) return 0f;
 
             int DesiredCount = GetDesiredSpareCountFor(pawn, 0);
 

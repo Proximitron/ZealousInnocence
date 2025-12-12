@@ -59,8 +59,10 @@ namespace ZealousInnocence
                     impactors.Add(new CapacityImpactorCustom { customLabel = "StateSleeping".Translate(), customValue = sleepFactor });
                 }
                 num2 *= sleepFactor;
-                bool canChange = Helper_Regression.canChangeDiaperOrUnderwear(pawn);
-                float bedwettingChance = canChange ? Helper_Diaper.CalculateProbability(whileAsleepTotal) : 1f;
+                var currDiaper = Helper_Diaper.getDiaper(pawn);
+                bool canChange = currDiaper == null || pawn.canChange(currDiaper,false);
+
+                float bedwettingChance = Helper_Diaper.CalculateProbability(whileAsleepTotal);
                 if (impactors != null)
                 {
                     string bedwetting = "StateWordLow";
@@ -79,7 +81,7 @@ namespace ZealousInnocence
                             bedwetting = "StateWordMedium";
                         }
                     }
-                    if (needsDiaper || !canChange)
+                    if (needsDiaper)
                     {
                         impactors.Add(new CapacityImpactorCustom { customString = "StateNeedsDiapers".Translate() });
                     }
@@ -90,7 +92,7 @@ namespace ZealousInnocence
                             impactors.Add(new CapacityImpactorCustom { customString = "StateNeedsPullups".Translate() });
                         }
                     }
-                    if(!canChange && impactors != null) impactors.Add(new CapacityImpactorCustom { customString = "ShortReasonCantChangeDiaperOrUnderwearSelf".Translate() });
+                    if(!canChange && impactors != null) impactors.Add(new CapacityImpactorCustom { customString = "ShortCapReasonCantRemove".Translate(currDiaper.def.LabelCap) });
                     impactors.Add(new CapacityImpactorCustom { customLabel = "PhraseDaytimeAccidents".Translate(), customValue = canChange ? Helper_Diaper.CalculateProbability(whileAwakeTotal) : 1f });
                     string wordBedwetting = "PhraseBedwetting".Translate();
                     impactors.Add(new CapacityImpactorCustom { customLabel = $"{wordBedwetting} ({bedwetting.Translate()})", customValue = bedwettingChance });

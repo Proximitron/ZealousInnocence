@@ -172,11 +172,8 @@ namespace ZealousInnocence
 
         public static void Postfix(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result, Pawn __state)
         {
-            // Early exit for null checks - these are critical for game logic
-            if (nd == null || __instance == null) return;
+            if (nd == null || __instance == null || __state == null) return;
 
-            // GAME LOGIC - always runs regardless of debug settings
-            // Try visitor/caravan/raider bladder override first
             if (Bladder_RaidCaravanVisitor_Postfix(__instance, ref __result, nd)) return;
             
             // Try developmental stage gating
@@ -184,11 +181,11 @@ namespace ZealousInnocence
 
             // DEBUG LOGGING ONLY - exit early if debug disabled
             if (!EnabledDetailed) return;
-            
+
             // Get pawn for logging (reuse from Prefix if available)
             var pawn = __state ?? GetPawn(__instance);
             if (pawn == null) return;
-            
+
             string reason = ExplainDecision(pawn, nd, __result);
             Log.Message($"[ZI]Postfix pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} {reason}");
         }
@@ -221,6 +218,23 @@ namespace ZealousInnocence
             return true;
         }
 
+        private static bool HasAnyHediffByDefName(Pawn pawn, List<string> list, out string hit)
+        {
+            hit = null;
+            var hediffs = pawn?.health?.hediffSet?.hediffs;
+            if (list == null || hediffs == null) return false;
+            foreach (var h in hediffs)
+            {
+                var dn = h?.def?.defName;
+                if (dn != null && list.Contains(dn))
+                {
+                    hit = dn;
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool Bladder_RaidCaravanVisitor_Postfix(Pawn_NeedsTracker __instance, ref bool __result, NeedDef nd)
         {
             // Early exit: Only care about Bladder/Diaper needs
@@ -234,14 +248,15 @@ namespace ZealousInnocence
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             if (!settings.bladderForRaidCaravanVisitors) return false;
 
-            // Get pawn after settings check
-            var pawn = GetPawn(__instance);
-            if (pawn == null || pawn.Dead)
-                return false; // let vanilla decide / avoid NRE during load
+            if (!settings.bladderForRaidCaravanVisitors) return false; // Deactivated by setting. We keep it untouched!
 
             // If Guest or everyone don't get bladder need, this overwrite will also not be used
             if (!DubsBadHygieneMod.Settings.BladderNeed) return false;
             if (!DubsBadHygieneMod.Settings.GuestsGetBladder) return false;
+
+            var pawn = GetPawn(__instance);
+            if (pawn == null || pawn.Dead)
+                return false; // let vanilla decide / avoid NRE during load
 
             // We only extend to humanlike visitors; animals/raiders unchanged.
             if (pawn.RaceProps?.Humanlike != true)
@@ -256,14 +271,8 @@ namespace ZealousInnocence
 
             // Hediff exemption check - inlined for performance
             bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderHediff : DubDef.Bladder.Exemptions.Hediffs;
-            if (bs != null && pawn.health?.hediffSet?.hediffs != null)
-            {
-                foreach (var h in pawn.health.hediffSet.hediffs)
-                {
-                    if (h?.def?.defName != null && bs.Contains(h.def.defName))
-                        return false;
-                }
-            }
+
+            if (HasAnyHediffByDefName(pawn, bs, out var hitH)) return false;
             if (pawn.RaceProps?.EatsFood != true) return false;
             if (pawn.ageTracker?.CurLifeStage == LifeStageDefOf.HumanlikeBaby) return false;
 

@@ -168,7 +168,7 @@
     
     <projectile>
 			<damageDef>RayGression</damageDef>
-      <damageAmountBase>2.5</damageAmountBase>
+      <damageAmountBase>3</damageAmountBase>
     </projectile>
 	
 		<beamWidth>0.6</beamWidth>

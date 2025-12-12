@@ -651,6 +651,7 @@ namespace ZealousInnocence
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             bool debugging = settings.debugging && settings.debuggingCloth;
             if (!ap.PawnCanWear(pawn, true)) return -100f;
+            if (CompBiocodable.IsBiocoded(ap) && !CompBiocodable.IsBiocodedFor(ap, pawn)) return -100f;
             if (!allowedByPolicy(pawn, ap)) return -100f;
             
             if (ap.HasThingCategory(ThingCategoryDefOf.Diapers))
