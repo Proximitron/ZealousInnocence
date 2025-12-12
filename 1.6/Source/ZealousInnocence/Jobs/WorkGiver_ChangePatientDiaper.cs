@@ -188,6 +188,8 @@ namespace ZealousInnocence
             if (t is not Pawn patient || patient == caretaker)
                 return false;
 
+            if (!caretaker.canChangeOtherDiaper(true)) return false;
+
             Need_Diaper need_diaper = patient.needs?.TryGetNeed<Need_Diaper>();
             if (need_diaper == null) return false; // Doesn't/never needs diapers
 
@@ -225,7 +227,7 @@ namespace ZealousInnocence
             }
 
             // If they can handle it themselves, no job
-            if (!isWardenJob && Helper_Regression.canChangeDiaperOrUnderwear(patient) &&
+            if (!isWardenJob && patient.canChangeOwnDiaper() && patient.canChangeOwnUnderwear() && patient.canNoticeNeedChange() &&
                 !Helper_Diaper.shouldStayPut(patient))
             {
                 JobFailReason.Is("Can do it themselfs.");
@@ -267,8 +269,8 @@ namespace ZealousInnocence
             // -------------------------------------------------
             // Unable to do self: periodic "check" gating
             // -------------------------------------------------
-            bool isBabyOrToddler = !patient.canChangeDiaperOrUnderwear();
-            if (isBabyOrToddler)
+
+            if (!patient.canNoticeNeedChange())
             {
                 // Only check periodically; if not ready yet, skip.
                 if (!need_diaper.KnowsNeedChange && !ReadyForPeriodicCheck(patient))
@@ -295,6 +297,14 @@ namespace ZealousInnocence
             if (!diaperTarget.IsValid || !diaperTarget.HasThing)
                 return false;
 
+            if (!forced)
+            {
+                if (diaperTarget.Thing is Apparel app && patient.canChange(app))
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -307,9 +317,9 @@ namespace ZealousInnocence
                 return null;
 
             Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
-            bool isBabyOrToddler = !patient.canChangeDiaperOrUnderwear();
+
             // Schedule next periodic check for babies/toddlers
-            if (isBabyOrToddler && !need_diaper.KnowsNeedChange)
+            if (!patient.canNoticeNeedChange() && !need_diaper.KnowsNeedChange)
             {
                 Log.Message($"[ZI] Trigger CheckPatientDiaper for {patient.LabelShort}");
                 ScheduleNextPeriodicCheck(patient);

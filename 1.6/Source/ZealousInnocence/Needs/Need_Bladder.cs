@@ -171,14 +171,17 @@ namespace ZealousInnocence
 
         public static void Postfix(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result, Pawn __state)
         {
-            if (nd == null || __instance == null) return;
+            if (nd == null || __instance == null || __state == null) return;
 
-            var pawn = __state ?? GetPawn(__instance);
-            if (pawn == null) return;
             if (Bladder_RaidCaravanVisitor_Postfix(__instance, ref __result, nd)) return;
             if (Postfix_StageTracker(__instance, nd, ref __result)) return;
 
             if (!EnabledDetailed) return;
+
+            // Get pawn for logging (reuse from Prefix if available)
+            var pawn = __state ?? GetPawn(__instance);
+            if (pawn == null) return;
+
             string reason = ExplainDecision(pawn, nd, __result);
             Log.Message($"[ZI]Postfix pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} {reason}");
         }
@@ -206,26 +209,44 @@ namespace ZealousInnocence
             return true;
         }
 
+        private static bool HasAnyHediffByDefName(Pawn pawn, List<string> list, out string hit)
+        {
+            hit = null;
+            var hediffs = pawn?.health?.hediffSet?.hediffs;
+            if (list == null || hediffs == null) return false;
+            foreach (var h in hediffs)
+            {
+                var dn = h?.def?.defName;
+                if (dn != null && list.Contains(dn))
+                {
+                    hit = dn;
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool Bladder_RaidCaravanVisitor_Postfix(Pawn_NeedsTracker __instance, ref bool __result, NeedDef nd)
         {
-            // Only care about the DBH need named "Bladder"
+            // Early exit: Only care about Bladder/Diaper needs
             if (nd == null || (nd.defName != "Bladder" && nd.defName != "Diaper"))
-                return false; // run vanilla
+                return false;
 
-            if (__result) return false; // We don't touch anything that is already allowed
+            // Early exit: Don't override if already allowed
+            if (__result) return false;
 
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
             var debug = settings.debuggingCapacities;
 
             if (!settings.bladderForRaidCaravanVisitors) return false; // Deactivated by setting. We keep it untouched!
 
-            var pawn = GetPawn(__instance);
-            if (pawn == null || pawn.Dead)
-                return false; // let vanilla decide / avoid NRE during load
-
             // If Guest or everyone don't get bladder need, this overwrite will also not be used
             if (!DubsBadHygieneMod.Settings.BladderNeed) return false;
             if (!DubsBadHygieneMod.Settings.GuestsGetBladder) return false;
+
+            var pawn = GetPawn(__instance);
+            if (pawn == null || pawn.Dead)
+                return false; // let vanilla decide / avoid NRE during load
 
             // We only extend to humanlike visitors; animals/raiders unchanged.
             if (pawn.RaceProps?.Humanlike != true)
@@ -239,23 +260,8 @@ namespace ZealousInnocence
             if (bs?.Contains(pawn.def?.defName) == true) return false;
 
             bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderHediff : DubDef.Bladder.Exemptions.Hediffs;
-            bool HasAnyHediffByDefName(List<string> list, out string hit)
-            {
-                hit = null;
-                var hediffs = pawn?.health?.hediffSet?.hediffs;
-                if (list == null || hediffs == null) return false;
-                foreach (var h in hediffs)
-                {
-                    var dn = h?.def?.defName;
-                    if (dn != null && list.Contains(dn))
-                    {
-                        hit = dn;
-                        return true;
-                    }
-                }
-                return false;
-            }
-            if (HasAnyHediffByDefName(bs, out var hitH)) return false;
+
+            if (HasAnyHediffByDefName(pawn, bs, out var hitH)) return false;
             if (pawn.RaceProps?.EatsFood != true) return false;
             if (pawn.ageTracker?.CurLifeStage == LifeStageDefOf.HumanlikeBaby) return false;
 

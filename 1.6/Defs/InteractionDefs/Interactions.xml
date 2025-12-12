@@ -111,10 +111,10 @@
 				
 				<li>child_toilet_fail_pee_diaper->I peed my diaper again, i think.</li>
 				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState&lt;40)->My diaper is really soaked!</li>
-				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>60)->My diaper is wet again.</li>
-				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>60)->I wet my diaper again, but i think i don’t need a change yet.</li>
-				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>60)->Yea i had to pee. But it‘s ok, my diaper got it.</li>
-				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>60)->I only wet a little.</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>55)->My diaper is wet again.</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>55)->I wet my diaper again, but i think i don’t need a change yet.</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>55)->Yea i had to pee. But it‘s ok, my diaper got it.</li>
+				<li>child_toilet_fail_pee_diaper(INITIATOR_underwearState>55)->I only wet a little.</li>
 				
 				<!-- ==== CHILD PEE FAIL ==== -->
 				<li>child_toilet_fail_pee->Oh no… I didn’t make it in time… again.</li>

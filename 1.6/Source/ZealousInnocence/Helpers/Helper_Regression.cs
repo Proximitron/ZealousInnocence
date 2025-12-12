@@ -1,5 +1,6 @@
 ﻿using DubsBadHygiene;
 using HarmonyLib;
+using Ionic.Zlib;
 using JetBrains.Annotations;
 using RimWorld;
 using System;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Security.Cryptography;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.Rendering.VirtualTexturing;
 using Verse;
@@ -18,6 +20,9 @@ namespace ZealousInnocence
 {
     public static class Helper_Regression
     {
+        private static readonly Lazy<ZealousInnocenceSettings> _settings = new Lazy<ZealousInnocenceSettings>(() => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>());
+        public static ZealousInnocenceSettings Settings => _settings.Value;
+
         private static Dictionary<Pawn, AgeStageInfo> cachedMentalAgeStages = new Dictionary<Pawn, AgeStageInfo>();
         public static float getAgeStageMental(this Pawn pawn, bool force = false)
         {
@@ -204,7 +209,7 @@ namespace ZealousInnocence
         {
             return pawn.isAdultAtAge(pawn.getAgeBehaviour());
         }
-        public static bool canChangeDiaperOrUnderwear(this Pawn p)
+        public static bool canChangeGeneral(this Pawn p)
         {
             if (p == null || p.Dead) return false;
             if (!p.RaceProps.Humanlike) return false;
@@ -220,9 +225,50 @@ namespace ZealousInnocence
             if (caps.GetLevel(RimWorld.PawnCapacityDefOf.Manipulation) <= 0.25f) return false;
 
             if (p.InMentalState && p.MentalStateDef.blockNormalThoughts) return false;
+            return true;
+        }
+        public static bool canChange(this Pawn p,Apparel app,bool withReason = false)
+        {
+            if (Helper_Diaper.isUnderwear(app) || Helper_Diaper.isNightDiaper(app)) return canChangeOwnUnderwear(p, withReason);
+            if (Helper_Diaper.isDiaper(app)) return canChangeOwnUnderwear(p, withReason);
+            return true;
+        }
+        public static bool canChangeOtherDiaper(this Pawn p, bool withReason = false)
+        {
+            var can = true;
+            if (!canChangeGeneral(p)) can = false;
+            can = can && Settings.Regression_DiaperChangeOthers <= getAgeStagePhysicalMentalMin(p);
+            if(!can && withReason) JobFailReason.Is("ShortReasonCantChangeDiaperOthers".Translate(p.Named("PAWN")));
+            return can;
+        }
+        public static bool canChangeOwnDiaper(this Pawn p, bool withReason = false)
+        {
+            var can = true;
+            if (!canChangeGeneral(p)) can = false;
+            can = can && Settings.Regression_DiaperChange <= getAgeStagePhysicalMentalMin(p);
+            if (!can && withReason) JobFailReason.Is("ShortReasonCantChangeDiaper".Translate(p.Named("PAWN")));
+            return can;
+        }
+        public static bool canChangeOwnUnderwear(this Pawn p, bool withReason = false)
+        {
+            var can = true;
+            if (!canChangeGeneral(p)) can = false;
+            can = can && Settings.Regression_PullupChange <= getAgeStagePhysicalMentalMin(p);
+            if (!can && withReason) JobFailReason.Is("ShortReasonCantChangePullupOrUnderwearSelf".Translate(p.Named("PAWN")));
+            return can;
+        }
+        public static bool canNoticeNeedChange(this Pawn p)
+        {
+            return !p.isToddlerMentalOrPhysical();
+        }
+        /*public static bool canChangeDiaperOrUnderwear(this Pawn p)
+        {
+            if (!canChangeGeneral(p)) return false;
+
+
 
             return !isToddlerOrBabyMentalOrPhysical(p);
-        }
+        }*/
 
         public static RegressionComputeInfo ComputeTotalRegression(this Pawn pawn, bool mental)
         {
@@ -307,9 +353,9 @@ namespace ZealousInnocence
                 { 
                     return "ShortReasonForcedInDiaper".Translate(); // forced in diapers
                 }
-                if (!canChangeDiaperOrUnderwear(pawn))
+                if (!pawn.canChange(currDiapie))
                 {
-                    return "ShortReasonCantChangeDiaperOrUnderwearSelf".Translate();
+                    return "ShortCapReasonCantRemove".Translate(currDiapie.def.LabelCap);
                 }
             }
             return true;
@@ -726,7 +772,7 @@ namespace ZealousInnocence
 
         public static bool reincarnateToChildPawn(Pawn pawn, ThingDef cause, out List<Hediff> removedHediffs, out float pawnAgeDelta)
         {
-            Helper_Regression.SetRegressionHediff(pawn, pawn.def, HediffDefOf.RegressionDamage_FoyWater_Ingested, 1.1f);
+            SetRegressionHediff(pawn, pawn.def, HediffDefOf.RegressionDamage_FoyWater_Ingested, 1.1f);
             removedHediffs = new List<Hediff>();
             pawnAgeDelta = 0;
             return true;
@@ -1001,30 +1047,112 @@ namespace ZealousInnocence
             {
                 Need_Diaper need_diaper = pawn.needs.TryGetNeed<Need_Diaper>();
                 if (need_diaper == null) return;
-                if (Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return;
+
 
                 var diaper = Helper_Diaper.getUnderwearOrDiaper(pawn);
                 if (diaper == null || !Helper_Diaper.allowedByPolicy(pawn, diaper) || need_diaper.CurLevel < 0.5f)
                 {
                     var cloth = need_diaper.getCachedBestDiaperOrUndie();
-                    __result = cloth != null && cloth.IsValid && cloth.HasThing;
+                    if (cloth == null || !cloth.IsValid || !cloth.HasThing) return;
+                    if (Helper_Regression.canChange(pawn,(Apparel)cloth.Thing)) return;
+                    __result = true;
                 }
             }
         }
     }
+
+    public static class Helper_OptimizeApparel
+    {
+        public static void SetNextOptimizeTick(Pawn pawn) => typeof(JobGiver_OptimizeApparel).GetMethod("SetNextOptimizeTick", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { pawn });
+        public static List<float> wornApparelScoresGet(Pawn pawn)
+        {
+            List<Thing> list = pawn?.Map?.listerThings?.ThingsInGroup(ThingRequestGroup.Apparel);
+            List<float> wornApparelScores = new List<float>();
+            if (list == null) return wornApparelScores;
+
+            List<Apparel> wornApparel = pawn.apparel.WornApparel;
+            for (int i = 0; i < wornApparel.Count; i++)
+            {
+                wornApparelScores.Add(JobGiver_OptimizeApparel.ApparelScoreRaw(pawn, wornApparel[i]));
+            }
+            return wornApparelScores;
+        }
+
+        public static Apparel bestBetterApparel(Pawn baby, Pawn hauler, List<float> wornApparelScores = null)
+        {
+            if(baby == null) return null;
+            if (hauler == null)
+            {
+                hauler = baby;
+            }
+            
+            if(hauler != baby)
+            {
+                if (!hauler.canChangeOtherDiaper()) return null;
+            }
+            ApparelPolicy curApparelPolicy = baby.outfits.CurrentApparelPolicy;
+            List<Thing> list = hauler?.Map?.listerThings?.ThingsInGroup(ThingRequestGroup.Apparel);
+            if (list == null) return null;
+            float num2 = 0f;
+            Apparel thing = null;
+            wornApparelScores = wornApparelScores ?? wornApparelScoresGet(baby);
+            for (int j = 0; j < list.Count; j++)
+            {
+                Apparel apparel = (Apparel)list[j];
+                //Log.Message("Contemplating apparel: " + apparel.ToString());
+                //Log.Message("currentOutfit.filter.Allows(apparel): "+ currentOutfit.filter.Allows(apparel));
+                //Log.Message("apparel.IsInAnyStorage(): " + apparel.IsInAnyStorage());
+                //Log.Message("apparel.IsForbidden(hauler): " + apparel.IsForbidden(hauler));
+                //Log.Message("apparel.IsForbidden(baby): " + apparel.IsForbidden(baby));
+                if (curApparelPolicy.filter.Allows(apparel)
+                    && apparel.IsInAnyStorage()
+                    && !apparel.IsForbidden(hauler) && !apparel.IsForbidden(baby)
+                    && !apparel.IsBurning()
+                    && (!Helper_Diaper.isDiaper(apparel) || hauler != baby || baby.canChange(apparel)))
+                {
+                    float num3 = JobGiver_OptimizeApparel.ApparelScoreGain(baby, apparel, wornApparelScores);
+
+                    if (!(num3 < 0.05f) && !(num3 < num2)
+                        && (!CompBiocodable.IsBiocoded(apparel) || CompBiocodable.IsBiocodedFor(apparel, baby))
+                        && ApparelUtility.HasPartsToWear(baby, apparel.def)
+                        && hauler.CanReserveAndReach(apparel, PathEndMode.OnCell, hauler.NormalMaxDanger())
+                        && hauler.CanReserveAndReach(baby, PathEndMode.OnCell, hauler.NormalMaxDanger())
+                        && apparel.def.apparel.developmentalStageFilter.Has(baby.DevelopmentalStage))
+                    {
+                        //Log.Message("picked " + apparel.ToString() + "as an option");
+                        thing = apparel;
+                        num2 = num3;
+                    }
+                }
+            }
+            return thing;
+        }
+    }
+
     [HarmonyPatch(typeof(JobGiver_OptimizeApparel), "TryGiveJob")]
     public static class JobGiver_OptimizeApparel_TryGiveJob_Patch
     {
-        public static bool Prefix(Pawn pawn, ref Job __result)
+        public static void Postfix(Pawn pawn, ref Job __result)
         {
-            // Add your condition here to check if the pawn should not dress themselves
-            if (!Helper_Regression.canChangeDiaperOrUnderwear(pawn))
+            if (__result == null) return;
+            if (__result.def != RimWorld.JobDefOf.Wear) return;
+
+            if(__result.targetA.HasThing && __result.targetA.Thing is Apparel app)
             {
-                JobFailReason.Is("Can't change their own diaper or underwear.");
-                __result = null; // Prevent the job from being given
-                return false;    // Skip the original method
+                if (!pawn.canChange(app, true))
+                {
+                    __result = null; // Prevent the job from being given
+
+                    Thing thing = Helper_OptimizeApparel.bestBetterApparel(pawn, null);
+                    if (thing == null)
+                    {
+                        Helper_OptimizeApparel.SetNextOptimizeTick(pawn);
+                        return;
+                    }
+
+                    __result = JobMaker.MakeJob(RimWorld.JobDefOf.Wear, thing); // Giving a new one
+                }
             }
-            return true; // Continue with the original method
         }
     }
     [HarmonyPatch(typeof(Pawn_JobTracker), "StartJob")]
@@ -1037,11 +1165,14 @@ namespace ZealousInnocence
             if (newJob.def == RimWorld.JobDefOf.Wear)
             {
                 Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_JobTracker), "pawn").GetValue(__instance);
-                if (Helper_Regression.canChangeDiaperOrUnderwear(pawn)) return true;
-                JobFailReason.Is("Can't change their own diaper or underwear.");
+                if (newJob.targetA.HasThing && newJob.targetA.Thing is Apparel app)
+                {
+                    if (pawn.canChange(app, true)) return true;
+                    Messages.Message(JobFailReason.Reason, pawn, MessageTypeDefOf.RejectInput, historical: false);
+                    return false; // Prevent the job from being started
+                }
 
-                Messages.Message("This pawn can't change their own diaper or underwear.", pawn, MessageTypeDefOf.RejectInput, historical: false);
-                return false; // Prevent the job from being started
+                return true;
             }
             if(newJob.def == DubDef.UseToilet)
             {

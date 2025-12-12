@@ -97,6 +97,12 @@ namespace ZealousInnocence
 
         public float Regression_RessurectChance = 0.5f;
 
+        // ========== Learning ==========
+
+        public int Regression_PullupChange = 6;
+        public int Regression_DiaperChange = 9;
+        public int Regression_DiaperChangeOthers = 13;
+
         // ========== Skill Masking ==========
 
         /// <summary>
@@ -175,6 +181,11 @@ namespace ZealousInnocence
             Scribe_Values.Look(ref Regression_RestingMultiplier, "Regression_RestingMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_ChildMultiplier, "Regression_ChildMultiplier", 1.0f);
             Scribe_Values.Look(ref Regression_AnimalMultiplier, "Regression_AnimalMultiplier", 2.0f);
+
+            Scribe_Values.Look(ref Regression_PullupChange, "Regression_PullupChange", 6);
+            Scribe_Values.Look(ref Regression_DiaperChange, "Regression_DiaperChange", 9);
+            Scribe_Values.Look(ref Regression_DiaperChangeOthers, "Regression_DiaperChangeOthers", 13);
+
             Scribe_Values.Look(ref Regression_LevelMaskBySeverity, "Regression_LevelMaskBySeverity", 0.7f);
 
             if (Scribe.mode == LoadSaveMode.LoadingVars && settingVersion != CurrentSettingsVersion)
@@ -319,7 +330,7 @@ namespace ZealousInnocence
         public void DoRegression(Rect inRect)
         {
             list = new Listing_Standard();
-            list.ColumnWidth = (inRect.width - 40f);
+            list.ColumnWidth = (inRect.width - 40f) * 0.5f;
             list.Begin(inRect);
             list.GapLine(gabSize);
 
@@ -346,7 +357,25 @@ namespace ZealousInnocence
                 0f, 1f, 0.5f,
                 "SettingRessurectChanceHelp".Translate());
 
-            list.GapLine();
+            list.NewColumn();
+            list.ColumnWidth = (inRect.width - 40f) * 0.5f;
+
+            // --- Regression Healing / Decay ---
+            list.Label("SettingRegressionLearning".Translate(), -1f, tooltip: "SettingRegressionLearningHelp".Translate());
+
+            SliderInt(list, "SettingLearnChangePullups".Translate(), ref Regression_PullupChange,
+                3, 20, 6,
+                "SettingLearnChangePullupsHelp".Translate());
+
+            SliderInt(list, "SettingLearnChangeDiapers".Translate(), ref Regression_DiaperChange,
+                3, 20, 9,
+                "SettingLearnChangeDiapersHelp".Translate());
+
+            SliderInt(list, "SettingLearnChangeDiapers".Translate(), ref Regression_DiaperChangeOthers,
+                3, 20, 13,
+                "SettingLearnChangeDiapersHelp".Translate());
+
+            list.GapLine(gabSize);
 
             // --- Skill Masking ---
             list.Label("SettingSkillMasking".Translate(), -1f, tooltip: "SettingSkillMaskingHelp".Translate());
@@ -355,7 +384,7 @@ namespace ZealousInnocence
                 0f, 1f, 0.7f,
                 "SettingLevelMaskBySeverityHelp".Translate());
 
-
+            list.GapLine(gabSize);
             if (list.ButtonText("SettingResetDefaults".Translate()))
                 ResetRegressionToDefaults();
 
@@ -400,6 +429,7 @@ namespace ZealousInnocence
             SliderPct(list, "SettingMaxLeftWidthFrac".Translate(), ref maxLeftFrac, 0.40f, 0.80f, 0.58f,
                 "SettingMaxLeftWidthFracHelp".Translate());
 
+            list.GapLine(gabSize);
             if (list.ButtonText("SettingResetDefaults".Translate()))
                 ResetUiToDefaults();
 
@@ -549,6 +579,11 @@ this.row.CheckboxLabeled("dbh.PriorityIndoorCleaning".Translate(), ref Settings.
             Regression_ChildMultiplier = 1.0f;
             Regression_AnimalMultiplier = 2.0f;
             Regression_RessurectChance = 0.5f;
+
+            Regression_PullupChange = 6;
+            Regression_DiaperChange = 9;
+            Regression_DiaperChangeOthers = 13;
+
             Regression_LevelMaskBySeverity = 0.7f;
             
         }
