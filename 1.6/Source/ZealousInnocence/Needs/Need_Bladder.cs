@@ -171,6 +171,8 @@ namespace ZealousInnocence
 
         public static void Postfix(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result, Pawn __state)
         {
+            if (!Enabled) return;
+            
             if (nd == null || __instance == null) return;
 
             var pawn = __state ?? GetPawn(__instance);
