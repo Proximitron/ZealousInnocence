@@ -1,4 +1,4 @@
-﻿using DubsBadHygiene;
+using DubsBadHygiene;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -165,7 +165,6 @@ namespace ZealousInnocence
 
         public static void Prefix(Pawn_NeedsTracker __instance, NeedDef nd, ref Pawn __state)
         {
-            // Only capture pawn for debug logging if enabled
             if (!Enabled || nd == null || __instance == null) return;
             __state = GetPawn(__instance);
         }
@@ -175,11 +174,8 @@ namespace ZealousInnocence
             if (nd == null || __instance == null || __state == null) return;
 
             if (Bladder_RaidCaravanVisitor_Postfix(__instance, ref __result, nd)) return;
-            
-            // Try developmental stage gating
             if (Postfix_StageTracker(__instance, nd, ref __result)) return;
 
-            // DEBUG LOGGING ONLY - exit early if debug disabled
             if (!EnabledDetailed) return;
 
             // Get pawn for logging (reuse from Prefix if available)
@@ -192,29 +188,24 @@ namespace ZealousInnocence
         public static bool Postfix_StageTracker(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result)
         {
             if (__instance == null || nd == null) return false;
-            
-            // Check if this need has custom rules before getting pawn (optimization)
-            bool isBladderOrDiaper = nd.defName == "Bladder" || nd.defName == "Diaper";
-            if (!isBladderOrDiaper)
+            var pawn = GetPawn(__instance);
+            if (pawn == null) return false;
+
+            if(nd.defName == "Bladder" || nd.defName == "Diaper")
+            {
+                __result = pawn.canHaveBladder();
+            }
+            else
             {
                 var ext = nd.GetModExtension<DevStageExtension>();
                 if (ext == null) return false; // No custom rule → leave vanilla outcome.
-                
-                // Get pawn only when we know we have custom rules
-                var pawn = GetPawn(__instance);
-                if (pawn == null) return false;
-                
+
+                // Stage gating (mandatory now that vanilla filter is gone)
                 __result = ext.Allows(pawn);
-                if (Enabled) Log.Message($"[ZI]Postfix_StageTracker pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} StageTracker");
-                return true;
             }
-            
-            // Handle Bladder/Diaper
-            var bladderPawn = GetPawn(__instance);
-            if (bladderPawn == null) return false;
-            
-            __result = bladderPawn.canHaveBladder();
-            if (Enabled) Log.Message($"[ZI]Postfix_StageTracker pawn={bladderPawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} StageTracker");
+
+
+            if(Enabled) Log.Message($"[ZI]Postfix_StageTracker pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} StageTracker");
             return true;
         }
 
@@ -244,9 +235,8 @@ namespace ZealousInnocence
             // Early exit: Don't override if already allowed
             if (__result) return false;
 
-            // Early exit: Check setting before doing expensive operations
             var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
-            if (!settings.bladderForRaidCaravanVisitors) return false;
+            var debug = settings.debuggingCapacities;
 
             if (!settings.bladderForRaidCaravanVisitors) return false; // Deactivated by setting. We keep it untouched!
 
@@ -269,17 +259,16 @@ namespace ZealousInnocence
             var bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderRace : DubDef.Bladder.Exemptions.RaceDefs;
             if (bs?.Contains(pawn.def?.defName) == true) return false;
 
-            // Hediff exemption check - inlined for performance
             bs = DubsBadHygieneMod.Settings.OverrideNd ? DubsBadHygieneMod.Settings.BladderHediff : DubDef.Bladder.Exemptions.Hediffs;
 
             if (HasAnyHediffByDefName(pawn, bs, out var hitH)) return false;
             if (pawn.RaceProps?.EatsFood != true) return false;
             if (pawn.ageTracker?.CurLifeStage == LifeStageDefOf.HumanlikeBaby) return false;
 
-            // Override to allow bladder need
-            if (settings.debuggingCapacities) 
-                Log.Message($"[ZI]Patch_ForceBladderForGuests: Pawn {pawn.LabelShort} force true");
-            
+            // All vanilla preconditions (intelligence, dev stage, etc.) have already
+            // been applied in the original method. We’re explicitly overriding the
+            // remaining blockers (e.g. onlyIfCausedByHediff) for this one need.
+            if (debug) Log.Message($"[ZI]Patch_ForceBladderForGuests: Pawn {pawn.LabelShort} force true");
             __result = true;
             return true;
         }
@@ -418,5 +407,4 @@ namespace ZealousInnocence
     }
 
 }
-
 
