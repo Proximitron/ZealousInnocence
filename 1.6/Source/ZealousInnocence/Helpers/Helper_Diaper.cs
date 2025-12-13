@@ -813,6 +813,10 @@ namespace ZealousInnocence
                     {
                         return DiaperLikeCategory.Liked;
                     }
+                    else if (ideo.HasPrecept(PreceptDefOf.Diapers_Liked))
+                    {
+                        return DiaperLikeCategory.Diaper_Lover;
+                    }
                     else if (ideo.HasPrecept(PreceptDefOf.Diapers_Hated))
                     {
                         return DiaperLikeCategory.Disliked;
