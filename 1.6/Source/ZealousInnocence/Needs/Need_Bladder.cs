@@ -73,7 +73,7 @@ namespace ZealousInnocence
             if (pawn == null || pawn.Dead) return;
             if (!pawn.RaceProps.Humanlike) return;
 
-            if(pawn.needs?.learning != null && pawn.learning == null)
+            if (pawn.needs?.learning != null && pawn.learning == null)
             {
                 if (__state != null)
                 {
@@ -99,7 +99,7 @@ namespace ZealousInnocence
 
         public bool Allows(Pawn pawn)
         {
-            if(pawn == null || pawn.ageTracker == null) return false;
+            if (pawn == null || pawn.ageTracker == null) return false;
             if (pawn.RaceProps == null || !pawn.RaceProps.Humanlike) return false;
             if (pawn.RaceProps.intelligence != Intelligence.Humanlike) return false;
 
@@ -113,17 +113,17 @@ namespace ZealousInnocence
             {
                 age = pawn.getAgeStageMentalInt();
             }
-            else if(physicalStat)
+            else if (physicalStat)
             {
                 age = pawn.getAgeStageMentalInt();
             }
 
             // Babies and toddlers share the baby age stage. Toddler often handled seperatly by mod "Toddlers"
-            if(pawn.isBabyAtAge(age) || pawn.isToddlerAtAge(age))
+            if (pawn.isBabyAtAge(age) || pawn.isToddlerAtAge(age))
             {
                 return allowBaby;
             }
-            else if(pawn.isChildAtAge(age))
+            else if (pawn.isChildAtAge(age))
             {
                 return allowChild;
             }
@@ -191,7 +191,7 @@ namespace ZealousInnocence
             var pawn = GetPawn(__instance);
             if (pawn == null) return false;
 
-            if(nd.defName == "Bladder" || nd.defName == "Diaper")
+            if (nd.defName == "Bladder" || nd.defName == "Diaper")
             {
                 __result = pawn.canHaveBladder();
             }
@@ -205,7 +205,7 @@ namespace ZealousInnocence
             }
 
 
-            if(Enabled) Log.Message($"[ZI]Postfix_StageTracker pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} StageTracker");
+            if (Enabled) Log.Message($"[ZI]Postfix_StageTracker pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} StageTracker");
             return true;
         }
 
@@ -407,4 +407,3 @@ namespace ZealousInnocence
     }
 
 }
-
