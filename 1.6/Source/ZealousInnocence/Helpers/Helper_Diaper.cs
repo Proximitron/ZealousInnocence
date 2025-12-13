@@ -399,12 +399,12 @@ namespace ZealousInnocence
         public static bool acceptsDiaper(Pawn pawn)
         {
             var pref = getDiaperPreference(pawn);
-            return pref == DiaperLikeCategory.Toddler || pref == DiaperLikeCategory.Child || pref == DiaperLikeCategory.Liked || (pref != DiaperLikeCategory.Disliked && needsDiaper(pawn));
+            return pref == DiaperLikeCategory.Toddler || pref == DiaperLikeCategory.Child || pref == DiaperLikeCategory.Liked || (pref != DiaperLikeCategory.Disliked && needsDiaper(pawn)) || (pref == DiaperLikeCategory.Diaper_Lover);
         }
         public static bool prefersDiaper(Pawn pawn)
         {
             var pref = getDiaperPreference(pawn);
-            return pref == DiaperLikeCategory.Toddler || pref == DiaperLikeCategory.Liked || (needsDiaper(pawn) && pref != DiaperLikeCategory.Disliked);
+            return pref == DiaperLikeCategory.Toddler || pref == DiaperLikeCategory.Liked || (needsDiaper(pawn) && pref != DiaperLikeCategory.Disliked) || (pref == DiaperLikeCategory.Diaper_Lover);
         }
         public static bool needsDiaperNight(Pawn pawn)
         {
@@ -418,7 +418,7 @@ namespace ZealousInnocence
         public static bool acceptsDiaperNight(Pawn pawn)
         {
             var pref = getDiaperPreference(pawn);
-            return pref == DiaperLikeCategory.Toddler || pref == DiaperLikeCategory.Child || pref == DiaperLikeCategory.Liked || (pref != DiaperLikeCategory.Disliked && needsDiaperNight(pawn));
+            return pref == DiaperLikeCategory.Toddler || pref == DiaperLikeCategory.Child || pref == DiaperLikeCategory.Liked || (pref != DiaperLikeCategory.Disliked && needsDiaperNight(pawn)) || (pref == DiaperLikeCategory.Diaper_Lover);
         }
         public static bool canHaveBladder(this Pawn pawn)
         {
@@ -698,7 +698,7 @@ namespace ZealousInnocence
                 {
                     rating += 0.5f;
                 }
-                else if (preference == DiaperLikeCategory.Liked)
+                else if (preference == DiaperLikeCategory.Liked || preference == DiaperLikeCategory.Diaper_Lover)
                 {
                     rating += 10f;
                 }
@@ -713,7 +713,7 @@ namespace ZealousInnocence
             {
                 rating += 2.0f; // Underwear is default more likely to be worn
                 var preference = getDiaperPreference(pawn);
-                if (preference == DiaperLikeCategory.Liked)
+                if (preference == DiaperLikeCategory.Liked || preference == DiaperLikeCategory.Diaper_Lover)
                 {
                     rating -= 2f;
                 }
@@ -791,11 +791,15 @@ namespace ZealousInnocence
                 return DiaperLikeCategory.Neutral;
             }
 
-            if (pawn.story.traits.HasTrait(TraitDefOf.Potty_Rebel))
+            if (traits.HasTrait(TraitDefOf.Potty_Rebel))
             {
                 return DiaperLikeCategory.Liked;
             }
-            if (pawn.story.traits.HasTrait(TraitDefOf.Big_Boy))
+            if (traits.HasTrait(TraitDefOf.Diaper_Lover))
+            {
+                return DiaperLikeCategory.Diaper_Lover;
+            }
+            if (traits.HasTrait(TraitDefOf.Big_Boy))
             {
                 return DiaperLikeCategory.Disliked;
             }

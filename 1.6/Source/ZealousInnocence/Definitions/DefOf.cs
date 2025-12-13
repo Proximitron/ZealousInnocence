@@ -149,6 +149,7 @@ namespace ZealousInnocence
     {
         public static TraitDef Potty_Rebel;
         public static TraitDef Big_Boy;
+        public static TraitDef Diaper_Lover;
     }
     [DefOf]
     public class JobDefOf

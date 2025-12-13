@@ -19,5 +19,15 @@
         <description>{PAWN_nameDef} heavily dislikes diapers, reguardless of medical requirement.</description>
       </li>
     </degreeDatas>
-  </TraitDef>   
+  </TraitDef>
+  <TraitDef>
+    <defName>Diaper_Lover</defName>
+    <commonality>0.8</commonality>
+    <degreeDatas>
+      <li>
+        <label>Diaper Lover</label>
+        <description>{PAWN_nameDef} likes wearing diapers, regardless of medical requirement.</description>
+      </li>
+    </degreeDatas>
+  </TraitDef>
  </Defs>

@@ -720,8 +720,8 @@ namespace ZealousInnocence
             }
             else if (__instance.tags.Contains("Diaper"))
             {
-                __result = (Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn)) || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked;
-                if (debugging)  Log.Message($"[ZI]Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} physical age {pawn.ageTracker.AgeBiologicalYears}");
+                __result = (Helper_Diaper.needsDiaper(pawn) && Helper_Diaper.acceptsDiaper(pawn)) || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked || Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Diaper_Lover;
+                if (debugging)  Log.Message($"[ZI]Apparel DEBUG: Diaper {pawn.LabelShort} value {__result} based on needsDiaper {Helper_Diaper.needsDiaper(pawn)} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Liked} or cat {Helper_Diaper.getDiaperPreference(pawn) == DiaperLikeCategory.Diaper_Lover} physical age {pawn.ageTracker.AgeBiologicalYears}");
 
             }
             else if (__instance.tags.Contains("Underwear"))
