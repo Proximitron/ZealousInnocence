@@ -46,6 +46,20 @@ namespace ZealousInnocence
                             return;
                         }
                     }
+                    else if (liked == DiaperLikeCategory.Diaper_Lover)
+                    {
+                        var currDiapie = Helper_Diaper.getDiaper(pawn);
+                        if (currDiapie == null)
+                        {
+                            pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("HadToUseToilet"), null, null);
+                        }
+                        else
+                        {
+                            if (debugging)  Log.Message($"[ZI]JobGiver_UseToilet postfix null for {pawn.Name.ToStringShort}");
+                            __result = null;
+                            return;
+                        }
+                    }
                 }
                 else
                 {

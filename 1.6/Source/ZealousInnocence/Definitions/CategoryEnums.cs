@@ -20,7 +20,8 @@ namespace ZealousInnocence
         Liked,
         Disliked,
         Child,
-        Toddler
+        Toddler,
+        Diaper_Lover
     }
 
     [System.Flags]

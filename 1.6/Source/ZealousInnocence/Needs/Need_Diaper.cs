@@ -432,6 +432,14 @@ namespace ZealousInnocence
                         }
                         else Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Loved);
                         break;
+                    case DiaperLikeCategory.Diaper_Lover:
+                        if (!pawn.Awake())
+                        {
+                            if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Bedwetter_Loved);
+                            else Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Loved);
+                        }
+                        else Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Loved);
+                        break;
                     case DiaperLikeCategory.Disliked:
                         Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Hated);
                         break;
@@ -462,6 +470,9 @@ namespace ZealousInnocence
                         Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Default);
                         break;
                     case DiaperLikeCategory.Liked:
+                        Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Diaper_Loved);
+                        break;
+                    case DiaperLikeCategory.Diaper_Lover:
                         Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Diaper_Loved);
                         break;
                     case DiaperLikeCategory.Disliked:
@@ -666,6 +677,14 @@ namespace ZealousInnocence
                         {
                             startAccident(pee);
                             if (debugging) Log.Message("doing trait (Potty_Rebel) for " + pawn.Name);
+                        }
+                        else if (pawn.story.traits.HasTrait(TraitDefOf.Diaper_Lover))
+                        {
+                            if (currProtection != null && Helper_Diaper.isDiaper(currProtection))
+                            {
+                                startAccident(pee);
+                                if (debugging) Log.Message("doing trait (Diaper_Lover) accident in diaper for " + pawn.Name);
+                            }
                         }
                         else
                         {

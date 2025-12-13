@@ -23,6 +23,17 @@
 		</associatedMemes>
 	</PreceptDef>
 	<PreceptDef>
+		<defName>Diapers_Liked</defName>
+		<issue>Diapers</issue>
+		<label>liked</label>
+		<description>Diapers are always preferable to using toilets.</description>
+		<impact>Medium</impact>
+		<defaultSelectionWeight>0</defaultSelectionWeight>
+		<associatedMemes>
+			<li>Babs</li>
+		</associatedMemes>
+	</PreceptDef>
+	<PreceptDef>
 		<defName>Diapers_Neutral</defName>
 		<issue>Diapers</issue>
 		<label>neutral</label>

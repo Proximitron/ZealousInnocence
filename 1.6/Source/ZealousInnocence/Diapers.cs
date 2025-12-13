@@ -139,7 +139,15 @@ namespace ZealousInnocence
                     }
                 }
 
-                int targetTrait = p.story.traits.HasTrait(TraitDefOf.Potty_Rebel) ? 4 : 0;
+                int targetTrait = 0;
+                if (p.story.traits.HasTrait(TraitDefOf.Diaper_Lover))
+                {
+                    targetTrait = 8;
+                }
+                else if (p.story.traits.HasTrait(TraitDefOf.Potty_Rebel))
+                {
+                    targetTrait = 4;
+                }
 
                 if (stinkLevel <= 0.0f)
                 {

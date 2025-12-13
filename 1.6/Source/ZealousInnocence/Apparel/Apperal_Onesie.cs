@@ -58,11 +58,15 @@ namespace ZealousInnocence
                 return OnesieLikeCategory.Neutral;
             }
 
-            if (pawn.story.traits.HasTrait(TraitDefOf.Potty_Rebel))
+            if (traits.HasTrait(TraitDefOf.Potty_Rebel))
             {
                 return OnesieLikeCategory.Liked;
             }
-            if (pawn.story.traits.HasTrait(TraitDefOf.Big_Boy))
+            if (traits.HasTrait(TraitDefOf.Diaper_Lover))
+            {
+                return OnesieLikeCategory.Liked;
+            }
+            if (traits.HasTrait(TraitDefOf.Big_Boy))
             {
                 return OnesieLikeCategory.Disliked;
             }

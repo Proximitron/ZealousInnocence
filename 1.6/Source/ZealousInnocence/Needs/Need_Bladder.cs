@@ -1,4 +1,4 @@
-﻿using DubsBadHygiene;
+using DubsBadHygiene;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -407,5 +407,4 @@ namespace ZealousInnocence
     }
 
 }
-
 

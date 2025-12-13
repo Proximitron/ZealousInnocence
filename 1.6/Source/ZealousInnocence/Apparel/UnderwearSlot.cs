@@ -294,6 +294,14 @@ namespace ZealousInnocence
             Underwear_Not_Worn,
             Underwear_Worn,
             Underwear_Worn_Non_Adult,
+
+            // Diaper lover's thoughts
+            DL_Loved_None,
+            DL_Loved_Clean,
+            DL_Loved_Used,
+            DL_Loved_Spent,
+            DL_Loved_Trashed,
+
         }
 
         [DefOf]
@@ -351,6 +359,8 @@ namespace ZealousInnocence
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Clean);
                             case DiaperLikeCategory.Disliked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Hated_Clean);
+                            case DiaperLikeCategory.Diaper_Lover:
+                                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.DL_Loved_Clean);
                             default:
                                 if (diaperRequired)
                                 {
@@ -381,6 +391,8 @@ namespace ZealousInnocence
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Used);
                             case DiaperLikeCategory.Disliked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Hated_AnyOther);
+                            case DiaperLikeCategory.Diaper_Lover:
+                                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.DL_Loved_Used);
                             default:
                                 if (diaperRequired)
                                 {
@@ -411,6 +423,8 @@ namespace ZealousInnocence
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Spent);
                             case DiaperLikeCategory.Disliked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Hated_AnyOther);
+                            case DiaperLikeCategory.Diaper_Lover:
+                                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.DL_Loved_Spent);
                             default:
                                 if (diaperRequired)
                                 {
@@ -441,6 +455,8 @@ namespace ZealousInnocence
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_Trashed);
                             case DiaperLikeCategory.Disliked:
                                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Hated_AnyOther);
+                            case DiaperLikeCategory.Diaper_Lover:
+                                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.DL_Loved_Trashed);
                             default:
                                 if (diaperRequired)
                                 {
@@ -481,6 +497,10 @@ namespace ZealousInnocence
             if (preference == DiaperLikeCategory.Liked)
             {
                 return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.Loved_None);
+            }
+            else if (preference == DiaperLikeCategory.Diaper_Lover)
+            {
+                return ThoughtState.ActiveAtStage((int)DiaperSituationCategoryThought.DL_Loved_None);
             }
             else if (preference != DiaperLikeCategory.Disliked)
             {

@@ -229,6 +229,34 @@
 				<description>Yay! I am wearing undies for bigs!</description>
 				<baseMoodEffect>2</baseMoodEffect>
 			</li>
+
+			<!-- Thoughts of diaper lover, similar to base liked diaper but more adult focused-->
+			<li>
+				<label>No diaper</label>
+				<description>Going on and about without diapers sucks</description>
+				<baseMoodEffect>-3</baseMoodEffect>
+			</li>
+			<li>
+				<label>Padded up</label>
+				<description>I like my diapers, they're so soft, comfortable and reliable.</description>
+				<baseMoodEffect>2</baseMoodEffect>
+			</li>
+			<li>
+				<label>Wet</label>
+				<description>My diaper is a bit damp, just the way I like it.</description>
+				<baseMoodEffect>3</baseMoodEffect>
+			</li>
+			<li>
+				<label>Full</label>
+				<description>My diaper is starting to stink. Maybe I should change?</description>
+				<baseMoodEffect>1</baseMoodEffect>
+			</li>
+			<li>
+				<label>Sagging</label>
+				<description>My diaper is about to leak. I need to change now!</description>
+				<baseMoodEffect>-1</baseMoodEffect>
+			</li>
+
 		</stages>
 	</ThoughtDef>
 	
@@ -238,6 +266,7 @@
     <workerClass>ZealousInnocence.ThoughtWorker_Stink</workerClass>
     <validWhileDespawned>true</validWhileDespawned>
     <stages>
+			<!-- Default behaviour for non-diaper wearers -->
 			<li>
 				<label>Funny smell</label>
 				<description>Do you smell that? Who was it?</description>
@@ -259,6 +288,7 @@
 				<baseMoodEffect>-7</baseMoodEffect>
 			</li>
 			
+			<!-- Thoughts of babs -->
 			<li>
 				<label>Huh?</label>
 				<description>Was that me?</description>
@@ -278,6 +308,28 @@
 				<label>Change, now!</label>
 				<description>Ew! Someone needs changies, now!</description>
 				<baseMoodEffect>-1</baseMoodEffect>
+			</li>
+
+			<!-- Thoughts of diaper wearers -->
+			<li>
+				<label>Funny smell</label>
+				<description>Someone is wearing an used diaper</description>
+				<baseMoodEffect>0</baseMoodEffect>
+			</li>
+			<li>
+				<label>Someone stinks</label>
+				<description>Who smells? Someone needs a change.</description>
+				<baseMoodEffect>-1</baseMoodEffect>
+			</li>
+			<li>
+				<label>Serious stink!</label>
+				<description>It smells pretty bad, we need to do some changes.</description>
+				<baseMoodEffect>-2</baseMoodEffect>
+			</li>
+			<li>
+				<label>Really stinky!</label>
+				<description>It smells terrible! Is anyone getting changes at all?</description>
+				<baseMoodEffect>-4</baseMoodEffect>
 			</li>
     </stages>
 	</ThoughtDef>
@@ -338,6 +390,25 @@
 				<label>Potty monster</label>
 				<description>I had to use a toilet, I hate the toilets!</description>
 				<baseMoodEffect>-5</baseMoodEffect>
+			</li>
+		</stages>
+		<nullifyingPrecepts>
+      <li MayRequire="Ludeon.RimWorld.Ideology">Diapers_Hated</li>
+    </nullifyingPrecepts>
+		<showBubble>true</showBubble>
+	</ThoughtDef>
+	
+	<ThoughtDef>
+		<defName>HadToUseToilet</defName>
+		<durationDays>1.5</durationDays>
+		<stackLimit>3</stackLimit>
+		<developmentalStageFilter>Adult</developmentalStageFilter>
+    <socialTargetDevelopmentalStageFilter>Adult</socialTargetDevelopmentalStageFilter>
+		<stages>
+			<li>
+				<label>Cold toilet</label>
+				<description>I had to use a toilet, I much rather have diapers</description>
+				<baseMoodEffect>-3</baseMoodEffect>
 			</li>
 		</stages>
 		<nullifyingPrecepts>
