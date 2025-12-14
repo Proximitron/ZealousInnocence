@@ -82,6 +82,11 @@ namespace ZealousInnocence
                 postfix: new HarmonyMethod(typeof(Patch_ShouldHaveNeed), nameof(Patch_ShouldHaveNeed.Postfix)),
                 info: "Pawn_NeedsTracker.ShouldHaveNeed"
             );*/
+            patchFunctionPrefix(
+                original: AccessTools.Method(typeof(Pawn_NeedsTracker), "ShouldHaveNeed", new[] { typeof(NeedDef) }),
+                prefix: new HarmonyMethod(typeof(Patch_ShouldHaveNeed_Debug), nameof(Patch_ShouldHaveNeed_Debug.Prefix)),
+                info: "Pawn_NeedsTracker.ShouldHaveNeed (DubsBadHygiene conflict solved)"
+            );
             patchFunctionPostfix(
                 original: AccessTools.Method(typeof(Pawn_NeedsTracker), "ShouldHaveNeed", new[] { typeof(NeedDef) }),
                 postfix: new HarmonyMethod(typeof(Patch_ShouldHaveNeed_Debug), nameof(Patch_ShouldHaveNeed_Debug.Postfix)),
@@ -567,11 +572,6 @@ namespace ZealousInnocence
         {
             if (ModsConfig.IdeologyActive)
             {
-                /*if (!LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().formerAdultsCanHaveIdeoRoles || p.records.GetValue(RecordDefOf.ResearchPointsResearched) == 0)
-                {
-                    return true;
-                }*/
-
                 if (!Hediff_MentalRegression.CanHaveRole(p)) return true;
 
                 foreach (RoleRequirement roleRequirement in __instance.def.roleRequirements)

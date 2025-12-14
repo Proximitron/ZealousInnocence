@@ -4,6 +4,7 @@ using RimWorld;
 using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -158,38 +159,29 @@ namespace ZealousInnocence
             }
         }
 
-        private static Pawn GetPawn(Pawn_NeedsTracker tracker)
-        {
-            return AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>(tracker, "pawn");
-        }
-
         public static void Prefix(Pawn_NeedsTracker __instance, NeedDef nd, ref Pawn __state)
         {
             if (!Enabled || nd == null || __instance == null) return;
-            __state = GetPawn(__instance);
+            __state = AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>(__instance, "pawn");
         }
 
         public static void Postfix(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result, Pawn __state)
         {
             if (nd == null || __instance == null || __state == null) return;
 
-            if (Bladder_RaidCaravanVisitor_Postfix(__instance, ref __result, nd)) return;
-            if (Postfix_StageTracker(__instance, nd, ref __result)) return;
+            var pawn = __state;
+
+            if (Bladder_RaidCaravanVisitor_Postfix(__instance, ref __result, nd, pawn)) return;
+            if (Postfix_StageTracker(__instance, nd, ref __result, pawn)) return;
 
             if (!EnabledDetailed) return;
-
-            // Get pawn for logging (reuse from Prefix if available)
-            var pawn = __state ?? GetPawn(__instance);
-            if (pawn == null) return;
 
             string reason = ExplainDecision(pawn, nd, __result);
             Log.Message($"[ZI]Postfix pawn={pawn.LabelShortCap} need={nd.defName} -> {(__result ? "TRUE" : "FALSE")} {reason}");
         }
-        public static bool Postfix_StageTracker(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result)
+        public static bool Postfix_StageTracker(Pawn_NeedsTracker __instance, NeedDef nd, ref bool __result, Pawn pawn)
         {
             if (__instance == null || nd == null) return false;
-            var pawn = GetPawn(__instance);
-            if (pawn == null) return false;
 
             if (nd.defName == "Bladder" || nd.defName == "Diaper")
             {
@@ -226,7 +218,7 @@ namespace ZealousInnocence
             return false;
         }
 
-        public static bool Bladder_RaidCaravanVisitor_Postfix(Pawn_NeedsTracker __instance, ref bool __result, NeedDef nd)
+        public static bool Bladder_RaidCaravanVisitor_Postfix(Pawn_NeedsTracker __instance, ref bool __result, NeedDef nd, Pawn pawn)
         {
             // Early exit: Only care about Bladder/Diaper needs
             if (nd == null || (nd.defName != "Bladder" && nd.defName != "Diaper"))
@@ -244,8 +236,8 @@ namespace ZealousInnocence
             if (!DubsBadHygieneMod.Settings.BladderNeed) return false;
             if (!DubsBadHygieneMod.Settings.GuestsGetBladder) return false;
 
-            var pawn = GetPawn(__instance);
-            if (pawn == null || pawn.Dead)
+
+            if (pawn.Dead)
                 return false; // let vanilla decide / avoid NRE during load
 
             // We only extend to humanlike visitors; animals/raiders unchanged.

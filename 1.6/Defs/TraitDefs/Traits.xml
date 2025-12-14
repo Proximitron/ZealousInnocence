@@ -2,7 +2,7 @@
 <Defs>
   <TraitDef>
     <defName>Potty_Rebel</defName>
-    <commonality>0.7</commonality>
+    <commonality>0.4</commonality>
     <degreeDatas>
       <li>
         <label>Potty rebel</label>
@@ -16,13 +16,13 @@
     <degreeDatas>
       <li>
         <label>Self concious</label>
-        <description>{PAWN_nameDef} heavily dislikes diapers, reguardless of medical requirement.</description>
+        <description>{PAWN_nameDef} heavily dislikes diapers, regardless of medical requirement.</description>
       </li>
     </degreeDatas>
   </TraitDef>
   <TraitDef>
     <defName>Diaper_Lover</defName>
-    <commonality>0.8</commonality>
+    <commonality>0.5</commonality>
     <degreeDatas>
       <li>
         <label>Diaper Lover</label>

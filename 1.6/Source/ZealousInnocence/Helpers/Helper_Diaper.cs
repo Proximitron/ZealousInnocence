@@ -714,7 +714,7 @@ namespace ZealousInnocence
             {
                 rating += 2.0f; // Underwear is default more likely to be worn
                 var preference = getDiaperPreference(pawn);
-                if (preference == DiaperLikeCategory.Liked || preference == DiaperLikeCategory.Diaper_Lover)
+                if (preference == DiaperLikeCategory.Liked)
                 {
                     rating -= 2f;
                 }

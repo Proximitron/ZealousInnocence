@@ -761,9 +761,6 @@ namespace ZealousInnocence
             }
         }
 
-
-
-
         public int LastMentalYearsInt
         {
             get
@@ -802,22 +799,22 @@ namespace ZealousInnocence
         }
         public static bool WasEverAdult(Pawn p)
         {
-            if (p.ageTracker.AgeBiologicalYears >= 13) return true;
+            if (p.ageTracker.AgeBiologicalYears >= p.adultMinAge()) return true;
             var mentalHediff = HediffByPawn(p);
             if (mentalHediff == null)
             {
                 var physicalHediff = Hediff_PhysicalRegression.HediffByPawn(p);
                 if(physicalHediff == null) return false;
-                return physicalHediff.BaseAgeYearInt >= 13;
+                return physicalHediff.BaseAgeYearInt >= p.adultMinAge();
             }
-            return mentalHediff.BaseAgeYearInt >= 13;
+            return mentalHediff.BaseAgeYearInt >= p.adultMinAge();
         }
 
         public static bool CanHaveRole(Pawn p)
         {
             if (!ModsConfig.IdeologyActive) return false;
-            var age = Helper_Regression.getAgeStageMentalInt(p);
-            return age >= 3;
+            var age = Helper_Regression.getAgeStagePhysicalMentalMin(p);
+            return age >= p.childMinAge();
         }
 
 
