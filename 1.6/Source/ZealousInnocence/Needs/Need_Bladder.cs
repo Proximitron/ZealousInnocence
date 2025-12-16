@@ -161,7 +161,7 @@ namespace ZealousInnocence
 
         public static void Prefix(Pawn_NeedsTracker __instance, NeedDef nd, ref Pawn __state)
         {
-            if (!Enabled || nd == null || __instance == null) return;
+            if (nd == null || __instance == null) return;
             __state = AccessTools.FieldRefAccess<Pawn_NeedsTracker, Pawn>(__instance, "pawn");
         }
 
