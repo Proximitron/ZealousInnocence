@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<!-- LordJob_RegressedPlayTime Playing -->
+	<LordJobRegressedPlayAround>和某人玩耍</LordJobRegressedPlayAround>
+	<MessagePawnRegressed>{0} 获得了退行！ 所有脑部损伤已经被治疗, 但是他们需要更多的帮助和注意以恢复能力和心理年龄。</MessagePawnRegressed>
+	<LetterDiaperRash>{0} 受 {1} 折磨，这是因为其一直带着尿布。 {PAWN_pronoun} 需要一些婴儿油和痱子粉。</LetterDiaperRash>
+	
+	<!-- New Translations for 1.5 -->
+	<MessagePawnResurrectedFailed>{0} 不能被复活！</MessagePawnResurrectedFailed>
+	
+	<!-- Short words of states and propabilities -->
+	<PhraseBladderStrength>膀胱强度</PhraseBladderStrength>
+	<PhraseAge>年龄</PhraseAge>
+	<PhraseDaytimeAccidents>白天的事件</PhraseDaytimeAccidents>
+	<PhraseBedwetting>尿床</PhraseBedwetting>
+	<PhrasePantsWetting>拉湿的裤子</PhrasePantsWetting>
+	<PhrasePantsSoiling>臭烘烘的裤子</PhrasePantsSoiling>
+	<PhraseDiaperWetting>拉湿的 {0}</PhraseDiaperWetting>
+	<PhraseDiaperSoiling>臭烘烘的 {0}</PhraseDiaperSoiling>
+	<PhraseUnderwearWetting>拉湿的 {0}</PhraseUnderwearWetting>
+	<PhraseUnderwearSoiling>臭烘烘的 {0}</PhraseUnderwearSoiling>
+	<StateSleeping>睡觉</StateSleeping>
+	<StateNeedsDiapers>需要尿布</StateNeedsDiapers>
+	<StateNeedsPullups>需要拉拉裤</StateNeedsPullups>
+	<StateWordLow>低</StateWordLow>
+	<StateWordMedium>中</StateWordMedium>
+	<StateWordHigh>高</StateWordHigh>
+	<StateWordVeryHigh>极高</StateWordVeryHigh>
+	
+	<!-- Descriptions why the pawn is now allowed to use the potty -->
+	<ShortReasonNotUnderstand>还不知道怎么用</ShortReasonNotUnderstand>
+	<ShortReasonIsTooSmall>太小了，没法自己大便</ShortReasonIsTooSmall>
+	<ShortReasonNotComply>不想用这个</ShortReasonNotComply>
+	<ShortReasonWrongMentalState>不在适当精神状态</ShortReasonWrongMentalState>
+	<ShortReasonNeedRemoveDiaper>需要先换掉 {PAWN_possessive} 的尿布</ShortReasonNeedRemoveDiaper>	
+	<ShortReasonCantChangeDiaper>不能换掉 {PAWN_possessive} 自己的尿布</ShortReasonCantChangeDiaper>
+	<ShortReasonCantChangePullupOrUnderwearSelf>不能换掉 {PAWN_possessive} 自己的内衣尿布</ShortReasonCantChangePullupOrUnderwearSelf>
+	<ShortReasonCantChangeDiaperOthers>不能换掉 {PAWN_possessive} 其他人的尿布</ShortReasonCantChangeDiaperOthers>
+	
+	<ShortReasonForcedInDiaper>强制穿上尿布</ShortReasonForcedInDiaper>
+	
+	<StatPartPhysicalAgeDescriptor>生物年龄: {0}} 岁</StatPartPhysicalAgeDescriptor>
+	<!-- Description why the pawn is not affected by its physical age at the moment -->
+	<ShortReasonPhysicalAgeNoEffect>生物年龄对认知的影响并不重要。</ShortReasonPhysicalAgeNoEffect>
+	
+	<ShortCapReasonCantRemove>无法更换 {0}</ShortCapReasonCantRemove>
+	
+	<LetterResurrectStart>{PAWN_labelShort} 的身体开始活跃。</LetterResurrectStart>
+	<LetterLabelResurrectStart>重生？</LetterLabelResurrectStart>
+
+	<LetterResurrectMove>{PAWN_labelShort} 的身体能够再次运动。</LetterResurrectMove>
+	<LetterLabelResurrectMove>重生？！</LetterLabelResurrectMove>
+</LanguageData>

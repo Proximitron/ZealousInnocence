@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<FountainOfYouthCantActivate>无法 {0} 涌流</FountainOfYouthCantActivate>
+	<FountainOfYouthInvestigate>{PAWN_labelShort} 将要去研究这一诡异的泉水。</FountainOfYouthInvestigate>
+	<FountainOfYouthWalkAway>可能最好离泉水远一点。</FountainOfYouthWalkAway>
+	<FountainOfYouthActivateConfirmationText>诡异泉水的活动将引发不可预测的危险。\n\n至少研究泉水的人将被其效果所影响。\n\n 你确定要这么干吗？</FountainOfYouthActivateConfirmationText>
+	<FountainOfYouthGenerationMethod_Disabled>青春之泉不可用</FountainOfYouthGenerationMethod_Disabled>
+	<FountainOfYouthGenerationMethod_NearColonists>青春之泉在靠近殖民者的地方出现了</FountainOfYouthGenerationMethod_NearColonists>
+	
+	<FountainOfYouthViewResearch>查看退行研究</FountainOfYouthViewResearch>
+</LanguageData>
