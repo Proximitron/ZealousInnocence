@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+	<SettingRegressionFeatures>退行功能</SettingRegressionFeatures>
+	
+  <!-- Regression Healing / Decay -->
+  <SettingRegressionHealing>退行恢复设置</SettingRegressionHealing>
+  <SettingRegressionHealingHelp>控制退行严重度自然恢复的速度。</SettingRegressionHealingHelp>
+
+  <SettingBaseRecovery>基础恢复倍率</SettingBaseRecovery>
+  <SettingBaseRecoveryHelp>严重度恢复量乘以该状态自身的自然恢复速度。100% 为正常恢复，0% 为不恢复，200% 为双倍恢复速度。</SettingBaseRecoveryHelp>
+
+  <SettingRestingMultiplier>休息倍率</SettingRestingMultiplier>
+  <SettingRestingMultiplierHelp>角色躺床休息时的恢复速度倍率。</SettingRestingMultiplierHelp>
+
+  <SettingChildMultiplier>儿童倍率</SettingChildMultiplier>
+  <SettingChildMultiplierHelp>未成年角色的恢复速度倍率。</SettingChildMultiplierHelp>
+
+  <SettingAnimalMultiplier>动物倍率</SettingAnimalMultiplier>
+  <SettingAnimalMultiplierHelp>动物通常寿命更短，因此它们的生命周期应相对人类更快。</SettingAnimalMultiplierHelp>
+
+  <SettingRessurectChance>复活概率</SettingRessurectChance>
+  <SettingRessurectChanceHelp>当退行严重度处于 149% 到 150% 之间时，角色会被复活的概率。如果你用退行武器防御袭击，这会显著影响随机复活发生的频率。</SettingRessurectChanceHelp>
+	
+	<!-- Regression Learning -->
+  <SettingRegressionLearning>退行学习设置</SettingRegressionLearning>
+  <SettingRegressionLearningHelp>控制角色会在什么年龄学会并掌握特定事情。</SettingRegressionLearningHelp>
+
+  <SettingLearnChangePullups>学会：更换拉拉裤</SettingLearnChangePullups>
+  <SettingLearnChangePullupsHelp>角色通常会在什么年龄学会自己更换拉拉裤或内裤。</SettingLearnChangePullupsHelp>
+	
+	<SettingLearnChangeDiapers>学会：更换尿布</SettingLearnChangeDiapers>
+  <SettingLearnChangeDiapersHelp>角色通常会在什么年龄学会自己更换尿布。</SettingLearnChangeDiapersHelp>
+	
+	<SettingLearnChangeDiapersOthers>学会：为他人更换</SettingLearnChangeDiapersOthers>
+  <SettingLearnChangeDiapersOthersHelp>角色通常会在什么年龄学会为其他角色更换尿布。</SettingLearnChangeDiapersOthersHelp>
+	
+  <!-- Skill Masking -->
+  <SettingSkillMasking>技能遮蔽设置</SettingSkillMasking>
+  <SettingSkillMaskingHelp>控制退行对可见技能等级的压制强度。</SettingSkillMaskingHelp>
+
+  <SettingLevelMaskBySeverity>满严重度时被遮蔽的等级</SettingLevelMaskBySeverity>
+  <SettingLevelMaskBySeverityHelp>当严重度达到 100% 时，已获得技能等级中有多少百分比会暂时不可用。</SettingLevelMaskBySeverityHelp>
+
+  <SettingResetDefaults>恢复默认值</SettingResetDefaults>
+	
+	
+	<!-- Toggles -->
+  <SettingEnableTwoUp>启用双项并排布局</SettingEnableTwoUp>
+  <SettingEnableTwoUpHelp>当宽度足够时，将两行内容并排显示。</SettingEnableTwoUpHelp>
+
+  <SettingSnapToUiScale>贴合 UI 缩放</SettingSnapToUiScale>
+  <SettingSnapToUiScaleHelp>像原版 Label() 一样让矩形对齐 UI 缩放，避免在非整数缩放下文字发虚。</SettingSnapToUiScaleHelp>
+
+  <SettingTinyFontFallback>允许回退到 Tiny 字体</SettingTinyFontFallback>
+  <SettingTinyFontFallbackHelp>当能减少高度时，允许右侧标签切换为 Tiny 字体。</SettingTinyFontFallbackHelp>
+
+  <SettingEnableTwoColRight>允许右侧文字分两列</SettingEnableTwoColRight>
+  <SettingEnableTwoColRightHelp>将较长的右侧文本拆分为两列较窄文本。</SettingEnableTwoColRightHelp>
+
+  <!-- Thresholds -->
+  <SettingMinTwoUpCellWidth>双项布局最小单元宽度</SettingMinTwoUpCellWidth>
+  <SettingMinTwoUpCellWidthHelp>尝试双项并排布局时，每个半宽单元所需的最小宽度。</SettingMinTwoUpCellWidthHelp>
+
+  <SettingFullWidthHeightGate>全宽显示高度阈值</SettingFullWidthHeightGate>
+  <SettingFullWidthHeightGateHelp>如果半宽单元高度会超过此值，则改为全宽显示。</SettingFullWidthHeightGateHelp>
+
+  <SettingTwoColTriggerHeight>双列触发高度</SettingTwoColTriggerHeight>
+  <SettingTwoColTriggerHeightHelp>如果右侧文本换行后的高度超过此值，则使用内部双列布局。</SettingTwoColTriggerHeightHelp>
+
+  <SettingTwoColMinWidth>双列最小宽度</SettingTwoColMinWidth>
+  <SettingTwoColMinWidthHelp>右侧区域至少要达到此宽度，才允许拆分为两列。</SettingTwoColMinWidthHelp>
+
+  <!-- Spacing -->
+  <SettingPairGap>成对单元间距</SettingPairGap>
+  <SettingPairGapHelp>双项并排布局中相邻单元之间的间距。</SettingPairGapHelp>
+
+  <SettingPaddingX>水平内边距</SettingPaddingX>
+  <SettingPaddingXHelp>每个单元内部的水平留白。</SettingPaddingXHelp>
+
+  <SettingGapInside>内部间距（左到右）</SettingGapInside>
+  <SettingGapInsideHelp>单元内部左侧文本区与右侧文本区之间的间距。</SettingGapInsideHelp>
+
+  <SettingTwoColGap>双列间距</SettingTwoColGap>
+  <SettingTwoColGapHelp>右侧文本拆分为两列时，两列之间的间距。</SettingTwoColGapHelp>
+
+  <SettingRowMinHeight>行最小高度</SettingRowMinHeight>
+  <SettingRowMinHeightHelp>内容行允许的最小高度。</SettingRowMinHeightHelp>
+
+  <SettingExtraRowSpacing>额外行间距</SettingExtraRowSpacing>
+  <SettingExtraRowSpacingHelp>每完成一整行（或一对）后增加额外的垂直间距。</SettingExtraRowSpacingHelp>
+
+  <!-- Proportions -->
+  <SettingMaxLeftWidthFrac>左侧最大宽度占比</SettingMaxLeftWidthFrac>
+  <SettingMaxLeftWidthFracHelp>左侧标签宽度占内部内容区域的最大比例。</SettingMaxLeftWidthFracHelp>
+	
+	
+	<SettingReduceAge>降低年龄</SettingReduceAge>
+	<SettingReduceAgeHelp>勾选后，转生仪式会把角色的生理年龄倒退到儿童阶段；否则只会让角色的心智退化。</SettingReduceAgeHelp>
+	
+	<SettingRitualAgeResult>仪式目标年龄</SettingRitualAgeResult>
+	<SettingRitualAgeResultHelp>转生仪式会把角色降低到的目标年龄。仅在同时勾选“降低年龄”时生效。</SettingRitualAgeResultHelp>
+	
+	<SettingNotWithForeverYoung>安装“ForeverYoung”后将无法生效！</SettingNotWithForeverYoung>
+	
+	<SettingExtraGrowthMoments>额外成长时刻</SettingExtraGrowthMoments>
+	<SettingExtraGrowthMomentsHelp>关闭时，曾经是成人的角色不会在 7/10/13 岁获得额外成长时刻；开启后，成长时刻将照常运作。</SettingExtraGrowthMomentsHelp>
+	
+	<SettingIdeologyRoles>意识形态职位</SettingIdeologyRoles>
+	<SettingIdeologyRolesHelp>允许曾经是成人的角色在其意识形态中担任职位。</SettingIdeologyRolesHelp>
+
+	<SettingLearningNeed>学习需求</SettingLearningNeed>
+	<SettingLearningNeedHelp>控制角色在被退行为儿童后是否拥有学习需求。许多儿童活动都依赖这个需求；没有它，很多孩子气的行为都不会发生。</SettingLearningNeedHelp>
+	
+	<SettingRequiresRestart>需要重新加载/重启</SettingRequiresRestart>
+	
+	<SettingEnableBladderForRaidVisitorCaravans>袭击者/访客/商队启用膀胱需求</SettingEnableBladderForRaidVisitorCaravans>
+	<SettingEnableBladderForRaidVisitorCaravansHelp>为更多敌对或友好的访客启用膀胱需求。这样一来，商队成员也会像找餐桌吃饭一样，尝试前往你基地里的厕所。</SettingEnableBladderForRaidVisitorCaravansHelp>
+	
+	<SettingDynamicGenetics>动态基因</SettingDynamicGenetics>
+	<SettingDynamicGeneticsHelp>为部分新生成的角色加入随机的膀胱相关遗传特性，例如小膀胱、大膀胱或尿床倾向。</SettingDynamicGeneticsHelp>
+	
+	<SettingAdultBedwetterChance>成人尿床概率</SettingAdultBedwetterChance>
+	<SettingAdultBedwetterChanceHelp>有多少成年人会把尿床习惯延续到成年。基础值为 {CHANCE}%。</SettingAdultBedwetterChanceHelp>
+	
+	<SettingBladderControlFactor>膀胱控制系数</SettingBladderControlFactor>
+	<SettingBladderControlFactorHelp>控制力越低，整体越容易发生失禁事故。此修正会在所有其他计算之后应用。基础值为 {CHANCE}%。</SettingBladderControlFactorHelp>
+	
+	<SettingNighttimeControlFactor>夜间控制系数</SettingNighttimeControlFactor>
+	<SettingNighttimeControlFactorHelp>控制力越低，夜间越容易发生失禁事故。此修正会在所有其他计算之后应用。基础值为 {CHANCE}%。</SettingNighttimeControlFactorHelp>
+	
+	<SettingNeedDiapersOnBladderControl>白天接受尿布的控制阈值</SettingNeedDiapersOnBladderControl>
+	<SettingNeedDiapersOnBladderControlHelp>决定角色在白天膀胱控制力低到什么程度时，会自动接受自己需要穿尿布。基础值为 {CHANCE}%。</SettingNeedDiapersOnBladderControlHelp>
+	
+	<SettingNeedPullupsOnBladderControl>夜间接受拉拉裤的控制阈值</SettingNeedPullupsOnBladderControl>
+	<SettingNeedPullupsOnBladderControlHelp>决定角色在夜间膀胱控制力低到什么程度时，会自动接受自己需要夜用拉拉裤。此修正会在所有其他计算之后应用。基础值为 {CHANCE}%。</SettingNeedPullupsOnBladderControlHelp>
+	
+	<SettingUseBedPan>使用便盆</SettingUseBedPan>
+	<SettingUseBedPanHelp>为无法下床、但仍具备足够膀胱控制力的角色启用便盆。</SettingUseBedPanHelp>
+	
+	<SettingActivateFaeces>启用排便内容</SettingActivateFaeces>
+	<SettingActivateFaecesHelp>启用排便相关文本、音效以及粪便在世界中的生成。除此之外没有额外玩法改动。</SettingActivateFaecesHelp>
+	
+	<SettingBladderRelieveAmount>膀胱排空量</SettingBladderRelieveAmount>
+	<SettingBladderRelieveAmountHelp>当角色尿在或拉在裤子里时，每个需求间隔（2.5 秒）从膀胱中减少的数值。厕所使用有单独规则。基础值为 {CHANCE}%。</SettingBladderRelieveAmountHelp>
+	
+	<SettingUseBedPanIfDiaperEquipped>穿着尿布时也可用便盆</SettingUseBedPanIfDiaperEquipped>
+	<SettingUseBedPanIfDiaperEquippedHelp>也允许穿着尿布的角色使用便盆。注意：此项仅在启用便盆后生效。</SettingUseBedPanIfDiaperEquippedHelp>
+	
+	<SettingDebugMode>调试模式</SettingDebugMode>
+	<SettingDebugModeHelp>为开发模式启用大量调试日志，便于排查错误。通常不需要重新启动或重新加载。</SettingDebugModeHelp>
+	
+  <!-- Debug Flags -->
+  <SettingDebugCloth>调试：衣物</SettingDebugCloth>
+  <SettingDebugClothHelp>生成与衣物系统相关的调试信息。</SettingDebugClothHelp>
+
+  <SettingDebugJobs>调试：工作</SettingDebugJobs>
+  <SettingDebugJobsHelp>生成与角色工作相关的调试信息。</SettingDebugJobsHelp>
+
+  <SettingDebugCapacities>调试：能力</SettingDebugCapacities>
+  <SettingDebugCapacitiesHelp>生成与能力值（如膀胱控制）相关的调试信息。</SettingDebugCapacitiesHelp>
+
+  <SettingDebugGenes>调试：基因</SettingDebugGenes>
+  <SettingDebugGenesHelp>生成与基因以及基因相关状态和变化创建过程有关的调试信息。</SettingDebugGenesHelp>
+
+  <SettingDebugBedwetting>调试：尿床</SettingDebugBedwetting>
+  <SettingDebugBedwettingHelp>生成与所有尿床功能和调用相关的调试信息。</SettingDebugBedwettingHelp>
+
+  <SettingDebugRegression>调试：退行</SettingDebugRegression>
+  <SettingDebugRegressionHelp>生成与退行、退行相关属性以及伤害变化有关的调试信息。</SettingDebugRegressionHelp>
+
+  <SettingDebugApparel>调试：服装</SettingDebugApparel>
+  <SettingDebugApparelHelp>生成与新角色生成时所使用的服装生成器相关的调试信息。</SettingDebugApparelHelp>
+
+  <SettingDebugRects>调试：健康卡</SettingDebugRects>
+  <SettingDebugRectsHelp>调试用于在健康卡上腾出更多空间（显示全部能力值）的工具。</SettingDebugRectsHelp>
+	
+	<SettingDebugHarmony>调试：Harmony</SettingDebugHarmony>
+  <SettingDebugHarmonyHelp>需要重启：Harmony 补丁用于覆盖现有行为。启用后会在 RimWorld 启动时打印完整的 Harmony 补丁列表。你必须重启 RimWorld，此项才会生效。</SettingDebugHarmonyHelp>
+	
+	<SettingDebugNeeds>调试：需求</SettingDebugNeeds>
+  <SettingDebugNeedsHelp>膀胱、玩耍/学习/娱乐或尿布等需求与能力值会有重叠，但此调试项专门针对需求的添加、移除与跳动，不包括由此产生的能力结果。</SettingDebugNeedsHelp>
+	
+  <!-- Apparel Stats -->
+  <SettingStreamlinedApparel>禁用大部分服装特殊偏移</SettingStreamlinedApparel>
+  <SettingStreamlinedApparelHelp>启用后，本模组中的服装（如尿布、连体衣和内裤）会减少臃肿的属性修正，主要影响移动速度等物理属性，而非心情管理和灵能敏感度，从而带来更平衡、但较少角色扮演倾向的体验。</SettingStreamlinedApparelHelp>
+
+  <!-- Buttons -->
+  <SettingCheckForeverYoung>检查“ForeverYoung”是否启用</SettingCheckForeverYoung>
+  <SettingForeverYoungActive>“ForeverYoung”已启用！</SettingForeverYoungActive>
+  <SettingForeverYoungNotActive>“ForeverYoung”未启用！</SettingForeverYoungNotActive>
+	<SettingResetSingle>重置</SettingResetSingle>
+</LanguageData>

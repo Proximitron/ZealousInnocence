@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<RitualUnbladderingTriggerExtraDesc>所有在场并参与活动的 {IDEOMEMBER} 殖民者将会解放他们的膀胱。</RitualUnbladderingTriggerExtraDesc>
+	<RitualOutcomeExtraDesc_UnbladderingPsylink>经历了令人满意的解放膀胱仪式, {PAWN_labelShort} 获得了一个心灵链接等级！</RitualOutcomeExtraDesc_UnbladderingPsylink>
+	
+	<!-- Destruction of cloth by accidents (pee/poop) -->
+	<MessageClothDestroyedByAccident>由于一个小小的事故，{PAWN_labelShort} 摧毁了 {PAWN_possessive} {CLOTH_labelShort} 。</MessageClothDestroyedByAccident>
+	
+	<RimlaserChangeBeamColor>改变颜色: {0}</RimlaserChangeBeamColor>
+</LanguageData>
