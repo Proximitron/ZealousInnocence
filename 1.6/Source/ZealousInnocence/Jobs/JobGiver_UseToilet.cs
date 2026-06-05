@@ -81,6 +81,7 @@ namespace ZealousInnocence
         // Prefix to save runs in unnessesary cases. It tracks if the pawn notices 
         public static bool Prefix(Building_AssignableFixture __instance, Pawn p, ref AcceptanceReport __result)
         {
+            if (__instance.fixture != FixtureType.Toilet) return true;
             var report = Helper_Regression.canUsePottyReport(p);
             if (!report.Accepted)
             {
