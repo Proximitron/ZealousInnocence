@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<!-- Issue -->
+	<IssueDef>
+		<defName>CribBed</defName>
+		<label>crib bed</label>
+		<iconPath>Things/Building/Furniture/Crib/Crib_north</iconPath>
+	</IssueDef>
+	
+	<!-- PreceptDef -->
+	<PreceptDef>
+		<defName>CribBed_Preferred</defName>
+		<issue>CribBed</issue>
+		<label>preferred</label>
+		<description>The right way to sleep is in a crib.</description>
+		<impact>Low</impact>
+		<requiredMemes>
+		  <li>Babs</li>
+		</requiredMemes>
+		<associatedMemes>
+			<li>Babs</li>
+		</associatedMemes>
+		<comps>
+		  <li Class="PreceptComp_SituationalThought">
+				<description>Slept in my crib</description>
+				<thought>CribBed_Preferred</thought>
+		  </li>
+		</comps>
+	</PreceptDef>
+	
+</Defs>

@@ -1,0 +1,40 @@
+<Defs>
+  <ThinkTreeDef MayRequire="cyanobot.toddlers">
+    <defName>ZI_ToddlerOverride_Subtree_Toddlers</defName>
+
+    <insertTag>Humanlike_PostMentalState</insertTag>
+
+    <insertPriority>100</insertPriority>
+
+    <thinkRoot Class="ZealousInnocence.ThinkNode_ConditionalToddlerOverride">
+      <subNodes>
+        <li Class="ThinkNode_Subtree">
+          <treeDef>HumanlikeToddler</treeDef>
+        </li>
+      </subNodes>
+    </thinkRoot>
+  </ThinkTreeDef>
+
+  <ThinkTreeDef>
+    <defName>ZI_ToddlerOverride_Subtree_NoToddlers</defName>
+
+    <insertTag>Humanlike_PostMentalState</insertTag>
+    <insertPriority>100</insertPriority>
+
+    <thinkRoot Class="ZealousInnocence.ThinkNode_ConditionalToddlerOverride_NoToddlersOnly">
+      <subNodes>
+        <li Class="ZealousInnocence.ThinkNode_ConditionalInCrib">
+          <subNodes>
+            <li Class="ThinkNode_PrioritySorter">
+              <subNodes>
+                <li Class="JobGiver_GetRest" />
+                <li Class="ZealousInnocence.JobGiver_IdleInCrib" />
+              </subNodes>
+            </li>
+          </subNodes>
+        </li>
+      </subNodes>
+    </thinkRoot>
+  </ThinkTreeDef>
+
+</Defs>

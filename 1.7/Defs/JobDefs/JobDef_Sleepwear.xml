@@ -1,0 +1,9 @@
+<Defs>
+  <!--<JobDef>
+    <defName>ChangeSleepwear</defName>
+    <driverClass>ZealousInnocence.JobDriver_ChangeSleepwear</driverClass>
+    <reportString>changing out of sleepwear.</reportString>
+    <playerInterruptible>false</playerInterruptible>
+    <checkOverrideOnDamage>Always</checkOverrideOnDamage>
+  </JobDef>-->
+</Defs>

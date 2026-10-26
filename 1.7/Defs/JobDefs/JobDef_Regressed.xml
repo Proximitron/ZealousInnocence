@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <JobDef>
+    <defName>RegressedPlayAround</defName>
+    <driverClass>ZealousInnocence.JobDriver_RegressedPlayAround</driverClass>
+    <reportString>playing.</reportString>
+  </JobDef>
+
+
+  <JobDef>
+    <defName>FountainOfYouthInvestigate</defName>
+    <driverClass>ZealousInnocence.JobDriver_FountainOfYouthInvestigate</driverClass>
+    <reportString>investigating fountain.</reportString>
+  </JobDef>
+	<JobDef>
+    <defName>FountainOfYouthActivate</defName>
+    <driverClass>ZealousInnocence.JobDriver_FountainOfYouthActivate</driverClass>
+    <reportString>activating fountain.</reportString>
+  </JobDef>
+	
+	<JobDef>
+    <defName>InjectRegression</defName>
+    <driverClass>ZealousInnocence.JobDriver_InjectRegression</driverClass>
+    <reportString>injecting TargetA.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+	
+	<JobDef>
+		<defName>TrappedInCrib</defName>
+		<driverClass>ZealousInnocence.JobDriver_TrappedInCrib</driverClass>
+		<reportString>trapped in crib.</reportString>
+	</JobDef>
+	
+	<JobDef>
+		<defName>RegressedWiggleInCrib</defName>
+		<driverClass>ZealousInnocence.JobDriver_RegressedWiggleInCrib</driverClass>
+		<reportString>wiggels a lot.</reportString>
+	</JobDef>
+	
+	
+</Defs>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- Issue -->
+	<IssueDef>
+		<defName>Onesies</defName>
+		<label>onesies</label>
+		<iconPath>Apparel/Onesie/Onesie/Onesie</iconPath>
+	</IssueDef>
+	
+	<!-- PreceptDef -->
+	<PreceptDef>
+		<defName>Onesies_Loved</defName>
+		<issue>Onesies</issue>
+		<label>loved</label>
+		<description>Onesies are the best! They are comfy, cute, and even make diapers last longer!</description>
+		<impact>Low</impact>
+		<defaultSelectionWeight>0</defaultSelectionWeight>
+		<requiredMemes>
+			<li>Babs</li>
+		</requiredMemes>
+		<associatedMemes>
+			<li>Babs</li>
+		</associatedMemes>
+	</PreceptDef>
+	<PreceptDef>
+		<defName>Onesies_Neutral</defName>
+		<issue>Onesies</issue>
+		<label>neutral</label>
+		<description>Onesies are childish, but they are pretty comfortable. If nothing better is in reach, they are alright.</description>
+		<impact>Low</impact>
+		<defaultSelectionWeight>1</defaultSelectionWeight>
+	</PreceptDef>
+	<PreceptDef>
+		<defName>Onesies_Hated</defName>
+		<issue>Onesies</issue>
+		<label>hated</label>
+		<description>Why should I ever wear baby clothes. I am an adult!</description>
+		<impact>Medium</impact>
+		<defaultSelectionWeight>1</defaultSelectionWeight>
+	</PreceptDef>
+	
+</Defs>

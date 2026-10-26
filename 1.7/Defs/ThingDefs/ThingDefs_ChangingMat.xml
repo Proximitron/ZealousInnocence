@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="RitualSeatBase" MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>ChangingMat</defName>
+    <label>changing mat</label>
+    <description>A changing mat for getting changed, or to sit on while observing rituals, praying, or conversating. Can also be used for quick naps.</description>
+    <graphicData>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <texPath>Things/Building/Misc/ChangingMat/ChangingMat</texPath>
+      <drawSize>(2,2)</drawSize>
+    </graphicData>
+    <fillPercent>0.05</fillPercent>
+    <size>(2,2)</size>
+    <stuffCategories>
+      <li>Fabric</li>
+      <li>Leathery</li>
+    </stuffCategories>
+    <costStuffCount>80</costStuffCount>
+    <statBases>
+      <MaxHitPoints>40</MaxHitPoints>
+      <WorkToBuild>2400</WorkToBuild>
+      <Beauty>10</Beauty>
+      <Flammability>1.0</Flammability>
+      <Comfort>0.60</Comfort>
+      <Mass>2.5</Mass>
+      <StyleDominance>5</StyleDominance>
+    </statBases>
+    <building>
+      <multiSittable>true</multiSittable>
+      <sitIgnoreOrientation>true</sitIgnoreOrientation>
+    </building>
+  </ThingDef>
+
+</Defs>

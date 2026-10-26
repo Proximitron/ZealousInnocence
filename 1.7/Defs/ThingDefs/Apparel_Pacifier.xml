@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+<ThingDef ParentName="HatMakeableBase">
+  <defName>ZI_Pacifier</defName>
+  <label>pacifier</label>
+  <description>A simple pacifier to calm down babies. May also work in some other cases.</description>
+	<smeltable>false</smeltable>
+  <techLevel>Neolithic</techLevel>
+
+  <graphicData>
+    <texPath>Apparel/Pacifier/pacifier_south</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+    <drawSize>0.80</drawSize>
+  </graphicData>
+
+  <uiIconScale>1.15</uiIconScale>
+
+  <!-- no stuffCategories here = not stuff-based, no wood tint -->
+  <statBases>
+    <WorkToMake>3000</WorkToMake>
+    <MaxHitPoints>80</MaxHitPoints>
+    <Mass>1.4</Mass>
+    <StuffEffectMultiplierArmor>0.3</StuffEffectMultiplierArmor>
+    <StuffEffectMultiplierInsulation_Cold>0.05</StuffEffectMultiplierInsulation_Cold>
+    <StuffEffectMultiplierInsulation_Heat>0.05</StuffEffectMultiplierInsulation_Heat>
+    <EquipDelay>1.5</EquipDelay>
+  </statBases>
+
+	<costList>
+		<WoodLog>25</WoodLog>
+		<ComponentIndustrial>1</ComponentIndustrial>
+	</costList>
+	
+	<equippedStatOffsets>
+		<SlaveSuppressionOffset MayRequire="Ludeon.RimWorld.Ideology">0.15</SlaveSuppressionOffset>
+		<MentalBreakThreshold>-0.2</MentalBreakThreshold>
+		<PsychicSensitivity>-0.4</PsychicSensitivity>
+		<!-- worse trading -->
+		<NegotiationAbility>-0.15</NegotiationAbility>
+		<TradePriceImprovement>-0.15</TradePriceImprovement>
+	</equippedStatOffsets>
+			
+
+  <apparel>
+		<bodyPartGroups>
+			<li>Mouth</li>
+		</bodyPartGroups>
+    <wornGraphicPath>Apparel/Pacifier/pacifier</wornGraphicPath>
+    <renderSkipFlags>
+      <li>None</li>
+    </renderSkipFlags>
+    <drawData>
+      <dataNorth>
+        <layer>-3</layer>
+      </dataNorth>
+    </drawData>
+    <layers>
+      <li>Overhead</li>
+    </layers>
+    <defaultOutfitTags>
+      <li>Soldier</li>
+    </defaultOutfitTags>
+  </apparel>
+
+  <recipeMaker>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Crafting</workSkill>
+    <effectWorking>Sculpt</effectWorking>
+    <soundWorking>Recipe_Sculpt</soundWorking>
+    <recipeUsers>
+      <li>CraftingSpot</li>
+    </recipeUsers>
+
+    <factionPrerequisiteTags>
+      <li>Tribal</li>
+    </factionPrerequisiteTags>
+  </recipeMaker>
+
+  <tradeTags>
+    <li>BasicClothing</li>
+  </tradeTags>
+</ThingDef>
+</Defs>

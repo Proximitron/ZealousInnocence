@@ -1,0 +1,29 @@
+<Patch>
+  <!-- Only run this patch if Dubs Bad Hygiene is active -->
+  <Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>Dubwise.DubsBadHygiene</li>
+    </mods>
+    <match Class="PatchOperationSequence">
+      <operations>
+
+        <!-- Ensure the Bladder need is not restricted to “caused by hediff” -->
+        <li Class="PatchOperationReplace">
+          <xpath>/Defs/NeedDef[defName="Bladder"]/onlyIfCausedByHediff</xpath>
+          <value>
+            <onlyIfCausedByHediff>false</onlyIfCausedByHediff>
+          </value>
+        </li>
+
+        <!-- If the tag didn’t exist in the user’s version, add it as false -->
+        <li Class="PatchOperationAdd">
+          <xpath>/Defs/NeedDef[defName="Bladder"][not(onlyIfCausedByHediff)]</xpath>
+          <value>
+            <onlyIfCausedByHediff>false</onlyIfCausedByHediff>
+          </value>
+        </li>
+
+      </operations>
+    </match>
+  </Operation>
+</Patch>

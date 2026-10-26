@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+	<PawnCapacityDef>
+		<workerClass>ZealousInnocence.PawnCapacityWorker_BladderControl</workerClass>
+		<defName>BladderControl</defName>
+		<label>bladder control</label>
+		<description>Controls the ability to hold urine.</description>
+		<listOrder>200</listOrder>
+		<lethalFlesh>false</lethalFlesh>
+		<showOnMechanoids>false</showOnMechanoids>
+		<minValue>0.0</minValue>
+		<minForCapable>0.15</minForCapable>
+	</PawnCapacityDef>
+</Defs>

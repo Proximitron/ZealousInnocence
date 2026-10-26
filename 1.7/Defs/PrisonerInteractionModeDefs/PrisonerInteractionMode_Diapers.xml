@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <PrisonerInteractionModeDef>
+    <defName>DiaperChangesAllowed</defName>
+    <label>diaper changes</label>
+    <listOrder>27</listOrder>
+    <description>Change this pawns diaper if they need new ones.</description>
+    <mustBeAwake>false</mustBeAwake>
+    <isNonExclusiveInteraction>true</isNonExclusiveInteraction>
+  </PrisonerInteractionModeDef>
+	
+	<PrisonerInteractionModeDef>
+    <defName>UnderwearChangesAllowed</defName>
+    <label>underwear changes</label>
+    <listOrder>26</listOrder>
+    <description>Change this pawns underwear if they need new ones.</description>
+    <mustBeAwake>false</mustBeAwake>
+    <isNonExclusiveInteraction>true</isNonExclusiveInteraction>
+  </PrisonerInteractionModeDef>
+</Defs>

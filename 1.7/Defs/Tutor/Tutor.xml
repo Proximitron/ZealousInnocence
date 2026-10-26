@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<ConceptDef>
+    <defName>Regression</defName>
+    <label>regression</label>
+    <helpText>The concept of regression describes the positive and negative effects of being young again. Regression can heal and make young again, but also causes loss of independence, potty training and makes the pawn less easy to control and useful.
+
+Open the 'Research' tab, then select the '' sub-tab to view Anomaly research projects.</helpText>
+    <priority>20</priority>
+    <needsOpportunity>True</needsOpportunity>
+    <highlightTags>
+      <li>ToggleStudy</li>
+      <li>MainTab-Research-Closed</li>
+      <li>Research-Tab-Anomaly</li>
+    </highlightTags>
+  </ConceptDef>
+</Defs>
