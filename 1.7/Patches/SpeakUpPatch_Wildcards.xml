@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+	<success>Normal</success>
+	<operations>
+
+	<li Class="ZealousInnocence.PatchOperationMultiXpath">
+		<xpath>
+			<li>/Defs/InteractionDef[@ParentName="SpeakUpReply"]/logRulesInitiator/rulesStrings</li>
+			<li>/Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator/rulesStrings</li>
+    </xpath>
+
+		<value>
+			<!-- wildcard lib rules -->
+			<!--==compliments==-->		
+			<li>babycompliment->coot</li>
+			<li>babycompliment->adowable</li>
+			<li>babycompliment->sweet</li>
+			<li>babycompliment->nice</li>
+			<li>elderbabycompliment->cute</li>
+			<li>elderbabycompliment->adorable</li>
+			<li>elderbabycompliment->sweet</li>
+			<li>elderbabycompliment->nice</li>
+			<li>childcompliment->coot</li>
+			<li>childcompliment->sweet</li>
+			<li>childcompliment->cootie pie</li>
+			<li>childcompliment->nice</li>
+			<li>childcompliment->coots</li>
+			<li>childcompliment->pwetty</li>
+			<li>childcompliment->bootifuh</li>
+			<li>childcompliment->adowable</li>
+			<li>childcompliment->fwiendwy</li>				
+				
+			<!--==insults==-->
+			<li>elderinsult->gross</li>
+			<li>elderinsult->ugly</li>
+			<li>elderinsult->smelly</li>
+			<li>elderinsult->weird</li>
+			<li>toddlerinsult->gwoss</li>
+			<li>toddlerinsult->ugwee</li>
+			<li>toddlerinsult->tinky</li>
+			<li>toddlerinsult->toopid</li>
+			<li>toddlerinsult->poopy head</li>
+			<li>toddlerinsult->wittle baby</li>
+			<li>toddlerinsult->pee pee</li>
+			<li>toddlerinsult->dummy</li>
+			<li>toddlerinsult->dumb</li>
+			<li>babyinsult->gwoss</li>
+			<li>babyinsult->ugwee</li>
+			<li>babyinsult->toopid</li>
+			<li>babyinsult->tinky</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->sit head</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->fuckuh</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->toopid ass</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->wittle peez uh sit</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->peez uh sit</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->toopid pee pee fuckuh</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->toopid bits</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->wittle wetahd</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->dum bass</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar,RECIPIENT_gender==Female)->swut</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar,RECIPIENT_gender==Female)->hookah...sumfin wike dat...</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar,RECIPIENT_gender==Female)->cut...dat how you saided dat wowd?</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar,RECIPIENT_gender==Female)->cook suckuh...sumfin wike dat...</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar,RECIPIENT_gender==Male)->Dik hed</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar,RECIPIENT_gender==Male)->ass howuh</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar,RECIPIENT_gender==Male)->doos bag</li>
+			<li>toddlerinsult(INITIATOR_trait==vulgar)->Pissy diapee head</li>					
+				
+			<!-- ===toddler wildcards=== -->
+			<li>toys->pwushies</li>
+			<li>toys->toys</li>
+			<li>toys->tuffed aminaws</li>
+			<li>toys->teddy bayuhs</li>
+			<li>toys->bideo games</li>
+			<li>toys(INITIATOR_gender==Female)->wittle baby dowws</li>
+			<li>toys(INITIATOR_gender==Female)->dowws</li>
+			<li>toys(INITIATOR_gedner==Male)->fyah twucks</li>
+			<li>toys(INITIATOR_gedner==Male)->wace cahs</li>
+			<li>toys(INITIATOR_gedner==Male)->wobot toys</li>
+			<li>toys->pwushies</li>
+			<li>toys->dowws</li>
+			<li>toys->teddy bayuhs</li>
+			<li>toys->teddies</li>
+			<li>toys->tuff aminaws</li>
+			<li>excited->Yipee</li>
+			<li>excited->Hooway</li>
+			<li>excited->Yay</li>
+			<li>excited->Hoowah</li>
+			<li>excited->Wowee</li>
+			<li>excited->Yipee skipee</li>
+			<li>excited->Weeee</li>
+			
+			<li>god->Gwob</li>
+			<li>god->Gob</li>
+			<li>god->Gwod</li>
+			<li>god->Gwob fing in da sky</li>
+			<li>god->Wittle Gwob</li>
+			
+			<li>sleep->seep</li>
+			<li>sleep->sweep</li>
+			<li>sleep->go night night</li>
+			<li>sleep->da night night time</li>
+			<li>sleep->seepy time</li>
+			<li>sleep->sweepy time</li>
+			
+			<li>cold->cold</li>
+			<li>cold->fweezing</li>
+			<li>cold->c-c-c-cold</li>
+			<li>cold->f-f-f-fweezing</li>
+		</value>
+	</li>
+	
+	</operations>
+	</Operation>
+</Patch>

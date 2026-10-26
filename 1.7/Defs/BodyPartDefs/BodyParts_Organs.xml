@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <BodyPartDef>
+    <defName>Bladder</defName>
+    <label>bladder</label>
+    <hitPoints>15</hitPoints>
+    <bleedRate>0.5</bleedRate>
+    <skinCovered>false</skinCovered>
+    <frostbiteVulnerability>1</frostbiteVulnerability>
+    <canSuggestAmputation>true</canSuggestAmputation>
+		<forceAlwaysRemovable>true</forceAlwaysRemovable>
+		<spawnThingOnRemoved>Bladder</spawnThingOnRemoved>
+    <tags>
+			<li>BladderControlSource</li>
+    </tags>
+  </BodyPartDef>
+</Defs>

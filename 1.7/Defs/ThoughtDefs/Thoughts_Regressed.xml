@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThoughtDef>
+		<defName>RegressedGames</defName>
+		<thoughtClass>Thought_MemorySocialCumulative</thoughtClass>
+		<stackLimit>300</stackLimit>
+		<maxCumulatedOpinionOffset>20</maxCumulatedOpinionOffset>
+		<nullifyingTraits>
+			<li>Psychopath</li>
+		</nullifyingTraits>
+		<stages>
+			<li>
+				<label>played together</label>
+				<baseOpinionOffset>1.66</baseOpinionOffset>
+			</li>
+		</stages>
+	</ThoughtDef>
+</Defs>
+	

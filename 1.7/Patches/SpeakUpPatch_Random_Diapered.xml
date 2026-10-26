@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+	<success>Normal</success>
+	<operations>
+
+	<li Class="ZealousInnocence.PatchOperationMultiXpath">
+		<xpath>
+			<li>/Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator/rulesStrings</li>
+    </xpath>
+
+		<value>
+			<!-- random diapered interaction -->
+			<li>r_logentry(INITIATOR_age>=1,INITIATOR_age&lt;=4,INITIATOR_underwearType==Diaper,priority=5)->[toddler_diapered]</li>
+
+			<li>toddler_diapered->Me weawwy wike habbing da diapee on! It weawwy comfy!</li>
+			<li>toddler_diapered->Ebby time me wakeded up fwom da nap, da gwown ups awways getted me da bwand new cwean diapee! Me wub dem fuh dat!</li>
+			<li>toddler_diapered->Da gwown ups awways gib me da cwean diapee ebbu mowning when me wakeded up! It duss am vewy comfy, it makeded me duss go night night aww obah again! Hee hee!</li>
+			<li>toddler_diapered->Diapees am da bestest! Me wub dem!</li>
+			<li>toddler_diapered->Dis am da vewy comfy diapee!</li>
+			<li>toddler_diapered->Me wub dis diapee! Me no hab top pwaying wiff me fwiends and go potty tuz me duss pee pee and poopy in me diapee! Hee hee!</li>
+				
+			<li>toddler_diapered(tag=Ask_Diapered_Too,RECIPIENT_age&lt;=12,RECIPIENT_underwearType==Diaper,priority=7)->[toddler_diapered_too_young]</li>	
+				<li>toddler_diapered_too_young->You wike you diapee too? It vewy comfy!</li>
+				<li>toddler_diapered_too_young->Me weawwy wike dis diapee! You wike you diapee too? Hee hee!</li>
+				<li>toddler_diapered_too_young->Me wub dis diapee! Hee hee!</li>
+				<li>toddler_diapered_too_young->Me am nebba duss pee pee uh poopy in da potty! Me duss hab dis weawwy coot and comfy diapee fuh dat! Hee hee!</li>
+				<li>toddler_diapered_too_young->Makeded da pee pee and poopy in me diapee am wots bettuh den da toopid potty!</li>
+				<li>toddler_diapered_too_young->Den diape keepded you comfy if it am fweezing outtide!</li>
+				<li>toddler_diapered_too_young->Me duss makeded da pee pee in me diapee so me no hab top pwaying and go to da toopid potty. You wike do dat too?</li>
+				<li>toddler_diapered_too_young->Me fink dat duss makeded da pee pee in da diapee am wots bettuh den da toopid potty!</li>
+				<li>toddler_diapered_too_young->Makeded da poopy in me diapee am wots bettuh den da toopid potty! You mell wike you hab wots uh da poopy in you diapee too! Hee hee!</li>
+			
+			<li>toddler_diapered(tag=Ask_Diapered_Not,RECIPIENT_age&lt;=12,priority=5)->[toddler_diapered_not_young]</li>
+				<li>toddler_diapered_not_young->You no wike hab da diapee uh sum fing?</li>
+				<li>toddler_diapered_not_young->Me sowwy you no hab da diapee and hab go to da potty...dat not vewy nice tuz you duss hab top pwaying you do dat!</li>
+				<li>toddler_diapered_not_young->Dat not vewy nice uh da gwown ups dat dem no getted you da diapee...</li>
+				<li>toddler_diapered_not_young->You hab go to da potty tuz you no hab da diapee? Dat am vewy mean uh you mommy fuh makeded you do dat tuz you hab top pwaying and go potty...sowwy you no getted da diapee.</li>
+				<li>toddler_diapered_not_young->You mommy and daddy awe da big meanies fuh no getted you da diapee fuh go pee pee and poopy in. Sowwy dem no wub you.</li>
+				
+			<li>toddler_diapered(tag=Ask_Diapered_Too,RECIPIENT_age>=13,RECIPIENT_underwearType==Diaper,priority=6)->[toddler_diapered_too_adult]</li>
+				<li>toddler_diapered_too_adult->Hee hee! You big peeple an' you hab diapee too?! Dat siwwy! Me wike you!</li>
+				<li>toddler_diapered_too_adult->Wowee! Big gwown up hab comfy diapee wike me! We matchies! Hee hee!</li>
+				<li>toddler_diapered_too_adult->You big peeple still getted changey diapee? Me an' you bof pee pee in diapee! Hee hee!</li>
+				<li>toddler_diapered_too_adult->You no need toopid potty eeduh? Yay! Me an' big peeple bof diapee fwens!</li>
+				<li>toddler_diapered_too_adult->Dat you diapee? It am weawwy big an' poofy! Me want big poofy diapee wike you!</li>
+				<li>toddler_diapered_too_adult->Hee hee! Me tiny diapee, you big diapee! We am diapee team!</li>
+				<li>toddler_diapered_too_adult->You big, but you still hab diapee...dat mean me no need gwow up eebuh! Me stay diapee kid foweber! Hee hee!</li>
+				<li>toddler_diapered_too_adult->You hab diapee, me hab diapee...who make da biggest pee pee in diapee, you or me? Hee hee!</li>
+				<li>toddler_diapered_too_adult->Me fought onwy babies hab diapee...but big peeple hab diapee too? Dat am funny an' coot!</li>
+				<li>toddler_diapered_too_adult->You no shy 'bout diapee? Otay! Me no shy 'bout mine eeduh! We show off ouw poofy diapees! Hee hee!</li>
+				
+			<li>toddler_diapered(tag=Ask_Diapered_Not,RECIPIENT_age>=13,priority=4)->[toddler_diapered_not_adult]</li>
+				<li>toddler_diapered_not_adult->Fanks fuh getted me dis comfy diapee!</li>
+				<li>toddler_diapered_not_adult->Me weawwy wike dis diapee! Me duss makeded wots uh pee pee in dayuh doe...you getted me da new one pwease?</li>
+				<li>toddler_diapered_not_adult->Diapees am vewy comfy and you no hab go to da toopid potty!</li>
+				<li>toddler_diapered_not_adult->Me likes diapie! Me keep pwaying and pee pee in you diapee aww day wong!</li>
+				<li>toddler_diapered_not_adult->Me wub diapee! Me keep wem wem me big!</li>
+		</value>
+	</li>
+	
+	</operations>
+	</Operation>
+</Patch>

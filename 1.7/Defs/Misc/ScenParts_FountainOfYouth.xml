@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ScenPartDef>
+    <defName>ScenPart_FountainOfYouth</defName>
+    <label>fountain of youth</label>
+    <scenPartClass>ZealousInnocence.ScenPart_FountainOfYouthGeneration</scenPartClass>
+    <genStep>FountainOfYouth</genStep>
+    <category>Rule</category>
+    <selectionWeight>0</selectionWeight>
+    <summaryPriority>500</summaryPriority>
+    <maxUses>1</maxUses>
+  </ScenPartDef>
+</Defs>

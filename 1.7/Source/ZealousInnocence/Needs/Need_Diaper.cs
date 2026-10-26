@@ -1,0 +1,854 @@
+﻿using DubsBadHygiene;
+using Ionic.Zlib;
+using RimWorld;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Unity.Jobs;
+using UnityEngine;
+using UnityEngine.UIElements;
+using Verse;
+using Verse.AI;
+using Verse.Sound;
+
+namespace ZealousInnocence
+{
+    public class Need_Diaper : Need
+    {
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref this.isHavingAccident, "isHavingAccident", false);
+            Scribe_Values.Look(ref this.peeing, "peeing", false);
+            Scribe_Values.Look(ref this.failureSeed, "failureSeed", 0);
+            Scribe_Values.Look(ref this.bedwettingSeed, "bedwettingSeed", 0);
+            Scribe_Values.Look(ref this.sleepTrack, "sleepTrack", 0);
+            Scribe_Values.Look(ref this.knowsNeedChange, "knowsNeedChange", false);
+            Scribe_Values.Look(ref this.lastLevel, "lastLevel", -1f);
+        }
+        private bool isHavingAccident;
+        private bool isAdditionalCrapPants;
+        public bool IsHavingAccident { get => isHavingAccident; }
+
+        private bool peeing;
+        public bool IsPeeing { get => peeing; }
+
+        private int failureSeed = 0;
+
+        public int bedwettingSeed = 0;
+
+        private int sleepTrack = 0;
+
+        private bool knowsNeedChange = false;
+
+        private float lastLevel = -1;
+
+        public bool KnowsNeedChange
+        {
+            get
+            {
+                return knowsNeedChange;
+            }
+            set => knowsNeedChange = value;
+        }
+        public int FailureSeed
+        {
+            get
+            {
+                if (failureSeed == 0)
+                {
+                    failureSeed = pawn.HashOffsetTicks() + pawn.ageTracker.BirthDayOfYear + pawn.ageTracker.AgeChronologicalYears + pawn.ageTracker.BirthYear;
+                }
+                return failureSeed;
+            }
+            set => failureSeed = value;
+        }
+
+
+        public void StartSound(bool pee = true)
+        {
+            if (pee)
+            {
+                SoundStarter.PlayOneShotOnCamera(DiaperChangie.Pee, pawn.Map);
+            }
+            else
+            {
+                SoundStarter.PlayOneShotOnCamera(DiaperChangie.Poop, pawn.Map);
+            }
+        }
+        private LocalTargetInfo cachedDiaperTarget;
+        private float lastCacheUpdateTime;
+        private const float CacheUpdateInterval = 1f; // 1 second
+
+        public float peePerTick
+        {
+            get
+            {
+                return Settings.bladderRelieveAmount;
+            }
+        }
+        public LocalTargetInfo getCachedBestDiaperOrUndie()
+        {
+            if (Time.realtimeSinceStartup - lastCacheUpdateTime > CacheUpdateInterval)
+            {
+                cachedDiaperTarget = getBestDiaperOrUndie(null, pawn);
+                lastCacheUpdateTime = Time.realtimeSinceStartup;
+            }
+            return cachedDiaperTarget;
+        }
+        public static LocalTargetInfo getBestDiaperOrUndie(Pawn caretaker, Pawn patient)
+        {
+            Need_Diaper need_diaper = patient.needs.TryGetNeed<Need_Diaper>();
+            Apparel oldDiaper = Helper_Diaper.getUnderwearOrDiaper(patient);
+            
+            bool oldIsAllowed = oldDiaper == null ? false : Helper_Diaper.allowedByPolicy(patient, oldDiaper);
+            if(need_diaper == null)
+            {
+                JobFailReason.Is("Need diaper was null?!");
+                return null;
+            }
+            if (oldDiaper != null && oldIsAllowed && need_diaper.CurLevel >= 0.5f)
+            {
+                var needDiaper = Helper_Diaper.needsDiaper(patient);
+                if (needDiaper == Helper_Diaper.isDiaper(oldDiaper))
+                {
+                    var needDiaperButIsNight = needDiaper && Helper_Diaper.isNightDiaper(oldDiaper);
+
+                    if (!needDiaperButIsNight)
+                    {
+                        JobFailReason.Is("No change needed.");
+                        return LocalTargetInfo.Invalid;
+                    }
+
+                }
+            }
+
+            float minRating = -0.1f;
+            if (oldIsAllowed)
+            {
+                if (patient.outfits?.forcedHandler != null && !patient.outfits.forcedHandler.AllowedToAutomaticallyDrop(oldDiaper))
+                {
+                    if (caretaker != null) CantRemoveUnderwearReason(oldDiaper);
+                    return LocalTargetInfo.Invalid;
+                }
+                if (patient.apparel != null && patient.apparel.IsLocked(oldDiaper))
+                {
+                    if (caretaker != null) CantRemoveUnderwearReason(oldDiaper);
+                    return LocalTargetInfo.Invalid;
+                }
+                minRating = Helper_Diaper.getDiaperOrUndiesRating(patient, oldDiaper);
+            }
+            //var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            //var debugging = settings.debugging && settings.debuggingCloth;
+            
+            LocalTargetInfo a = findBestUndieOrDiaper(caretaker, patient, minRating);
+            if (a == null || !a.IsValid || !a.HasThing)
+            {
+                if (caretaker != null) JobFailReason.Is("No allowed cloth found.");
+                return LocalTargetInfo.Invalid;
+            }
+            return a;
+        }
+        private static void CantRemoveUnderwearReason(Apparel apparel)
+        {
+            if (Helper_Diaper.isDiaper(apparel))
+            {
+                JobFailReason.Is("Can't remove diaper.");
+            }
+            else if (Helper_Diaper.isNightDiaper(apparel))
+            {
+                JobFailReason.Is("Can't remove pull-ups.");
+            }
+            else
+            {
+                JobFailReason.Is("Can't remove underwear.");
+            }
+        }
+
+        private static LocalTargetInfo findBestUndieOrDiaper(Pawn caretaker, Pawn patient, float minRating = -0.1f)
+        {
+            Thing bestThing = null;
+            float bestRating = minRating;
+
+            //var settings = LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>();
+            //var debugging = settings.debugging && settings.debuggingCloth;
+            
+            if (caretaker == null || patient == null) return LocalTargetInfo.Invalid;
+            if (!caretaker.IsColonist || (!patient.IsColonist && !patient.IsPrisoner)) return LocalTargetInfo.Invalid;
+            if (!caretaker.Spawned || !patient.Spawned) return LocalTargetInfo.Invalid;
+            if (caretaker.Map == null || patient.Map == null) return LocalTargetInfo.Invalid;
+
+
+
+            foreach (Thing thing in caretaker?.inventory?.innerContainer)
+            {
+                EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, false);
+            }
+            if (bestThing != null)
+            {
+                bestRating += 0.5f; // Nudge rating to make it more likely carried things will be used
+            }
+            foreach (Thing thing in patient.Map.listerThings.AllThings)
+            {
+                if (!caretaker.CanReserveAndReach(thing, PathEndMode.OnCell, caretaker.NormalMaxDanger())) continue;
+                EvaluateSingleApparel(caretaker, patient, thing, ref bestThing, ref bestRating, true);
+            }
+            
+            return bestThing != null ? new LocalTargetInfo(bestThing) : LocalTargetInfo.Invalid;
+        }
+        public static void EvaluateSingleApparel(
+            Pawn caretaker, Pawn patient, Thing thing,
+            ref Thing bestThing, ref float bestRating, bool checkReachable = true)
+        {
+            if (thing is not Apparel app) return;
+            if (app.HitPoints < (app.MaxHitPoints / 2)) return;
+
+            if (CompBiocodable.IsBiocoded(app) && !CompBiocodable.IsBiocodedFor(app, patient)) return;
+
+            float rating = Helper_Diaper.getDiaperOrUndiesRating(patient, app);
+            if (rating > bestRating && (!checkReachable ||
+                caretaker.CanReserveAndReach(thing, PathEndMode.ClosestTouch, Danger.Deadly)))
+            {
+                bestRating = rating;
+                bestThing = thing;
+            }
+        }
+        public override void SetInitialLevel()
+        {
+            base.CurLevelPercentage = 0f;
+        }
+
+        public bool hasDiaper()
+        {
+            return Helper_Diaper.getDiaper(pawn) != null;
+        }
+        public bool hasUnderwearOrDiaper()
+        {
+            return Helper_Diaper.getUnderwearOrDiaper(pawn) != null;
+        }
+
+        public Need_Diaper(Pawn pawn) : base(pawn)
+        {
+            threshPercents = new List<float>();
+            threshPercents.Add(0.8f);
+            threshPercents.Add(0.5f);
+            threshPercents.Add(0.2f);
+        }
+
+
+        public DiaperSituationCategory CurCategory
+        {
+            get
+            {
+                if (CurLevel > 0.8f)
+                {
+                    return DiaperSituationCategory.Clean;
+                }
+                if (CurLevel > 0.2f && CurLevel < 0.5f)
+                {
+                    return DiaperSituationCategory.Spent;
+                }
+                if (CurLevel < 0.2f)
+                {
+                    return DiaperSituationCategory.Trashed;
+                }
+                return DiaperSituationCategory.Used;
+            }
+        }
+
+        public override float CurLevel
+        {
+            get {
+                if (currProtection != null)
+                {
+                    return Math.Max(0f, (float)currProtection.HitPoints / (float)currProtection.MaxHitPoints);
+                }
+                else
+                {
+                    return 0.0f;
+                }
+            }
+            set
+            {
+                // Can't set
+            }
+        }
+
+        public override bool ShowOnNeedList
+        {
+            get
+            {
+                return pawn.canWearDiaper();
+            }
+        }
+
+        public void crapPants()
+        {
+            if (debugging) Log.Message("debug: doing (crapPants) for " + pawn.Name);
+
+            Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
+            var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, peePerTick);
+            var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
+           
+            if (bladder != null) bladder.CurLevel += peeAmountPercentile;
+
+            if (pawn.canWearDiaper())
+            {
+                var isBabyOrToddler = pawn.isToddlerMental() && pawn.isBabyMental();
+                Need_Hygiene need_Hygiene = this.pawn.needs.TryGetNeed<Need_Hygiene>();
+                if (need_Hygiene != null)
+                {
+                    need_Hygiene.CurLevel -= Math.Min(need_Hygiene.CurLevel, fluidAmount);
+                }
+                if (!pawn.InBed())
+                {
+                    List<Apparel> legApparel = pawn.apparel.WornApparel.Where(apparel => apparel.def.apparel.bodyPartGroups.Contains(BodyPartGroupDefOf.Legs)).ToList();
+                    int splitOfDamage = legApparel.Count;
+                    int damageBase = 25; // damage for a full bladder in hp
+                    for (int i = legApparel.Count - 1; i >= 0; i--)
+                    {
+                        Apparel apparel = legApparel[i];
+                        float damage = damageBase * (peeAmountPercentile / splitOfDamage);
+                        int finDamage = chancedDamage(damage);
+                        if (debugging) Log.Message($"[ZI]crapPants: causing {finDamage} damage to {apparel.LabelShort} for {pawn.LabelShort} " + pawn.Name);
+                        apparel.HitPoints -= Math.Min(apparel.HitPoints, finDamage);
+                        pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
+
+                        // Check if the apparel gets destroyed during this process
+                        if (apparel.HitPoints < 1)
+                        {
+                            apparel.Notify_LordDestroyed();
+                            Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), apparel.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent, true);
+                            apparel.Destroy(DestroyMode.Vanish);
+                        }
+                    }
+                    if (!isAdditionalCrapPants)
+                        MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, IsPeeing ? "PhrasePantsWetting".Translate() : "PhrasePantsSoiling".Translate(), IsPeeing ? Settings.wettingColor : Settings.solingColor);
+                }
+                else
+                {
+                    var bed = pawn.CurrentBed();
+                    float damage = ((float)bed.MaxHitPoints / 2f) * fluidAmount;
+                    bed.HitPoints -= Math.Min(bed.HitPoints - 1, chancedDamage(damage));
+                    if (!isAdditionalCrapPants)
+                    {
+                        MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, "PhraseBedwetting".Translate(), Settings.wettingColor);
+                        foreach (var curr in pawn.CurrentBed().CurOccupants)
+                        {
+                            if (curr != pawn)
+                            {
+                                if (!curr.isBabyMental() && !curr.isToddlerMental())
+                                {
+                                    curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PeedOnMe"), pawn, null);
+                                }
+                                curr.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
+                            }
+                        }
+                        if (!isBabyOrToddler)
+                        {
+                            if (!Helper_Regression.isAdultMental(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Non_Adult);
+                            else if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Bedwetter);
+                            else Helper_Diaper.getMemory(pawn, WettingBedThought.Wet_Bed_Default);
+                        }
+                        pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("SoakingWet"), pawn, null);
+                    }
+
+                }
+            }
+
+            makeFilth();
+            isAdditionalCrapPants = true; // Additional triggers of this function will be ignored until current accident is done
+        }
+
+        public void makeFilth()
+        {
+            if (peeing) FilthMaker.TryMakeFilth(pawn.Position, pawn.Map, DubDef.FilthUrine, 1, FilthSourceFlags.Pawn, true);
+            else FilthMaker.TryMakeFilth(pawn.Position, pawn.Map, DubDef.FilthFaeces, 1, FilthSourceFlags.Pawn, true);
+        }
+
+        public float CurrLevelProjection()
+        {
+            if (!pawn.canWearDiaper()) return 0f;
+
+            if (IsHavingAccident)
+            {
+                Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
+                var peeAmountPercentile = 1.0f - bladder.CurLevel;
+                var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
+
+                float absorbency = pawn.GetStatValue(StatDefOf.DiaperAbsorbency) / 3;
+                if (absorbency < 0.1f) absorbency = 0.1f;
+                float hitPointDamage = fluidAmount / (0.05f * absorbency);
+
+                int hitpoints = currProtection.HitPoints - Math.Min(currProtection.HitPoints, chancedDamage(hitPointDamage));
+
+                return Math.Max(0f, (float)hitpoints / (float)currProtection.MaxHitPoints);
+            }
+            return CurLevel;
+        }
+
+        public void startAccident(bool pee = true)
+        {
+            if (IsHavingAccident) return;
+            if(pawn.IsColonistPlayerControlled) StartSound(pee);
+            FailureSeed = 0;
+            isHavingAccident = true;
+            peeing = pee;
+            if (debugging) Log.Message("[ZI] startAccident '" + (peeing ? "pee" : "poop") + "' for " + pawn.Name);
+            if (!pawn.canWearDiaper()) return;
+
+            var liked = Helper_Diaper.getDiaperPreference(pawn);
+            var diaper = Helper_Diaper.getDiaper(pawn);
+            if (diaper != null)
+            {
+                // This short time stagger will only happen for diaper, because without the pawn get staggered repeatetly anyway
+                pawn.stances?.stagger?.StaggerFor(150);
+                MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, IsPeeing ? "PhraseDiaperWetting".Translate(diaper.def.label) : "PhraseDiaperSoiling".Translate(diaper.def.label), IsPeeing ? Settings.wettingColor : Settings.solingColor);
+                switch (liked)
+                {
+                    case DiaperLikeCategory.Toddler:
+                        break; // No memories created, we didn't notice
+                    case DiaperLikeCategory.Child:
+                        if (pawn.Awake()) Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Non_Adult);
+                        else Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Non_Adult);
+                        break;
+                    case DiaperLikeCategory.Neutral:
+                        if (!pawn.Awake())
+                        {
+                            if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Bedwetter);
+                            else Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Default);
+                        }
+                        else Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Default);
+                        break;
+                    case DiaperLikeCategory.Liked:
+                        if (!pawn.Awake())
+                        {
+                            if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Bedwetter_Loved);
+                            else Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Loved);
+                        }
+                        else Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Loved);
+                        break;
+                    case DiaperLikeCategory.Diaper_Lover:
+                        if (!pawn.Awake())
+                        {
+                            if (Helper_Diaper.needsDiaperNight(pawn)) Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Bedwetter_Loved);
+                            else Helper_Diaper.getMemory(pawn, BedwettingDiaperThought.Wet_Diaper_Bed_Loved);
+                        }
+                        else Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Loved);
+                        break;
+                    case DiaperLikeCategory.Disliked:
+                        Helper_Diaper.getMemory(pawn, WettingDiaperThought.Wet_Diaper_Hated);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+            else if (pawn.InBed())
+            {
+                // We ignore this case and assume the pawn has no pants on in bed
+                // Thoughts will be handled by the wet bed incidents
+            }
+            else
+            {
+                var underwear = Helper_Diaper.getUnderwear(pawn);
+                if (underwear != null)
+                {
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.MapHeld, IsPeeing ? "PhraseUnderwearWetting".Translate(underwear.def.label) : "PhraseUnderwearSoiling".Translate(underwear.def.label), IsPeeing ? Settings.wettingColor : Settings.solingColor);
+                }
+                switch (liked)
+                {
+                    case DiaperLikeCategory.Toddler:
+                        break; // Didn't notice
+                    case DiaperLikeCategory.Child:
+                        Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Non_Adult);
+                        break;
+                    case DiaperLikeCategory.Neutral:
+                        Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Default);
+                        break;
+                    case DiaperLikeCategory.Liked:
+                        Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Diaper_Loved);
+                        break;
+                    case DiaperLikeCategory.Diaper_Lover:
+                        Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Diaper_Loved);
+                        break;
+                    case DiaperLikeCategory.Disliked:
+                        Helper_Diaper.getMemory(pawn, WettingPantsThought.Wet_Pants_Diaper_Hated);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+        private Apparel_UnderwearSlot currProtectionCache;
+
+        private Apparel_UnderwearSlot currProtection
+        {
+            get
+            {
+                if (currProtectionCache == null)
+                {
+                    if (!pawn.canWearDiaper()) return null;
+                    Apparel diaperSlot = Helper_Diaper.getUnderwearOrDiaper(pawn);
+                    if (diaperSlot is Apparel_UnderwearSlot diaperOrUndies)
+                    {
+                        currProtectionCache = diaperOrUndies;
+                    }
+
+                }
+                return currProtectionCache;
+            }
+            set
+            {
+                currProtectionCache = value;
+            }
+        }
+
+        private static readonly Lazy<ZealousInnocenceSettings> _settings = new Lazy<ZealousInnocenceSettings>(() => LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>());
+        public static ZealousInnocenceSettings Settings => _settings.Value;
+
+        private bool debugging => Settings.debugging && Settings.debuggingCapacities;
+        // Triggers every 150 ticks! (2.5 seconds)
+        // 2500 ticks in an ingame hour, 60000 ticks in a day (day is 1000 realtime seconds)
+        // That means there are 400 need intervals in a day, meaning a chance of 0.0025 happens once a day
+        public override void NeedInterval()
+        {
+            if (pawn.Dead || !pawn.canHaveBladder()) return;
+            Helper_Toddlers.AdjustToddlersHediffs(pawn);
+            pawn.health.capacities.Notify_CapacityLevelsDirty(); // Yes, nessesary. The caching doesn't keep track of changes like sleeping and things that not cause hediffs
+            currProtectionCache = null;
+
+            Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
+            if (bladder == null) return;
+
+            bool hadAlreadyAccident = isHavingAccident;
+            if (lastLevel < 0) lastLevel = CurLevel; // Init
+            if (pawn.canWearDiaper())
+            {
+                if (lastLevel < CurLevel && knowsNeedChange)
+                {
+                    if (debugging) Log.Message($"[ZI] Because of lastLevel higher than current {pawn.Name} is now unaware of the need to change their diapers");
+                    knowsNeedChange = false; // Means usually diaper change
+                }
+                if (!knowsNeedChange && CurLevel <= 0.5f && pawn.canNoticeNeedChange())
+                {
+                    if (debugging) Log.Message($"[ZI] {pawn.Name} is now aware of the need to change their diapers");
+                    knowsNeedChange = true;
+                }
+            }
+            lastLevel = CurLevel;
+
+            // Bedwetting block: start
+            if (pawn.canWearDiaper())
+            {
+                var debugBedwetting = Settings.debugging && Settings.debuggingBedwetting;
+                new HediffGiver_BedWetting().OnIntervalPassed(pawn, null);
+                if (pawn.Awake())
+                {
+                    if (sleepTrack > 0)
+                    {
+                        if (debugging) Log.Message($"[ZI]Ending sleep at {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name} after {sleepTrack} ticks");
+                    }
+                    sleepTrack = 0;
+                }
+                else
+                {
+                    if (sleepTrack == 0)
+                    {
+                        if (debugging) Log.Message($"[ZI]Starting sleep at {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                    }
+                    sleepTrack++;
+
+                    // every 10 ticks of sleeping
+                    if (bladder.CurLevel <= 0.75f && sleepTrack % 10 == 0)
+                    {
+                        // 7% every 10 ticks. Sleep roughly 100 ticks, makes it a 10 times 10% chance (to remember potty chance of 5%-100%)
+                        if (Rand.ChanceSeeded(0.07f, pawn.HashOffsetTicks()) && !Helper_Diaper.remembersPotty(pawn))
+                        {
+                            if (debugBedwetting) Log.Message($"[ZI]Triggering bedwetting incident at {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                            startAccident(true);
+                        }
+                    }
+                }
+
+                if (!isHavingAccident && bladder.CurLevel <= 0.5f && pawn.CurJobDef != DubDef.UseToilet)
+                {
+                    if (bladder.CurLevel <= Helper_Diaper.getBladderControlFailPoint(pawn))
+                    {
+                        bool startPottyRunBed = false;
+                        bool startPottyRun = false;
+                        if (pawn.health.capacities.CanBeAwake && !Helper_Diaper.shouldStayPut(pawn) && Helper_Diaper.remembersPotty(pawn))
+                        {
+                            if (pawn.CurJobDef == JobDefOf.LayDown && pawn.Awake() == false)
+                            {
+                                // Interrupt the current sleep job
+                                pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, true);
+
+                                var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
+
+                                // Get a toilet job for the pawn
+                                Job job = jobGiver.TryGiveJob(pawn);
+                                if (debugBedwetting) Log.Message($"[ZI]conditions met for wakeup call at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                                // If a job is found, start the job
+                                if (job != null)
+                                {
+                                    startPottyRunBed = true;
+                                    pawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                                }
+                            }
+                            else if (pawn.CanPolitelyInterrupt())
+                            {
+                                if (debugging) Log.Message($"[ZI] polite override: interrupting {pawn.CurJobDef?.defName} for toilet ({pawn.LabelShort})");
+
+                                // End the current trivial job
+                                pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, startNewJob: true);
+
+                                var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
+                                Job toiletJob = jobGiver.TryGiveJob(pawn);
+                                if (toiletJob != null)
+                                {
+                                    startPottyRun = true;
+                                    pawn.jobs.StartJob(toiletJob, JobCondition.InterruptForced, cancelBusyStances: true);
+                                }
+                                else
+                                {
+                                    // If we failed to create a toilet job, no harm done: the Lord/think tree will give them a new wander/Wait job.
+                                    if (debugging) Log.Message($"[ZI] no toilet job available for {pawn.LabelShort} after polite override");
+                                }
+                            }
+                        }
+
+                        if (startPottyRunBed)
+                        {
+                            if (debugBedwetting) Log.Message($"[ZI]Bedtime prevent fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                        }
+                        else if (startPottyRun)
+                        {
+                            if (debugging) Log.Message($"[ZI]prevent fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                        }
+                        else
+                        {
+                            startAccident(DecideRandomPeePoopIncident());
+                            if (debugBedwetting) Log.Message($"[ZI]doing fail of bladder control at level {bladder.CurLevel} failpoint {Helper_Diaper.getBladderControlFailPoint(pawn)} for {pawn.Name}");
+                        }
+                    }
+                    else
+                    {
+                        if (bladder.CurLevel <= 0.28f && Rand.ChanceSeeded(1f / 32f, pawn.HashOffsetTicks() + 812) && bladder.CurLevel <= (Helper_Diaper.getBladderControlFailPoint(pawn) + 0.05f) && Helper_Diaper.remembersPotty(pawn) && pawn.CanPolitelyInterrupt())
+                        {
+                            var jobGiver = new DubsBadHygiene.JobGiver_UseToilet();
+                            Job toiletJob = jobGiver.TryGiveJob(pawn);
+                            if (toiletJob != null)
+                            {
+                                pawn.jobs.jobQueue.EnqueueFirst(toiletJob);
+                                if (debugging) Log.Message($"[ZI]random potty assignment: interrupting {pawn.CurJobDef?.defName} for toilet ({pawn.LabelShort})");
+                            }
+                        }
+                    }
+                }
+            }
+            // Bedwetting block: end
+
+            if (!isHavingAccident)
+            {
+                if (pawn?.CurJob?.def == DubDef.UseToilet && pawn.getAgeSocialIsToddler() && bladder.CurLevel <= 0.70f)
+                {
+                    startAccident(DecideRandomPeePoopIncident());
+                }
+                else if (bladder.CurLevel <= 0f)
+                {
+                    startAccident(DecideRandomPeePoopIncident());
+                }
+            }
+
+            
+            
+            if (!isHavingAccident && bladder.CurLevel <= 0.30f)
+            {
+                if (pawn.canWearDiaper())
+                {
+                    if (pawn.Awake())
+                    {
+                        var pee = DecideRandomPeePoopIncident();
+                        if (pawn.story.traits.HasTrait(TraitDefOf.Potty_Rebel))
+                        {
+                            startAccident(pee);
+                            if (debugging) Log.Message("doing trait (Potty_Rebel) for " + pawn.Name);
+                        }
+                        else if (pawn.story.traits.HasTrait(TraitDefOf.Diaper_Lover))
+                        {
+                            if (currProtection != null && Helper_Diaper.isDiaper(currProtection))
+                            {
+                                startAccident(pee);
+                                if (debugging) Log.Message("doing trait (Diaper_Lover) accident in diaper for " + pawn.Name);
+                            }
+                        }
+                        else
+                        {
+                            var liked = Helper_Diaper.getDiaperPreference(pawn);
+                            if (liked == DiaperLikeCategory.Liked || liked == DiaperLikeCategory.Toddler)
+                            {
+                                if (liked != DiaperLikeCategory.Toddler && (currProtection == null || !Helper_Diaper.isDiaper(currProtection)))
+                                {
+                                    pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("HadToHoldIt"), null, null);
+                                }
+                                else
+                                {
+                                    startAccident(pee);
+                                    if (debugging) Log.Message("doing (accident in diaper by preference) for " + pawn.Name);
+                                }
+                            }
+
+                        }
+                    }
+                }
+                else
+                {
+                    startAccident(DecideRandomPeePoopIncident());
+                }
+            }
+
+            if (isHavingAccident)
+            {
+                ManageOngoingAccident();
+                if(!hadAlreadyAccident) pawn.TriggerPottyFailInteractionWithNearby();
+                if (currProtection != null)
+                {
+                    var peeAmountPercentile = Math.Min(1.0f - bladder.CurLevel, peePerTick);
+                    var fluidAmount = Helper_Diaper.fluidAmount(pawn, peeAmountPercentile);
+                    if (debugging) Log.Message($"[ZI]peeing in protection: {Helper_Diaper.getBladderControlLevel(pawn)} for {pawn.LabelShort} percentile {peeAmountPercentile} => {fluidAmount} amount");
+                    bladder.CurLevel += peeAmountPercentile;
+                    float absorbency = pawn.GetStatValue(StatDefOf.DiaperAbsorbency) / 3; // we always calculate at 1/3 the value. 3 liter capacity is the base for this calculation
+                                                                                          //float totalDiaperAbsorbency = currDiapie.GetStatValue(StatDefOf.Absorbency);
+                                                                                          //Log.Message("absorbency: " + absorbency);
+                                                                                          // Log.Message("absorbency2: " + currDiapie.GetStatValue(StatDefOf.Absorbency));
+                    if (absorbency < 0.1f) absorbency = 0.1f;
+                    float hitPointDamage = fluidAmount / (0.05f * absorbency);
+
+                    currProtection.HitPoints -= Math.Min(currProtection.HitPoints, chancedDamage(hitPointDamage));
+                    if (currProtection.HitPoints < 1)
+                    {
+                        currProtection.Notify_LordDestroyed();
+                        Messages.Message("MessageClothDestroyedByAccident".Translate(pawn.Named("PAWN"), currProtection.Named("CLOTH")), pawn, MessageTypeDefOf.NegativeEvent, true);
+                        currProtection.Destroy(DestroyMode.Vanish);
+                        currProtection = null;
+                    }
+                }
+                if (bladder.CurLevel >= 0.95f)
+                {
+                    isHavingAccident = false;
+                    isAdditionalCrapPants = false;
+                }
+                if (isHavingAccident)
+                {
+                    if (currProtection == null || !Helper_Diaper.isDiaper(currProtection))
+                        pawn.stances?.stagger?.StaggerFor(150);
+
+                    if (currProtection != null)
+                    {
+                        if (Rand.ChanceSeeded(1 / 3f, pawn.HashOffsetTicks() + 249))
+                        {
+                            makeFilth();
+                        }
+
+                    }
+                    else crapPants();
+                }
+
+            }
+            if (!isHavingAccident && currProtection != null && !currProtection.DestroyedOrNull())
+            {
+                //CurLevel = (float)currProtection.HitPoints / (float)currProtection.MaxHitPoints;
+
+                if (currProtection.HitPoints < currProtection.MaxHitPoints / 2)
+                {
+                    // That means there are 400 need intervals in a day, meaning a chance of 0.0025 happens once a day
+                    // 0.5 - (0.0 - 0.5) makes the total chance higher, the higher the amount of missing hitpoints
+                    float chance = Math.Min(0.5f, 0.5f - (currProtection.HitPoints / currProtection.MaxHitPoints));
+                    chance = 0.003f * chance * Find.Storyteller.difficulty.playerPawnInfectionChanceFactor; // infection factors are 0.3,"Easy" 0.5,"Medium" 0.75 and 1.1 
+
+                    //Log.Message("DEBUG: playerPawnInfectionChange = " + Find.Storyteller.difficulty.playerPawnInfectionChanceFactor);
+                    if (Rand.ChanceSeeded(chance, pawn.HashOffsetTicks() + 8))
+                    {
+                        if (!pawn.health.hediffSet.HasHediff(HediffDefOf.DiaperRash))
+                        {
+                            if (debugging) Log.Message("doing rash incident at fail chance " + chance.ToString() + " for " + pawn.Name);
+                            BodyPartRecord part = pawn.RaceProps.body.AllParts.FirstOrFallback((BodyPartRecord p) => p.def == RimWorld.BodyPartDefOf.Torso);
+                            var hediff = pawn.health.AddHediff(HediffDefOf.DiaperRash, part);
+                            if (PawnUtility.ShouldSendNotificationAbout(pawn))
+                            {
+                                Messages.Message("LetterDiaperRash".Translate(pawn.LabelShort, hediff.Label, pawn.Named("PAWN")), pawn, MessageTypeDefOf.NegativeHealthEvent);
+                            }
+                        }
+                        else
+                        {
+                            if (debugging) Log.Message("skipping rash incident at fail chance " + chance.ToString() + " for " + pawn.Name);
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                SetInitialLevel();
+            }
+
+
+        }
+
+        // Pee => true, Poop => false ; If poop incidents are disabled, always returns true
+        private bool DecideRandomPeePoopIncident()
+        {
+            return LoadedModManager.GetMod<ZealousInnocence>().GetSettings<ZealousInnocenceSettings>().faecesActive ? Rand.ChanceSeeded(0.65f, pawn.HashOffsetTicks() + 854) : true;
+        }
+        private int TicksAccidentLeftCalc
+        {
+            get
+            {
+                Need bladder = pawn.needs.TryGetNeed<Need_Bladder>();
+                if (bladder == null) return 0;
+
+                return Mathf.RoundToInt((1.0f - bladder.CurLevel) / peePerTick * 150f);
+            }
+        }
+
+        private void ManageOngoingAccident()
+        {
+            if (isHavingAccident)
+            {
+                var curJob = pawn?.CurJob;
+                var noRelatedJobRunning = curJob == null || (curJob.def != JobDefOf.PeeEvent && curJob.def != JobDefOf.PoopEvent);
+                if (noRelatedJobRunning && pawn.Awake() && pawn.CanPolitelyInterrupt() && (!Helper_Diaper.isDiaper(currProtection) || pawn.isToddlerOrBabyMentalOrPhysical()))
+                {
+                    var job = JobMaker.MakeJob(IsPeeing ? JobDefOf.PeeEvent : JobDefOf.PoopEvent);
+                    job.expiryInterval = TicksAccidentLeftCalc;
+                    job.checkOverrideOnExpire = true;   // let normal AI resume/override when it ends
+                    job.playerForced = false;           // makes it easy to interrupt by the player
+                    if (Settings.debuggingJobs) Log.Message($"[ZI] ManageOngoingAccident {pawn.LabelShort} startring job triggered; Cur={curJob.def.defName} New={job.def.defName}");
+
+                    pawn.jobs.StartJob(
+                        job,
+                        JobCondition.InterruptOptional,
+                        tag: JobTag.Misc,
+                        resumeCurJobAfterwards: true,
+                        cancelBusyStances: true);
+                }
+            }
+        }
+
+        int chancedDamage(float damage)
+        {
+            float halfHitpoints = damage - (float)Math.Floor(damage);
+
+            if (halfHitpoints > 0.0f && Rand.ChanceSeeded(halfHitpoints, pawn.HashOffsetTicks() + 4))
+            {
+                return (int)Math.Ceiling(damage);
+            }
+
+            return (int)Math.Floor(damage);
+        }
+    }
+}

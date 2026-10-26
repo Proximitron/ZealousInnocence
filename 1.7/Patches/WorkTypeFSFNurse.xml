@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationConditional">
+    <!-- If FSFNurse worktype exists, use it; otherwise fall back to Doctor -->
+    <xpath>Defs/WorkTypeDef[defName="FSFNurse"]</xpath>
+    <match Class="PatchOperationReplace">
+      <xpath>Defs/WorkGiverDef[defName="ChangePatientDiaperDoctor"]/workType</xpath>
+      <value><workType>FSFNurse</workType></value>
+    </match>
+    <nomatch Class="PatchOperationReplace">
+      <xpath>Defs/WorkGiverDef[defName="ChangePatientDiaperDoctor"]/workType</xpath>
+      <value><workType>Doctor</workType></value>
+    </nomatch>
+  </Operation>
+</Patch>

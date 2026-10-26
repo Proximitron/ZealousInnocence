@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+	<success>Normal</success>
+	<operations>
+
+	<li Class="ZealousInnocence.PatchOperationMultiXpath">
+		<xpath>
+			<li>/Defs/InteractionDef[@ParentName="SpeakUpReply"]/logRulesInitiator/rulesStrings</li>
+			<li>/Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator/rulesStrings</li>
+    </xpath>
+
+		<value>
+			<!-- Low-priority catch-all for toddlers replying to stuff -->
+			<li>r_logentry(INITIATOR_age>=1,INITIATOR_age&lt;=4,priority=2)->[toddler_generic_answer]</li>
+
+			<!-- ============ GENERIC TODDLER ANSWERS (1–4) ============ -->
+
+			<li>toddler_generic_answer->Oh… otay.</li>
+			<li>toddler_generic_answer->Mm-hmm…</li>
+			<li>toddler_generic_answer->Hee hee…</li>
+			<li>toddler_generic_answer->Me no weawwy know…</li>
+			<li>toddler_generic_answer->Me jus’ wike bein’ wiff you.</li>
+			<li>toddler_generic_answer->Me no mind… iss fine.</li>
+			<li>toddler_generic_answer->Uh-huh… me tink so too.</li>
+			<li>toddler_generic_answer->Me no undastand, but otay!</li>
+			<li>toddler_generic_answer->Me duss go “yeah”…</li>
+			<li>toddler_generic_answer->Me wook awound… iss funny wowld.</li>
+
+			<!-- Slightly reactive without being too smart -->
+			<li>toddler_generic_answer->Hmm… me feew funny ‘bout dat.</li>
+			<li>toddler_generic_answer->Me no weawwy cawe… me jus’ pway.</li>
+			<li>toddler_generic_answer->If you say so, [RECIPIENT_nameDef].</li>
+			<li>toddler_generic_answer->Me duss nod wike dis. *nods*</li>
+			<li>toddler_generic_answer->Me tink… me no tink… me go pway.</li>
+		</value>
+	</li>
+	
+	</operations>
+	</Operation>
+</Patch>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <!-- Shown category for displaying purpose -->	
+	<GeneCategoryDef>
+    <defName>Bladder</defName>
+    <label>Bladder</label>
+    <displayPriorityInXenotype>-1260</displayPriorityInXenotype>
+  </GeneCategoryDef>
+</Defs>

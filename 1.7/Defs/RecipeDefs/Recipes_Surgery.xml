@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<RecipeDef ParentName="SurgeryFlesh">
+		<defName>CureWeakBladder</defName>
+		<label>Cure weak bladder</label>
+		<description>Cures a weak bladder with an high tech operation.</description>
+		<workerClass>Recipe_RemoveHediff</workerClass>
+		<jobString>Curing weak bladder.</jobString>
+		<workAmount>8000</workAmount>
+		<removesHediff>WeakBladder</removesHediff>
+		<successfullyRemovedHediffMessage>{0} has successfully cured {1}'s weak bladder.</successfullyRemovedHediffMessage>
+		<deathOnFailedSurgeryChance>0.05</deathOnFailedSurgeryChance>
+		<skillRequirements>
+			<Medicine>5</Medicine>
+		</skillRequirements>
+		<recipeUsers>
+			<li>Human</li>
+		</recipeUsers>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>MedicineUltratech</li>
+					</thingDefs>
+				</filter>
+				<count>5</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>MedicineUltratech</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+		<researchPrerequisite>VitalsMonitor</researchPrerequisite>
+	</RecipeDef>
+	
+	<RecipeDef Name="PutInDiaperBase" Abstract="True">
+		<defName>PutInDiaper</defName>
+		<description>Changes someones diaper, or just puts one on.</description>
+		<workerClass>ZealousInnocence.Recipe_PutInDiaper</workerClass>
+		
+    <effectWorking>Tailor</effectWorking>
+    <workSpeedStat>MedicalOperationSpeed</workSpeedStat>
+    <workSkill>Medicine</workSkill>
+    <workSkillLearnFactor>1</workSkillLearnFactor>
+		<anesthetize>false</anesthetize>
+		<jobString>Diaper changies.</jobString>
+		<workAmount>50</workAmount>
+		<hideBodyPartNames>true</hideBodyPartNames>
+		<targetsBodyPart>false</targetsBodyPart>
+		<surgerySuccessChanceFactor>5</surgerySuccessChanceFactor>
+		<successfullyRemovedHediffMessage>{0} has successfully changed {1}'s diaper.</successfullyRemovedHediffMessage>
+		<deathOnFailedSurgeryChance>0.00</deathOnFailedSurgeryChance>
+		<recipeUsers>
+			<li>Human</li>
+		</recipeUsers>
+		<skillRequirements>
+			<Medicine>1</Medicine>
+		</skillRequirements>
+	</RecipeDef>
+	
+	<RecipeDef ParentName="PutInDiaperBase">
+		<defName>PutInFlimsyDiaper</defName>
+		<label>diaper change (flimsy)</label>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Apparel_Diaper_Flimsy</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Apparel_Diaper_Flimsy</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+	</RecipeDef>
+	<RecipeDef ParentName="PutInDiaperBase">
+		<defName>PutInDiaper</defName>
+		<label>diaper change (normal)</label>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Apparel_Diaper</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Apparel_Diaper</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+	</RecipeDef>
+	<RecipeDef ParentName="PutInDiaperBase">
+		<defName>PutInNightDiaper</defName>
+		<label>diaper change (pull-ups)</label>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Apparel_Diaper_Night</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Apparel_Diaper_Night</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+	</RecipeDef>
+	<RecipeDef ParentName="PutInDiaperBase">
+		<defName>PutInPremiumDiaper</defName>
+		<label>diaper change (premium)</label>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Apparel_Premium_Diaper</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Apparel_Premium_Diaper</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+	</RecipeDef>
+	
+</Defs>

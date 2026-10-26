@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<!--<Operation Class="PatchOperationSequence">
+	<success>Normal</success>
+	<operations>
+
+	<li Class="ZealousInnocence.PatchOperationMultiXpath">
+		<xpath>
+			<li>/Defs/InteractionDef[defName="Chitchat"]/logRulesInitiator/rulesStrings</li>
+    </xpath>
+
+		<value>
+
+		</value>
+	</li>
+	
+	</operations>
+	</Operation>-->
+</Patch>

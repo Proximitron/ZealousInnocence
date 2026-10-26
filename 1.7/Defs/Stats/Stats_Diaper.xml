@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <StatDef>
+    <defName>DiaperAbsorbency</defName>
+    <label>protection capacity</label>
+    <description>This value describes how much capacity underwear/diapers have against getting soiled.\n\nHigh values will make the cloth last longer. Low values mean the cloth will get soiled and destroyed quickly.\n\nConsists of two values. 'Absorbency' of the underwear and 'Support' of other cloth.</description>
+    <category>BasicsPawn</category>
+    <defaultBaseValue>0</defaultBaseValue>
+    <toStringStyle>FloatOne</toStringStyle>
+		<formatString>{0} l</formatString>
+    <minValue>0</minValue>
+    <maxValue>20</maxValue>
+    <parts>
+      <li Class="StatPart_GearStatOffset">
+        <apparelStat>Absorbency</apparelStat>
+      </li>
+			<!-- The maximum impact can be the absolut value of Absorbency (the limit is a doubeling) -->
+			<li Class="ZealousInnocence.StatPart_LimitedSupport">
+        <mainStat>Absorbency</mainStat>
+        <supportStat>DiaperSupport</supportStat>
+      </li>
+			
+			<!--<li Class="StatPart_GearStatOffset">
+        <apparelStat>DiaperSupport</apparelStat>
+      </li>-->
+    </parts>
+    <scenarioRandomizable>true</scenarioRandomizable>
+    <displayPriorityInCategory>2000</displayPriorityInCategory>
+  </StatDef>
+
+  <StatDef>
+    <defName>Absorbency</defName>
+    <label>absorbency</label>
+    <description>The amount of abuse underwear/diapers can take before leaking. Higher values reduce the speed at which they are used up.</description>
+    <category>Apparel</category>
+		<defaultBaseValue>0</defaultBaseValue>
+    <minValue>0</minValue>
+		<maxValue>9999</maxValue>
+		<hideAtValue>0</hideAtValue>
+    <toStringStyle>FloatOne</toStringStyle>
+    <formatString>{0} l</formatString>
+    <showIfUndefined>false</showIfUndefined>
+    <displayPriorityInCategory>60</displayPriorityInCategory>
+    <parts>
+      <li Class="StatPart_Quality">
+        <factorAwful>0.75</factorAwful>
+        <factorPoor>0.9</factorPoor>
+        <factorNormal>1</factorNormal>
+        <factorGood>1.1</factorGood>
+        <factorExcellent>1.2</factorExcellent>
+        <factorMasterwork>1.5</factorMasterwork>
+        <factorLegendary>1.9</factorLegendary>
+      </li>
+    </parts>
+  </StatDef>
+
+  <StatDef>
+    <defName>DiaperSupport</defName>
+    <label>support</label>
+    <description>The amount of support this cloth give against sagging and leaking. Higher support can reduce the speed they get used up.</description>
+    <category>Apparel</category>
+		<defaultBaseValue>0</defaultBaseValue>
+    <minValue>0</minValue>
+		<maxValue>9999</maxValue>
+		<hideAtValue>0</hideAtValue>
+    <toStringStyle>FloatOne</toStringStyle>
+    <formatString>{0} l</formatString>
+    <showIfUndefined>false</showIfUndefined>
+    <displayPriorityInCategory>61</displayPriorityInCategory>
+    <parts>
+      <li Class="StatPart_Quality">
+        <factorAwful>0.75</factorAwful>
+        <factorPoor>0.9</factorPoor>
+        <factorNormal>1</factorNormal>
+        <factorGood>1.06</factorGood>
+        <factorExcellent>1.13</factorExcellent>
+        <factorMasterwork>1.19</factorMasterwork>
+        <factorLegendary>1.25</factorLegendary>
+      </li>
+    </parts>
+  </StatDef>
+</Defs>

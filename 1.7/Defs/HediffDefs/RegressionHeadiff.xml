@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<!-- START This was deprecated and is removed/replaced at game start -->
+	<HediffDef>
+		<defName>RegressionState</defName>
+		<description>This person is mentally regressed. It will take some time for them to become their normal adult self. Until then, your colony has another baby.</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<label>regression</label>
+		<everCurableByItem>false</everCurableByItem>
+		<isBad>false</isBad>
+		<initialSeverity>1</initialSeverity>
+		<maxSeverity>1</maxSeverity>
+		<taleOnVisible>RegressionRevealed</taleOnVisible>
+		<comps>
+			<li Class="HediffCompProperties_Disappears">
+				<disappearsAfterTicks>6000000~6750000</disappearsAfterTicks>
+			</li>
+			<li Class="HediffCompProperties_SeverityPerDay">
+				<severityPerDay>-0.019</severityPerDay>
+			</li>
+		</comps>
+		<stages>
+			<li>
+				<label>teenager</label>
+				<statFactors>
+					<CertaintyLossFactor MayRequire="Ludeon.RimWorld.Ideology">1.2</CertaintyLossFactor>
+				</statFactors>
+				<minSeverity>0.01</minSeverity>
+				<restFallFactor>1.25</restFallFactor>
+				<hungerRateFactor>1.15</hungerRateFactor>
+				<capMods>
+					<li>
+						<capacity>BladderControl</capacity>
+						<offset>-0.2</offset>
+					</li>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.95</setMax>
+					</li>
+				</capMods>
+				<hediffGivers>
+					<li Class="HediffGiver_Random">
+            <hediff>BladderInfection</hediff>
+            <mtbDays>120</mtbDays>
+            <partsToAffect>
+              <li>Bladder</li>
+            </partsToAffect>
+          </li>
+				</hediffGivers>
+			</li>
+			<li>
+				<label>child</label>
+				<statFactors>
+					<CertaintyLossFactor MayRequire="Ludeon.RimWorld.Ideology">2</CertaintyLossFactor>
+				</statFactors>
+				<minSeverity>0.25</minSeverity>
+				<restFallFactor>1.5</restFallFactor>
+				<hungerRateFactor>1.5</hungerRateFactor>
+				<vomitMtbDays>2.0</vomitMtbDays>
+				<capMods>
+					<li>
+						<capacity>Manipulation</capacity>
+						<offset>-0.35</offset>
+					</li>
+					<li>
+						<capacity>Talking</capacity>
+						<offset>-0.25</offset>
+					</li>
+					<li>
+						<capacity>Moving</capacity>
+						<offset>-0.25</offset>
+					</li>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.85</setMax>
+					</li>
+					<li>
+            <capacity>BloodFiltration</capacity>
+            <offset>-0.25</offset>
+          </li>
+					<li>
+						<capacity>BladderControl</capacity>
+						<offset>-0.5</offset>
+					</li>
+					<li>
+            <capacity>Eating</capacity>
+            <offset>-0.25</offset>
+          </li>
+				</capMods>
+				<hediffGivers>
+          <li Class="HediffGiver_Random">
+            <hediff>Flu</hediff>
+            <mtbDays>160</mtbDays>
+            <partsToAffect>
+              <li>Torso</li>
+            </partsToAffect>
+          </li>
+					<li Class="HediffGiver_Random">
+            <hediff>SleepingSickness</hediff>
+            <mtbDays>160</mtbDays>
+            <partsToAffect>
+              <li>Torso</li>
+            </partsToAffect>
+          </li>
+					<li Class="HediffGiver_Random">
+            <hediff>BladderInfection</hediff>
+            <mtbDays>160</mtbDays>
+            <partsToAffect>
+              <li>Bladder</li>
+            </partsToAffect>
+          </li>
+        </hediffGivers>
+				<forgetMemoryThoughtMtbDays>1</forgetMemoryThoughtMtbDays>
+			</li>
+			<li>
+				<label>toddler</label>
+				<statFactors>
+					<CertaintyLossFactor MayRequire="Ludeon.RimWorld.Ideology">2.5</CertaintyLossFactor>
+				</statFactors>
+				<minSeverity>0.75</minSeverity>
+				<vomitMtbDays>0.75</vomitMtbDays>
+				<restFallFactor>2.0</restFallFactor>
+				<hungerRateFactor>1.75</hungerRateFactor>
+				<forgetMemoryThoughtMtbDays>5</forgetMemoryThoughtMtbDays>
+				<capMods>
+					<li>
+						<capacity>Manipulation</capacity>
+						<offset>-0.5</offset>
+					</li>
+					<li>
+						<capacity>Talking</capacity>
+						<offset>-0.5</offset>
+					</li>
+					<li>
+						<capacity>Moving</capacity>
+						<offset>-0.55</offset>
+					</li>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.8</setMax>
+					</li>
+					<li>
+						<capacity>BladderControl</capacity>
+						<offset>-0.95</offset>
+					</li>
+					<li>
+            <capacity>BloodFiltration</capacity>
+            <offset>-0.20</offset>
+          </li>
+					<li>
+            <capacity>Eating</capacity>
+            <offset>-0.5</offset>
+          </li>
+				</capMods>
+				<hediffGivers>
+          <li Class="HediffGiver_Random">
+            <hediff>Flu</hediff>
+            <mtbDays>100</mtbDays>
+            <partsToAffect>
+              <li>Torso</li>
+            </partsToAffect>
+          </li>
+					<li Class="HediffGiver_Random">
+            <hediff>SleepingSickness</hediff>
+            <mtbDays>100</mtbDays>
+            <partsToAffect>
+              <li>Torso</li>
+            </partsToAffect>
+          </li>
+					<li Class="HediffGiver_Random">
+            <hediff>BladderInfection</hediff>
+            <mtbDays>140</mtbDays>
+            <partsToAffect>
+              <li>Bladder</li>
+            </partsToAffect>
+          </li>
+        </hediffGivers>
+			</li>
+			<li>
+				<label>baby</label>
+				<statFactors>
+					<CertaintyLossFactor MayRequire="Ludeon.RimWorld.Ideology">3</CertaintyLossFactor>
+				</statFactors>
+				<minSeverity>0.9</minSeverity>
+				<vomitMtbDays>0.5</vomitMtbDays>
+				<restFallFactor>2.5</restFallFactor>
+				<hungerRateFactor>2.5</hungerRateFactor>
+				<capMods>
+					<li>
+						<capacity>Moving</capacity>
+						<setMax>0</setMax>
+					</li>
+					<li>
+						<capacity>Talking</capacity>
+						<setMax>0</setMax>
+					</li>
+					<li>
+						<capacity>Manipulation</capacity>
+						<setMax>0</setMax>
+					</li>
+					<li>
+						<capacity>BladderControl</capacity>
+						<setMax>0</setMax>
+					</li>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.6</setMax>
+					</li>
+					<li>
+            <capacity>BloodFiltration</capacity>
+            <offset>-0.25</offset>
+          </li>
+					<li>
+            <capacity>Eating</capacity>
+            <offset>-0.75</offset>
+          </li>
+				</capMods>
+				<hediffGivers>
+          <li Class="HediffGiver_Random">
+            <hediff>Flu</hediff>
+            <mtbDays>50</mtbDays>
+            <partsToAffect>
+              <li>Torso</li>
+            </partsToAffect>
+          </li>
+					<li Class="HediffGiver_Random">
+            <hediff>SleepingSickness</hediff>
+            <mtbDays>50</mtbDays>
+            <partsToAffect>
+              <li>Torso</li>
+            </partsToAffect>
+          </li>
+        </hediffGivers>
+			</li>
+		</stages>
+	</HediffDef>
+	<!-- END This was deprecated and is removed/replaced at game start -->
+	
+	<HediffDef>
+		<defName>RegressionMental</defName>
+		<description>This person is mentally regressed (made younger) as a result of received a dose of regressive nanites found only in the fountain of youth. This will make them act younger than they physically are.  While a full dose will heal the brain, an overdose is even able to revert death.</description>
+		<hediffClass>ZealousInnocence.Hediff_MentalRegression</hediffClass>
+		<label>mental regression</label>
+		<defaultLabelColor>(0.9, 1.0, 0.35)</defaultLabelColor>
+		<everCurableByItem>false</everCurableByItem>
+		<isBad>false</isBad>
+		<taleOnVisible>RegressionRevealed</taleOnVisible>
+		<comps>
+		  <!-- <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-0.1</severityPerDay>This controls how the severity changes over time, if at all 
+      </li>-->
+		</comps>
+		<stages>
+		  <li>
+				<minSeverity>0.01</minSeverity>
+      </li>
+      <li>
+				<minSeverity>1.201</minSeverity>
+        <capMods>
+					<li>
+						<capacity>Moving</capacity>
+						<setMax>0</setMax>
+					</li>
+					<li>
+						<capacity>Talking</capacity>
+						<setMax>0</setMax>
+					</li>
+					<li>
+						<capacity>Manipulation</capacity>
+						<setMax>0</setMax>
+					</li>
+					<li>
+						<capacity>BladderControl</capacity>
+						<setMax>0</setMax>
+					</li>
+        </capMods>
+      </li>
+    </stages>
+		<initialSeverity>0.01</initialSeverity>
+		<minSeverity>0</minSeverity>
+		<maxSeverity>1.3</maxSeverity>
+		<tendable>false</tendable>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>RegressionPhysical</defName>
+		<description>This person is physically regressed (made younger) as a result of received a dose of regressive nanites found only in the fountain of youth. Depending on severity this pawn will be affected in multiple ways, usually temporary. While a full dose will heal physical injuries, an overdose is even able to revert death</description>
+		<hediffClass>ZealousInnocence.Hediff_PhysicalRegression</hediffClass>
+		<label>physical regression</label>
+		<defaultLabelColor>(0.9, 1.0, 0.35)</defaultLabelColor>
+		<everCurableByItem>false</everCurableByItem>
+		<isBad>false</isBad>
+		<taleOnVisible>RegressionRevealed</taleOnVisible>
+		<comps>
+		  <!-- <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-0.1</severityPerDay>This controls how the severity changes over time, if at all 
+      </li>-->
+		</comps>
+		<initialSeverity>0.01</initialSeverity>
+		<minSeverity>0</minSeverity>
+		<maxSeverity>1.3</maxSeverity>
+		<tendable>false</tendable>		
+	</HediffDef>
+	
+	
+	
+
+	<HediffDef>
+		<defName>RegressionDamage_FoyWater_Injected</defName>
+		<label>FOY water(injected)</label>
+		<description>Got injected with refined nanites from the fountain of youth. Effects will be very long term.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionInfluence</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>0.005</decayPerDayBase>
+
+				<powerMental>0.5</powerMental>
+				<powerPhysical>1</powerPhysical>
+				
+				<totalCapMental>1.3</totalCapMental>
+				<totalCapPhysical>1.3</totalCapPhysical>
+				
+				<injuryHeal_ChancePerSeverity>2.5</injuryHeal_ChancePerSeverity>
+				<injuryHeal_MinSeverity>0.5</injuryHeal_MinSeverity>
+				
+				<ressurect_ChancePerSeverity>20.0</ressurect_ChancePerSeverity>
+				<ressurect_MinSeverity>0.95</ressurect_MinSeverity>
+			</li>
+		</comps>
+		<maxSeverity>1.3</maxSeverity>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>RegressionDamage_FoyWater_Ingested</defName>
+		<label>FOY water(ingested)</label>
+		<description>Swallowed water from the fountain of youth. It will take a little while to get it out of their system.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionInfluence</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>0.02</decayPerDayBase>
+
+				<powerMental>0.5</powerMental>
+				<powerPhysical>1.0</powerPhysical>
+				
+				<injuryHeal_ChancePerSeverity>10.0</injuryHeal_ChancePerSeverity>
+				<injuryHeal_MinSeverity>0.5</injuryHeal_MinSeverity>
+				
+			</li>
+		</comps>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>RegressionDamage_FoyWater_SkinContact</defName>
+		<label>FOY water(contact)</label>
+		<description>Touched water from the fountain of youth. Most effects will be short term.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionInfluence</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>5.0</decayPerDayBase>
+
+				<powerMental>0.02</powerMental>
+				<powerPhysical>0.06</powerPhysical>
+
+				<totalCapMental>0.7</totalCapMental>
+				<totalCapPhysical>1.1</totalCapPhysical>
+			</li>
+		</comps>
+	</HediffDef>
+	
+	<HediffDef ParentName="InjuryBase">
+		<defName>RegressionDamage_RayGression</defName>
+		<label>ray-gression</label>
+    <labelNoun>a burn</labelNoun>
+    <description>Got hit by a ray-gression laser and probably has trouble remembering... anything. Effects will probably be short term.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionInfluence_Injury</hediffClass>
+    <comps>
+      <li Class="HediffCompProperties_TendDuration">
+        <labelTendedWell>tended</labelTendedWell>
+        <labelTendedWellInner>tended</labelTendedWellInner>
+        <labelSolidTendedWell>set</labelSolidTendedWell>
+      </li>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>1.0</decayPerDayBase>
+
+				<powerMental>0.038</powerMental>
+				<powerPhysical>0.013</powerPhysical>
+				
+				<totalCapMental>1.3</totalCapMental>
+				<totalCapPhysical>0.5</totalCapPhysical>
+				
+				<affectsBodyParts>true</affectsBodyParts>
+				<tendRecoveryBonusPerQuality>1.0</tendRecoveryBonusPerQuality>
+			</li>
+    </comps>
+    <injuryProps>
+      <painPerSeverity>0.0095</painPerSeverity>
+      <averagePainPerSeverityPermanent>0.00300</averagePainPerSeverityPermanent>
+      <canMerge>true</canMerge>
+      <destroyedLabel>Melted</destroyedLabel>
+    </injuryProps>
+		<tendable>true</tendable>	
+  </HediffDef>
+		
+	<HediffDef>
+		<defName>MentalRegressionDamage</defName>
+		<label>? mental regression</label>
+		<description>Got affected by mental regression from an unknown source. Maybe some stray nanites, maybe some occult ritual...</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionInfluence</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>0.02</decayPerDayBase>
+
+				<!-- Domain powers: only mental contributes -->
+				<powerMental>1</powerMental>
+				<powerPhysical>0</powerPhysical>
+
+				<maxContributionMental>9999</maxContributionMental>
+				<multiplierPhysical>0</multiplierPhysical>
+			</li>
+		</comps>
+		<maxSeverity>1.3</maxSeverity>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>PhysicalRegressionDamage</defName>
+		<label>? physical regression</label>
+		<description>Got affected by physical regression from an unknown source. Maybe some stray nanites, maybe some occult ritual...</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionInfluence</hediffClass>
+		<comps>
+			<li Class="ZealousInnocence.CompProperties_RegressionInfluence">
+				<decayPerDayBase>0.02</decayPerDayBase>
+
+				<!-- Domain powers: only physical contributes -->
+				<powerMental>0</powerMental>
+				<powerPhysical>1</powerPhysical>
+
+				<!-- Multipliers: 1 means neutral; non-zero is required to participate -->
+				<multiplierMental>0</multiplierMental>
+				<multiplierPhysical>1</multiplierPhysical>
+
+				<maxContributionMental>0</maxContributionMental>
+				<maxContributionPhysical>9999</maxContributionPhysical>
+				
+				<totalCapMental>0</totalCapMental>
+				<totalCapPhysical>0</totalCapPhysical>
+
+				<affectsBodyParts>false</affectsBodyParts>
+				<tendRecoveryBonusPerQuality>0.0</tendRecoveryBonusPerQuality>
+				
+				<stacking>Additive</stacking>
+			</li>
+		</comps>
+		<maxSeverity>1.3</maxSeverity>
+	</HediffDef>
+	
+	
+	<HediffDef>
+		<defName>RegressionDamageMental</defName>
+		<label>migrating mental regression</label>
+		<description>Old mental regression. migrating.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionDamageMental</hediffClass>
+		<maxSeverity>1.3</maxSeverity>
+	</HediffDef>
+	
+	<HediffDef>
+		<defName>RegressionDamage</defName>
+		<label>migrating physical regression</label>
+		<description>Old physical regression. migrating.</description>
+		<hediffClass>ZealousInnocence.Hediff_RegressionDamage</hediffClass>
+		<maxSeverity>1.3</maxSeverity>
+	</HediffDef>
+	
+	<HediffDef>
+    <defName>DrenchedStatusEffect</defName>
+    <label>drenched</label>
+		<description>Got drenched with FOY water.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <initialSeverity>1</initialSeverity>
+    <stages>
+      <li>
+        <!-- short, noticeable slow -->
+        <statFactors>
+          <MoveSpeed>0.70</MoveSpeed>
+        </statFactors>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HediffCompProperties_DisappearsOnDeath" />
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>60</disappearsAfterTicks>
+      </li>
+    </comps>
+  </HediffDef>
+
+</Defs>
